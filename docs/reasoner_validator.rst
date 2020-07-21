@@ -1,8 +1,5 @@
-reasoner\_validator package
+API
 ===========================
-
-Module contents
----------------
 
 .. automodule:: reasoner_validator
    :members:

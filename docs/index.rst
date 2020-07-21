@@ -3,8 +3,6 @@ Reasoner Validator
 
 The Reasoner validator will allow you to validate Reasoner API components.
 
-Look how easy it is to use:
-
 .. code-block:: python
 
     from reasoner_validator import validate_Message, ValidationError
@@ -15,35 +13,28 @@ Look how easy it is to use:
       raise ValueError('Bad Reasoner component!')
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :hidden:
 
    reasoner_validator
-
-Features
---------
-
-- Be awesome
-- Make things faster
 
 Installation
 ------------
 
-Install $project by running:
+.. code-block:: bash
 
-    install project
+  pip install reasoner-validator
 
 Contribute
 ----------
 
-- Issue Tracker: github.com/$project/$project/issues
-- Source Code: github.com/$project/$project
+- `Report a bug <https://github.com/NCATSTranslator/reasoner-validator/issues/new?template=bug_report.md>`_
+- `Request a feature <https://github.com/NCATSTranslator/reasoner-validator/issues/new?template=feature_request.md>`_
 
 Support
 -------
 
-If you are having issues, please let us know.
-We have a mailing list located at: project@google-groups.com
+- `Ask a question <https://github.com/NCATSTranslator/reasoner-validator/issues/new?template=question.md>`_
 
 License
 -------
