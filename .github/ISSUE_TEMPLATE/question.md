@@ -2,7 +2,7 @@
 name: Question
 about: Request assistance
 title: ''
-labels: ''
+labels: question
 assignees: ''
 
 ---
