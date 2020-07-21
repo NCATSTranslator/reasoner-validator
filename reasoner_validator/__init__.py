@@ -46,7 +46,7 @@ for component_name in components:
 
         Raises
         ------
-        ValidationError
+        `ValidationError <https://python-jsonschema.readthedocs.io/en/latest/errors/#jsonschema.exceptions.ValidationError>`_
           If the object is not a valid {component:s}.
 
         Examples
