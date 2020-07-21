@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='reasoner-validator',
-    version='0.1.0-dev',
+    version='0.9.2+1.0.0',
     author='Patrick Wang',
     author_email='patrick@covar.com',
     url='https://github.com/NCATSTranslator/reasoner-validator',
