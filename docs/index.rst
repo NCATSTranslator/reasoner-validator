@@ -7,7 +7,7 @@ Look how easy it is to use:
 
 .. code-block:: python
 
-    from reasoner_validate import validate_Message, ValidationError
+    from reasoner_validator import validate_Message, ValidationError
     message = ...
     try:
       validate_Message(message)
@@ -18,7 +18,7 @@ Look how easy it is to use:
    :maxdepth: 2
    :caption: Contents:
 
-   reasoner_validate
+   reasoner_validator
 
 Features
 --------

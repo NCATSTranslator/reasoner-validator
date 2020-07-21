@@ -3,7 +3,7 @@ import pytest
 
 from jsonschema.exceptions import ValidationError
 
-from reasoner_validate import validate_Query, validate_Credentials
+from reasoner_validator import validate_Query, validate_Credentials
 
 
 def test_validate():
