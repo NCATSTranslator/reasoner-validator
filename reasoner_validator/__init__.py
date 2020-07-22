@@ -43,6 +43,7 @@ for component_name in components:
         Parameters
         ----------
         obj : object
+            Object to validate
 
         Raises
         ------
