@@ -64,3 +64,5 @@ for component_name in components:
         validate.__name__,
         validate,
     )
+
+del validate
