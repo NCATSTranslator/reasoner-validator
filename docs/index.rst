@@ -1,7 +1,8 @@
 Reasoner Validator
 ==================
 
-The Reasoner validator will allow you to validate Reasoner API components.
+This Python module provides a :code:`validate_X()` method for each component in the
+`Reasoner API <https://github.com/NCATS-Tangerine/NCATS-ReasonerStdAPI/blob/master/API/TranslatorReasonersAPI.yaml>`_.
 
 .. code-block:: python
 
@@ -24,6 +25,16 @@ Installation
 .. code-block:: bash
 
   pip install reasoner-validator
+
+
+To install the validator for a specific version of the Reasoner API, e.g. 0.9.2:
+
+.. code-block:: bash
+
+  pip install reasoner-validator==0.9.2.*
+
+Note the trailing :code:`.*`; the validator library version follows the schema version,
+so 0.9.2.1.0.0 indicates schema version 0.9.2 and library version 1.0.0.
 
 Contribute
 ----------
