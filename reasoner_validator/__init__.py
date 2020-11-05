@@ -17,7 +17,7 @@ except ImportError:
     # Try backported to PY<37 `importlib_resources`.
     import importlib_resources as pkg_resources
 from . import data  # relative-import the *package* containing the templates
-to_load = pkg_resources.read_text(data, 'TranslatorReasonersAPI.yml')
+to_load = pkg_resources.read_text(data, 'TranslatorReasonerAPI.yml')
 
 spec = yaml.load(to_load, Loader=Loader)
 components = spec['components']['schemas']
