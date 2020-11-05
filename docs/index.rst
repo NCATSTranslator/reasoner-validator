@@ -2,7 +2,7 @@ Reasoner Validator
 ==================
 
 This Python module provides a :code:`validate_X()` method for each component in the
-`Reasoner API <https://github.com/NCATS-Tangerine/NCATS-ReasonerStdAPI/blob/master/API/TranslatorReasonersAPI.yaml>`_.
+`Reasoner API <https://github.com/NCATSTranslator/ReasonerAPI/blob/master/TranslatorReasonerAPI.yaml>`_.
 
 .. code-block:: python
 
