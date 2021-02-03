@@ -3,7 +3,10 @@ import pytest
 
 from jsonschema.exceptions import ValidationError
 
-from reasoner_validator import validate_EdgeBinding, validate_Query
+from reasoner_validator import (
+    validate_EdgeBinding, validate_Query,
+    validate_QNode,
+)
 
 
 def test_query():
@@ -27,3 +30,12 @@ def test_edgebinding():
         validate_EdgeBinding({
             'foo': {},
         })
+
+
+def test_nullable():
+    """Test nullable property."""
+    qnode = {
+        "category": None
+    }
+
+    validate_QNode(qnode)

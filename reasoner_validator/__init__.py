@@ -17,10 +17,15 @@ except ImportError:
     # Try backported to PY<37 `importlib_resources`.
     import importlib_resources as pkg_resources
 from . import data  # relative-import the *package* containing the templates
+
+from .util import openapi_to_jsonschema
+
 to_load = pkg_resources.read_text(data, 'TranslatorReasonerAPI.yml')
 
 spec = yaml.load(to_load, Loader=Loader)
 components = spec['components']['schemas']
+for component_name, schema in components.items():
+    openapi_to_jsonschema(schema)
 for component_name in components:
     # build json schema against which we validate
     other_components = copy.deepcopy(components)
