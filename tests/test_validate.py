@@ -5,7 +5,7 @@ from jsonschema.exceptions import ValidationError
 
 from reasoner_validator import (
     validate_EdgeBinding, validate_Query,
-    validate_QNode,
+    validate_QNode, validate_Message,
 )
 
 
@@ -37,5 +37,11 @@ def test_nullable():
     qnode = {
         "category": None
     }
-
     validate_QNode(qnode)
+
+    message = {
+        "knowledge_graph": None,
+        "query_graph": None,
+        "results": None,
+    }
+    validate_Message(message)
