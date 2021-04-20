@@ -1,1 +1,1 @@
-include reasoner_validator/data/TranslatorReasonerAPI.yml
+include reasoner_validator/data/TranslatorReasonerAPI*

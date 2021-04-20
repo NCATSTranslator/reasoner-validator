@@ -20,7 +20,7 @@ from . import data  # relative-import the *package* containing the templates
 
 from .util import openapi_to_jsonschema
 
-TRAPI_VERSIONS = ['1.0']
+TRAPI_VERSIONS = ['1.0', '1.1']
 to_loads = {}
 specs = {}
 components = {}
