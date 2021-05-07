@@ -3,33 +3,30 @@ import pytest
 
 from jsonschema.exceptions import ValidationError
 
-from reasoner_validator import (
-    validate_EdgeBinding, validate_Query,
-    validate_QNode, validate_Message,
-)
+from reasoner_validator import validate
 
 
 def test_query():
-    """Test validate_Query()."""
-    validate_Query({
-        'message': {},
-    })
+    """Test validate()."""
+    validate({
+        "message": {},
+    }, "Query", "1.0.3")
     with pytest.raises(ValidationError):
-        validate_Query({
-            'foo': {},
-            'bar': {},
-        })
+        validate({
+            "foo": {},
+            "bar": {},
+        }, "Query", "1.0.3")
 
 
 def test_edgebinding():
     """Test validate_EdgeBinding()."""
-    validate_EdgeBinding({
-        'id': 'hello',
-    })
+    validate({
+        "id": "hello",
+    }, "EdgeBinding", "1.0.3")
     with pytest.raises(ValidationError):
-        validate_EdgeBinding({
-            'foo': {},
-        })
+        validate({
+            "foo": {},
+        }, "EdgeBinding", "1.0.3")
 
 
 def test_nullable():
@@ -37,11 +34,11 @@ def test_nullable():
     qnode = {
         "category": None
     }
-    validate_QNode(qnode)
+    validate(qnode, "QNode", "1.0.3")
 
     message = {
         "knowledge_graph": None,
         "query_graph": None,
         "results": None,
     }
-    validate_Message(message)
+    validate(message, "Message", "1.0.3")
