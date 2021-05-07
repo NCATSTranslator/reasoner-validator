@@ -1,73 +1,42 @@
 """Build validation functions."""
-import copy
-from inspect import signature
-import sys
-
 import jsonschema
-from jsonschema import ValidationError
-import yaml
-try:
-    from yaml import CLoader as Loader
-except ImportError:
-    from yaml import Loader
+import requests
 
-try:
-    import importlib.resources as pkg_resources
-except ImportError:
-    # Try backported to PY<37 `importlib_resources`.
-    import importlib_resources as pkg_resources
-from . import data  # relative-import the *package* containing the templates
+from .util import load_schema
 
-from .util import openapi_to_jsonschema
 
-to_load = pkg_resources.read_text(data, 'TranslatorReasonerAPI.yml')
+response = requests.get("https://api.github.com/repos/NCATSTranslator/ReasonerAPI/releases")
+releases = response.json()
+versions = [
+    release["tag_name"][1:]
+    for release in releases
+    if release["tag_name"].startswith("v")
+]
 
-spec = yaml.load(to_load, Loader=Loader)
-components = spec['components']['schemas']
-for component_name, schema in components.items():
-    openapi_to_jsonschema(schema)
-for component_name in components:
-    # build json schema against which we validate
-    other_components = copy.deepcopy(components)
-    schema = other_components.pop(component_name)
-    schema['components'] = {'schemas': other_components}
 
-    def validate(obj, schema=schema):
-        """Validate object against schema."""
-        jsonschema.validate(obj, schema)
+def validate(instance, component, trapi_version=None):
+    """Validate instance against schema.
 
-    # Override signature
-    sig = signature(validate)
-    sig = sig.replace(parameters=tuple(sig.parameters.values())[:1])
-    validate.__signature__ = sig
+    Parameters
+    ----------
+    instance
+        instance to validate
+    component : str
+        component to validate against
+    trapi_version : str
+        version of component to validate against
 
-    validate.__name__ = f'validate_{component_name}'
-    validate.__doc__ = (
-        """Validate object against {component:s} schema.
+    Raises
+    ------
+    `ValidationError <https://python-jsonschema.readthedocs.io/en/latest/errors/#jsonschema.exceptions.ValidationError>`_
+        If the instance is invalid.
 
-        Parameters
-        ----------
-        obj : object
-            Object to validate
+    Examples
+    --------
+    >>> validate({"message": {}}, "Query", "1.0.3")
 
-        Raises
-        ------
-        `ValidationError <https://python-jsonschema.readthedocs.io/en/latest/errors/#jsonschema.exceptions.ValidationError>`_
-          If the object is not a valid {component:s}.
-
-        Examples
-        --------
-        >>> validate_{component:s}({{'message': {{}}}})
-
-        """.format(
-            component=component_name
-        )
-    )
-
-    setattr(
-        sys.modules[__name__],
-        validate.__name__,
-        validate,
-    )
-
-del validate
+    """
+    if trapi_version not in versions:
+        raise ValueError(f"No TRAPI version {trapi_version}")
+    schema = load_schema(trapi_version)[component]
+    jsonschema.validate(instance, schema)
