@@ -5,6 +5,11 @@
 
 See the [documentation](https://reasoner-validator.readthedocs.io/) and/or [contributor guidelines](https://github.com/NCATSTranslator/reasoner-validator/blob/master/.github/CONTRIBUTING.md).
 
-```text
-pip install reasoner-validator
+### Building
+
+To build the documentation:
+
+```bash
+cd docs
+make html
 ```
