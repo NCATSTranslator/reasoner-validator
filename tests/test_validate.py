@@ -18,6 +18,18 @@ def test_query():
         }, "Query", "1.0.3")
 
 
+def test_version_completion():
+    """Test validate() with version completion."""
+    validate({
+        "message": {},
+    }, "Query", "1.0")
+    with pytest.raises(ValidationError):
+        validate({
+            "foo": {},
+            "bar": {},
+        }, "Query", "1")
+
+
 def test_edgebinding():
     """Test validate_EdgeBinding()."""
     validate({
