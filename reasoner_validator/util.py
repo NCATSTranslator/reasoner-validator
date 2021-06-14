@@ -10,6 +10,15 @@ except ImportError:
     from yaml import Loader
 
 
+response = requests.get("https://api.github.com/repos/NCATSTranslator/ReasonerAPI/releases")
+releases = response.json()
+versions = [
+    release["tag_name"][1:]
+    for release in releases
+    if release["tag_name"].startswith("v")
+]
+
+
 def fix_nullable(schema) -> None:
     """Fix nullable schema."""
     if "oneOf" in schema:
@@ -38,8 +47,15 @@ def openapi_to_jsonschema(schema) -> None:
         fix_nullable(schema)
 
 
-@lru_cache()
 def load_schema(trapi_version: str):
+    """Load schema from GitHub."""
+    if trapi_version not in versions:
+        raise ValueError(f"No TRAPI version {trapi_version}")
+    return _load_schema(trapi_version)
+
+
+@lru_cache()
+def _load_schema(trapi_version: str):
     """Load schema from GitHub."""
     response = requests.get(f"https://raw.githubusercontent.com/NCATSTranslator/ReasonerAPI/v{trapi_version}/TranslatorReasonerAPI.yaml")
     spec = yaml.load(response.text, Loader=Loader)
