@@ -17,8 +17,8 @@ setup(
     package_data={},
     include_package_data=True,
     install_requires=[
-        "jsonschema>=3.0",
-        "pyyaml>=5.1",
+        "jsonschema>=3.0,<4.0",
+        "pyyaml>=5.1,<6.0",
     ],
     zip_safe=False,
     license="MIT",
