@@ -19,6 +19,7 @@ setup(
     install_requires=[
         "jsonschema>=3.0,<4.0",
         "pyyaml>=5.1,<6.0",
+        "requests>=2.0,<3.0",
     ],
     zip_safe=False,
     license="MIT",
