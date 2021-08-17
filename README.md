@@ -5,8 +5,11 @@
 
 See the [documentation](https://reasoner-validator.readthedocs.io/) and/or [contributor guidelines](https://github.com/NCATSTranslator/reasoner-validator/blob/master/.github/CONTRIBUTING.md).
 
-The `master` branch occasionally outpaces official releases when it is tied pre-release versions of TRAPI. To install the latest, bleeding-edge validator:
+### Building
 
-```text
-pip install git+git://github.com/NCATSTranslator/reasoner-validator@master#egg=reasoner-validator
+To build the documentation:
+
+```bash
+cd docs
+make html
 ```
