@@ -20,6 +20,10 @@ versions = [
     if release["tag_name"].startswith("v")
 ]
 
+branch_versions = ['1.2.0']
+
+versions += branch_versions
+
 semver_pattern = re.compile(r"(\d+)(?:\.(\d+)(?:\.(\d+))?)?")
 
 
@@ -123,6 +127,8 @@ def load_schema(trapi_version: str):
 @lru_cache()
 def _load_schema(trapi_version: str):
     """Load schema from GitHub."""
+    if trapi_version in branch_versions:
+        trapi_version = '.'.join(trapi_version.split('.')[:-1])
     response = requests.get(f"https://raw.githubusercontent.com/NCATSTranslator/ReasonerAPI/v{trapi_version}/TranslatorReasonerAPI.yaml")
     spec = yaml.load(response.text, Loader=Loader)
     components = spec["components"]["schemas"]
