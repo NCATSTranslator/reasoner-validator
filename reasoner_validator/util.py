@@ -14,6 +14,7 @@ except ImportError:
 
 response = requests.get("https://api.github.com/repos/NCATSTranslator/ReasonerAPI/releases")
 releases = response.json()
+print(release for release in releases)
 versions = [
     release["tag_name"][1:]
     for release in releases
