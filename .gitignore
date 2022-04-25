@@ -8,3 +8,6 @@ dist/
 __pycache__/
 venv/
 .vscode/
+
+# PyCharms IDE metadata
+.idea/
