@@ -27,7 +27,7 @@ docker build -t trapi-validator .
 Then, run the service:
 
 ```
-docker run -d --name mycontainer -p 80:80 trapi-validator
+docker run -d --rm --name trapi-validator -p 80:80 trapi-validator
 ```
 
 Go to  http://127.0.0.1/docs to see the service documentation.
