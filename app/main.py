@@ -1,7 +1,6 @@
 """
 FastAPI wrapper for TRAPI validator
 """
-import sys
 from typing import Dict
 import uvicorn
 from fastapi import FastAPI, HTTPException
@@ -29,9 +28,9 @@ async def validate(query: Query):
 
     message: Dict = {"message": query.message}
 
-    print(f"TRAPI Message:\n\t{pp.pformat(message)}\n", file=sys.stderr)
+    # print(f"TRAPI Message:\n\t{pp.pformat(message)}\n", file=sys.stderr)
 
-    result = is_valid_trapi(instance={"message": query.message}, trapi_version=trapi_version)
+    result = is_valid_trapi(instance=message, trapi_version=trapi_version)
     return {"trapi_version": trapi_version, "result": result}
 
 if __name__ == "__main__":
