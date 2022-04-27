@@ -1,35 +1,38 @@
 """
 FastAPI wrapper for TRAPI validator
 """
-from typing import Optional
-from fastapi import FastAPI
-from pydantic import BaseModel
-
-from app.util import is_valid_trapi
+import sys
+from typing import Dict
+import uvicorn
+from fastapi import FastAPI, HTTPException
+from pprint import PrettyPrinter
+import logging
+from app.util import Query, is_valid_trapi
 from reasoner_validator.util import latest
 
-# Default is actually specifically 1.2.0 as of April 2022,
-# but the Reasoner validator should discern this
-DEFAULT_TRAPI_VERSION = "1"
+logger = logging.getLogger(__name__)
+logger.setLevel("DEBUG")
 
-
-class TrapiMessage(BaseModel):
-    contents: str                  # Candidate TRAPI message, uploaded as a string
-    version: Optional[str] = None  # target TRAPI version, defaults to 'latest'
-
+pp = PrettyPrinter(indent=4)
 
 app = FastAPI()
 
 
-@app.post("/validate/")
-async def create_item(trapi_message: TrapiMessage):
+@app.post("/validate")
+async def validate(query: Query):
 
-    trapi_version = trapi_message.version if trapi_message.version else DEFAULT_TRAPI_VERSION
+    trapi_version = query.version
     trapi_version = latest.get(trapi_version)
 
-    if is_valid_trapi(instance=trapi_message.contents, trapi_version=trapi_version):
-        result = "successful"
-    else:
-        result = "invalid"
+    if not query.message:
+        raise HTTPException(status_code=400, detail="Empty input message?")
 
-    return result
+    message: Dict = {"message": query.message}
+
+    print(f"TRAPI Message:\n\t{pp.pformat(message)}\n", file=sys.stderr)
+
+    result = is_valid_trapi(instance={"message": query.message}, trapi_version=trapi_version)
+    return {"trapi_version": trapi_version, "result": result}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=80)
