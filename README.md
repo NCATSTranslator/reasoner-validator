@@ -29,15 +29,17 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 
 ```json
 {
-  "version": "1",
+  "trapi_version": "1.0",
+  "biolink_version": "1.2",
   "message": "<TRAPI JSON message blob...>"
 }
 ```
 
 The request body consists of JSON data structure with two top level tag:
 
-- An optional `version` tag should be given a value of the TRAPI version against which the message will be validated, expressed as a SemVer string (defaults to 'latest' if omitted; partial SemVer strings are resolved to their 'latest' minor and patch releases). 
-- A mandatory `message` tag should have as its value the complete TRAPI **Message** JSON data structure to be validated.
+- An **optional** `trapi_version` tag can be given a value of the TRAPI version against which the message will be validated, expressed as a SemVer string (defaults to 'latest' if omitted; partial SemVer strings are resolved to their 'latest' minor and patch releases). 
+- An **optional** `biolink_version` tag can be given a value of the Biolink Model version against which the message knowledge graph semantic contents will be validated, expressed as a SemVer string (defaults to 'latest' Biolink Model Toolkit supported version, if omitted). 
+- A **mandatory** `message` tag should have as its value the complete TRAPI **Message** JSON data structure to be validated.
 
 ### Docker Container
 
