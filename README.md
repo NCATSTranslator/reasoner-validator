@@ -16,15 +16,10 @@ make html
 
 ## Validation Run as a Web Service
 
-The Reasoner Validator is available wrapped as a simple web service, which may be run directly as a python module:
-
-```shell
-python -m app.main
-```
-
-Go to  http://localhost/docs to see the service documentation and to use the simple UI to input TRAPI messages for validation.
+The Reasoner Validator is available wrapped as a simple web service.  The service may be run directly or as a Docker container.
 
 ### API
+
 The web service has a single POST endpoint `/validate` taking a simple JSON request body, as follows:
 
 ```json
@@ -41,7 +36,23 @@ The request body consists of JSON data structure with two top level tag:
 - An **optional** `biolink_version` tag can be given a value of the Biolink Model version against which the message knowledge graph semantic contents will be validated, expressed as a SemVer string (defaults to 'latest' Biolink Model Toolkit supported version, if omitted). 
 - A **mandatory** `message` tag should have as its value the complete TRAPI **Message** JSON data structure to be validated.
 
-### Docker Container
+### Running the Web Service Directly
+
+The service may be run directly as a python module. It is suggested that a virtual environment first be created (using virtualenv, conda, within your IDE, or equivalent).  Then, certain Python dependencies need to be installed, as follows:
+
+```shell
+pip install -r requirements-service.txt
+```
+
+The module may afterwards be run, as follows:
+
+```shell
+python -m app.main
+```
+
+Go to  http://localhost/docs to see the service documentation and to use the simple UI to input TRAPI messages for validation.
+
+### Running the Web Service within Docker
 
 The Reasoner Validator web service may be run inside a docker container, using Docker Compose.
 
