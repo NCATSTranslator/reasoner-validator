@@ -47,7 +47,7 @@ _bmt_toolkit: Optional[Toolkit] = None
 # At any given time, only a modest number of Biolink Model versions
 # are expected to be active targets for SRI Test validations?
 @lru_cache(maxsize=10)
-def set_biolink_model_toolkit(biolink_version=None):
+def set_biolink_model_toolkit(biolink_version=None) -> str:
     # Note here that we let BMT control which version of Biolink we are using,
     # unless the value for which is overridden on the CLI
     global _bmt_toolkit
@@ -61,6 +61,8 @@ def set_biolink_model_toolkit(biolink_version=None):
     else:
         _bmt_toolkit = Toolkit()
 
+    return _bmt_toolkit.get_model_version()
+
 
 def get_toolkit() -> Optional[Toolkit]:
     global _bmt_toolkit
@@ -69,12 +71,11 @@ def get_toolkit() -> Optional[Toolkit]:
     return _bmt_toolkit
 
 
-_BME = "Knowledge Graph Error: "
-
-
 class BiolinkValidator:
 
-    def __init__(self):
+    def __init__(self, graph_type: str):
+        self.graph_type = graph_type
+        self.error_prefix = f"{self.graph_type} Graph Error: "
         self.bmtk: Toolkit = get_toolkit()
         self.errors: Set[str] = set()
         self.nodes: Set[str] = set()
@@ -105,7 +106,7 @@ class BiolinkValidator:
             else:
                 # Error: a truly unrecognized category?
                 self.errors.add(
-                    f"{_BME}'{category}' for node '{node_id}' " +
+                    f"{self.error_prefix}'{category}' for node '{node_id}' " +
                     "is not a recognized Biolink Model category?"
                 )
         return None
@@ -117,7 +118,7 @@ class BiolinkValidator:
         #       probably no longer relevant to the community?
         if 'categories' in details:
             if not isinstance(details["categories"], List):
-                self.errors.add(f"{_BME}The value of node '{node_id}' categories should be a List?")
+                self.errors.add(f"{self.error_prefix}The value of node '{node_id}' categories should be a List?")
             else:
                 categories = details["categories"]
                 node_prefix_mapped: bool = False
@@ -129,11 +130,11 @@ class BiolinkValidator:
                             node_prefix_mapped = True
                 if not node_prefix_mapped:
                     self.errors.add(
-                        f"{_BME}For all node categories [{','.join(categories)}] of " +
+                        f"{self.error_prefix}For all node categories [{','.join(categories)}] of " +
                         f"'{node_id}', the CURIE prefix namespace remains unmapped?"
                     )
         else:
-            self.errors.add(f"{_BME}Node '{node_id}' is missing its 'categories'?")
+            self.errors.add(f"{self.error_prefix}Node '{node_id}' is missing its 'categories'?")
         # TODO: Do we need to (or can we) validate other node fields here? Perhaps yet?
 
     def set_nodes(self, nodes: Set):
@@ -152,27 +153,27 @@ class BiolinkValidator:
         edge_id = f"{str(subject_id)}--{str(predicate)}->{str(object_id)}"
 
         if not subject_id:
-            self.errors.add(f"{_BME}Edge '{edge_id}' has a missing or empty subject slot?")
+            self.errors.add(f"{self.error_prefix}Edge '{edge_id}' has a missing or empty subject slot?")
         elif subject_id not in self.nodes:
             self.errors.add(
-                f"{_BME}Edge subject id '{subject_id}' is missing from the nodes catalog?"
+                f"{self.error_prefix}Edge subject id '{subject_id}' is missing from the nodes catalog?"
             )
 
         if not predicate:
-            self.errors.add(f"{_BME}Edge '{edge_id}' has a missing or empty predicate slot?")
+            self.errors.add(f"{self.error_prefix}Edge '{edge_id}' has a missing or empty predicate slot?")
         elif not self.bmtk.is_predicate(predicate):
-            self.errors.add(f"{_BME}'{predicate}' is an unknown Biolink Model predicate")
+            self.errors.add(f"{self.error_prefix}'{predicate}' is an unknown Biolink Model predicate")
 
         if not object_id:
-            self.errors.add(f"{_BME}Edge '{edge_id}' has a missing or empty predicate slot?")
+            self.errors.add(f"{self.error_prefix}Edge '{edge_id}' has a missing or empty predicate slot?")
         elif object_id not in self.nodes:
-            self.errors.add(f"{_BME}Edge object id '{object_id}' is missing from the nodes catalog?")
+            self.errors.add(f"{self.error_prefix}Edge object id '{object_id}' is missing from the nodes catalog?")
 
         # TODO: not quite sure whether and how to fully validate the 'attributes' of an edge
         # For now, we simply assume that *all* edges must have *some* attributes
         # (at least, provenance related, but we don't explicitly test for them)
         if not attributes:
-            self.errors.add(f"{_BME}Edge '{edge_id}' has missing or empty attributes?")
+            self.errors.add(f"{self.error_prefix}Edge '{edge_id}' has missing or empty attributes?")
 
 
 # TODO: review and fix issue that a Biolink Model compliance test
@@ -181,36 +182,33 @@ _MAX_TEST_NODES = 1
 _MAX_TEST_EDGES = 1
 
 
-def check_biolink_model_compliance_of_query_graph(graph: Dict) -> Tuple[str, Optional[List[str]]]:
-    # TODO: I probably need to add some additional
-    #       Biolink Model validation of the query graph data
-    pass
-
-
-def check_biolink_model_compliance_of_knowledge_graph(graph: Dict) -> Tuple[str, Optional[List[str]]]:
+def _check_biolink_model_compliance(graph: Dict, graph_type: str) -> Tuple[str, Optional[List[str]]]:
     """
-    Validate a TRAPI-schema compliant message knowledge graph
+    Validate a TRAPI-schema compliant Message graph-like data structure
     against the currently active BMT Biolink Model release.
 
     :param graph: knowledge graph to be validated
+    :param graph_type: type of graph data being validated, either 'Query' or 'Knowledge'
+
+    The 'strict' parameter is set to False if only a Query Graph or similar partial graph fragment is being validated.
 
     :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
     """
-    validator = BiolinkValidator()
+    validator = BiolinkValidator(graph_type)
 
     # Access knowledge graph data fields to be validated... fail early if missing...
     nodes: Optional[Dict]
     if 'nodes' in graph and graph['nodes']:
         nodes = graph['nodes']
     else:
-        validator.report_error("TRAPI Error: No nodes found in the knowledge graph?")
+        validator.report_error(f"TRAPI Error: No nodes found in the {graph_type} Graph?")
         nodes = None
 
     edges: Optional[Dict]
     if 'edges' in graph and graph['edges']:
         edges = graph['edges']
     else:
-        validator.report_error("TRAPI Error: No edges found in the knowledge graph?")
+        validator.report_error(f"TRAPI Error: No edges found in the {graph_type} Graph?")
         edges = None
 
     # I only do a sampling of node and edge content. This ensures that
@@ -240,3 +238,29 @@ def check_biolink_model_compliance_of_knowledge_graph(graph: Dict) -> Tuple[str,
                     break
 
     return validator.get_result()
+
+
+# TODO: need to add some additional Biolink Model validation of the query graph data
+def check_biolink_model_compliance_of_query_graph(graph: Dict) -> Tuple[str, Optional[List[str]]]:
+    """
+    Validate a TRAPI-schema compliant Message Query Graph against the current BMT Biolink Model release.
+
+    Since a Query graph is usually an incomplete knowledge graph specification,
+    the validation undertaken is not 'strict'
+
+    :param graph: knowledge graph to be validated
+
+    :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
+    """
+    return _check_biolink_model_compliance(graph, graph_type="Query")
+
+
+def check_biolink_model_compliance_of_knowledge_graph(graph: Dict) -> Tuple[str, Optional[List[str]]]:
+    """
+    Strict validation of a TRAPI-schema compliant Message Knowledge Graph against the active BMT Biolink Model release.
+
+    :param graph: knowledge graph to be validated
+
+    :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
+    """
+    return _check_biolink_model_compliance(graph, graph_type="Knowledge")

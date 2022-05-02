@@ -12,6 +12,7 @@ from bmt import Toolkit
 from biolink import (
     set_biolink_model_toolkit,
     get_toolkit,
+    check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph
 )
 
@@ -19,6 +20,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
 
 pp = PrettyPrinter(indent=4)
+
+
+LATEST_BIOLINK_MODEL = "2.2.16"  # "Latest" Biolink Model Version
 
 
 def test_set_default_biolink_versioned_global_environment():
@@ -37,15 +41,47 @@ def test_set_specific_biolink_versioned_global_environment():
     assert tk.get_model_version() == "2.2.16"
 
 
-# TODO: we may wish to externalize the sample knowledge graphs
-#       for testing here instead of embedding them in this file?
 @pytest.mark.parametrize(
     "query",
     [
         (
-            "2.2.13",  # Biolink Model Version
+            LATEST_BIOLINK_MODEL,
+            # Query 0: Sample small valid TRAPI Query Graph
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {"categories": ["biolink:Drug"]}
+                },
+                "edges": {
+                    "treats": {"subject": "drug", "predicates": ["biolink:treats"], "object": "type-2 diabetes"}
+                }
+            },
+            "TRAPI Error: No nodes found in the Query Graph?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 1: Empty query graph - caught by missing 'nodes' key
+            {},
+            "TRAPI Error: No nodes found in the Query Graph?"
+        ),
+    ]
+)
+def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
+    set_biolink_model_toolkit(biolink_version=query[0])
+    #  check_biolink_model_compliance_of_query_graph(graph: Dict) -> Tuple[str, Optional[List[str]]]
+    model_version, errors = check_biolink_model_compliance_of_query_graph(graph=query[1])
+    assert model_version == get_toolkit().get_model_version()
+    print(f"Errors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
+    assert any([error == query[2] for error in errors]) if errors else True
 
-            # Query 0: Sample full TRAPI Knowledge Graph
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (
+            LATEST_BIOLINK_MODEL,  # Biolink Model Version
+
+            # Query 0: Sample full valid TRAPI Knowledge Graph
             {
                 # Sample nodes
                 'nodes': {
@@ -103,21 +139,21 @@ def test_set_specific_biolink_versioned_global_environment():
             ""
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 1: Empty graph - caught by missing 'nodes' key
             {},
-            "TRAPI Error: No nodes found in the knowledge graph?"
+            "TRAPI Error: No nodes found in the Knowledge Graph?"
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 2: Empty nodes dictionary
             {
                 "nodes": dict()
             },
-            "TRAPI Error: No nodes found in the knowledge graph?"
+            "TRAPI Error: No nodes found in the Knowledge Graph?"
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 3: Empty edges - caught by missing 'edges' dictionary
             {
                 "nodes": {
@@ -128,10 +164,10 @@ def test_set_specific_biolink_versioned_global_environment():
                     }
                 }
             },
-            "TRAPI Error: No edges found in the knowledge graph?"
+            "TRAPI Error: No edges found in the Knowledge Graph?"
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 4 Empty edges dictionary
             {
                 "nodes": {
@@ -143,10 +179,10 @@ def test_set_specific_biolink_versioned_global_environment():
                 },
                 "edges": dict()
             },
-            "TRAPI Error: No edges found in the knowledge graph?"
+            "TRAPI Error: No edges found in the Knowledge Graph?"
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 5: 'categories' tag value is ill-formed: should be a list
             {
                 "nodes": {
@@ -164,7 +200,7 @@ def test_set_specific_biolink_versioned_global_environment():
             "Knowledge Graph Error: Node 'NCBIGene:29974' is missing its 'categories'?"
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 6: 'categories' tag value is ill-formed: should be a list
             {
                 "nodes": {
@@ -184,7 +220,7 @@ def test_set_specific_biolink_versioned_global_environment():
             "Knowledge Graph Error: The value of node 'NCBIGene:29974' categories should be a List?"
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 7: invalid category specified
             {
                 "nodes": {
@@ -207,7 +243,7 @@ def test_set_specific_biolink_versioned_global_environment():
             "'NCBIGene:29974' is not a recognized Biolink Model category?"
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 8: invalid node CURIE prefix namespace, for specified category
             {
                 "nodes": {
@@ -230,7 +266,7 @@ def test_set_specific_biolink_versioned_global_environment():
             "'FOO:1234', the CURIE prefix namespace remains unmapped?"
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 9: missing or empty subject, predicate, object values
             {
                 "nodes": {
@@ -254,7 +290,7 @@ def test_set_specific_biolink_versioned_global_environment():
             "has a missing or empty subject slot?"
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 10: subject id is missing from the nodes catalog
             {
                 "nodes": {
@@ -282,7 +318,7 @@ def test_set_specific_biolink_versioned_global_environment():
             "Knowledge Graph Error: Edge subject id 'NCBIGene:12345' is missing from the nodes catalog?"
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 11: predicate is unknown
             {
                 "nodes": {
@@ -310,7 +346,7 @@ def test_set_specific_biolink_versioned_global_environment():
             "Knowledge Graph Error: 'biolink:unknown_predicate' is an unknown Biolink Model predicate"
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 12: object id is missing from the nodes catalog
             {
                 "nodes": {
@@ -338,7 +374,7 @@ def test_set_specific_biolink_versioned_global_environment():
             "Knowledge Graph Error: Edge object id 'PUBCHEM.COMPOUND:678' is missing from the nodes catalog?"
         ),
         (
-            "2.2.13",
+            LATEST_BIOLINK_MODEL,
             # Query 13: object id is missing from the nodes catalog
             {
                 "nodes": {
