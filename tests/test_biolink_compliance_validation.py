@@ -50,10 +50,16 @@ def test_set_specific_biolink_versioned_global_environment():
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
-                    "drug": {"categories": ["biolink:Drug"]}
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
                 },
                 "edges": {
-                    "treats": {"subject": "drug", "predicates": ["biolink:treats"], "object": "type-2 diabetes"}
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
                 }
             },
             ""  # This should pass without errors
@@ -88,7 +94,7 @@ def test_set_specific_biolink_versioned_global_environment():
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 4 Empty edges dictionary
+            # Query 4: Empty edges dictionary
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -100,6 +106,223 @@ def test_set_specific_biolink_versioned_global_environment():
                 "edges": dict()
             },
             ""  # Query Graphs can have empty 'edges'
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 5: Node "ids" not a List
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": "MONDO:0005148"}
+                },
+                "edges": dict()
+            },
+            "Query Graph Error: Node 'type-2 diabetes.ids' slot value is not an array?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 6: Node "ids" is an empty array
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": []}
+                },
+                "edges": dict()
+            },
+            "Query Graph Error: Node 'type-2 diabetes.ids' slot array is empty?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 7: Node "categories" not a array
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": "biolink:Gene"
+                    }
+                },
+                "edges": dict()
+            },
+            "Query Graph Error: Node 'NCBIGene:29974.categories' slot value is not an array?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 8: Node "categories" is an empty array?
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": []
+                    }
+                },
+                "edges": dict()
+            },
+            "Query Graph Error: Node 'NCBIGene:29974.categories' slot array is empty?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 9: Node "categories" is an empty array?
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": ["biolink:InvalidCategory"]
+                    }
+                },
+                "edges": dict()
+            },
+            "Query Graph Error: 'biolink:InvalidCategory' for node 'NCBIGene:29974' " +
+            "is not a recognized Biolink Model category?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 10: Sample small valid TRAPI Query Graph with null predicates (allowed)
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        # "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            ""  # Predicates slot can be null... This should pass without errors?
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 11: ... but if present, predicates must be an array!
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": "biolink:treats",
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            "Query Graph Error: Edge 'drug--biolink:treats->type-2 diabetes' predicate slot value is not an array?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 12: ... but if present, predicates must have at least one predicate in the array
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": [],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            "Query Graph Error: Edge 'drug--[]->type-2 diabetes' predicate slot value is an empty array?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 13: ... but if present, predicates must be valid for the specified Biolink Model version
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:invalid_predicate"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            "Query Graph Error: 'biolink:invalid_predicate' is an unknown Biolink Model predicate?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 14: 'Subject' id used in edge is mandatory
+            {
+                "nodes": {
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    },
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]}
+                },
+                "edges": {
+                    "treats": {
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            "Query Graph Error: Edge 'None--['biolink:treats']->type-2 diabetes' " +
+            "has a missing or empty 'subject' slot value?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 15: 'Subject' id used in edge is missing from the nodes catalog?
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]}
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            "Query Graph Error: Edge 'subject' id 'drug' is missing from the nodes catalog?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 16: 'Object' id used in edge is mandatory
+            {
+                "nodes": {
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    },
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]}
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"]
+                    }
+                }
+            },
+            "Query Graph Error: Edge 'drug--['biolink:treats']->None' has a missing or empty 'object' slot value?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 17: 'Object' id used in edge is missing from the nodes catalog?
+            {
+                "nodes": {
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            "Query Graph Error: Edge 'object' id 'type-2 diabetes' is missing from the nodes catalog?"
         )
     ]
 )
@@ -322,13 +545,13 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
                     }
                 }
             },
-            # ditto for predicate and object... but identical code pattern thus we only test the subject id here
+            # ditto for predicate and object... but identical code pattern thus we only test missing subject id here
             "Knowledge Graph Error: Edge 'None--biolink:interacts_with->NCBIGene:29974' " +
-            "has a missing or empty subject slot?"
+            "has a missing or empty 'subject' slot value?"
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 10: subject id is missing from the nodes catalog
+            # Query 10: 'subject' id is missing from the nodes catalog
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -352,7 +575,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
                     }
                 }
             },
-            "Knowledge Graph Error: Edge subject id 'NCBIGene:12345' is missing from the nodes catalog?"
+            "Knowledge Graph Error: Edge 'subject' id 'NCBIGene:12345' is missing from the nodes catalog?"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -380,11 +603,11 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
                     }
                 }
             },
-            "Knowledge Graph Error: 'biolink:unknown_predicate' is an unknown Biolink Model predicate"
+            "Knowledge Graph Error: 'biolink:unknown_predicate' is an unknown Biolink Model predicate?"
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 12: object id is missing from the nodes catalog
+            # Query 12: 'object' id is missing from the nodes catalog
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -408,7 +631,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
                     }
                 }
             },
-            "Knowledge Graph Error: Edge object id 'PUBCHEM.COMPOUND:678' is missing from the nodes catalog?"
+            "Knowledge Graph Error: Edge 'object' id 'PUBCHEM.COMPOUND:678' is missing from the nodes catalog?"
         ),
         (
             LATEST_BIOLINK_MODEL,

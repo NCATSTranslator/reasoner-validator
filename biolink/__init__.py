@@ -176,12 +176,8 @@ class BiolinkValidator:
                     self.errors.add(f"{self.error_prefix}Node '{node_id}.categories' slot array is empty?")
                 else:
                     for category in categories:
-                        category_name: str = self.validate_category(node_id, category)
-                        if not category_name:
-                            self.errors.add(
-                                f"{self.error_prefix}Node '{node_id} category '{category}' "
-                                "is unknown in the current Biolink Model?"
-                            )
+                        # category validation may report an error internally
+                        self.validate_category(node_id, category)
             # else:  # null "categories" value is permitted in QNodes
 
             if 'is_set' in details:
@@ -221,20 +217,24 @@ class BiolinkValidator:
             self.errors.add(f"{self.error_prefix}Edge '{edge_id}' has a missing or empty 'subject' slot value?")
         elif subject_id not in self.nodes:
             self.errors.add(
-                f"{self.error_prefix}Edge subject id '{subject_id}' is missing from the nodes catalog?"
+                f"{self.error_prefix}Edge 'subject' id '{subject_id}' is missing from the nodes catalog?"
             )
 
         if self.graph_type is TrapiGraphType.Knowledge_Graph:
             if not predicate:
                 self.errors.add(f"{self.error_prefix}Edge '{edge_id}' has a missing or empty predicate slot?")
+            elif not self.bmtk.is_predicate(predicate):
+                self.errors.add(f"{self.error_prefix}'{predicate}' is an unknown Biolink Model predicate?")
         else:  # is a Query Graph...
             if predicates is None:
-                # Query Graphs can have a null predicates value
+                # Query Graphs can have a missing or null predicates slot
                 pass
             elif not isinstance(predicates, List):
                 self.errors.add(f"{self.error_prefix}Edge '{edge_id}' predicate slot value is not an array?")
+            elif len(predicates) is 0:
+                self.errors.add(f"{self.error_prefix}Edge '{edge_id}' predicate slot value is an empty array?")
             else:
-                # Should be a non-empty list of CURIES which are valid Biolink Predicates
+                # Should now be a non-empty list of CURIES which are valid Biolink Predicates
                 for predicate in predicates:
                     if not self.bmtk.is_predicate(predicate):
                         self.errors.add(f"{self.error_prefix}'{predicate}' is an unknown Biolink Model predicate?")
@@ -242,7 +242,7 @@ class BiolinkValidator:
         if not object_id:
             self.errors.add(f"{self.error_prefix}Edge '{edge_id}' has a missing or empty 'object' slot value?")
         elif object_id not in self.nodes:
-            self.errors.add(f"{self.error_prefix}Edge object id '{object_id}' is missing from the nodes catalog?")
+            self.errors.add(f"{self.error_prefix}Edge 'object' id '{object_id}' is missing from the nodes catalog?")
 
         if self.graph_type is TrapiGraphType.Knowledge_Graph:
             if not attributes:
@@ -251,7 +251,7 @@ class BiolinkValidator:
                 # (at least, provenance related, but we don't explicitly test for them)
                 self.errors.add(f"{self.error_prefix}Edge '{edge_id}' has missing or empty attributes?")
         else:
-            # TODO: validate Query Graph constraints here?
+            # TODO: do we need to validate Query Graph 'constraints' slot contents here?
             pass
 
     def check_biolink_model_compliance(self, graph: Dict) -> Tuple[str, Optional[List[str]]]:
@@ -260,10 +260,7 @@ class BiolinkValidator:
         against the currently active BMT Biolink Model release.
     
         :param graph: knowledge graph to be validated
-        :param graph_type: type of graph data being validated, either 'Query' or 'Knowledge'
-    
-        The 'strict' parameter is set to False if only a Query Graph or similar partial graph fragment is being validated.
-    
+
         :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
         """
         # Access knowledge graph data fields to be validated... fail early if missing...
