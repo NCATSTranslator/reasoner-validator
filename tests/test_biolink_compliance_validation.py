@@ -30,7 +30,7 @@ def test_set_default_biolink_versioned_global_environment():
     tk: Optional[Toolkit] = get_toolkit()
     assert tk
     model_version = tk.get_model_version()
-    logger.debug(f"test_set_default_global_environment(): Biolink Model version is: '{str(model_version)}'")
+    logger.debug(f"\ntest_set_default_global_environment(): Biolink Model version is: '{str(model_version)}'")
     assert model_version == Toolkit().get_model_version()
 
 
@@ -56,14 +56,51 @@ def test_set_specific_biolink_versioned_global_environment():
                     "treats": {"subject": "drug", "predicates": ["biolink:treats"], "object": "type-2 diabetes"}
                 }
             },
-            "TRAPI Error: No nodes found in the Query Graph?"
+            ""  # This should pass without errors
         ),
         (
             LATEST_BIOLINK_MODEL,
             # Query 1: Empty query graph - caught by missing 'nodes' key
             {},
-            "TRAPI Error: No nodes found in the Query Graph?"
+            ""  # Query Graphs can have empty 'nodes'
         ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 2: Empty nodes dictionary
+            {
+                "nodes": dict()
+            },
+            ""  # Query Graphs can have empty 'nodes'
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 3: Empty edges - caught by missing 'edges' dictionary
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:Gene"
+                       ]
+                    }
+                }
+            },
+            ""  # Query Graphs can have empty 'edges'
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 4 Empty edges dictionary
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:Gene"
+                       ]
+                    }
+                },
+                "edges": dict()
+            },
+            ""  # Query Graphs can have empty 'edges'
+        )
     ]
 )
 def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
@@ -71,8 +108,8 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
     #  check_biolink_model_compliance_of_query_graph(graph: Dict) -> Tuple[str, Optional[List[str]]]
     model_version, errors = check_biolink_model_compliance_of_query_graph(graph=query[1])
     assert model_version == get_toolkit().get_model_version()
-    print(f"Errors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
-    assert any([error == query[2] for error in errors]) if errors else True
+    print(f"\nErrors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
+    assert any([error == query[2] for error in errors]) if query[2] or errors else True
 
 
 @pytest.mark.parametrize(
@@ -217,7 +254,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
                     }
                 }
             },
-            "Knowledge Graph Error: The value of node 'NCBIGene:29974' categories should be a List?"
+            "Knowledge Graph Error: The value of node 'NCBIGene:29974.categories' should be an array?"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -409,5 +446,5 @@ def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
     # check_biolink_model_compliance_of_knowledge_graph(graph: Dict) -> Tuple[str, Optional[List[str]]]:
     model_version, errors = check_biolink_model_compliance_of_knowledge_graph(graph=query[1])
     assert model_version == get_toolkit().get_model_version()
-    print(f"Errors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
-    assert any([error == query[2] for error in errors]) if errors else True
+    print(f"\nErrors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
+    assert any([error == query[2] for error in errors]) if query[2] or errors else True
