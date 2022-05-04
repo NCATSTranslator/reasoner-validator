@@ -66,7 +66,7 @@ def test_set_specific_biolink_versioned_global_environment():
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 1: Empty query graph - caught by missing 'nodes' key
+            # Query 1: Empty query graph
             {},
             ""  # Query Graphs can have empty 'nodes'
         ),
@@ -74,13 +74,13 @@ def test_set_specific_biolink_versioned_global_environment():
             LATEST_BIOLINK_MODEL,
             # Query 2: Empty nodes dictionary
             {
-                "nodes": dict()
+                "nodes": {}
             },
             ""  # Query Graphs can have empty 'nodes'
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 3: Empty edges - caught by missing 'edges' dictionary
+            # Query 3: Empty edges
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -103,7 +103,7 @@ def test_set_specific_biolink_versioned_global_environment():
                        ]
                     }
                 },
-                "edges": dict()
+                "edges": {}
             },
             ""  # Query Graphs can have empty 'edges'
         ),
@@ -114,7 +114,7 @@ def test_set_specific_biolink_versioned_global_environment():
                 "nodes": {
                     "type-2 diabetes": {"ids": "MONDO:0005148"}
                 },
-                "edges": dict()
+                "edges": {}
             },
             "Query Graph Error: Node 'type-2 diabetes.ids' slot value is not an array?"
         ),
@@ -125,7 +125,7 @@ def test_set_specific_biolink_versioned_global_environment():
                 "nodes": {
                     "type-2 diabetes": {"ids": []}
                 },
-                "edges": dict()
+                "edges": {}
             },
             "Query Graph Error: Node 'type-2 diabetes.ids' slot array is empty?"
         ),
@@ -138,7 +138,7 @@ def test_set_specific_biolink_versioned_global_environment():
                        "categories": "biolink:Gene"
                     }
                 },
-                "edges": dict()
+                "edges": {}
             },
             "Query Graph Error: Node 'NCBIGene:29974.categories' slot value is not an array?"
         ),
@@ -151,7 +151,7 @@ def test_set_specific_biolink_versioned_global_environment():
                        "categories": []
                     }
                 },
-                "edges": dict()
+                "edges": {}
             },
             "Query Graph Error: Node 'NCBIGene:29974.categories' slot array is empty?"
         ),
@@ -164,7 +164,7 @@ def test_set_specific_biolink_versioned_global_environment():
                        "categories": ["biolink:InvalidCategory"]
                     }
                 },
-                "edges": dict()
+                "edges": {}
             },
             "Query Graph Error: 'biolink:InvalidCategory' for node 'NCBIGene:29974' " +
             "is not a recognized Biolink Model category?"
@@ -323,6 +323,91 @@ def test_set_specific_biolink_versioned_global_environment():
                 }
             },
             "Query Graph Error: Edge 'object' id 'type-2 diabetes' is missing from the nodes catalog?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 18: Node 'is_set' value is not a boolean
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"],
+                        "is_set": "should-be-a-boolean"
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            "Query Graph Error: Node 'drug.is_set' slot is not a boolean value?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 19: Unmapped node ids against any of the specified Biolink Model categories
+            {
+                "nodes": {
+                    "type-2 diabetes": {
+                        "ids": ["FOO:12345", "BAR:67890"],
+                        "categories": ["biolink:Disease", "biolink:Gene"]
+                    },
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            "Query Graph Error: Node 'type-2 diabetes.ids' have ['FOO:12345', 'BAR:67890'] " +
+            "that are unmapped to any of the Biolink Model categories ['biolink:Disease', 'biolink:Gene']?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 20: Sample small valid TRAPI Query Graph
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            ""  # This should pass without errors
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 21: Sample small valid TRAPI Query Graph
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            ""  # This should pass without errors
         )
     ]
 )
@@ -408,7 +493,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
             LATEST_BIOLINK_MODEL,
             # Query 2: Empty nodes dictionary
             {
-                "nodes": dict()
+                "nodes": {}
             },
             "TRAPI Error: No nodes found in the Knowledge Graph?"
         ),
@@ -437,16 +522,16 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
                        ]
                     }
                 },
-                "edges": dict()
+                "edges": {}
             },
             "TRAPI Error: No edges found in the Knowledge Graph?"
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 5: 'categories' tag value is ill-formed: should be a list
+            # Query 5: missing node 'categories' slot
             {
                 "nodes": {
-                    "NCBIGene:29974": dict()
+                    "NCBIGene:29974": {}
                 },
                 "edges": {
                    "edge_1": {
@@ -635,7 +720,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 13: object id is missing from the nodes catalog
+            # Query 13: edge has missing or empty attributes
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -661,6 +746,74 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
             },
             "Knowledge Graph Error: Edge 'NCBIGene:29974--biolink:interacts_with->PUBCHEM.COMPOUND:597' " +
             "has missing or empty attributes?"
+        ),
+        # "1.8.2",
+        # {
+        #     'subject_category': 'biolink:ChemicalSubstance',
+        #     'object_category': 'biolink:Protein',
+        #     'predicate': 'biolink:entity_negatively_regulates_entity',
+        #     'subject': 'DRUGBANK:DB00945',
+        #     'object': 'UniProtKB:P23219'
+        # },
+        (
+            "1.8.2",
+            # Query 14:  # An earlier Biolink Model Version won't recognize a category not found in its version
+            {
+                # Sample nodes
+                'nodes': {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:Gene"
+                       ]
+                    },
+                    "PUBCHEM.COMPOUND:597": {
+                        "name": "cytosine",
+                        "categories": [
+                            "biolink:SmallMolecule"  # Not valid in latest model?
+                        ],
+                        "attributes": [
+                            {
+                                "attribute_source": "infores:chembl",
+                                "attribute_type_id": "biolink:highest_FDA_approval_status",
+                                "attributes": [],
+                                "original_attribute_name": "max_phase",
+                                "value": "FDA Clinical Research Phase 2",
+                                "value_type_id": "biolink:FDA_approval_status_enum"
+                            }
+                        ]
+                    }
+                },
+                # Sample edge
+                'edges': {
+                   "edge_1": {
+                       "subject": "NCBIGene:29974",
+                       "predicate": "biolink:interacts_with",
+                       "object": "PUBCHEM.COMPOUND:597",
+                       "attributes": [
+                           {
+                               "attribute_source": "infores:hmdb",
+                               "attribute_type_id": "biolink:primary_knowledge_source",
+                               "attributes": [],
+                               "description": "MolePro's HMDB target transformer",
+                               "original_attribute_name": "biolink:primary_knowledge_source",
+                               "value": "infores:hmdb",
+                               "value_type_id": "biolink:InformationResource"
+                           },
+                           {
+                               "attribute_source": "infores:hmdb",
+                               "attribute_type_id": "biolink:aggregator_knowledge_source",
+                               "attributes": [],
+                               "description": "Molecular Data Provider",
+                               "original_attribute_name": "biolink:aggregator_knowledge_source",
+                               "value": "infores:molepro",
+                               "value_type_id": "biolink:InformationResource"
+                           }
+                        ]
+                    }
+                }
+            },
+            "Knowledge Graph Error: 'biolink:SmallMolecule' for node " +
+            "'PUBCHEM.COMPOUND:597' is not a recognized Biolink Model category?"
         )
     ]
 )

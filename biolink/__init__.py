@@ -21,10 +21,11 @@ logger = logging.getLogger(__name__)
 
 pp = PrettyPrinter(indent=4)
 
-# TODO: review and fix issue that a Biolink Model compliance test
-#       could run too slowly, if the knowledge graph is very large?
-_MAX_TEST_NODES = 1
-_MAX_TEST_EDGES = 1
+# TODO: is there a better way to ensure that a Biolink Model compliance test
+#       runs quickly enough if the knowledge graph is very large?
+#       Limiting nodes and edges viewed may miss deeply embedded errors(?)
+_MAX_TEST_NODES = 1000
+_MAX_TEST_EDGES = 100
 
 # Biolink Release number should be a well-formed Semantic Version
 semver_pattern = re.compile(r"^\d+\.\d+\.\d+$")
@@ -155,18 +156,15 @@ class BiolinkValidator:
             # TODO: Do we need to (or can we) validate other Knowledge Graph node fields here? Perhaps yet?
 
         else:  # Query Graph node validation
-            # ids
+
             if "ids" in details:
                 ids = details["ids"]
                 if not isinstance(ids, List):
                     self.errors.add(f"{self.error_prefix}Node '{node_id}.ids' slot value is not an array?")
                 elif not ids:
                     self.errors.add(f"{self.error_prefix}Node '{node_id}.ids' slot array is empty?")
-                else:
-                    for id in ids:
-                        # TODO: maybe somehow check if the ids are valid CURIES in a Biolink registered namespace?
-                        pass
-            # else:  # null "ids" value is permitted in QNodes
+            else:
+                ids: List[str] = list()  # null "ids" value is permitted in QNodes
 
             if "categories" in details:
                 categories = details["categories"]
@@ -175,9 +173,23 @@ class BiolinkValidator:
                 elif not categories:
                     self.errors.add(f"{self.error_prefix}Node '{node_id}.categories' slot array is empty?")
                 else:
+                    id_prefix_mapped: Dict = {identifier: False for identifier in ids}
                     for category in categories:
                         # category validation may report an error internally
-                        self.validate_category(node_id, category)
+                        category_name = self.validate_category(node_id, category)
+                        if category_name:
+                            for identifier in ids:  # may be empty list if not provided...
+                                possible_subject_categories = self.bmtk.get_element_by_prefix(identifier)
+                                if category_name in possible_subject_categories:
+                                    id_prefix_mapped[identifier] = True
+                    unmapped_ids = [
+                        identifier for identifier in id_prefix_mapped.keys() if not id_prefix_mapped[identifier]
+                    ]
+                    if unmapped_ids:
+                        self.errors.add(
+                            f"{self.error_prefix}Node '{node_id}.ids' have {str(unmapped_ids)} " +
+                            f"that are unmapped to any of the Biolink Model categories {str(categories)}?")
+
             # else:  # null "categories" value is permitted in QNodes
 
             if 'is_set' in details:
@@ -263,7 +275,7 @@ class BiolinkValidator:
 
         :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
         """
-        # Access knowledge graph data fields to be validated... fail early if missing...
+        # Access graph data fields to be validated
         nodes: Optional[Dict]
         if 'nodes' in graph and graph['nodes']:
             nodes = graph['nodes']
@@ -271,15 +283,16 @@ class BiolinkValidator:
             # Query Graphs can have an empty nodes catalog
             if self.graph_type is not TrapiGraphType.Query_Graph:
                 self.report_error(f"TRAPI Error: No nodes found in the {self.graph_type.value} Graph?")
+            # else:  Query Graphs can omit the 'nodes' tag
             nodes = None
 
         edges: Optional[Dict]
         if 'edges' in graph and graph['edges']:
             edges = graph['edges']
         else:
-            # Query Graphs can have an empty edges catalog
             if self.graph_type is not TrapiGraphType.Query_Graph:
                 self.report_error(f"TRAPI Error: No edges found in the {self.graph_type.value} Graph?")
+            # else:  Query Graphs can omit the 'edges' tag
             edges = None
 
         # I only do a sampling of node and edge content. This ensures that
