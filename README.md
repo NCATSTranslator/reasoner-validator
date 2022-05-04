@@ -77,3 +77,13 @@ docker-compose down
 ```
 
 Of course, the above docker-compose commands may be customized by the user to suit their needs. Note that the docker implementation assumes the use of uvicorn
+
+## Validation Web Service Limitations (implied Future Work?)
+
+- This release of the Reasoner Validator Web Service will detect TRAPI 1.0.* releases but doesn't strive to be completely backwards compatible with them (considering that they are less relevant now). 
+- The web service validation doesn't do deep validation of the Results part of a TRAPI Message
+- The validation is only run on the first 1000 nodes and 100 edges of graphs, to keep the validation time tractable (this risks not having complete coverage of the graph)
+- Biolink Model toolkit is not (yet) cached so changing the model version during use will result in some latency in results
+- The validator service doesn't (yet) deeply validate non-core node and edge slot contents of Message Knowledge Graphs
+- The validator service doesn't (yet) attempt validation of Query Graph nodes and edges 'constraints'
+- Query Graph node 'ids' are not validated except when an associated 'categories' parameter is provided for the given node

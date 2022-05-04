@@ -324,7 +324,6 @@ class BiolinkValidator:
         return self.get_result()
 
 
-# TODO: need to add some additional Biolink Model validation of the query graph data
 def check_biolink_model_compliance_of_query_graph(graph: Dict) -> Tuple[str, Optional[List[str]]]:
     """
     Validate a TRAPI-schema compliant Message Query Graph against the current BMT Biolink Model release.
