@@ -52,7 +52,7 @@ def _get_biolink_model_schema(biolink_release: Optional[str] = None) -> Optional
 # At any given time, only a modest number of Biolink Model versions
 # are expected to be active targets for SRI Test validations?
 @lru_cache(maxsize=3)
-def _get_biolink_model_toolkit(biolink_release: Optional[str] = None) -> Toolkit:
+def get_biolink_model_toolkit(biolink_release: Optional[str] = None) -> Toolkit:
     if biolink_release:
         # If errors occur while instantiating non-default Toolkit;
         # then log the error but just use default as a workaround?
@@ -80,7 +80,7 @@ class BiolinkValidator:
 
         """
         self.graph_type = graph_type
-        self.bmtk = _get_biolink_model_toolkit(biolink_release=biolink_release)
+        self.bmtk = get_biolink_model_toolkit(biolink_release=biolink_release)
         self.errors: Set[str] = set()
         self.nodes: Set[str] = set()
 
@@ -377,7 +377,7 @@ class BiolinkValidator:
 
 def check_biolink_model_compliance_of_input_edge(
         edge: Dict[str, str],
-        biolink_release=None
+        biolink_release: Optional[str] = None
 ) -> Tuple[str, Optional[List[str]]]:
     """
     Validate an input edge object contents against the current BMT Biolink Model release.
@@ -403,7 +403,7 @@ def check_biolink_model_compliance_of_input_edge(
 
 def check_biolink_model_compliance_of_query_graph(
         graph: Dict,
-        biolink_release=None
+        biolink_release: Optional[str] = None
 ) -> Tuple[str, Optional[List[str]]]:
     """
     Validate a TRAPI-schema compliant Message Query Graph against the current BMT Biolink Model release.
@@ -422,7 +422,7 @@ def check_biolink_model_compliance_of_query_graph(
 
 def check_biolink_model_compliance_of_knowledge_graph(
         graph: Dict,
-        biolink_release=None
+        biolink_release: Optional[str] = None
 ) -> Tuple[str, Optional[List[str]]]:
     """
     Strict validation of a TRAPI-schema compliant Message Knowledge Graph against the active BMT Biolink Model release.
