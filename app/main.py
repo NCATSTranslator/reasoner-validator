@@ -9,7 +9,7 @@ from fastapi import FastAPI, HTTPException
 
 from reasoner_validator import DEFAULT_TRAPI_VERSION, is_valid_trapi_query
 from reasoner_validator.util import latest
-from biolink import (
+from reasoner_validator.biolink import (
     check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph
 )

@@ -9,7 +9,7 @@ import pytest
 
 from bmt import Toolkit
 
-from biolink import (
+from reasoner_validator.biolink import (
     TrapiGraphType,
     BiolinkValidator,
     check_biolink_model_compliance_of_input_edge,
