@@ -304,13 +304,15 @@ class BiolinkValidator:
         if subject_category_name:
             possible_subject_categories = self.bmtk.get_element_by_prefix(subject_curie)
             if subject_category_name not in possible_subject_categories:
-                err_msg = f"namespace prefix of 'subject' identifier '{subject_curie}' is unmapped to '{subject_category_curie}'?"
+                err_msg = f"namespace prefix of 'subject' identifier '{subject_curie}' " +\
+                          f"is unmapped to '{subject_category_curie}'?"
                 self.report_error(err_msg)
 
         if object_category_name:
             possible_object_categories = self.bmtk.get_element_by_prefix(object_curie)
             if object_category_name not in possible_object_categories:
-                err_msg = f"namespace prefix of 'object' identifier '{object_curie}' is unmapped to '{object_category_curie}'?"
+                err_msg = f"namespace prefix of 'object' identifier '{object_curie}' " +\
+                          f"is unmapped to '{object_category_curie}'?"
                 self.report_error(err_msg)
 
         return self.get_result()
