@@ -2,7 +2,6 @@
 FastAPI web service wrapper for TRAPI validator and Biolink Model compliance testing
 """
 from typing import Optional, Dict, List
-from urllib.error import HTTPError
 from pydantic import BaseModel
 
 import uvicorn
@@ -11,7 +10,6 @@ from fastapi import FastAPI, HTTPException
 from reasoner_validator import DEFAULT_TRAPI_VERSION, is_valid_trapi_query
 from reasoner_validator.util import latest
 from biolink import (
-    set_biolink_model_toolkit,
     check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph
 )
@@ -28,7 +26,7 @@ class Query(BaseModel):
     trapi_version: Optional[str] = DEFAULT_TRAPI_VERSION
 
     # default: latest Biolink Model Toolkit supported version
-    biolink_version: Optional[str] = None
+    biolink_release: Optional[str] = None
 
     message: Dict
 
@@ -40,12 +38,7 @@ async def validate(query: Query):
         raise HTTPException(status_code=400, detail="Empty input message?")
 
     trapi_version = latest.get(query.trapi_version)
-    try:
-        biolink_model_version = set_biolink_model_toolkit(biolink_version=query.biolink_version)
-    except TypeError as te:
-        return {"validation": str(te)}
-    except HTTPError:
-        return {"validation": f"Unknown Biolink Model version: '{query.biolink_version}'?"}
+    biolink_release = query.biolink_release
 
     results: List[str] = list()
     
@@ -59,8 +52,11 @@ async def validate(query: Query):
         results.append(f"TRAPI Message Warning: empty TRAPI Message Query Graph?")
     else:
         # Verify that the provided TRAPI Message Query Graph is compliant to the current Biolink Model release
-        biolink_model_version, errors = \
-            check_biolink_model_compliance_of_query_graph(graph=query.message['query_graph'])
+        biolink_release, errors = \
+            check_biolink_model_compliance_of_query_graph(
+                graph=query.message['query_graph'],
+                biolink_release=query.biolink_release
+            )
         if errors:
             results.extend(errors)
 
@@ -70,8 +66,11 @@ async def validate(query: Query):
         results.append(f"TRAPI Message Warning: empty TRAPI Message Knowledge Graph?")
     else:
         # Verify that the provided TRAPI Message Knowledge Graph is compliant to the current Biolink Model release
-        biolink_model_version, errors = \
-            check_biolink_model_compliance_of_knowledge_graph(graph=query.message['knowledge_graph'])
+        biolink_release, errors = \
+            check_biolink_model_compliance_of_knowledge_graph(
+                graph=query.message['knowledge_graph'],
+                biolink_release=query.biolink_release
+            )
         if errors:
             results.extend(errors)
 
@@ -97,7 +96,7 @@ async def validate(query: Query):
 
     return {
         "trapi_version": trapi_version,
-        "biolink_version": biolink_model_version,
+        "biolink_version": biolink_release,
         "validation": results
     }
 

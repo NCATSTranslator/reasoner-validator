@@ -2,7 +2,7 @@
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
 import sys
-from typing import Optional, Tuple
+from typing import Tuple
 from pprint import PrettyPrinter
 import logging
 import pytest
@@ -10,8 +10,9 @@ import pytest
 from bmt import Toolkit
 
 from biolink import (
-    set_biolink_model_toolkit,
-    get_toolkit,
+    TrapiGraphType,
+    BiolinkValidator,
+    check_biolink_model_compliance_of_input_edge,
     check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph
 )
@@ -26,19 +27,108 @@ LATEST_BIOLINK_MODEL = "2.2.16"  # "Latest" Biolink Model Version
 
 
 def test_set_default_biolink_versioned_global_environment():
-    set_biolink_model_toolkit()
-    tk: Optional[Toolkit] = get_toolkit()
-    assert tk
-    model_version = tk.get_model_version()
+    validator = BiolinkValidator(graph_type=TrapiGraphType.Knowledge_Graph)
+    model_version = validator.get_biolink_model_version()
     logger.debug(f"\ntest_set_default_global_environment(): Biolink Model version is: '{str(model_version)}'")
     assert model_version == Toolkit().get_model_version()
 
 
 def test_set_specific_biolink_versioned_global_environment():
-    set_biolink_model_toolkit(biolink_version="2.2.16")
-    tk: Optional[Toolkit] = get_toolkit()
-    assert tk
-    assert tk.get_model_version() == "2.2.16"
+    validator = BiolinkValidator(
+        graph_type=TrapiGraphType.Knowledge_Graph,
+        biolink_release="1.8.2"
+    )
+    assert validator.get_biolink_model_version() == "1.8.2"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (   # Query 0 - Valid edge object
+            LATEST_BIOLINK_MODEL,  # Biolink Model Version
+            {
+                'subject_category': 'biolink:AnatomicalEntity',
+                'object_category': 'biolink:AnatomicalEntity',
+                'predicate': 'biolink:subclass_of',
+                'subject': 'UBERON:0005453',
+                'object': 'UBERON:0035769'
+            },
+            ""
+        ),
+        (   # Query 1 - Invalid subject category
+            LATEST_BIOLINK_MODEL,
+            {
+                'subject_category': 'biolink:NotACategory',
+                'object_category': 'biolink:AnatomicalEntity',
+                'predicate': 'biolink:subclass_of',
+                'subject': 'UBERON:0005453',
+                'object': 'UBERON:0035769'
+            },
+            "Edge Error: 'subject' category 'biolink:NotACategory' is unknown?"
+        ),
+        (   # Query 2 - Invalid object category
+            LATEST_BIOLINK_MODEL,
+            {
+                'subject_category': 'biolink:AnatomicalEntity',
+                'object_category': 'biolink:NotACategory',
+                'predicate': 'biolink:subclass_of',
+                'subject': 'UBERON:0005453',
+                'object': 'UBERON:0035769'
+            },
+            "Edge Error: 'object' category 'biolink:NotACategory' is unknown?"
+        ),
+        (   # Query 3 - Invalid predicate
+            LATEST_BIOLINK_MODEL,
+            {
+                'subject_category': 'biolink:AnatomicalEntity',
+                'object_category': 'biolink:AnatomicalEntity',
+                'predicate': 'biolink:not_a_predicate',
+                'subject': 'UBERON:0005453',
+                'object': 'UBERON:0035769'
+            },
+            "Edge Error: predicate 'biolink:not_a_predicate' is unknown?"
+        ),
+        (   # Query 4 - Unmappable subject namespace
+            LATEST_BIOLINK_MODEL,
+            {
+                'subject_category': 'biolink:AnatomicalEntity',
+                'object_category': 'biolink:AnatomicalEntity',
+                'predicate': 'biolink:subclass_of',
+                'subject': 'FOO:0005453',
+                'object': 'UBERON:0035769'
+            },
+            "Edge Error: namespace prefix of 'subject' identifier 'FOO:0005453' " +
+            "is unmapped to 'biolink:AnatomicalEntity'?"
+        ),
+        (   # Query 5 - Unmappable object namespace
+            LATEST_BIOLINK_MODEL,
+            {
+                'subject_category': 'biolink:AnatomicalEntity',
+                'object_category': 'biolink:AnatomicalEntity',
+                'predicate': 'biolink:subclass_of',
+                'subject': 'UBERON:0005453',
+                'object': 'BAR:0035769'
+            },
+            "Edge Error: namespace prefix of 'object' identifier 'BAR:0035769' " +
+            "is unmapped to 'biolink:AnatomicalEntity'?"
+        ),
+        (   # Query 6 - Valid other model
+            "1.8.2",
+            {
+                'subject_category': 'biolink:ChemicalSubstance',
+                'object_category': 'biolink:Protein',
+                'predicate': 'biolink:entity_negatively_regulates_entity',
+                'subject': 'DRUGBANK:DB00945',
+                'object': 'UniProtKB:P23219'
+            },
+            ""
+        )
+    ]
+)
+def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
+    model_version, errors = check_biolink_model_compliance_of_input_edge(edge=query[1], biolink_release=query[0])
+    print(f"Model {model_version} Errors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
+    assert any([error == query[2] for error in errors]) if query[2] or errors else True
 
 
 @pytest.mark.parametrize(
@@ -412,11 +502,8 @@ def test_set_specific_biolink_versioned_global_environment():
     ]
 )
 def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
-    set_biolink_model_toolkit(biolink_version=query[0])
-    #  check_biolink_model_compliance_of_query_graph(graph: Dict) -> Tuple[str, Optional[List[str]]]
-    model_version, errors = check_biolink_model_compliance_of_query_graph(graph=query[1])
-    assert model_version == get_toolkit().get_model_version()
-    print(f"\nErrors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
+    model_version, errors = check_biolink_model_compliance_of_query_graph(graph=query[1], biolink_release=query[0])
+    print(f"Model {model_version} Errors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
     assert any([error == query[2] for error in errors]) if query[2] or errors else True
 
 
@@ -487,7 +574,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
             LATEST_BIOLINK_MODEL,
             # Query 1: Empty graph - caught by missing 'nodes' key
             {},
-            "TRAPI Error: No nodes found in the Knowledge Graph?"
+            "Knowledge Graph Error: No nodes found?"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -495,7 +582,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
             {
                 "nodes": {}
             },
-            "TRAPI Error: No nodes found in the Knowledge Graph?"
+            "Knowledge Graph Error: No nodes found?"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -509,7 +596,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
                     }
                 }
             },
-            "TRAPI Error: No edges found in the Knowledge Graph?"
+            "Knowledge Graph Error: No edges found?"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -524,7 +611,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
                 },
                 "edges": {}
             },
-            "TRAPI Error: No edges found in the Knowledge Graph?"
+            "Knowledge Graph Error: No edges found?"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -747,14 +834,6 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
             "Knowledge Graph Error: Edge 'NCBIGene:29974--biolink:interacts_with->PUBCHEM.COMPOUND:597' " +
             "has missing or empty attributes?"
         ),
-        # "1.8.2",
-        # {
-        #     'subject_category': 'biolink:ChemicalSubstance',
-        #     'object_category': 'biolink:Protein',
-        #     'predicate': 'biolink:entity_negatively_regulates_entity',
-        #     'subject': 'DRUGBANK:DB00945',
-        #     'object': 'UniProtKB:P23219'
-        # },
         (
             "1.8.2",
             # Query 14:  # An earlier Biolink Model Version won't recognize a category not found in its version
@@ -818,9 +897,6 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
     ]
 )
 def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
-    set_biolink_model_toolkit(biolink_version=query[0])
-    # check_biolink_model_compliance_of_knowledge_graph(graph: Dict) -> Tuple[str, Optional[List[str]]]:
-    model_version, errors = check_biolink_model_compliance_of_knowledge_graph(graph=query[1])
-    assert model_version == get_toolkit().get_model_version()
-    print(f"\nErrors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
+    model_version, errors = check_biolink_model_compliance_of_knowledge_graph(graph=query[1], biolink_release=query[0])
+    print(f"Model {model_version} Errors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
     assert any([error == query[2] for error in errors]) if query[2] or errors else True
