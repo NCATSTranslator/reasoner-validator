@@ -6,9 +6,9 @@ with open("README.md", "r") as stream:
 
 setup(
     name="reasoner-validator",
-    version="2.1.0",
-    author="Patrick Wang",
-    author_email="patrick@covar.com",
+    version="2.2.0",
+    author="Patrick Wang, Richard Bruskiewich",
+    author_email="patrick@covar.com, richard.bruskiewich@delphinai.com",
     url="https://github.com/NCATSTranslator/reasoner-validator",
     description="Validation tools for Reasoner API",
     long_description=long_description,
