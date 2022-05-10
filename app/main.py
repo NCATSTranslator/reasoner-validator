@@ -92,7 +92,7 @@ async def validate(query: Query):
     #                       f"Result object IDs {pp.pformat(object_ids)} for node '{output_node_binding}' binding?"
 
     if not results:
-        results.append("Valid TRAPI Message")
+        results.append(f"Biolink Model-compliant TRAPI Message!")
 
     return {
         "trapi_version": trapi_version,
