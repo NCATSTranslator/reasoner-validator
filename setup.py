@@ -6,15 +6,15 @@ with open("README.md", "r") as stream:
 
 setup(
     name="reasoner-validator",
-    version="2.2.0",
+    version="2.2.1",
     # Patrick Wang, project creator and emeritus Translator scientist
-    author="Richard Bruskiewich", # current maintainer
-    author_email="richard.bruskiewich@delphinai.com",
+    author="Richard Bruskiewich, Patrick Wang",  # current maintainer
+    author_email="richard.bruskiewich@delphinai.com, patrickelvin@gmail.com",
     url="https://github.com/NCATSTranslator/reasoner-validator",
     description="Validation tools for Reasoner API",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=["reasoner_validator"],
+    packages=["reasoner_validator", "reasoner_validator.biolink"],
     package_data={},
     include_package_data=True,
     install_requires=[
