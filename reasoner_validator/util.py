@@ -123,8 +123,10 @@ def load_schema(trapi_version: str):
 @lru_cache()
 def _load_schema(trapi_version: str):
     """Load schema from GitHub."""
-    response = requests.get(f"https://raw.githubusercontent.com/NCATSTranslator/ReasonerAPI/v{trapi_version}/TranslatorReasonerAPI.yaml")
-    spec = yaml.load(response.text, Loader=Loader)
+    result = requests.get(
+        f"https://raw.githubusercontent.com/NCATSTranslator/ReasonerAPI/v{trapi_version}/TranslatorReasonerAPI.yaml"
+    )
+    spec = yaml.load(result.text, Loader=Loader)
     components = spec["components"]["schemas"]
     for component, schema in components.items():
         openapi_to_jsonschema(schema)
