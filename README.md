@@ -86,4 +86,11 @@ Of course, the above docker-compose commands may be customized by the user to su
 - Biolink Model toolkit is not (yet) cached so changing the model version during use will result in some latency in results
 - The validator service doesn't (yet) deeply validate non-core node and edge slot contents of Message Knowledge Graphs
 - The validator service doesn't (yet) attempt validation of Query Graph nodes and edges 'constraints'
-- Query Graph node 'ids' are not validated except when an associated 'categories' parameter is provided for the given node
+- Query Graph node 'ids' are not validated except when an associated 'categories' parameter is provided for the given node. In general, [Query Graph Validation](https://github.com/NCATSTranslator/reasoner-validator/issues/14) could be elaborated.
+- The system should leverage the [Reasoner Pydantic Models](https://github.com/NCATSTranslator/reasoner-validator/issues/15)
+
+# Core Contributors
+
+- Kudos to Patrick Wang, who created the original implementation of the Reasoner-Validator project while with CoVar (an entrepreneurial team contributing to the Biomedical Data Translator).
+- Thanks to Kenneth Morton (CoVar) for his reviews of the latest code.
+- The project is currently being extended and maintained by Richard Bruskiewich (Delphinai Corporation, on the SRI team contributing to Translator)
