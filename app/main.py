@@ -26,7 +26,7 @@ class Query(BaseModel):
     trapi_version: Optional[str] = DEFAULT_TRAPI_VERSION
 
     # default: latest Biolink Model Toolkit supported version
-    biolink_release: Optional[str] = None
+    biolink_version: Optional[str] = None
 
     message: Dict
 
@@ -38,7 +38,7 @@ async def validate(query: Query):
         raise HTTPException(status_code=400, detail="Empty input message?")
 
     trapi_version = latest.get(query.trapi_version)
-    biolink_release = query.biolink_release
+    biolink_version = query.biolink_version
 
     results: List[str] = list()
     
@@ -52,10 +52,10 @@ async def validate(query: Query):
         results.append(f"TRAPI Message Warning: empty TRAPI Message Query Graph?")
     else:
         # Verify that the provided TRAPI Message Query Graph is compliant to the current Biolink Model release
-        biolink_release, errors = \
+        biolink_version, errors = \
             check_biolink_model_compliance_of_query_graph(
                 graph=query.message['query_graph'],
-                biolink_release=query.biolink_release
+                biolink_version=query.biolink_version
             )
         if errors:
             results.extend(errors)
@@ -66,10 +66,10 @@ async def validate(query: Query):
         results.append(f"TRAPI Message Warning: empty TRAPI Message Knowledge Graph?")
     else:
         # Verify that the provided TRAPI Message Knowledge Graph is compliant to the current Biolink Model release
-        biolink_release, errors = \
+        biolink_version, errors = \
             check_biolink_model_compliance_of_knowledge_graph(
                 graph=query.message['knowledge_graph'],
-                biolink_release=query.biolink_release
+                biolink_version=query.biolink_version
             )
         if errors:
             results.extend(errors)
@@ -96,7 +96,7 @@ async def validate(query: Query):
 
     return {
         "trapi_version": trapi_version,
-        "biolink_version": biolink_release,
+        "biolink_version": biolink_version,
         "validation": results
     }
 

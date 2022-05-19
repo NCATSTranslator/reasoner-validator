@@ -25,7 +25,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 ```json
 {
   "trapi_version": "1.0",
-  "biolink_release": "2.2.16",
+  "biolink_version": "2.2.16",
   "message": "<TRAPI JSON message blob...>"
 }
 ```
