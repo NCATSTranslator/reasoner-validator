@@ -24,5 +24,5 @@ setup(
     ],
     zip_safe=False,
     license="MIT",
-    python_requires=">=3.6",
+    python_requires=">=3.7",
 )
