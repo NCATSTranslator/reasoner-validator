@@ -277,28 +277,31 @@ class BiolinkValidator:
         :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
         """
         # data fields to be validated...
-        subject_category_curie = edge['subject_category']
-        object_category_curie = edge['object_category']
-        predicate_curie = edge['predicate']
+        subject_category_curie = edge['subject_category'] if 'subject_category' in edge else None
+        object_category_curie = edge['object_category'] if 'object_category' in edge else None
+        predicate_curie = edge['predicate'] if 'predicate' in edge else None
         subject_curie = edge['subject']
         object_curie = edge['object']
 
-        if self.bmtk.is_category(subject_category_curie):
+        if subject_category_curie and self.bmtk.is_category(subject_category_curie):
             subject_category_name = self.bmtk.get_element(subject_category_curie).name
         else:
-            err_msg = f"'subject' category '{subject_category_curie}' is unknown?"
+            err_msg = f"'subject' category "
+            err_msg += f"'{subject_category_curie}' is unknown?" if subject_category_curie else "is missing?"
             self.report_error(err_msg)
             subject_category_name = None
 
-        if self.bmtk.is_category(object_category_curie):
+        if object_category_curie and self.bmtk.is_category(object_category_curie):
             object_category_name = self.bmtk.get_element(object_category_curie).name
         else:
-            err_msg = f"'object' category '{object_category_curie}' is unknown?"
+            err_msg = f"'object' category "
+            err_msg += f"'{object_category_curie}' is unknown?" if object_category_curie else "is missing?"
             self.report_error(err_msg)
             object_category_name = None
 
-        if not self.bmtk.is_predicate(predicate_curie):
-            err_msg = f"predicate '{predicate_curie}' is unknown?"
+        if not (predicate_curie and self.bmtk.is_predicate(predicate_curie)):
+            err_msg = f"predicate "
+            err_msg += f"'{predicate_curie}' is unknown?" if predicate_curie else "is missing?"
             self.report_error(err_msg)
 
         if subject_category_name:

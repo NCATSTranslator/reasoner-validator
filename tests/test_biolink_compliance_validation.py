@@ -55,7 +55,17 @@ def test_set_specific_biolink_versioned_global_environment():
             },
             ""
         ),
-        (   # Query 1 - Invalid subject category
+        (   # Query 1 - Missing subject category
+            LATEST_BIOLINK_MODEL,
+            {
+                'object_category': 'biolink:AnatomicalEntity',
+                'predicate': 'biolink:subclass_of',
+                'subject': 'UBERON:0005453',
+                'object': 'UBERON:0035769'
+            },
+            "Edge Error: 'subject' category is missing?"
+        ),
+        (   # Query 2 - Invalid subject category
             LATEST_BIOLINK_MODEL,
             {
                 'subject_category': 'biolink:NotACategory',
@@ -66,7 +76,17 @@ def test_set_specific_biolink_versioned_global_environment():
             },
             "Edge Error: 'subject' category 'biolink:NotACategory' is unknown?"
         ),
-        (   # Query 2 - Invalid object category
+        (   # Query 3 - Missing object category
+            LATEST_BIOLINK_MODEL,
+            {
+                'subject_category': 'biolink:AnatomicalEntity',
+                'predicate': 'biolink:subclass_of',
+                'subject': 'UBERON:0005453',
+                'object': 'UBERON:0035769'
+            },
+            "Edge Error: 'object' category is missing?"
+        ),
+        (   # Query 4 - Invalid object category
             LATEST_BIOLINK_MODEL,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
@@ -77,7 +97,17 @@ def test_set_specific_biolink_versioned_global_environment():
             },
             "Edge Error: 'object' category 'biolink:NotACategory' is unknown?"
         ),
-        (   # Query 3 - Invalid predicate
+        (   # Query 5 - Missing predicate
+            LATEST_BIOLINK_MODEL,
+            {
+                'subject_category': 'biolink:AnatomicalEntity',
+                'object_category': 'biolink:AnatomicalEntity',
+                'subject': 'UBERON:0005453',
+                'object': 'UBERON:0035769'
+            },
+            "Edge Error: predicate is missing?"
+        ),
+        (   # Query 6 - Invalid predicate
             LATEST_BIOLINK_MODEL,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
@@ -88,7 +118,7 @@ def test_set_specific_biolink_versioned_global_environment():
             },
             "Edge Error: predicate 'biolink:not_a_predicate' is unknown?"
         ),
-        (   # Query 4 - Unmappable subject namespace
+        (   # Query 7 - Unmappable subject namespace
             LATEST_BIOLINK_MODEL,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
@@ -100,7 +130,7 @@ def test_set_specific_biolink_versioned_global_environment():
             "Edge Error: namespace prefix of 'subject' identifier 'FOO:0005453' " +
             "is unmapped to 'biolink:AnatomicalEntity'?"
         ),
-        (   # Query 5 - Unmappable object namespace
+        (   # Query 8 - Unmappable object namespace
             LATEST_BIOLINK_MODEL,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
@@ -112,7 +142,7 @@ def test_set_specific_biolink_versioned_global_environment():
             "Edge Error: namespace prefix of 'object' identifier 'BAR:0035769' " +
             "is unmapped to 'biolink:AnatomicalEntity'?"
         ),
-        (   # Query 6 - Valid other model
+        (   # Query 9 - Valid other model
             "1.8.2",
             {
                 'subject_category': 'biolink:ChemicalSubstance',
