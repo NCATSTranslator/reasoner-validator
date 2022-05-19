@@ -36,7 +36,7 @@ def test_set_default_biolink_versioned_global_environment():
 def test_set_specific_biolink_versioned_global_environment():
     validator = BiolinkValidator(
         graph_type=TrapiGraphType.Knowledge_Graph,
-        biolink_release="1.8.2"
+        biolink_version="1.8.2"
     )
     assert validator.get_biolink_model_version() == "1.8.2"
 
@@ -126,7 +126,7 @@ def test_set_specific_biolink_versioned_global_environment():
     ]
 )
 def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
-    model_version, errors = check_biolink_model_compliance_of_input_edge(edge=query[1], biolink_release=query[0])
+    model_version, errors = check_biolink_model_compliance_of_input_edge(edge=query[1], biolink_version=query[0])
     print(f"Model {model_version} Errors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
     assert any([error == query[2] for error in errors]) if query[2] or errors else True
 
@@ -502,7 +502,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
     ]
 )
 def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
-    model_version, errors = check_biolink_model_compliance_of_query_graph(graph=query[1], biolink_release=query[0])
+    model_version, errors = check_biolink_model_compliance_of_query_graph(graph=query[1], biolink_version=query[0])
     print(f"Model {model_version} Errors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
     assert any([error == query[2] for error in errors]) if query[2] or errors else True
 
@@ -897,6 +897,6 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
     ]
 )
 def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
-    model_version, errors = check_biolink_model_compliance_of_knowledge_graph(graph=query[1], biolink_release=query[0])
+    model_version, errors = check_biolink_model_compliance_of_knowledge_graph(graph=query[1], biolink_version=query[0])
     print(f"Model {model_version} Errors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
     assert any([error == query[2] for error in errors]) if query[2] or errors else True

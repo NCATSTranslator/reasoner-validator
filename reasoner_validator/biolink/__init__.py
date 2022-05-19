@@ -32,18 +32,18 @@ _MAX_TEST_EDGES = 100
 semver_pattern = re.compile(r"^\d+\.\d+\.\d+$")
 
 
-def _get_biolink_model_schema(biolink_release: Optional[str] = None) -> Optional[str]:
+def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional[str]:
     """
     Get Biolink Model Schema
     """
-    if biolink_release:
-        if not semver_pattern.fullmatch(biolink_release):
+    if biolink_version:
+        if not semver_pattern.fullmatch(biolink_version):
             raise TypeError(
-                "The 'biolink_release' argument '"
-                + biolink_release
+                "The 'biolink_version' argument '"
+                + biolink_version
                 + "' is not a properly formatted 'major.minor.patch' semantic version?"
             )
-        schema = f"https://raw.githubusercontent.com/biolink/biolink-model/{biolink_release}/biolink-model.yaml"
+        schema = f"https://raw.githubusercontent.com/biolink/biolink-model/{biolink_version}/biolink-model.yaml"
         return schema
     else:
         return None
@@ -52,12 +52,12 @@ def _get_biolink_model_schema(biolink_release: Optional[str] = None) -> Optional
 # At any given time, only a modest number of Biolink Model versions
 # are expected to be active targets for SRI Test validations?
 @lru_cache(maxsize=3)
-def get_biolink_model_toolkit(biolink_release: Optional[str] = None) -> Toolkit:
-    if biolink_release:
+def get_biolink_model_toolkit(biolink_version: Optional[str] = None) -> Toolkit:
+    if biolink_version:
         # If errors occur while instantiating non-default Toolkit;
         # then log the error but just use default as a workaround?
         try:
-            biolink_schema = _get_biolink_model_schema(biolink_release=biolink_release)
+            biolink_schema = _get_biolink_model_schema(biolink_version=biolink_version)
             bmtk = Toolkit(biolink_schema)
             return bmtk
         except (TypeError, HTTPError) as ex:
@@ -74,13 +74,13 @@ class TrapiGraphType(Enum):
 
 class BiolinkValidator:
 
-    def __init__(self, graph_type: TrapiGraphType, biolink_release=None):
+    def __init__(self, graph_type: TrapiGraphType, biolink_version=None):
         """
         :param graph_type: type of graph data being validated
 
         """
         self.graph_type = graph_type
-        self.bmtk = get_biolink_model_toolkit(biolink_release=biolink_release)
+        self.bmtk = get_biolink_model_toolkit(biolink_version=biolink_version)
         self.errors: Set[str] = set()
         self.nodes: Set[str] = set()
 
@@ -377,7 +377,7 @@ class BiolinkValidator:
 
 def check_biolink_model_compliance_of_input_edge(
         edge: Dict[str, str],
-        biolink_release: Optional[str] = None
+        biolink_version: Optional[str] = None
 ) -> Tuple[str, Optional[List[str]]]:
     """
     Validate an input edge object contents against the current BMT Biolink Model release.
@@ -393,17 +393,17 @@ def check_biolink_model_compliance_of_input_edge(
     }
 
     :param edge: basic contents of a templated input edge - S-P-O including concept Biolink Model categories
-    :param biolink_release: Biolink Model (SemVer) version against which the edge object is to be validated
+    :param biolink_version: Biolink Model (SemVer) version against which the edge object is to be validated
 
     :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
     """
-    validator = BiolinkValidator(graph_type=TrapiGraphType.Edge_Object, biolink_release=biolink_release)
+    validator = BiolinkValidator(graph_type=TrapiGraphType.Edge_Object, biolink_version=biolink_version)
     return validator.check_biolink_model_compliance_of_input_edge(edge)
 
 
 def check_biolink_model_compliance_of_query_graph(
         graph: Dict,
-        biolink_release: Optional[str] = None
+        biolink_version: Optional[str] = None
 ) -> Tuple[str, Optional[List[str]]]:
     """
     Validate a TRAPI-schema compliant Message Query Graph against the current BMT Biolink Model release.
@@ -412,25 +412,25 @@ def check_biolink_model_compliance_of_query_graph(
     the validation undertaken is not 'strict'
 
     :param graph: query graph to be validated
-    :param biolink_release: Biolink Model (SemVer) version against which the query graph is to be validated
+    :param biolink_version: Biolink Model (SemVer) version against which the query graph is to be validated
 
     :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
     """
-    validator = BiolinkValidator(graph_type=TrapiGraphType.Query_Graph, biolink_release=biolink_release)
+    validator = BiolinkValidator(graph_type=TrapiGraphType.Query_Graph, biolink_version=biolink_version)
     return validator.check_biolink_model_compliance(graph)
 
 
 def check_biolink_model_compliance_of_knowledge_graph(
         graph: Dict,
-        biolink_release: Optional[str] = None
+        biolink_version: Optional[str] = None
 ) -> Tuple[str, Optional[List[str]]]:
     """
     Strict validation of a TRAPI-schema compliant Message Knowledge Graph against the active BMT Biolink Model release.
 
     :param graph: knowledge graph to be validated
-    :param biolink_release: Biolink Model (SemVer) version against which the knowledge graph is to be validated
+    :param biolink_version: Biolink Model (SemVer) version against which the knowledge graph is to be validated
 
     :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
     """
-    validator = BiolinkValidator(graph_type=TrapiGraphType.Knowledge_Graph, biolink_release=biolink_release)
+    validator = BiolinkValidator(graph_type=TrapiGraphType.Knowledge_Graph, biolink_version=biolink_version)
     return validator.check_biolink_model_compliance(graph)
