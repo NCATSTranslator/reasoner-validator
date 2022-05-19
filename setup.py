@@ -6,7 +6,7 @@ with open("README.md", "r") as stream:
 
 setup(
     name="reasoner-validator",
-    version="2.2.3",
+    version="2.2.4",
     # Patrick Wang, project creator and emeritus Translator scientist
     author="Richard Bruskiewich, Patrick Wang",  # current maintainer
     author_email="richard.bruskiewich@delphinai.com, patrickelvin@gmail.com",

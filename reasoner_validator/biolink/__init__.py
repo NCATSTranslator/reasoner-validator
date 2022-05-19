@@ -67,7 +67,7 @@ def get_biolink_model_toolkit(biolink_version: Optional[str] = None) -> Toolkit:
 
 
 class TrapiGraphType(Enum):
-    Edge_Object = "Edge"
+    Edge_Object = "Input Edge"
     Query_Graph = "Query Graph"
     Knowledge_Graph = "Knowledge Graph"
 
@@ -280,8 +280,8 @@ class BiolinkValidator:
         subject_category_curie = edge['subject_category'] if 'subject_category' in edge else None
         object_category_curie = edge['object_category'] if 'object_category' in edge else None
         predicate_curie = edge['predicate'] if 'predicate' in edge else None
-        subject_curie = edge['subject']
-        object_curie = edge['object']
+        subject_curie = edge['subject'] if 'subject' in edge else None
+        object_curie = edge['object'] if 'object' in edge else None
 
         if subject_category_curie and self.bmtk.is_category(subject_category_curie):
             subject_category_name = self.bmtk.get_element(subject_category_curie).name
@@ -304,19 +304,27 @@ class BiolinkValidator:
             err_msg += f"'{predicate_curie}' is unknown?" if predicate_curie else "is missing?"
             self.report_error(err_msg)
 
-        if subject_category_name:
-            possible_subject_categories = self.bmtk.get_element_by_prefix(subject_curie)
-            if subject_category_name not in possible_subject_categories:
-                err_msg = f"namespace prefix of 'subject' identifier '{subject_curie}' " +\
-                          f"is unmapped to '{subject_category_curie}'?"
-                self.report_error(err_msg)
+        if subject_curie:
+            if subject_category_name:
+                possible_subject_categories = self.bmtk.get_element_by_prefix(subject_curie)
+                if subject_category_name not in possible_subject_categories:
+                    err_msg = f"namespace prefix of 'subject' identifier '{subject_curie}' " +\
+                              f"is unmapped to '{subject_category_curie}'?"
+                    self.report_error(err_msg)
+        else:
+            err_msg = "'subject' is missing?"
+            self.report_error(err_msg)
 
-        if object_category_name:
-            possible_object_categories = self.bmtk.get_element_by_prefix(object_curie)
-            if object_category_name not in possible_object_categories:
-                err_msg = f"namespace prefix of 'object' identifier '{object_curie}' " +\
-                          f"is unmapped to '{object_category_curie}'?"
-                self.report_error(err_msg)
+        if object_curie:
+            if object_category_name:
+                possible_object_categories = self.bmtk.get_element_by_prefix(object_curie)
+                if object_category_name not in possible_object_categories:
+                    err_msg = f"namespace prefix of 'object' identifier '{object_curie}' " +\
+                              f"is unmapped to '{object_category_curie}'?"
+                    self.report_error(err_msg)
+        else:
+            err_msg = "'object' is missing?"
+            self.report_error(err_msg)
 
         return self.get_result()
 
