@@ -60,4 +60,4 @@ def is_valid_trapi_query(instance, trapi_version) -> str:
         )
         return ""
     except jsonschema.ValidationError as e:
-        return f"TRAPI Query: '{e.message}'"
+        return f"TRAPI {trapi_version} Query: '{e.message}'"

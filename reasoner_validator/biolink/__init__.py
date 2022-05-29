@@ -85,7 +85,7 @@ class BiolinkValidator:
         self.nodes: Set[str] = set()
 
     def report_error(self, err_msg):
-        self.errors.add(f"{self.graph_type.value} Error: {err_msg}")
+        self.errors.add(f"BLM Version {self.get_biolink_model_version()} Error in {self.graph_type.value}: {err_msg}")
 
     def get_biolink_model_version(self) -> str:
         return self.bmtk.get_model_version()
