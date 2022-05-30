@@ -6,7 +6,7 @@ with open("README.md", "r") as stream:
 
 setup(
     name="reasoner-validator",
-    version="2.2.5",
+    version="2.2.6",
     # Patrick Wang, project creator and emeritus Translator scientist
     author="Richard Bruskiewich, Patrick Wang",  # current maintainer
     author_email="richard.bruskiewich@delphinai.com, patrickelvin@gmail.com",
@@ -21,6 +21,11 @@ setup(
         "jsonschema>=3.0,<4.0",
         "pyyaml>=5.1,<6.0",
         "requests>=2.0,<3.0",
+    ],
+    classifiers=[
+        "Programming Language :: Python :: 3.9",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
     ],
     zip_safe=False,
     license="MIT",
