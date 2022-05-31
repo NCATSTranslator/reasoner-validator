@@ -1,5 +1,5 @@
 """
-BiolinkValidator: validator of knowledge graph version-specific Biolink Model compliance.
+Version-specific Biolink Model semantic validation of knowledge graph components.
 """
 from typing import Optional, Any, Dict, List, Tuple, Set
 from enum import Enum
