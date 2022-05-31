@@ -17,11 +17,11 @@ This Python module provides the :code:`validate()` method for validating any com
     except ValidationError:
       raise ValueError('Bad TRAPI component!')
 
-.. toctree::
-   :maxdepth: 1
-   :hidden:
+.. autosummary::
+   :toctree: generated
 
    reasoner_validator
+   reasoner_validator.biolink
 
 Installation
 ------------

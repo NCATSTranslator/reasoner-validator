@@ -1,5 +1,5 @@
-API
-===========================
+TRAPI Validation
+================
 
 .. automodule:: reasoner_validator
    :members:

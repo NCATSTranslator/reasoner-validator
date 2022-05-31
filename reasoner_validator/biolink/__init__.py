@@ -1,14 +1,7 @@
 """
-Biolink Compliance testing support
-
-Ideally, this code should probably reside outside the reasoner-validator project
-(in fact, we are shameless copying it over from the SRI Testing translator.biolink package for now)
-but until the shared project package publication issues are sorted out, we duplicate it here.
-
-TODO: copied from https://github.com/TranslatorSRI/SRI_testing/blob/main/translator/biolink/__init__.py
-      on April 27, 2022 (check for updates or package publication to pypi?)
+BiolinkValidator: validator of knowledge graph version-specific Biolink Model compliance.
 """
-from typing import Optional, Dict, List, Tuple, Set
+from typing import Optional, Any, Dict, List, Tuple, Set
 from enum import Enum
 from functools import lru_cache
 from urllib.error import HTTPError
@@ -33,9 +26,7 @@ semver_pattern = re.compile(r"^\d+\.\d+\.\d+$")
 
 
 def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional[str]:
-    """
-    Get Biolink Model Schema
-    """
+    # Get Biolink Model Schema
     if biolink_version:
         if not semver_pattern.fullmatch(biolink_version):
             raise TypeError(
@@ -53,6 +44,15 @@ def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional
 # are expected to be active targets for SRI Test validations?
 @lru_cache(maxsize=3)
 def get_biolink_model_toolkit(biolink_version: Optional[str] = None) -> Toolkit:
+    """
+    Return Biolink Model Toolkit corresponding to specified version of the model (Default: current 'latest' version).
+
+    :param biolink_version: Optional[str], caller specified Biolink Model version (default: None)
+    :type biolink_version: Optional[str] or None
+    :return: Biolink Model Toolkit.
+    :rtype: Toolkit
+
+    """
     if biolink_version:
         # If errors occur while instantiating non-default Toolkit;
         # then log the error but just use default as a workaround?
@@ -67,33 +67,65 @@ def get_biolink_model_toolkit(biolink_version: Optional[str] = None) -> Toolkit:
 
 
 class TrapiGraphType(Enum):
+    """ Enum type of Biolink Model compliant graph data being validated."""
     Edge_Object = "Input Edge"
     Query_Graph = "Query Graph"
     Knowledge_Graph = "Knowledge Graph"
 
 
 class BiolinkValidator:
-
+    """
+    Wrapper class for Biolink Model validation.
+    """
     def __init__(self, graph_type: TrapiGraphType, biolink_version=None):
         """
-        :param graph_type: type of graph data being validated
+        BiolinkValidator constructor.
 
+        :param graph_type: type of graph data being validated
+        :type graph_type: TrapiGraphType
+        :param biolink_version: caller specified Biolink Model version (default: None)
+        :type biolink_version: Optional[str] or None
         """
         self.graph_type = graph_type
         self.bmtk = get_biolink_model_toolkit(biolink_version=biolink_version)
         self.errors: Set[str] = set()
         self.nodes: Set[str] = set()
 
-    def report_error(self, err_msg):
+    def report_error(self, err_msg: str):
+        """
+        Capture an annotated error message to report from the BiolinkValidator.
+
+        :param err_msg: error message to report.
+        :type err_msg: str
+        """
         self.errors.add(f"BLM Version {self.get_biolink_model_version()} Error in {self.graph_type.value}: {err_msg}")
 
     def get_biolink_model_version(self) -> str:
+        """
+        :return: Biolink Model version currently targeted by the validator.
+        :rtype biolink_version: str
+        """
         return self.bmtk.get_model_version()
 
     def get_result(self) -> Tuple[str, Optional[List[str]]]:
+        """
+        Get result of validation.
+        :return: model version of the validation and list of detected errors.
+        :rtype Tuple[str, Optional[List[str]]]
+        """
         return self.bmtk.get_model_version(), list(self.errors)
 
     def validate_category(self, node_id: str, category: str) -> Optional[str]:
+        """
+        Validate the category of node.
+
+        :param node_id: identifier of a concept node
+        :type node_id: str
+        :param category: of the node
+        :type category: str
+        :return: category name associated wth the category of the node
+        :rtype: Optional[str]
+        """
         if self.bmtk.is_category(category):
             return self.bmtk.get_element(category).name
         elif self.bmtk.is_mixin(category):
@@ -118,19 +150,26 @@ class BiolinkValidator:
                 )
         return None
 
-    def validate_node(self, node_id, details):
+    def validate_node(self, node_id, slots: Dict[str, Any]):
+        """
+        Validate slot properties (mainly 'categories') of a node.
 
-        logger.debug(f"{node_id}: {str(details)}")
+        :param node_id: identifier of a concept node
+        :type node_id: str
+        :param slots: properties of the node
+        :type slots: Dict
+        """
+        logger.debug(f"{node_id}: {str(slots)}")
 
         if self.graph_type is TrapiGraphType.Knowledge_Graph:
             # TODO: this will fail for an earlier TRAPI data schema version
             #       which didn't use the tag 'categories' for nodes...
             #       probably no longer relevant to the community?
-            if 'categories' in details:
-                if not isinstance(details["categories"], List):
+            if 'categories' in slots:
+                if not isinstance(slots["categories"], List):
                     self.report_error(f"The value of node '{node_id}.categories' should be an array?")
                 else:
-                    categories = details["categories"]
+                    categories = slots["categories"]
                     node_prefix_mapped: bool = False
                     for category in categories:
                         category_name: str = self.validate_category(node_id, category)
@@ -149,8 +188,8 @@ class BiolinkValidator:
 
         else:  # Query Graph node validation
 
-            if "ids" in details:
-                ids = details["ids"]
+            if "ids" in slots:
+                ids = slots["ids"]
                 if not isinstance(ids, List):
                     self.report_error(f"Node '{node_id}.ids' slot value is not an array?")
                 elif not ids:
@@ -158,8 +197,8 @@ class BiolinkValidator:
             else:
                 ids: List[str] = list()  # null "ids" value is permitted in QNodes
 
-            if "categories" in details:
-                categories = details["categories"]
+            if "categories" in slots:
+                categories = slots["categories"]
                 if not isinstance(categories, List):
                     self.report_error(f"Node '{node_id}.categories' slot value is not an array?")
                 elif not categories:
@@ -184,8 +223,8 @@ class BiolinkValidator:
 
             # else:  # null "categories" value is permitted in QNodes
 
-            if 'is_set' in details:
-                is_set = details["is_set"]
+            if 'is_set' in slots:
+                is_set = slots["is_set"]
                 if not isinstance(is_set, bool):
                     self.report_error(f"Node '{node_id}.is_set' slot is not a boolean value?")
             # else:  # a null "is_set" value is permitted in QNodes but defaults to 'False'
@@ -197,7 +236,12 @@ class BiolinkValidator:
         self.nodes.update(nodes)
 
     def validate_edge(self, edge: Dict):
+        """
+        Validate slot properties of a relationship ('biolink:Association') edge.
 
+        :param edge: dictionary of slot properties of the edge.
+        :type edge: dict[str, str]
+        """
         logger.debug(edge)
 
         # edge data fields to be validated...
@@ -273,8 +317,9 @@ class BiolinkValidator:
         }
 
         :param edge: basic dictionary of a templated input edge - S-P-O including concept Biolink Model categories
-
-        :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
+        :type edge: Dict[str,str]
+        :return: Biolink Model version (str) and List[str] (possibly empty) of error messages
+        :rtype: Tuple[str, List[str]]
         """
         # data fields to be validated...
         subject_category_curie = edge['subject_category'] if 'subject_category' in edge else None
@@ -331,11 +376,12 @@ class BiolinkValidator:
     def check_biolink_model_compliance(self, graph: Dict) -> Tuple[str, Optional[List[str]]]:
         """
         Validate a TRAPI-schema compliant Message graph-like data structure
-        against the currently active BMT Biolink Model release.
+        against the currently active Biolink Model Toolkit model version.
     
         :param graph: knowledge graph to be validated
-
+        :type graph: Dict
         :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
+        :rtype: Tuple[str, Optional[List[str]]]
         """
         # Access graph data fields to be validated
         nodes: Optional[Dict]
@@ -404,9 +450,11 @@ def check_biolink_model_compliance_of_input_edge(
     }
 
     :param edge: basic contents of a templated input edge - S-P-O including concept Biolink Model categories
+    :type edge: Dict[str,str]
     :param biolink_version: Biolink Model (SemVer) version against which the edge object is to be validated
-
+    :type biolink_version: Optional[str] = None
     :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
+    :rtype: Tuple[str, Optional[List[str]]]
     """
     validator = BiolinkValidator(graph_type=TrapiGraphType.Edge_Object, biolink_version=biolink_version)
     return validator.check_biolink_model_compliance_of_input_edge(edge)
@@ -423,9 +471,11 @@ def check_biolink_model_compliance_of_query_graph(
     the validation undertaken is not 'strict'
 
     :param graph: query graph to be validated
+    :type graph: Dict
     :param biolink_version: Biolink Model (SemVer) version against which the query graph is to be validated
-
-    :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
+    :type biolink_version: Optional[str] = None
+    :return: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
+    :rtype: Tuple[str, Optional[List[str]]]
     """
     validator = BiolinkValidator(graph_type=TrapiGraphType.Query_Graph, biolink_version=biolink_version)
     return validator.check_biolink_model_compliance(graph)
@@ -438,10 +488,12 @@ def check_biolink_model_compliance_of_knowledge_graph(
     """
     Strict validation of a TRAPI-schema compliant Message Knowledge Graph against the active BMT Biolink Model release.
 
-    :param graph: knowledge graph to be validated
+    :param graph: knowledge graph to be validated.
+    :type graph: Dict
     :param biolink_version: Biolink Model (SemVer) version against which the knowledge graph is to be validated
-
-    :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
+    :type biolink_version: Optional[str] = None
+    :return: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
+    :rtype: Tuple[str, Optional[List[str]]]
     """
     validator = BiolinkValidator(graph_type=TrapiGraphType.Knowledge_Graph, biolink_version=biolink_version)
     return validator.check_biolink_model_compliance(graph)
