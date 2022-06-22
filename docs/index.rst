@@ -1,7 +1,9 @@
 Reasoner Validator
 ==================
 
-This Python module provides the :code:`validate()` method for validating any component *in any version* of the
+This project has two components: one for TRAPI OpenAPI schema validation and the other for Biolink Model semantic validation.
+
+In particular, this package provides the :code:`validate()` method for validating any component *in any version* of the
 `Translator Reasoner API (TRAPI) <https://github.com/NCATSTranslator/ReasonerAPI/blob/master/README.md>`_ and `Biolink Model <https://github.com/biolink/biolink-model/blob/master/README.md>`_.
 
 .. code-block:: python
@@ -16,6 +18,9 @@ This Python module provides the :code:`validate()` method for validating any com
       )
     except ValidationError:
       raise ValueError('Bad TRAPI component!')
+
+API
+---
 
 .. toctree::
    :maxdepth: 2
