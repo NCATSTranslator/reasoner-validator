@@ -87,7 +87,7 @@ Of course, the above docker-compose commands may be customized by the user to su
 - The validation is only run on the first 1000 nodes and 100 edges of graphs, to keep the validation time tractable (this risks not having complete coverage of the graph)
 - Biolink Model toolkit is not (yet) cached so changing the model version during use will result in some latency in results
 - The validator service doesn't (yet) deeply validate non-core node and edge slot contents of Message Knowledge Graphs
-- The validator service doesn't (yet) attempt validation of Query Graph nodes and edges 'constraints'
+- The validator service doesn't (yet) attempt validation of Query Graph nodes and edges 'constraints' (e.g. `biolink:Association` etc. `domain` and `range` constraints)
 - Query Graph node 'ids' are not validated except when an associated 'categories' parameter is provided for the given node. In general, [Query Graph Validation](https://github.com/NCATSTranslator/reasoner-validator/issues/14) could be elaborated.
 - The system should leverage the [Reasoner Pydantic Models](https://github.com/NCATSTranslator/reasoner-validator/issues/15)
 
