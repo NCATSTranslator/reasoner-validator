@@ -1,4 +1,4 @@
-"""TRAPI Calidation Functions."""
+"""TRAPI Validation Functions."""
 import jsonschema
 
 from .util import load_schema
