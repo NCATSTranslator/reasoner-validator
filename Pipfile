@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+jsonschema = "==3.2.0"
+pyyaml = "==5.4"
+requests = "==2.25.1"
+
+[dev-packages]
+pytest = "==6.2.4"
+pylama = "*"
+pre-commit = "*"
+reasoner-validator = {editable = true, extras = ["dev"], path = "."}
+
+[requires]
+python_version = "3.8"

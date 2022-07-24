@@ -1,27 +1,44 @@
-"""Setup file for reasoner-validator package."""
 from setuptools import setup
 
-with open("README.md", "r") as stream:
-    long_description = stream.read()
+def read_production_requirements():
+    # read requirements from requirements.txt
+    prod_dependency_links = []
+    prod_requirements = []
+    with open('requirements.txt') as f:
+        parsed_requirements_file = f.read().splitlines()
+        # iterate through the file
+        for requirement in parsed_requirements_file:
+            # parse out index urls
+            if requirement.startswith("-i"):
+                prod_dependency_links.append(requirement)
+            # ignore commands and whitespace
+            elif not requirement.startswith('#') or not requirement.strip() == '':
+                prod_requirements.append(requirement)
+    return prod_requirements, prod_dependency_links
 
+def read_dev_requirements():
+    # read requirements from requirements.txt
+    dev_dependency_links = []
+    dev_requirements = []
+    with open('requirements-dev.txt') as f:
+        parsed_requirements_file = f.read().splitlines()
+        # iterate through the file
+        for requirement in parsed_requirements_file:
+            # parse out index urls
+            if requirement.startswith("-i"):
+                dev_dependency_links.append(requirement)
+            # ignore commands and whitespace
+            elif not requirement.startswith('#') or not requirement.strip() == '':
+                dev_requirements.append(requirement)
+    return dev_requirements, dev_dependency_links
+
+prod_requirements, prod_dependency_links = read_production_requirements()
+dev_requirements, dev_dependency_links = read_dev_requirements()
+# perform setup
 setup(
-    name="reasoner-validator",
-    version="2.1.0",
-    author="Patrick Wang",
-    author_email="patrick@covar.com",
-    url="https://github.com/NCATSTranslator/reasoner-validator",
-    description="Validation tools for Reasoner API",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    packages=["reasoner_validator"],
-    package_data={},
-    include_package_data=True,
-    install_requires=[
-        "jsonschema>=3.0,<4.0",
-        "pyyaml>=5.1,<6.0",
-        "requests>=2.0,<3.0",
-    ],
-    zip_safe=False,
-    license="MIT",
-    python_requires=">=3.6",
+    install_requires=prod_requirements,
+    dependency_links=prod_dependency_links,
+    extras_require={
+        'dev': dev_requirements,
+    },
 )

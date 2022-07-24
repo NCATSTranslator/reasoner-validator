@@ -1,7 +1,7 @@
 """Build validation functions."""
 import jsonschema
 from .util import load_schema
-
+from . __version__ import __version__
 
 def validate(instance, component, trapi_version=None):
     """Validate instance against schema.
