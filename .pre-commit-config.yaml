@@ -1,11 +1,4 @@
 repos:
-# -   repo: local
-#     hooks:
-#     - id: get_requirements.txt
-#       name: get_requirements.txt
-#       entry: echo $(pipenv requirements) > foo.txt
-#       language: system
-#       files: ^Pipfile(\.lock)?$
 -   repo: https://github.com/di2ag/chp_git_hooks
     rev: master
     hooks:
