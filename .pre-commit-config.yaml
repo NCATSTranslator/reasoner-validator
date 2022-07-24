@@ -1,5 +1,6 @@
 repos:
 -   repo: https://github.com/di2ag/chp_git_hooks
-    rev: master
+    rev: 0.2.0
     hooks:
     - id: pipenv-lock
+      
