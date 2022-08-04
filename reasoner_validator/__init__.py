@@ -27,7 +27,7 @@ def validate(instance, component, trapi_version=None):
 
     Examples
     --------
-    >>> validate({"message": {}}, "Query", "1.0.3")
+    >>> validate({"message": {}}, "Query", "1.3.0")
 
     """
     schema = load_schema(trapi_version)[component]
@@ -50,7 +50,7 @@ def is_valid_trapi_query(instance, trapi_version) -> str:
 
     Examples
     --------
-    >>> is_valid_trapi_query({"message": {}}, "1.0.3")
+    >>> is_valid_trapi_query({"message": {}}, "1.3.0")
     """
     try:
         validate(

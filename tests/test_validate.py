@@ -54,3 +54,15 @@ def test_nullable():
         "results": None,
     }
     validate(message, "Message", "1.0.3")
+
+
+def test_1_3_0_beta():
+    """Test validate()."""
+    validate({
+        "message": {},
+    }, "Query", "1.3.0-beta")
+    with pytest.raises(ValidationError):
+        validate({
+            "foo": {},
+            "bar": {},
+        }, "Query", "1.3.0-beta")

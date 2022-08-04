@@ -2,7 +2,7 @@
 import copy
 from functools import lru_cache
 import re
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 import requests
 import yaml
@@ -20,7 +20,11 @@ versions = [
     if release["tag_name"].startswith("v")
 ]
 
-semver_pattern = re.compile(r"(\d+)(?:\.(\d+)(?:\.(\d+))?)?")
+semver_pattern = re.compile(
+    r"^(?P<major>0|[1-9]\d*)(\.(?P<minor>0|[1-9]\d*)(\.(?P<patch>0|[1-9]\d*))?)?" +
+    r"(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?"
+    r"(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
+)
 
 
 class SemVerError(Exception):
@@ -35,16 +39,24 @@ class SemVer(NamedTuple):
     major: int
     minor: int
     patch: int
+    prerelease: Optional[str]
+    buildmetadata: Optional[str]
 
     @classmethod
     def from_string(cls, string):
         match = semver_pattern.fullmatch(string)
         if match is None:
             raise SemVerError(f"'{string}' is not a valid release version")
-        captured = match.groups()
-        if any(group is None for group in captured):
+        captured = match.groupdict()
+        if not all([group in captured for group in ['major', 'minor', 'patch']]):
             raise SemVerUnderspecified(f"'{string}' is missing minor and/or patch versions")
-        return cls(*[int(group) for group in captured])
+        try:
+            return cls(
+                *[int(captured[group]) for group in ['major', 'minor', 'patch']],
+                *[captured[group] for group in ['prerelease', 'buildmetadata']],
+            )
+        except TypeError:
+            raise SemVerUnderspecified(f"'{string}' is missing minor and/or patch versions")
     
     def __str__(self):
         """Generate string."""
@@ -53,35 +65,59 @@ class SemVer(NamedTuple):
             value += f".{self.minor}"
         if self.patch is not None:
             value += f".{self.patch}"
+        if self.prerelease is not None:
+            value += f"-{self.prerelease}"
+        if self.buildmetadata is not None:
+            value += f"+{self.buildmetadata}"
         return value
 
 
 latest_patch = dict()
 latest_minor = dict()
+latest_prerelease = dict()
 latest = dict()
 for version in versions:
     try:
-        major, minor, patch = SemVer.from_string(version)
+        major, minor, patch, prerelease, buildmetadata = SemVer.from_string(version)
     except SemVerError as err:
         print("\nWARNING:", err)
         continue
+
     latest_minor[major] = max(minor, latest_minor.get(major, -1))
     latest_patch[(major, minor)] = max(patch, latest_patch.get((major, minor), -1))
+    latest_prerelease[(major, minor, patch)] = prerelease \
+        if prerelease and not latest_prerelease.get((major, minor, patch), None) else None
+
     latest[f"{major}"] = str(SemVer(
         major,
         latest_minor[major],
         latest_patch[(major, latest_minor[major])],
+        latest_prerelease[(major, latest_minor[major], latest_patch[(major, latest_minor[major])])],
+        buildmetadata
     ))
     latest[f"{major}.{minor}"] = str(SemVer(
         major,
         minor,
         latest_patch[(major, minor)],
+        latest_prerelease[(major, minor, latest_patch[(major, minor)])],
+        buildmetadata
     ))
     latest[f"{major}.{minor}.{patch}"] = str(SemVer(
         major,
         minor,
         patch,
+        latest_prerelease[(major, minor, patch)],
+        buildmetadata
     ))
+    if prerelease:
+        latest[f"{major}.{minor}.{patch}-{prerelease}"] = str(SemVer(
+            major,
+            minor,
+            patch,
+            prerelease,
+            buildmetadata
+        ))
+    # TODO: we won't bother with buildmetadata for now
 
 
 def fix_nullable(schema) -> None:
