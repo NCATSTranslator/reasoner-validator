@@ -294,10 +294,17 @@ class BiolinkValidator:
 
         if self.graph_type is TrapiGraphType.Knowledge_Graph:
             if not attributes:
-                # TODO: not quite sure whether and how to fully validate the 'attributes' of an edge
                 # For now, we simply assume that *all* edges must have *some* attributes
                 # (at least, provenance related, but we don't explicitly test for them)
                 self.report_error(f"Edge '{edge_id}' has missing or empty attributes?")
+            else:
+                # TODO: attempt some deeper attribute validation here
+                for attribute in attributes:
+                    attribute_type_id = attribute['attribute_type_id']
+                    if not self.bmtk.is_association_slot(attribute_type_id):
+                        self.report_error(
+                            f"Edge '{edge_id}' attribute_type_id: '{str(attribute_type_id)}' is not an association_slot?"
+                        )
         else:
             # TODO: do we need to validate Query Graph 'constraints' slot contents here?
             pass
