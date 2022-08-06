@@ -33,12 +33,10 @@ def read_dev_requirements():
     return dev_requirements, dev_dependency_links
 
 prod_requirements, prod_dependency_links = read_production_requirements()
-dev_requirements, dev_dependency_links = read_dev_requirements()
+# dev_requirements, dev_dependency_links = read_dev_requirements()
 # perform setup
+
 setup(
     install_requires=prod_requirements,
-    dependency_links=prod_dependency_links,
-    extras_require={
-        'dev': dev_requirements,
-    },
+    dependency_links=prod_dependency_links
 )
