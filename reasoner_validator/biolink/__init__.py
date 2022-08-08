@@ -301,9 +301,12 @@ class BiolinkValidator:
                 # TODO: attempt some deeper attribute validation here
                 for attribute in attributes:
                     attribute_type_id = attribute['attribute_type_id']
+                    #
+                    # TODO: not sure if this should only be a Pytest 'warning' rather than an Pytest 'error'
+                    #
                     if not self.bmtk.is_association_slot(attribute_type_id):
                         self.report_error(
-                            f"Edge '{edge_id}' attribute_type_id: '{str(attribute_type_id)}' is not an association_slot?"
+                            f"Edge '{edge_id}' attribute_type_id: '{str(attribute_type_id)}' not an association_slot?"
                         )
         else:
             # TODO: do we need to validate Query Graph 'constraints' slot contents here?
