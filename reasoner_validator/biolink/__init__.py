@@ -77,7 +77,7 @@ class BiolinkValidator:
     """
     Wrapper class for Biolink Model validation.
     """
-    def __init__(self, graph_type: TrapiGraphType, biolink_version=None):
+    def __init__(self, graph_type: TrapiGraphType, biolink_version: Optional[str] = None):
         """
         BiolinkValidator constructor.
 

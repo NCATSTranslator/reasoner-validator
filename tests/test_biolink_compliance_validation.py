@@ -23,7 +23,7 @@ logger.setLevel("DEBUG")
 pp = PrettyPrinter(indent=4)
 
 
-LATEST_BIOLINK_MODEL = "2.2.16"  # "Latest" Biolink Model Version
+LATEST_BIOLINK_MODEL = "2.4.8"  # "Latest" Biolink Model Version
 
 
 def test_set_default_biolink_versioned_global_environment():
@@ -170,6 +170,17 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
         ),
         (   # Query 11 - Valid other model
             "1.8.2",
+            {
+                'subject_category': 'biolink:ChemicalSubstance',
+                'object_category': 'biolink:Protein',
+                'predicate': 'biolink:entity_negatively_regulates_entity',
+                'subject': 'DRUGBANK:DB00945',
+                'object': 'UniProtKB:P23219'
+            },
+            ""
+        ),
+        (   # Query 12 - Deprecated
+            LATEST_BIOLINK_MODEL,
             {
                 'subject_category': 'biolink:ChemicalSubstance',
                 'object_category': 'biolink:Protein',
