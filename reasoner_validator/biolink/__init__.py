@@ -77,7 +77,7 @@ class BiolinkValidator:
     """
     Wrapper class for Biolink Model validation.
     """
-    def __init__(self, graph_type: TrapiGraphType, biolink_version=None):
+    def __init__(self, graph_type: TrapiGraphType, biolink_version: Optional[str] = None):
         """
         BiolinkValidator constructor.
 
@@ -273,6 +273,8 @@ class BiolinkValidator:
                 self.report_error(f"Edge '{edge_id}' has a missing or empty predicate slot?")
             elif not self.bmtk.is_predicate(predicate):
                 self.report_error(f"'{predicate}' is an unknown Biolink Model predicate?")
+            elif not self.bmtk.is_translator_canonical_predicate(predicate):
+                self.report_error(f"predicate '{predicate}' is non-canonical?")
         else:  # is a Query Graph...
             if predicates is None:
                 # Query Graphs can have a missing or null predicates slot
@@ -286,7 +288,8 @@ class BiolinkValidator:
                 for predicate in predicates:
                     if not self.bmtk.is_predicate(predicate):
                         self.report_error(f"'{predicate}' is an unknown Biolink Model predicate?")
-
+                    elif not self.bmtk.is_translator_canonical_predicate(predicate):
+                        self.report_error(f"predicate '{predicate}' is non-canonical?")
         if not object_id:
             self.report_error(f"Edge '{edge_id}' has a missing or empty 'object' slot value?")
         elif object_id not in self.nodes:
@@ -348,6 +351,8 @@ class BiolinkValidator:
             err_msg = f"predicate "
             err_msg += f"'{predicate_curie}' is unknown?" if predicate_curie else "is missing?"
             self.report_error(err_msg)
+        elif not self.bmtk.is_translator_canonical_predicate(predicate_curie):
+            self.report_error(f"predicate '{predicate_curie}' is non-canonical?")
 
         if subject_curie:
             if subject_category_name:
