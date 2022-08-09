@@ -23,7 +23,7 @@ logger.setLevel("DEBUG")
 pp = PrettyPrinter(indent=4)
 
 
-LATEST_BIOLINK_MODEL = "2.2.16"  # "Latest" Biolink Model Version
+LATEST_BIOLINK_MODEL = "2.4.8"  # "Latest" Biolink Model Version
 
 
 def test_set_default_biolink_versioned_global_environment():
@@ -39,6 +39,20 @@ def test_set_specific_biolink_versioned_global_environment():
         biolink_version="1.8.2"
     )
     assert validator.get_biolink_model_version() == "1.8.2"
+
+
+def test_minimum_required_biolink_version():
+    # Setting Validator to BLM release 2.2.0
+    validator = BiolinkValidator(
+        graph_type=TrapiGraphType.Knowledge_Graph,
+        biolink_version="2.2.0"
+    )
+    # 2.2.0 >= 1.8.2 - True!
+    assert validator.minimum_required_biolink_version("1.8.2")
+    # 2.2.0 >= 2.2.0 - True!
+    assert validator.minimum_required_biolink_version("2.2.0")
+    # 2.2.0 >= 2.4.8 - False!
+    assert not validator.minimum_required_biolink_version("2.4.8")
 
 
 BLM_VERSION_PREFIX = "BLM Version 2.2.16 Error in "
