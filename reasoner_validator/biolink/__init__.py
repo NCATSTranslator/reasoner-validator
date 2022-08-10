@@ -65,6 +65,8 @@ def get_biolink_model_toolkit(biolink_version: Optional[str] = None) -> Toolkit:
         except (TypeError, HTTPError) as ex:
             logger.error(str(ex))
 
+    # 'latest' default Biolink Model
+    # version of given Toolkit returned
     return Toolkit()
 
 
