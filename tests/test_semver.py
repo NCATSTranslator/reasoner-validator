@@ -19,3 +19,40 @@ def test_pattern():
     assert str(SemVer.from_string("1.2.4+build.123")) == "1.2.4+build.123"
     with pytest.raises(SemVerUnderspecified):
         assert str(SemVer.from_string("1.2"))
+
+
+def test_semver_greater_or_equal_to():
+    zero_zero_one = SemVer.from_string("0.0.1")
+    one_zero_zero = SemVer.from_string("1.0.0")
+    one_one_zero = SemVer.from_string("1.1.0")
+    one_one_one = SemVer.from_string("1.1.1")
+    one_one_zero_r = SemVer.from_string("1.1.0-R1")
+    one_one_one_r = SemVer.from_string("1.1.1-R1")
+    one_one_zero_r_b = SemVer.from_string("1.1.0-R1+build123")
+    one_one_one_r_b = SemVer.from_string("1.1.1-R2+build456")
+
+    # Major release diff
+    assert one_zero_zero >= zero_zero_one
+    assert not zero_zero_one >= one_zero_zero
+
+    # Minor release diff
+    assert one_one_zero >= one_zero_zero
+    assert not one_zero_zero >= one_one_zero
+
+    # Patch release diff
+    assert one_one_one >= one_one_zero
+    assert not one_one_zero >= one_one_one
+
+    # Patch release diff ignores the prerelease ...
+    assert one_one_one_r >= one_one_zero_r
+    assert not one_one_zero_r >= one_one_one_r
+    assert one_one_one_r >= one_one_zero
+    assert not one_one_zero >= one_one_one_r
+
+    # ... and build subvariants
+    assert one_one_one_r_b >= one_one_zero_r_b
+    assert not one_one_zero_r_b >= one_one_one_r_b
+    assert one_one_one_r_b >= one_one_zero_r
+    assert not one_one_zero_r >= one_one_one_r_b
+    assert one_one_one_r_b >= one_one_zero
+    assert not one_one_zero >= one_one_one_r_b

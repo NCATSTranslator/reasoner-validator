@@ -57,7 +57,7 @@ class SemVer(NamedTuple):
             )
         except TypeError:
             raise SemVerUnderspecified(f"'{string}' is missing minor and/or patch versions")
-    
+
     def __str__(self):
         """Generate string."""
         value = f"{self.major}"
@@ -70,6 +70,36 @@ class SemVer(NamedTuple):
         if self.buildmetadata is not None:
             value += f"+{self.buildmetadata}"
         return value
+
+
+###########################################
+# Deferred SemVer method creation to work #
+# around SemVer forward definitions issue #
+###########################################
+def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
+    # Clearcut cases of 'major' release ordering
+    if obj.major > other.major:
+        return True
+    elif obj.major < other.major:
+        return False
+
+    # obj.major == other.major
+    # Check 'minor' level
+    elif obj.minor > other.minor:
+        return True
+    elif obj.minor < other.minor:
+        return False
+
+    # obj.minor == other.minor
+    # Check 'patch' level
+    elif obj.patch >= other.patch:
+        return True
+    else:
+        # obj.patch < other.patch
+        return False
+
+
+SemVer.__ge__ = _semver_ge_
 
 
 latest_patch = dict()

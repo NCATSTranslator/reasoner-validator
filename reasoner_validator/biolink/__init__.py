@@ -11,6 +11,8 @@ import logging
 
 from bmt import Toolkit
 
+from reasoner_validator.util import SemVer, SemVerError
+
 logger = logging.getLogger(__name__)
 
 pp = PrettyPrinter(indent=4)
@@ -63,6 +65,8 @@ def get_biolink_model_toolkit(biolink_version: Optional[str] = None) -> Toolkit:
         except (TypeError, HTTPError) as ex:
             logger.error(str(ex))
 
+    # 'latest' default Biolink Model
+    # version of given Toolkit returned
     return Toolkit()
 
 
@@ -106,6 +110,20 @@ class BiolinkValidator:
         :rtype biolink_version: str
         """
         return self.bmtk.get_model_version()
+
+    def minimum_required_biolink_version(self, version: str) -> bool:
+        """
+
+        :param version: simple 'major.minor.patch' Biolink Model SemVer
+        :return: True if current version is equal to, or newer than, a targeted 'minimum_version'
+        """
+        try:
+            current: SemVer = SemVer.from_string(self.bmtk.get_model_version())
+            target: SemVer = SemVer.from_string(version)
+            return current >= target
+        except SemVerError as sve:
+            logger.error(f"minimum_required_biolink_version() error: {str(sve)}")
+            return False
 
     def get_result(self) -> Tuple[str, Optional[List[str]]]:
         """
@@ -273,6 +291,9 @@ class BiolinkValidator:
                 self.report_error(f"Edge '{edge_id}' has a missing or empty predicate slot?")
             elif not self.bmtk.is_predicate(predicate):
                 self.report_error(f"'{predicate}' is an unknown Biolink Model predicate?")
+            elif self.minimum_required_biolink_version("2.2.0") and \
+                    not self.bmtk.is_translator_canonical_predicate(predicate):
+                self.report_error(f"predicate '{predicate}' is non-canonical?")
         else:  # is a Query Graph...
             if predicates is None:
                 # Query Graphs can have a missing or null predicates slot
@@ -286,7 +307,9 @@ class BiolinkValidator:
                 for predicate in predicates:
                     if not self.bmtk.is_predicate(predicate):
                         self.report_error(f"'{predicate}' is an unknown Biolink Model predicate?")
-
+                    elif self.minimum_required_biolink_version("2.2.0") and \
+                            not self.bmtk.is_translator_canonical_predicate(predicate):
+                        self.report_error(f"predicate '{predicate}' is non-canonical?")
         if not object_id:
             self.report_error(f"Edge '{edge_id}' has a missing or empty 'object' slot value?")
         elif object_id not in self.nodes:
@@ -358,6 +381,9 @@ class BiolinkValidator:
             err_msg = f"predicate "
             err_msg += f"'{predicate_curie}' is unknown?" if predicate_curie else "is missing?"
             self.report_error(err_msg)
+        elif self.minimum_required_biolink_version("2.2.0") and \
+                not self.bmtk.is_translator_canonical_predicate(predicate_curie):
+            self.report_error(f"predicate '{predicate_curie}' is non-canonical?")
 
         if subject_curie:
             if subject_category_name:
