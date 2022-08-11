@@ -134,53 +134,6 @@ class BiolinkValidator:
         """
         return self.bmtk.get_model_version(), list(self.errors)
 
-    def validate_category(self, category: str, identifier: str) -> Optional[str]:
-        """
-        Validate the category of node.
-
-        :param category: of the node
-        :type category: str
-        :param identifier: identifier of a concept node
-        :type identifier: str
-        :return: category name associated wth the category of the node
-        :rtype: Optional[str]
-        """
-        assert category, "Oops! Empty category identifier?"
-        #         if category:
-        #             biolink_class = self.bmtk.get_element(category)
-        #             if biolink_class:
-        #                 if biolink_class.deprecated:
-        #                     self.report_error(
-        #                         f"{context} Biolink class '{category}' is deprecated: {biolink_class.deprecated}?"
-        #                     )
-        #                     biolink_class = None
-        #                 elif not self.bmtk.is_category(category):
-        #                     self.report_error(f"{context} identifier '{category}' is not a valid Biolink category?")
-        #                     biolink_class = None
-        if self.bmtk.is_category(category):
-            return self.bmtk.get_element(category).name
-        elif self.bmtk.is_mixin(category):
-            # finding mixins in the categories is OK, but we otherwise ignore them in validation
-            logger.info(f"\nReported Biolink Model category '{category}' resolves to a Biolink Model 'mixin'?")
-        else:
-            element = self.bmtk.get_element(category)
-            if element:
-                # got something here... hopefully just an abstract class
-                # but not a regular category, so we also ignore it!
-                # TODO: how do we better detect abstract classes from the model?
-                #       How strict should our validation be here?
-                logger.info(
-                    f"\nReported Biolink Model category '{category}' " +
-                    "resolves to the (possibly abstract) " +
-                    f"Biolink Model element '{element.name}'?")
-            else:
-                # Error: a truly unrecognized category?
-                self.report_error(
-                    f"'{category}' for node '{identifier}' " +
-                    "is not a recognized Biolink Model category?"
-                )
-        return None
-
     def validate_graph_node(self, node_id, slots: Dict[str, Any]):
         """
         Validate slot properties (mainly 'categories') of a node.
@@ -203,10 +156,11 @@ class BiolinkValidator:
                     categories = slots["categories"]
                     node_prefix_mapped: bool = False
                     for category in categories:
-                        category_name: str = self.validate_category(category=category, identifier=node_id)
-                        if category_name:
+                        category: Optional[ClassDefinition] = \
+                            self.validate_category(context="Node", category=category, strict_validation=False)
+                        if category:
                             possible_subject_categories = self.bmtk.get_element_by_prefix(node_id)
-                            if category_name in possible_subject_categories:
+                            if category.name in possible_subject_categories:
                                 node_prefix_mapped = True
                     if not node_prefix_mapped:
                         self.report_error(
@@ -238,11 +192,12 @@ class BiolinkValidator:
                     id_prefix_mapped: Dict = {identifier: False for identifier in ids}
                     for category in categories:
                         # category validation may report an error internally
-                        category_name = self.validate_category(category=category, identifier=node_id)
-                        if category_name:
+                        category: Optional[ClassDefinition] = \
+                            self.validate_category(context="Node", category=category, strict_validation=False)
+                        if category:
                             for identifier in ids:  # may be empty list if not provided...
                                 possible_subject_categories = self.bmtk.get_element_by_prefix(identifier)
-                                if category_name in possible_subject_categories:
+                                if category.name in possible_subject_categories:
                                     id_prefix_mapped[identifier] = True
                     unmapped_ids = [
                         identifier for identifier in id_prefix_mapped.keys() if not id_prefix_mapped[identifier]
@@ -348,12 +303,19 @@ class BiolinkValidator:
             # TODO: do we need to validate Query Graph 'constraints' slot contents here?
             pass
 
-    def validate_input_node(
+    def validate_category(
             self,
             context: str,
             category: Optional[str],
-            identifier: Optional[str]
+            strict_validation: bool = True
     ) -> ClassDefinition:
+        """
+
+        :param context: str, label for context of concept whose category is being validated, i.e. 'Subject' or 'Object'
+        :param category: str, CURIE of putative concept 'category'
+        :param strict_validation: bool, True report mixin or abstract categories as errors; Ignore otherwise if False
+        :return:
+        """
         biolink_class: Optional[ClassDefinition] = None
         if category:
             biolink_class = self.bmtk.get_element(category)
@@ -364,13 +326,21 @@ class BiolinkValidator:
                     )
                     biolink_class = None
                 elif biolink_class.abstract:
+                    if strict_validation:
                         self.report_error(
                             f"{context} Biolink class '{category}' is abstract, not a concrete category?"
                         )
-                        biolink_class = None
+                    else:
+                        logger.info(f"{context} Biolink class '{category}' is abstract. Ignored in this context.")
+                    biolink_class = None
                 elif self.bmtk.is_mixin(category):
                     # A mixin cannot be instantiated so it should not be given as an input concept category
-                    self.report_error(f"{context} identifier '{category}' designates a mixin, not a concrete category?")
+                    if strict_validation:
+                        self.report_error(
+                            f"{context} identifier '{category}' designates a mixin, not a concrete category?"
+                        )
+                    else:
+                        logger.info(f"{context} Biolink class '{category}' is a 'mixin'. Ignored in this context.")
                     biolink_class = None
                 elif not self.bmtk.is_category(category):
                     self.report_error(f"{context} identifier '{category}' is not a valid Biolink category?")
@@ -380,16 +350,21 @@ class BiolinkValidator:
         else:
             self.report_error(f"{context} category identifier is missing?")
 
+        return biolink_class
+
+    def validate_input_node(self, context: str, category: Optional[str], identifier: Optional[str]):
+
+        biolink_class: Optional[ClassDefinition] = self.validate_category(f"Input {context}", category)
+
         if identifier:
             if biolink_class:
                 possible_subject_categories = self.bmtk.get_element_by_prefix(identifier)
                 if biolink_class.name not in possible_subject_categories:
-                    err_msg = f"Namespace prefix of '{context}' identifier '{identifier}' is unmapped to '{category}'?"
+                    err_msg = f"Namespace prefix of input {context} identifier '{identifier}' is unmapped to '{category}'?"
                     self.report_error(err_msg)
+            # else, we will have already reported an error in validate_category()
         else:
-            self.report_error(f"'{context}' identifier is missing?")
-
-        return biolink_class
+            self.report_error(f"Input {context} identifier is missing?")
 
     def check_biolink_model_compliance_of_input_edge(self, edge: Dict[str, str]) -> Tuple[str, Optional[List[str]]]:
         """
@@ -418,21 +393,21 @@ class BiolinkValidator:
         object_curie = edge['object'] if 'object' in edge else None
 
         self.validate_input_node(
-            context='Subject',
+            context='subject',
             category=subject_category_curie,
             identifier=subject_curie
         )
 
         if not (predicate_curie and self.bmtk.is_predicate(predicate_curie)):
-            err_msg = f"predicate "
+            err_msg = f"Input predicate "
             err_msg += f"'{predicate_curie}' is unknown?" if predicate_curie else "is missing?"
             self.report_error(err_msg)
         elif self.minimum_required_biolink_version("2.2.0") and \
                 not self.bmtk.is_translator_canonical_predicate(predicate_curie):
-            self.report_error(f"predicate '{predicate_curie}' is non-canonical?")
+            self.report_error(f"Input predicate '{predicate_curie}' is non-canonical?")
 
         self.validate_input_node(
-            context='Object',
+            context='object',
             category=object_category_curie,
             identifier=object_curie
         )
