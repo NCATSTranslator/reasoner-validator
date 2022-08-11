@@ -126,6 +126,21 @@ class BiolinkValidator:
             logger.error(f"minimum_required_biolink_version() error: {str(sve)}")
             return False
 
+    @staticmethod
+    def is_curie(s: str) -> bool:
+        """
+        Check if a given string is a CURIE.
+
+        :param s: str, string to be validated as a CURIE
+        :return: bool, whether or not the given string is a CURIE
+        """
+        # Method copied from kgx.prefix_manager.PrefixManager...
+        if isinstance(s, str):
+            m = re.match(r"^[^ <()>:]*:[^/ :]+$", s)
+            return bool(m)
+        else:
+            return False
+
     def get_result(self) -> Tuple[str, Optional[List[str]]]:
         """
         Get result of validation.
@@ -291,14 +306,26 @@ class BiolinkValidator:
             else:
                 # TODO: attempt some deeper attribute validation here
                 for attribute in attributes:
-                    attribute_type_id = attribute['attribute_type_id']
+                    attribute_type_id: str = attribute['attribute_type_id']
                     #
                     # TODO: not sure if this should only be a Pytest 'warning' rather than an Pytest 'error'
                     #
-                    if not self.bmtk.is_association_slot(attribute_type_id):
+                    if not self.is_curie(attribute_type_id):
                         self.report_error(
-                            f"Edge '{edge_id}' attribute_type_id: '{str(attribute_type_id)}' not an association_slot?"
+                            f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' is not a CURIE?"
                         )
+                    elif not self.bmtk.is_association_slot(attribute_type_id):
+                        self.report_error(
+                            f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' " +
+                            "not a biolink:association_slot?"
+                        )
+                        # if not a Biolink association_slot, at least, check if it is known to Biolink
+                        prefix = attribute_type_id.split(":", 1)[0]
+                        if not self.bmtk.get_element_by_prefix(prefix):
+                            self.report_error(
+                                f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' " +
+                                f"has a CURIE prefix namespace unknown to Biolink?"
+                            )
         else:
             # TODO: do we need to validate Query Graph 'constraints' slot contents here?
             pass

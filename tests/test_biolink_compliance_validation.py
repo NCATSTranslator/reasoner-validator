@@ -930,7 +930,36 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 14: edge has missing or empty attributes
+            # Query 14: 'attribute_type_id' is not a CURIE
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:Gene"
+                       ]
+                    },
+                    "PUBCHEM.COMPOUND:597": {
+                        "name": "cytosine",
+                        "categories": [
+                            "biolink:SmallMolecule"
+                        ],
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:interacts_with",
+                        "object": "PUBCHEM.COMPOUND:597",
+                        "attributes": [{"attribute_type_id": "not_a_curie"}]
+                    }
+                }
+            },
+            f"{KNOWLEDGE_GRAPH_PREFIX}: Edge 'NCBIGene:29974--biolink:interacts_with->PUBCHEM.COMPOUND:597' " +
+            "attribute_type_id 'not_a_curie' is not a CURIE?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 15: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -955,11 +984,40 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
                 }
             },
             f"{KNOWLEDGE_GRAPH_PREFIX}: Edge 'NCBIGene:29974--biolink:interacts_with->PUBCHEM.COMPOUND:597' " +
-            "attribute_type_id: 'biolink:synonym' not an association_slot?"
+            "attribute_type_id 'biolink:synonym' not a biolink:association_slot?"
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 15: attribute type id is not an association slot?
+            # Query 16: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:Gene"
+                       ]
+                    },
+                    "PUBCHEM.COMPOUND:597": {
+                        "name": "cytosine",
+                        "categories": [
+                            "biolink:SmallMolecule"
+                        ],
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:interacts_with",
+                        "object": "PUBCHEM.COMPOUND:597",
+                        "attributes": [{"attribute_type_id": "foo:bar"}]
+                    }
+                }
+            },
+            f"{KNOWLEDGE_GRAPH_PREFIX}: Edge 'NCBIGene:29974--biolink:interacts_with->PUBCHEM.COMPOUND:597' " +
+            "attribute_type_id 'foo:bar' has a CURIE prefix namespace unknown to Biolink?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 17: has missing or empty attributes?
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -988,7 +1046,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
         ),
         (
             "1.8.2",
-            # Query 16:  # An earlier Biolink Model Version won't recognize a category not found in its version
+            # Query 18:  # An earlier Biolink Model Version won't recognize a category not found in its version
             {
                 # Sample nodes
                 'nodes': {
