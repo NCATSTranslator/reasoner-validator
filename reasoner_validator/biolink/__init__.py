@@ -10,6 +10,7 @@ import re
 import logging
 
 from bmt import Toolkit
+from linkml_runtime.linkml_model import ClassDefinition
 
 from reasoner_validator.util import SemVer, SemVerError
 
@@ -335,6 +336,40 @@ class BiolinkValidator:
             # TODO: do we need to validate Query Graph 'constraints' slot contents here?
             pass
 
+    def validate_input_node(
+            self,
+            context: str,
+            category: Optional[str],
+            identifier: Optional[str]
+    ) -> ClassDefinition:
+        biolink_class: Optional[ClassDefinition] = None
+        if category:
+            biolink_class = self.bmtk.get_element(category)
+            if biolink_class:
+                if biolink_class.deprecated:
+                    self.report_error(
+                        f"{context} Biolink class '{category}' is deprecated: {biolink_class.deprecated}?"
+                    )
+                    biolink_class = None
+                elif not self.bmtk.is_category(category):
+                    self.report_error(f"{context} identifier '{category}' is not a valid Biolink category?")
+                    biolink_class = None
+            else:
+                self.report_error(f"{context} Biolink class '{category}' is unknown?")
+        else:
+            self.report_error(f"{context} category identifier is missing?")
+
+        if identifier:
+            if biolink_class:
+                possible_subject_categories = self.bmtk.get_element_by_prefix(identifier)
+                if biolink_class.name not in possible_subject_categories:
+                    err_msg = f"Namespace prefix of '{context}' identifier '{identifier}' is unmapped to '{category}'?"
+                    self.report_error(err_msg)
+        else:
+            self.report_error(f"'{context}' identifier is missing?")
+
+        return biolink_class
+
     def check_biolink_model_compliance_of_input_edge(self, edge: Dict[str, str]) -> Tuple[str, Optional[List[str]]]:
         """
         Validate a templated test input edge contents against the current BMT Biolink Model release.
@@ -361,21 +396,11 @@ class BiolinkValidator:
         subject_curie = edge['subject'] if 'subject' in edge else None
         object_curie = edge['object'] if 'object' in edge else None
 
-        if subject_category_curie and self.bmtk.is_category(subject_category_curie):
-            subject_category_name = self.bmtk.get_element(subject_category_curie).name
-        else:
-            err_msg = f"'subject' category "
-            err_msg += f"'{subject_category_curie}' is unknown?" if subject_category_curie else "is missing?"
-            self.report_error(err_msg)
-            subject_category_name = None
-
-        if object_category_curie and self.bmtk.is_category(object_category_curie):
-            object_category_name = self.bmtk.get_element(object_category_curie).name
-        else:
-            err_msg = f"'object' category "
-            err_msg += f"'{object_category_curie}' is unknown?" if object_category_curie else "is missing?"
-            self.report_error(err_msg)
-            object_category_name = None
+        self.validate_input_node(
+            context='Subject',
+            category=subject_category_curie,
+            identifier=subject_curie
+        )
 
         if not (predicate_curie and self.bmtk.is_predicate(predicate_curie)):
             err_msg = f"predicate "
@@ -385,27 +410,11 @@ class BiolinkValidator:
                 not self.bmtk.is_translator_canonical_predicate(predicate_curie):
             self.report_error(f"predicate '{predicate_curie}' is non-canonical?")
 
-        if subject_curie:
-            if subject_category_name:
-                possible_subject_categories = self.bmtk.get_element_by_prefix(subject_curie)
-                if subject_category_name not in possible_subject_categories:
-                    err_msg = f"namespace prefix of 'subject' identifier '{subject_curie}' " +\
-                              f"is unmapped to '{subject_category_curie}'?"
-                    self.report_error(err_msg)
-        else:
-            err_msg = "'subject' is missing?"
-            self.report_error(err_msg)
-
-        if object_curie:
-            if object_category_name:
-                possible_object_categories = self.bmtk.get_element_by_prefix(object_curie)
-                if object_category_name not in possible_object_categories:
-                    err_msg = f"namespace prefix of 'object' identifier '{object_curie}' " +\
-                              f"is unmapped to '{object_category_curie}'?"
-                    self.report_error(err_msg)
-        else:
-            err_msg = "'object' is missing?"
-            self.report_error(err_msg)
+        self.validate_input_node(
+            context='Object',
+            category=object_category_curie,
+            identifier=object_curie
+        )
 
         return self.get_result()
 

@@ -83,7 +83,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: 'subject' category is missing?"
+            f"{INPUT_EDGE_PREFIX}: Subject category identifier is missing?"
         ),
         (   # Query 2 - Invalid subject category
             LATEST_BIOLINK_MODEL,
@@ -94,7 +94,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: 'subject' category 'biolink:NotACategory' is unknown?"
+            f"{INPUT_EDGE_PREFIX}: Subject Biolink class 'biolink:NotACategory' is unknown?"
         ),
         (   # Query 3 - Missing object category
             LATEST_BIOLINK_MODEL,
@@ -104,7 +104,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: 'object' category is missing?"
+            f"{INPUT_EDGE_PREFIX}: Object category identifier is missing?"
         ),
         (   # Query 4 - Invalid object category
             LATEST_BIOLINK_MODEL,
@@ -115,7 +115,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: 'object' category 'biolink:NotACategory' is unknown?"
+            f"{INPUT_EDGE_PREFIX}: Object Biolink class 'biolink:NotACategory' is unknown?"
         ),
         (   # Query 5 - Missing predicate
             LATEST_BIOLINK_MODEL,
@@ -157,7 +157,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
                     'predicate': 'biolink:subclass_of',
                     'object': 'UBERON:0035769'
                 },
-                f"{INPUT_EDGE_PREFIX}: 'subject' is missing?"
+                f"{INPUT_EDGE_PREFIX}: 'Subject' identifier is missing?"
         ),
         (   # Query 9 - Unmappable subject namespace
             LATEST_BIOLINK_MODEL,
@@ -168,7 +168,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
                 'subject': 'FOO:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: namespace prefix of 'subject' identifier 'FOO:0005453' " +
+            f"{INPUT_EDGE_PREFIX}: Namespace prefix of 'Subject' identifier 'FOO:0005453' " +
             "is unmapped to 'biolink:AnatomicalEntity'?"
         ),
         (  # Query 10 - missing object
@@ -179,7 +179,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
                 'predicate': 'biolink:subclass_of',
                 'subject': "UBERON:0005453"
             },
-            f"{INPUT_EDGE_PREFIX}: 'object' is missing?"
+            f"{INPUT_EDGE_PREFIX}: 'Object' identifier is missing?"
         ),
         (   # Query 11 - Unmappable object namespace
             LATEST_BIOLINK_MODEL,
@@ -190,7 +190,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'BAR:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: namespace prefix of 'object' identifier 'BAR:0035769' " +
+            f"{INPUT_EDGE_PREFIX}: Namespace prefix of 'Object' identifier 'BAR:0035769' " +
             "is unmapped to 'biolink:AnatomicalEntity'?"
         ),
         (   # Query 12 - Valid other model
@@ -204,7 +204,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
             },
             ""
         ),
-        (   # Query 12 - Deprecated
+        (   # Query 13 - Deprecated
             LATEST_BIOLINK_MODEL,
             {
                 'subject_category': 'biolink:ChemicalSubstance',
@@ -213,7 +213,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
                 'subject': 'DRUGBANK:DB00945',
                 'object': 'UniProtKB:P23219'
             },
-            ""
+            f"{INPUT_EDGE_PREFIX}: Subject Biolink class 'biolink:ChemicalSubstance' is deprecated: "
+            "This class is deprecated in favor of 'small molecule.'?"
         )
     ]
 )
