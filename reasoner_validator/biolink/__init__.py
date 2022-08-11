@@ -363,6 +363,11 @@ class BiolinkValidator:
                         f"{context} Biolink class '{category}' is deprecated: {biolink_class.deprecated}?"
                     )
                     biolink_class = None
+                elif biolink_class.abstract:
+                        self.report_error(
+                            f"{context} Biolink class '{category}' is abstract, not a concrete category?"
+                        )
+                        biolink_class = None
                 elif self.bmtk.is_mixin(category):
                     # A mixin cannot be instantiated so it should not be given as an input concept category
                     self.report_error(f"{context} identifier '{category}' designates a mixin, not a concrete category?")

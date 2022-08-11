@@ -227,6 +227,18 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
             },
             f"{INPUT_EDGE_PREFIX}: Subject identifier 'biolink:GeneOrGeneProduct' " +
             f"designates a mixin, not a concrete category?"
+        ),
+        (   # Query 15 - input category should not be abstract?
+            LATEST_BIOLINK_MODEL,
+            {
+                'subject_category': 'biolink:AdministrativeEntity',
+                'object_category': 'biolink:Agent',
+                'predicate': 'biolink:related_to',
+                'subject': 'isbn:1234',
+                'object': 'ORCID:1234'
+            },
+            f"{INPUT_EDGE_PREFIX}: Subject Biolink class " + \
+            "'biolink:AdministrativeEntity' is abstract, not a concrete category?"
         )
     ]
 )
