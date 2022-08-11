@@ -950,6 +950,35 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
+                        "attributes": [{"attribute_type_id": "biolink:synonym"}]
+                    }
+                }
+            },
+            f"{KNOWLEDGE_GRAPH_PREFIX}: Edge 'NCBIGene:29974--biolink:interacts_with->PUBCHEM.COMPOUND:597' " +
+            "attribute_type_id: 'biolink:synonym' not an association_slot?"
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 15: attribute type id is not an association slot?
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:Gene"
+                       ]
+                    },
+                    "PUBCHEM.COMPOUND:597": {
+                        "name": "cytosine",
+                        "categories": [
+                            "biolink:SmallMolecule"
+                        ],
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:interacts_with",
+                        "object": "PUBCHEM.COMPOUND:597",
                         # "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
                 }
@@ -959,7 +988,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
         ),
         (
             "1.8.2",
-            # Query 15:  # An earlier Biolink Model Version won't recognize a category not found in its version
+            # Query 16:  # An earlier Biolink Model Version won't recognize a category not found in its version
             {
                 # Sample nodes
                 'nodes': {
