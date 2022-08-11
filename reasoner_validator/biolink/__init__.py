@@ -134,17 +134,29 @@ class BiolinkValidator:
         """
         return self.bmtk.get_model_version(), list(self.errors)
 
-    def validate_category(self, node_id: str, category: str) -> Optional[str]:
+    def validate_category(self, category: str, identifier: str) -> Optional[str]:
         """
         Validate the category of node.
 
-        :param node_id: identifier of a concept node
-        :type node_id: str
         :param category: of the node
         :type category: str
+        :param identifier: identifier of a concept node
+        :type identifier: str
         :return: category name associated wth the category of the node
         :rtype: Optional[str]
         """
+        assert category, "Oops! Empty category identifier?"
+        #         if category:
+        #             biolink_class = self.bmtk.get_element(category)
+        #             if biolink_class:
+        #                 if biolink_class.deprecated:
+        #                     self.report_error(
+        #                         f"{context} Biolink class '{category}' is deprecated: {biolink_class.deprecated}?"
+        #                     )
+        #                     biolink_class = None
+        #                 elif not self.bmtk.is_category(category):
+        #                     self.report_error(f"{context} identifier '{category}' is not a valid Biolink category?")
+        #                     biolink_class = None
         if self.bmtk.is_category(category):
             return self.bmtk.get_element(category).name
         elif self.bmtk.is_mixin(category):
@@ -164,12 +176,12 @@ class BiolinkValidator:
             else:
                 # Error: a truly unrecognized category?
                 self.report_error(
-                    f"'{category}' for node '{node_id}' " +
+                    f"'{category}' for node '{identifier}' " +
                     "is not a recognized Biolink Model category?"
                 )
         return None
 
-    def validate_node(self, node_id, slots: Dict[str, Any]):
+    def validate_graph_node(self, node_id, slots: Dict[str, Any]):
         """
         Validate slot properties (mainly 'categories') of a node.
 
@@ -191,7 +203,7 @@ class BiolinkValidator:
                     categories = slots["categories"]
                     node_prefix_mapped: bool = False
                     for category in categories:
-                        category_name: str = self.validate_category(node_id, category)
+                        category_name: str = self.validate_category(category=category, identifier=node_id)
                         if category_name:
                             possible_subject_categories = self.bmtk.get_element_by_prefix(node_id)
                             if category_name in possible_subject_categories:
@@ -226,7 +238,7 @@ class BiolinkValidator:
                     id_prefix_mapped: Dict = {identifier: False for identifier in ids}
                     for category in categories:
                         # category validation may report an error internally
-                        category_name = self.validate_category(node_id, category)
+                        category_name = self.validate_category(category=category, identifier=node_id)
                         if category_name:
                             for identifier in ids:  # may be empty list if not provided...
                                 possible_subject_categories = self.bmtk.get_element_by_prefix(identifier)
@@ -254,7 +266,7 @@ class BiolinkValidator:
     def set_nodes(self, nodes: Set):
         self.nodes.update(nodes)
 
-    def validate_edge(self, edge: Dict):
+    def validate_graph_edge(self, edge: Dict):
         """
         Validate slot properties of a relationship ('biolink:Association') edge.
 
@@ -350,6 +362,10 @@ class BiolinkValidator:
                     self.report_error(
                         f"{context} Biolink class '{category}' is deprecated: {biolink_class.deprecated}?"
                     )
+                    biolink_class = None
+                elif self.bmtk.is_mixin(category):
+                    # A mixin cannot be instantiated so it should not be given as an input concept category
+                    self.report_error(f"{context} identifier '{category}' designates a mixin, not a concrete category?")
                     biolink_class = None
                 elif not self.bmtk.is_category(category):
                     self.report_error(f"{context} identifier '{category}' is not a valid Biolink category?")
@@ -454,7 +470,7 @@ class BiolinkValidator:
         if nodes:
             for node_id, details in nodes.items():
 
-                self.validate_node(node_id, details)
+                self.validate_graph_node(node_id, details)
 
                 nodes_seen += 1
                 if nodes_seen >= _MAX_TEST_NODES:
@@ -468,7 +484,7 @@ class BiolinkValidator:
                 for edge in edges.values():
 
                     # print(f"{str(edge)}", flush=True)
-                    self.validate_edge(edge)
+                    self.validate_graph_edge(edge)
 
                     edges_seen += 1
                     if edges_seen >= _MAX_TEST_EDGES:

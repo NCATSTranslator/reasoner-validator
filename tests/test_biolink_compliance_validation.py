@@ -215,6 +215,18 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
             },
             f"{INPUT_EDGE_PREFIX}: Subject Biolink class 'biolink:ChemicalSubstance' is deprecated: "
             "This class is deprecated in favor of 'small molecule.'?"
+        ),
+        (   # Query 14 - input category cannot be a mixin
+            LATEST_BIOLINK_MODEL,
+            {
+                'subject_category': 'biolink:GeneOrGeneProduct',
+                'object_category': 'biolink:Protein',
+                'predicate': 'biolink:related_to',
+                'subject': 'HGNC:9604',
+                'object': 'UniProtKB:P23219'
+            },
+            f"{INPUT_EDGE_PREFIX}: Subject identifier 'biolink:GeneOrGeneProduct' " +
+            f"designates a mixin, not a concrete category?"
         )
     ]
 )
