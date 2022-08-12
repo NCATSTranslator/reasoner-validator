@@ -5,7 +5,7 @@ with open("README.md", "r") as stream:
     long_description = stream.read()
 
 NAME = 'reasoner-validator'
-VERSION = '2.2.8'
+VERSION = '2.2.9'
 DESCRIPTION = 'Validation tools for Reasoner API'
 URL = 'https://github.com/NCATSTranslator/reasoner-validator'
 
