@@ -47,7 +47,7 @@ async def validate(query: Query):
         results.append(error)
 
     # Verify that the response has a Query Graph
-    if not len(query.message['query_graph']):
+    if not query.message['query_graph']:
         # An empty Query Graph is Not considered an absolute error, but we issue a warning
         results.append(f"TRAPI Message Warning: empty TRAPI Message Query Graph?")
     else:
@@ -61,7 +61,7 @@ async def validate(query: Query):
             results.extend(errors)
 
     # Verify that the response had a non-empty Knowledge Graph
-    if not len(query.message['knowledge_graph']) > 0:
+    if not query.message['knowledge_graph']:
         # An empty Knowledge Graph is Not considered an absolute error, but we issue a warning
         results.append(f"TRAPI Message Warning: empty TRAPI Message Knowledge Graph?")
     else:
@@ -75,7 +75,7 @@ async def validate(query: Query):
             results.extend(errors)
 
     # Verify that the response had some Result
-    if not len(query.message['results']):
+    if not query.message['results']:
         # An empty Result is Not considered an absolute error, but we issue a warning
         results.append(f"TRAPI Message Warning: empty TRAPI Message Result?")
 
