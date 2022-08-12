@@ -243,7 +243,7 @@ class BiolinkValidator:
         :param edge: dictionary of slot properties of the edge.
         :type edge: dict[str, str]
         """
-        logger.debug(edge)
+        # logger.debug(edge)
 
         # edge data fields to be validated...
         subject_id = edge['subject'] if 'subject' in edge else None
@@ -258,7 +258,7 @@ class BiolinkValidator:
             edge_label = str(predicates)
 
         object_id = edge['object'] if 'object' in edge else None
-        attributes = edge['attributes'] if 'attributes' in edge else None
+        attributes: List = edge['attributes'] if 'attributes' in edge else None
 
         edge_id = f"{str(subject_id)}--{edge_label}->{str(object_id)}"
 
@@ -306,7 +306,18 @@ class BiolinkValidator:
             else:
                 # TODO: attempt some deeper attribute validation here
                 for attribute in attributes:
-                    attribute_type_id: str = attribute['attribute_type_id']
+                    attribute_type_id: Optional[str] = attribute.get('attribute_type_id', None)
+                    if not attribute_type_id:
+                        self.report_error(
+                            f"Edge '{edge_id}' attribute '{str(attribute)}' missing its 'attribute_type_id'?"
+                        )
+                        continue
+                    value: Optional[str] = attribute.get('value', None)
+                    if not value:
+                        self.report_error(
+                            f"Edge '{edge_id}' attribute '{str(attribute)}' missing its 'value'?"
+                        )
+                        continue
                     #
                     # TODO: not sure if this should only be a Pytest 'warning' rather than an Pytest 'error'
                     #
@@ -451,6 +462,9 @@ class BiolinkValidator:
         :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
         :rtype: Tuple[str, Optional[List[str]]]
         """
+        if not graph:
+            self.report_error(f"Empty graph?")
+
         # Access graph data fields to be validated
         nodes: Optional[Dict]
         if 'nodes' in graph and graph['nodes']:
