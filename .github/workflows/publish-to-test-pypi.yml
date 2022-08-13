@@ -24,7 +24,7 @@ jobs:
         setup.py
         sdist bdist_wheel
     - name: Publish distribution 📦 to Test PyPI
-      if: startsWith(github.ref, 'refs/tags')
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.test_pypi_password }}
@@ -32,7 +32,7 @@ jobs:
         skip_existing: true
         verbose: true
     - name: Publish distribution 📦 to PyPI
-      if: startsWith(github.ref, 'refs/tags')
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.pypi_password }}
