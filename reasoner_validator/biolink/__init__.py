@@ -332,7 +332,7 @@ class BiolinkValidator:
                         )
                         # if not a Biolink association_slot, at least, check if it is known to Biolink
                         prefix = attribute_type_id.split(":", 1)[0]
-                        if not self.bmtk.get_element_by_prefix(prefix):
+                        if not (prefix == 'biolink' or self.bmtk.get_element_by_prefix(prefix)):
                             self.report_error(
                                 f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' " +
                                 f"has a CURIE prefix namespace unknown to Biolink?"

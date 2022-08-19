@@ -1047,7 +1047,35 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 18: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
+            # Query 18: 'attribute_type_id' has a 'biolink' CURIE prefix and is an association_slot so it should pass
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:Gene"
+                       ]
+                    },
+                    "PUBCHEM.COMPOUND:597": {
+                        "name": "cytosine",
+                        "categories": [
+                            "biolink:SmallMolecule"
+                        ],
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:interacts_with",
+                        "object": "PUBCHEM.COMPOUND:597",
+                        "attributes": [{"attribute_type_id": "biolink:negated", "value": "some value"}]
+                    }
+                }
+            },
+            ""  # this should recognize the 'attribute_type_id' as a Biolink CURIE
+        ),
+        (
+            LATEST_BIOLINK_MODEL,
+            # Query 19: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -1076,7 +1104,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 19: has missing or empty attributes?
+            # Query 20: has missing or empty attributes?
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -1105,7 +1133,7 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
         ),
         (
             "1.8.2",
-            # Query 20:  # An earlier Biolink Model Version won't recognize a category not found in its version
+            # Query 21:  # An earlier Biolink Model Version won't recognize a category not found in its version
             {
                 # Sample nodes
                 'nodes': {
