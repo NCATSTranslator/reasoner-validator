@@ -25,7 +25,7 @@ _MAX_TEST_NODES = 1000
 _MAX_TEST_EDGES = 100
 
 # Biolink Release number should be a well-formed Semantic Version
-semver_pattern = re.compile(r"^\d+\.\d+\.\d+$")
+semver_pattern = re.compile(r"^v?\d+\.\d+\.\d+$")
 
 
 def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional[str]:
@@ -140,6 +140,27 @@ class BiolinkValidator:
             return bool(m)
         else:
             return False
+
+    def get_reference(self, curie: str) -> Optional[str]:
+        """
+        Get the object_id reference of a given CURIE.
+
+        Parameters
+        ----------
+        curie: str
+            The CURIE
+
+        Returns
+        -------
+        Optional[str]
+            The reference of a CURIE
+
+        """
+        # Method adapted from kgx.prefix_manager.PrefixManager...
+        reference: Optional[str] = None
+        if self.is_curie(curie):
+            reference = curie.split(":", 1)[1]
+        return reference
 
     def get_result(self) -> Tuple[str, Optional[List[str]]]:
         """
