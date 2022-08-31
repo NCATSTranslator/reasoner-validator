@@ -1,4 +1,5 @@
 """Utilities."""
+from os import environ
 import copy
 from functools import lru_cache
 import re
@@ -12,7 +13,11 @@ except ImportError:
     from yaml import Loader
 
 
-response = requests.get("https://api.github.com/repos/NCATSTranslator/ReasonerAPI/releases")
+GIT_ORG = environ.setdefault('GIT_ORGANIZATION', "NCATSTranslator")
+GIT_REPO = environ.setdefault('GIT_REPOSITORY', "ReasonerAPI")
+
+
+response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/releases")
 releases = response.json()
 versions = [
     release["tag_name"][1:]
@@ -190,7 +195,7 @@ def load_schema(trapi_version: str):
 def _load_schema(trapi_version: str):
     """Load schema from GitHub."""
     result = requests.get(
-        f"https://raw.githubusercontent.com/NCATSTranslator/ReasonerAPI/v{trapi_version}/TranslatorReasonerAPI.yaml"
+        f"https://raw.githubusercontent.com/{GIT_ORG}/{GIT_REPO}/v{trapi_version}/TranslatorReasonerAPI.yaml"
     )
     spec = yaml.load(result.text, Loader=Loader)
     components = spec["components"]["schemas"]
