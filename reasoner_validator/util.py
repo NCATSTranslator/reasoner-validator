@@ -12,7 +12,8 @@ try:
 except ImportError:
     from yaml import Loader
 
-
+# Undocumented possible local environmental variable
+# override of the ReasonerAPI schema access endpoint
 GIT_ORG = environ.setdefault('GIT_ORGANIZATION', "NCATSTranslator")
 GIT_REPO = environ.setdefault('GIT_REPOSITORY', "ReasonerAPI")
 

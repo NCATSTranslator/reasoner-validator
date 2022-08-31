@@ -4,6 +4,7 @@ import pytest
 from jsonschema.exceptions import ValidationError
 
 from reasoner_validator import validate
+from reasoner_validator.util import latest
 
 
 def test_query():
@@ -131,9 +132,13 @@ def test_120_results_component_validation():
         }, "Query", "1.2.0")
 
 
+# TODO: this test will fail until a fresh release of the
+#       TRAPI 1.3 fixes a NodeBindings.query_id spec bug
 def test_1_3_0_results_component_validation():
     """Test Test 1.3.0 Message.Results component in validate()."""
-    validate(sample_message_result, "Message", "1.3.0-beta3")
+    full_version: str = latest.get("1.3")
+    print(f"test_1_3_0_results_component_validation() TRAPI version is '{full_version}'")
+    validate(sample_message_result, "Message", full_version)
     with pytest.raises(ValidationError):
         validate({
             "foo": {},
