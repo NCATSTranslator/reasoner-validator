@@ -1,12 +1,41 @@
 """Test validation."""
+from sys import stderr
 import pytest
 
 from jsonschema.exceptions import ValidationError
 
 from reasoner_validator import validate
-from reasoner_validator.util import latest
+from reasoner_validator.util import openapi_to_jsonschema
 
 TEST_VERSIONS = "1", "1.2", "1.2.0", "1.3", "1.3.0"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+            {
+                'allOf':
+                    [{'$ref': '#/components/schemas/CURIE'}],
+                'description': 'something',
+                'nullable': True
+            },
+            {
+                'oneOf':
+                    [{'$ref': '#/components/schemas/CURIE'}],
+                'description': 'something',
+                'nullable': True
+            },
+            {
+                'description': 'something',
+                'nullable': True,
+                '$ref': '#/components/schemas/CURIE'
+            }
+    ]
+)
+def test_openapi_to_jsonschema(query):
+    print(f"\nEntering openapi_to_jsonschema(schema: {str(query)})", file=stderr)
+    openapi_to_jsonschema(query)
+    print(f"\nExiting openapi_to_jsonschema(schema: {str(query)})", file=stderr)
 
 
 @pytest.mark.parametrize("query", TEST_VERSIONS)

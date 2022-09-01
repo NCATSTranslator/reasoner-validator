@@ -175,8 +175,12 @@ def fix_nullable(schema) -> None:
 
 def openapi_to_jsonschema(schema) -> None:
     """Convert OpenAPI schema to JSON schema."""
+    if "allOf" in schema:
+        # September 1, 2022 hacky patch to rewrite 'allOf' tagged subschemata to 'oneOf'
+        # TODO: TRAPI needs to change this in release 1.4
+        schema["oneOf"] = schema.pop("allOf")
     if schema.get("type", None) == "object":
-        for prop in schema.get("properties", dict()).values():
+        for tag, prop in schema.get("properties", dict()).items():
             openapi_to_jsonschema(prop)
     if schema.get("type", None) == "array":
         openapi_to_jsonschema(schema.get("items", dict()))
