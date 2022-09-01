@@ -45,8 +45,8 @@ class SemVer(NamedTuple):
     major: int
     minor: int
     patch: int
-    prerelease: Optional[str]
-    buildmetadata: Optional[str]
+    prerelease: Optional[str] = None
+    buildmetadata: Optional[str] = None
 
     @classmethod
     def from_string(cls, string):
@@ -128,22 +128,16 @@ for version in versions:
         major,
         latest_minor[major],
         latest_patch[(major, latest_minor[major])],
-        latest_prerelease[(major, latest_minor[major], latest_patch[(major, latest_minor[major])])],
-        buildmetadata
     ))
     latest[f"{major}.{minor}"] = str(SemVer(
         major,
         minor,
         latest_patch[(major, minor)],
-        latest_prerelease[(major, minor, latest_patch[(major, minor)])],
-        buildmetadata
     ))
     latest[f"{major}.{minor}.{patch}"] = str(SemVer(
         major,
         minor,
         patch,
-        latest_prerelease[(major, minor, patch)],
-        buildmetadata
     ))
     if prerelease:
         latest[f"{major}.{minor}.{patch}-{prerelease}"] = str(SemVer(
