@@ -12,6 +12,7 @@ from bmt import Toolkit
 from reasoner_validator.biolink import (
     TrapiGraphType,
     BiolinkValidator,
+    get_biolink_model_toolkit,
     check_biolink_model_compliance_of_input_edge,
     check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph
@@ -55,25 +56,20 @@ def test_minimum_required_biolink_version():
     assert not validator.minimum_required_biolink_version("2.4.8")
 
 
-def get_toolkit(biolink_version: str):
-    schema = f"https://raw.githubusercontent.com/biolink/biolink-model/{biolink_version}/biolink-model.yaml"
-    return Toolkit(schema)
-
-
 def test_inverse_predicate():
-    tk: Toolkit = get_toolkit("2.2.0")
+    tk: Toolkit = get_biolink_model_toolkit("2.2.0")
     predicate = tk.get_element("biolink:related_to")
     assert predicate['symmetric']
     predicate = tk.get_element("biolink:active_in")
     assert not predicate['symmetric']
     assert not tk.get_inverse(predicate.name)
-    tk: Toolkit = get_toolkit("v2.4.8")
+    tk: Toolkit = get_biolink_model_toolkit("v2.4.8")
     predicate = tk.get_element("biolink:active_in")
     assert not predicate['symmetric']
     assert tk.get_inverse(predicate.name) == "has active component"
 
 
-BLM_VERSION_PREFIX = "BLM Version 2.2.16 Error in "
+BLM_VERSION_PREFIX = f"BLM Version {LATEST_BIOLINK_MODEL} Error in "
 INPUT_EDGE_PREFIX = f"{BLM_VERSION_PREFIX}Input Edge"
 QUERY_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Query Graph"
 KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
