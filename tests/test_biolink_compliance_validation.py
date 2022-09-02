@@ -1,6 +1,7 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
+from sys import stderr
 from typing import Tuple
 from pprint import PrettyPrinter
 import logging
@@ -31,7 +32,10 @@ LATEST_BIOLINK_MODEL = "2.4.8"
 def test_set_default_biolink_versioned_global_environment():
     validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
     model_version = validator.get_biolink_model_version()
-    print(f"\ntest_set_default_global_environment(): Biolink Model version is: '{str(model_version)}'", file=stderr)
+    print(
+        f"\ntest_set_default_global_environment(): Biolink Model version is: '{str(model_version)}'",
+        file=stderr, flush=True
+    )
     assert model_version == Toolkit().get_model_version()
 
 
@@ -53,8 +57,8 @@ def test_minimum_required_biolink_version():
     assert validator.minimum_required_biolink_version("1.8.2")
     # 2.2.0 >= 2.2.0 - True!
     assert validator.minimum_required_biolink_version("2.2.0")
-    # 2.2.0 >= v3.0.1 - False!
-    assert not validator.minimum_required_biolink_version("v3.0.1")
+    # 2.2.0 >= 2.4.8 - False!
+    assert not validator.minimum_required_biolink_version("2.4.8")
 
 
 def test_inverse_predicate():
