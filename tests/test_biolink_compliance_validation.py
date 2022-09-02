@@ -5,12 +5,13 @@ from typing import Tuple
 from pprint import PrettyPrinter
 import logging
 import pytest
-
+from sys import stderr
 from bmt import Toolkit
 
 from reasoner_validator.biolink import (
     TRAPIGraphType,
     BiolinkValidator,
+    get_biolink_model_toolkit,
     check_biolink_model_compliance_of_input_edge,
     check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph
@@ -21,14 +22,16 @@ logger.setLevel("DEBUG")
 
 pp = PrettyPrinter(indent=4)
 
-
-LATEST_BIOLINK_MODEL = "2.4.8"  # "Latest" Biolink Model Version
+# "Latest" Biolink Model Version (in the BM 2 series)
+# Note: different BMT versions may have different defaults, e.g. 2.2.16 in BMT 0.8.4
+# TODO: updating this to 3.0.1 will break a few things in the test, e.g. the test for non-canonical
+LATEST_BIOLINK_MODEL = "2.4.8"
 
 
 def test_set_default_biolink_versioned_global_environment():
     validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
     model_version = validator.get_biolink_model_version()
-    logger.debug(f"\ntest_set_default_global_environment(): Biolink Model version is: '{str(model_version)}'")
+    print(f"\ntest_set_default_global_environment(): Biolink Model version is: '{str(model_version)}'", file=stderr)
     assert model_version == Toolkit().get_model_version()
 
 
@@ -50,23 +53,18 @@ def test_minimum_required_biolink_version():
     assert validator.minimum_required_biolink_version("1.8.2")
     # 2.2.0 >= 2.2.0 - True!
     assert validator.minimum_required_biolink_version("2.2.0")
-    # 2.2.0 >= 2.4.8 - False!
-    assert not validator.minimum_required_biolink_version("2.4.8")
-
-
-def get_toolkit(biolink_version: str):
-    schema = f"https://raw.githubusercontent.com/biolink/biolink-model/{biolink_version}/biolink-model.yaml"
-    return Toolkit(schema)
+    # 2.2.0 >= v3.0.1 - False!
+    assert not validator.minimum_required_biolink_version("v3.0.1")
 
 
 def test_inverse_predicate():
-    tk: Toolkit = get_toolkit("2.2.0")
+    tk: Toolkit = get_biolink_model_toolkit("2.2.0")
     predicate = tk.get_element("biolink:related_to")
     assert predicate['symmetric']
     predicate = tk.get_element("biolink:active_in")
     assert not predicate['symmetric']
     assert not tk.get_inverse(predicate.name)
-    tk: Toolkit = get_toolkit("v2.4.8")
+    tk: Toolkit = get_biolink_model_toolkit("v2.4.8")
     predicate = tk.get_element("biolink:active_in")
     assert not predicate['symmetric']
     assert tk.get_inverse(predicate.name) == "has active component"
@@ -82,7 +80,7 @@ def check_messages(messages, query):
         assert not (messages['errors'] or messages['warnings']), f"Unexpected messages seen {messages}"
 
 
-BLM_VERSION_SUFFIX = "against Biolink Model 2.2.16"
+BLM_VERSION_SUFFIX = f"against Biolink Model {LATEST_BIOLINK_MODEL}"
 INPUT_EDGE_PREFIX = f"Validating Input Edge {BLM_VERSION_SUFFIX}"
 QUERY_GRAPH_PREFIX = f"Validating Query Graph {BLM_VERSION_SUFFIX}"
 KNOWLEDGE_GRAPH_PREFIX = f"Validating Knowledge Graph {BLM_VERSION_SUFFIX}"
@@ -271,10 +269,6 @@ KNOWLEDGE_GRAPH_PREFIX = f"Validating Knowledge Graph {BLM_VERSION_SUFFIX}"
 )
 def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
     model_version, messages = check_biolink_model_compliance_of_input_edge(edge=query[1], biolink_version=query[0])
-    # print(
-    #     f"Validating Input Edge against Biolink Model {model_version}:\n{pp.pformat(messages['errors'])}\n",
-    #     file=sys.stderr, flush=True
-    # )
     check_messages(messages, query[2])
 
 
@@ -632,10 +626,6 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
 )
 def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
     model_version, messages = check_biolink_model_compliance_of_query_graph(graph=query[1], biolink_version=query[0])
-    # print(
-    #     f"Validating Input Edge against Biolink Model {model_version}:\n{pp.pformat(messages)}\n",
-    #     file=sys.stderr, flush=True
-    # )
     check_messages(messages, query[2])
 
 
@@ -1233,8 +1223,4 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
 def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
     model_version, messages = \
         check_biolink_model_compliance_of_knowledge_graph(graph=query[1], biolink_version=query[0])
-    # print(
-    #     f"Validating Input Edge against Biolink Model {model_version}:\n{pp.pformat(messages)}\n",
-    #     file=sys.stderr, flush=True
-    # )
     check_messages(messages, query[2])

@@ -49,10 +49,23 @@ class SemVer(NamedTuple):
     buildmetadata: Optional[str] = None
 
     @classmethod
-    def from_string(cls, string):
+    def from_string(cls, string: str, ignore_prefix: Optional[str] = None):
+        """
+        Initializes a SemVer from a string.
+
+        :param string: str, string encoding the SemVer.
+        :param ignore_prefix: Optional[str], if set, gives a prefix of the SemVer string to be ignored before validating
+                              the SemVer string value, e.g. a Git Release 'v' character (i.e. v1.2.3); Default: None.
+        :return:
+        """
+        if ignore_prefix:
+            string = string.replace(ignore_prefix, "")
+
         match = semver_pattern.fullmatch(string)
+
         if match is None:
             raise SemVerError(f"'{string}' is not a valid release version")
+
         captured = match.groupdict()
         if not all([group in captured for group in ['major', 'minor', 'patch']]):
             raise SemVerUnderspecified(f"'{string}' is missing minor and/or patch versions")

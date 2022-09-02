@@ -25,19 +25,27 @@ pp = PrettyPrinter(indent=4)
 _MAX_TEST_NODES = 1000
 _MAX_TEST_EDGES = 100
 
-# Biolink Release number should be a well-formed Semantic Version
-semver_pattern = re.compile(r"^v?\d+\.\d+\.\d+$")
-
 
 def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional[str]:
     # Get Biolink Model Schema
     if biolink_version:
-        if not semver_pattern.fullmatch(biolink_version):
+        try:
+            svm = SemVer.from_string(biolink_version, ignore_prefix='v')
+
+            # Sanity check: override SemVer object to ignore prerelease and
+            # buildmetadata variants of the Biolink Version given
+            svm = SemVer(major=svm.major, minor=svm.minor, patch=svm.patch)
+        except SemVerError:
             raise TypeError(
                 "The 'biolink_version' argument '"
                 + biolink_version
-                + "' is not a properly formatted 'major.minor.patch' semantic version?"
+                + "' is not a properly formatted semantic version?"
             )
+
+        if svm >= SemVer.from_string("2.2.14"):
+            biolink_version = "v" + str(svm)
+        else:
+            biolink_version = str(svm)
         schema = f"https://raw.githubusercontent.com/biolink/biolink-model/{biolink_version}/biolink-model.yaml"
         return schema
     else:
@@ -62,8 +70,8 @@ def get_biolink_model_toolkit(biolink_version: Optional[str] = None) -> Toolkit:
         # then log the error but just use default as a workaround?
         try:
             biolink_schema = _get_biolink_model_schema(biolink_version=biolink_version)
-            bmtk = Toolkit(biolink_schema)
-            return bmtk
+            bmt = Toolkit(biolink_schema)
+            return bmt
         except (TypeError, HTTPError) as ex:
             logger.error(str(ex))
 
@@ -93,7 +101,7 @@ class BiolinkValidator(ValidationReporter):
         :param biolink_version: caller specified Biolink Model version (default: None)
         :type biolink_version: Optional[str] or None
         """
-        self.bmtk = get_biolink_model_toolkit(biolink_version=biolink_version)
+        self.bmt = get_biolink_model_toolkit(biolink_version=biolink_version)
         ValidationReporter.__init__(
             self,
             prefix=f"Validating {graph_type.value} against Biolink Model {self.get_biolink_model_version()}"
@@ -106,7 +114,7 @@ class BiolinkValidator(ValidationReporter):
         :return: Biolink Model version currently targeted by the validator.
         :rtype biolink_version: str
         """
-        return self.bmtk.get_model_version()
+        return self.bmt.get_model_version()
 
     def minimum_required_biolink_version(self, version: str) -> bool:
         """
@@ -115,7 +123,7 @@ class BiolinkValidator(ValidationReporter):
         :return: True if current version is equal to, or newer than, a targeted 'minimum_version'
         """
         try:
-            current: SemVer = SemVer.from_string(self.bmtk.get_model_version())
+            current: SemVer = SemVer.from_string(self.bmt.get_model_version())
             target: SemVer = SemVer.from_string(version)
             return current >= target
         except SemVerError as sve:
@@ -165,7 +173,7 @@ class BiolinkValidator(ValidationReporter):
         :return: model version of the validation and dictionary of reported validation messages.
         :rtype Tuple[str, Optional[Dict[str, Set[str]]]]
         """
-        return self.bmtk.get_model_version(), self.get_messages()
+        return self.bmt.get_model_version(), self.get_messages()
 
     def validate_graph_node(self, node_id, slots: Dict[str, Any]):
         """
@@ -192,7 +200,7 @@ class BiolinkValidator(ValidationReporter):
                         category: Optional[ClassDefinition] = \
                             self.validate_category(context="Node", category=category, strict_validation=False)
                         if category:
-                            possible_subject_categories = self.bmtk.get_element_by_prefix(node_id)
+                            possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
                             if category.name in possible_subject_categories:
                                 node_prefix_mapped = True
                     if not node_prefix_mapped:
@@ -229,7 +237,7 @@ class BiolinkValidator(ValidationReporter):
                             self.validate_category(context="Node", category=category, strict_validation=False)
                         if category:
                             for identifier in ids:  # may be empty list if not provided...
-                                possible_subject_categories = self.bmtk.get_element_by_prefix(identifier)
+                                possible_subject_categories = self.bmt.get_element_by_prefix(identifier)
                                 if category.name in possible_subject_categories:
                                     id_prefix_mapped[identifier] = True
                     unmapped_ids = [
@@ -290,10 +298,10 @@ class BiolinkValidator(ValidationReporter):
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             if not predicate:
                 self.error(f"Edge '{edge_id}' has a missing or empty predicate slot?")
-            elif not self.bmtk.is_predicate(predicate):
+            elif not self.bmt.is_predicate(predicate):
                 self.error(f"'{predicate}' is an unknown Biolink Model predicate?")
             elif self.minimum_required_biolink_version("2.2.0") and \
-                    not self.bmtk.is_translator_canonical_predicate(predicate):
+                    not self.bmt.is_translator_canonical_predicate(predicate):
                 self.error(f"predicate '{predicate}' is non-canonical?")
         else:  # is a Query Graph...
             if predicates is None:
@@ -306,10 +314,10 @@ class BiolinkValidator(ValidationReporter):
             else:
                 # Should now be a non-empty list of CURIES which are valid Biolink Predicates
                 for predicate in predicates:
-                    if not self.bmtk.is_predicate(predicate):
+                    if not self.bmt.is_predicate(predicate):
                         self.error(f"'{predicate}' is an unknown Biolink Model predicate?")
                     elif self.minimum_required_biolink_version("2.2.0") and \
-                            not self.bmtk.is_translator_canonical_predicate(predicate):
+                            not self.bmt.is_translator_canonical_predicate(predicate):
                         self.error(f"predicate '{predicate}' is non-canonical?")
         if not object_id:
             self.error(f"Edge '{edge_id}' has a missing or empty 'object' slot value?")
@@ -343,14 +351,14 @@ class BiolinkValidator(ValidationReporter):
                         self.error(
                             f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' is not a CURIE?"
                         )
-                    elif not self.bmtk.is_association_slot(attribute_type_id):
+                    elif not self.bmt.is_association_slot(attribute_type_id):
                         self.warning(
                             f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' " +
                             "not a biolink:association_slot?"
                         )
                         # if not a Biolink association_slot, at least, check if it is known to Biolink
                         prefix = attribute_type_id.split(":", 1)[0]
-                        if not (prefix == 'biolink' or self.bmtk.get_element_by_prefix(prefix)):
+                        if not (prefix == 'biolink' or self.bmt.get_element_by_prefix(prefix)):
                             self.error(
                                 f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' " +
                                 f"has a CURIE prefix namespace unknown to Biolink?"
@@ -374,7 +382,7 @@ class BiolinkValidator(ValidationReporter):
         """
         biolink_class: Optional[ClassDefinition] = None
         if category:
-            biolink_class = self.bmtk.get_element(category)
+            biolink_class = self.bmt.get_element(category)
             if biolink_class:
                 if biolink_class.deprecated:
                     self.warning(
@@ -389,7 +397,7 @@ class BiolinkValidator(ValidationReporter):
                     else:
                         logger.info(f"{context} Biolink class '{category}' is abstract. Ignored in this context.")
                     biolink_class = None
-                elif self.bmtk.is_mixin(category):
+                elif self.bmt.is_mixin(category):
                     # A mixin cannot be instantiated so it should not be given as an input concept category
                     if strict_validation:
                         self.error(
@@ -398,7 +406,7 @@ class BiolinkValidator(ValidationReporter):
                     else:
                         logger.info(f"{context} Biolink class '{category}' is a 'mixin'. Ignored in this context.")
                     biolink_class = None
-                elif not self.bmtk.is_category(category):
+                elif not self.bmt.is_category(category):
                     self.error(f"{context} identifier '{category}' is not a valid Biolink category?")
                     biolink_class = None
             else:
@@ -414,7 +422,7 @@ class BiolinkValidator(ValidationReporter):
 
         if identifier:
             if biolink_class:
-                possible_subject_categories = self.bmtk.get_element_by_prefix(identifier)
+                possible_subject_categories = self.bmt.get_element_by_prefix(identifier)
                 if biolink_class.name not in possible_subject_categories:
                     err_msg = f"Namespace prefix of input {context} " + \
                               f"identifier '{identifier}' is unmapped to '{category}'?"
@@ -455,12 +463,12 @@ class BiolinkValidator(ValidationReporter):
             identifier=subject_curie
         )
 
-        if not (predicate_curie and self.bmtk.is_predicate(predicate_curie)):
+        if not (predicate_curie and self.bmt.is_predicate(predicate_curie)):
             err_msg = f"Input predicate "
             err_msg += f"'{predicate_curie}' is unknown?" if predicate_curie else "is missing?"
             self.error(err_msg)
         elif self.minimum_required_biolink_version("2.2.0") and \
-                not self.bmtk.is_translator_canonical_predicate(predicate_curie):
+                not self.bmt.is_translator_canonical_predicate(predicate_curie):
             self.error(f"Input predicate '{predicate_curie}' is non-canonical?")
 
         self.validate_input_node(
