@@ -1,0 +1,28 @@
+#############################
+# Reasoner Validator Codes  #
+# * category types          #
+# * predicate types         #
+# * validation status codes #
+#   - info(rmation)         #
+#   - warning               #
+#   - error                 #
+#############################
+category:
+  - abstract
+  - mixin
+  - deprecated
+
+predicate:
+  - abstract
+  - mixin
+  - canonical
+  - inverse
+  - symmetric
+
+status:
+  info:
+    - ""
+  warning:
+    - ""
+  error:
+    - ""

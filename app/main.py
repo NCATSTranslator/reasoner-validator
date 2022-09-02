@@ -7,7 +7,7 @@ from pydantic import BaseModel
 import uvicorn
 from fastapi import FastAPI, HTTPException
 
-from reasoner_validator import DEFAULT_TRAPI_VERSION, is_valid_trapi_query
+from reasoner_validator import TRAPIValidator
 from reasoner_validator.util import latest
 from reasoner_validator.biolink import (
     check_biolink_model_compliance_of_query_graph,
@@ -23,7 +23,7 @@ app = FastAPI()
 # query_graph, knowledge_graph and results JSON tag-values
 #
 class Query(BaseModel):
-    trapi_version: Optional[str] = DEFAULT_TRAPI_VERSION
+    trapi_version: Optional[str] = TRAPIValidator.DEFAULT_TRAPI_VERSION
 
     # default: latest Biolink Model Toolkit supported version
     biolink_version: Optional[str] = None
@@ -37,12 +37,12 @@ async def validate(query: Query):
     if not query.message:
         raise HTTPException(status_code=400, detail="Empty input message?")
 
-    trapi_version = latest.get(query.trapi_version)
+    trapi_validator = TRAPIValidator(trapi_version=latest.get(query.trapi_version))
     biolink_version = query.biolink_version
 
     results: List[str] = list()
     
-    error = is_valid_trapi_query(instance={"message": query.message}, trapi_version=trapi_version)
+    error = trapi_validator.is_valid_trapi_query(instance={"message": query.message})
     if error:
         results.append(error)
 
@@ -95,7 +95,7 @@ async def validate(query: Query):
         results.append(f"Biolink Model-compliant TRAPI Message!")
 
     return {
-        "trapi_version": trapi_version,
+        "trapi_version": trapi_validator.get_trapi_version(),
         "biolink_version": biolink_version,
         "validation": results
     }
