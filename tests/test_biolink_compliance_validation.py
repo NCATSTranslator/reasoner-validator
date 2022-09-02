@@ -1,7 +1,7 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-import sys
+from sys import stderr
 from typing import Tuple
 from pprint import PrettyPrinter
 import logging
@@ -30,7 +30,10 @@ LATEST_BIOLINK_MODEL = "2.4.8"  # "Latest" Biolink Model Version
 def test_set_default_biolink_versioned_global_environment():
     validator = BiolinkValidator(graph_type=TrapiGraphType.Knowledge_Graph)
     model_version = validator.get_biolink_model_version()
-    logger.debug(f"\ntest_set_default_global_environment(): Biolink Model version is: '{str(model_version)}'")
+    print(
+        f"\ntest_set_default_global_environment(): Biolink Model version is: '{str(model_version)}'",
+        file=stderr, flush=True
+    )
     assert model_version == Toolkit().get_model_version()
 
 
@@ -258,7 +261,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX}Knowledge Graph"
 )
 def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
     model_version, errors = check_biolink_model_compliance_of_input_edge(edge=query[1], biolink_version=query[0])
-    print(f"Biolink Model version '{model_version}' Errors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
+    print(f"Biolink Model version '{model_version}' Errors:\n{pp.pformat(errors)}\n", file=stderr, flush=True)
     assert any([error == query[2] for error in errors]) if query[2] or errors else True
 
 
@@ -614,7 +617,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
 )
 def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
     model_version, errors = check_biolink_model_compliance_of_query_graph(graph=query[1], biolink_version=query[0])
-    print(f"Biolink Model version '{model_version}' Errors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
+    print(f"Biolink Model version '{model_version}' Errors:\n{pp.pformat(errors)}\n", file=stderr, flush=True)
     assert any([error == query[2] for error in errors]) if query[2] or errors else True
 
 
@@ -1208,5 +1211,5 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
 )
 def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
     model_version, errors = check_biolink_model_compliance_of_knowledge_graph(graph=query[1], biolink_version=query[0])
-    print(f"Biolink Model version '{model_version}' Errors:\n{pp.pformat(errors)}\n", file=sys.stderr, flush=True)
+    print(f"Biolink Model version '{model_version}' Errors:\n{pp.pformat(errors)}\n", file=stderr, flush=True)
     assert any([error == query[2] for error in errors]) if query[2] or errors else True

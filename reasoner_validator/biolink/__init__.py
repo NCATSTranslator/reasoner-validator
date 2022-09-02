@@ -24,19 +24,27 @@ pp = PrettyPrinter(indent=4)
 _MAX_TEST_NODES = 1000
 _MAX_TEST_EDGES = 100
 
-# Biolink Release number should be a well-formed Semantic Version
-semver_pattern = re.compile(r"^v?\d+\.\d+\.\d+$")
-
 
 def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional[str]:
     # Get Biolink Model Schema
     if biolink_version:
-        if not semver_pattern.fullmatch(biolink_version):
+        try:
+            svm = SemVer.from_string(biolink_version, ignore_prefix='v')
+
+            # Sanity check: override SemVer object to ignore prerelease and
+            # buildmetadata variants of the Biolink Version given
+            svm = SemVer(major=svm.major, minor=svm.minor, patch=svm.patch)
+        except SemVerError:
             raise TypeError(
                 "The 'biolink_version' argument '"
                 + biolink_version
-                + "' is not a properly formatted 'major.minor.patch' semantic version?"
+                + "' is not a properly formatted semantic version?"
             )
+
+        if svm >= SemVer.from_string("2.2.14"):
+            biolink_version = "v" + str(svm)
+        else:
+            biolink_version = str(svm)
         schema = f"https://raw.githubusercontent.com/biolink/biolink-model/{biolink_version}/biolink-model.yaml"
         return schema
     else:
