@@ -1,10 +1,11 @@
 """Test semantic version handling."""
 import pytest
 
-from reasoner_validator.util import SemVerUnderspecified, semver_pattern, SemVer
+from reasoner_validator.util import semver_pattern, SemVer, SemVerError, SemVerUnderspecified
 
 
-def test_pattern():
+def test_regex_pattern():
+    # test the semver pattern directly
     assert semver_pattern.fullmatch("1.2.3")
     assert semver_pattern.fullmatch("1.2")
     assert semver_pattern.fullmatch("1")
@@ -13,12 +14,27 @@ def test_pattern():
     assert semver_pattern.fullmatch("1.3-rc.1+build.123")
     assert semver_pattern.fullmatch("a.2.3") is None
     assert semver_pattern.fullmatch("1.2.3.4") is None
+
+
+def test_from_string():
+    # test simple semver patterns without prefixes
     assert str(SemVer.from_string("1.2.4")) == "1.2.4"
     assert str(SemVer.from_string("1.2.4-beta")) == "1.2.4-beta"
     assert str(SemVer.from_string("1.2.4-alpha+build.123")) == "1.2.4-alpha+build.123"
     assert str(SemVer.from_string("1.2.4+build.123")) == "1.2.4+build.123"
+
+
+def test_underspecified_string():
+    # test underspecified semver
     with pytest.raises(SemVerUnderspecified):
         assert str(SemVer.from_string("1.2"))
+
+
+def test_string_with_prefix():
+    # test semver with (ignorable Pypi-style release) semver
+    assert str(SemVer.from_string("v1.2.4", ignore_prefix='v')) == "1.2.4"
+    with pytest.raises(SemVerError):
+        assert str(SemVer.from_string("v1.2.4"))
 
 
 def test_semver_greater_or_equal_to():
