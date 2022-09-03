@@ -309,7 +309,7 @@ class BiolinkValidator(ValidationReporter):
                 pass
             elif not isinstance(predicates, List):
                 self.error(f"Edge '{edge_id}' predicate slot value is not an array?")
-            elif len(predicates) is 0:
+            elif len(predicates) == 0:
                 self.error(f"Edge '{edge_id}' predicate slot value is an empty array?")
             else:
                 # Should now be a non-empty list of CURIES which are valid Biolink Predicates

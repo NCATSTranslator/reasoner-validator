@@ -1,13 +1,13 @@
 """
 FastAPI web service wrapper for TRAPI validator and Biolink Model compliance testing
 """
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Set
 from pydantic import BaseModel
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
 
-from reasoner_validator import TRAPIValidator
+from reasoner_validator import TRAPIValidator, ValidationReporter
 from reasoner_validator.util import latest
 from reasoner_validator.biolink import (
     check_biolink_model_compliance_of_query_graph,
@@ -40,44 +40,44 @@ async def validate(query: Query):
     trapi_validator = TRAPIValidator(trapi_version=latest.get(query.trapi_version))
     biolink_version = query.biolink_version
 
-    results: List[str] = list()
+    results: Optional[ValidationReporter] = ValidationReporter()
     
-    error = trapi_validator.is_valid_trapi_query(instance={"message": query.message})
-    if error:
-        results.append(error)
+    trapi_validator.is_valid_trapi_query(instance={"message": query.message})
+    if trapi_validator.has_messages():
+        results.merge(trapi_validator)
 
     # Verify that the response has a Query Graph
     if not query.message['query_graph']:
         # An empty Query Graph is Not considered an absolute error, but we issue a warning
-        results.append(f"TRAPI Message Warning: empty TRAPI Message Query Graph?")
+        results.warning(f"Empty TRAPI Message Query Graph?")
     else:
         # Verify that the provided TRAPI Message Query Graph is compliant to the current Biolink Model release
-        biolink_version, errors = \
+        biolink_version, messages = \
             check_biolink_model_compliance_of_query_graph(
                 graph=query.message['query_graph'],
                 biolink_version=query.biolink_version
             )
-        if errors:
-            results.extend(errors)
+        if any([message_set for message_set in messages.values()]):
+            results.add_messages(messages)
 
     # Verify that the response had a non-empty Knowledge Graph
     if not query.message['knowledge_graph']:
         # An empty Knowledge Graph is Not considered an absolute error, but we issue a warning
-        results.append(f"TRAPI Message Warning: empty TRAPI Message Knowledge Graph?")
+        results.warning(f"TRAPI Message Warning: empty TRAPI Message Knowledge Graph?")
     else:
         # Verify that the provided TRAPI Message Knowledge Graph is compliant to the current Biolink Model release
-        biolink_version, errors = \
+        biolink_version, messages = \
             check_biolink_model_compliance_of_knowledge_graph(
                 graph=query.message['knowledge_graph'],
                 biolink_version=query.biolink_version
             )
-        if errors:
-            results.extend(errors)
+        if any([message_set for message_set in messages.values()]):
+            results.add_messages(messages)
 
     # Verify that the response had some Result
     if not query.message['results']:
         # An empty Result is Not considered an absolute error, but we issue a warning
-        results.append(f"TRAPI Message Warning: empty TRAPI Message Result?")
+        results.warning(f"TRAPI Message Warning: empty TRAPI Message Result?")
 
     # Finally, check that the Results contained the object of the query -
     # TODO: Not sure about this part of the TRAPI validation yet
@@ -92,7 +92,7 @@ async def validate(query: Query):
     #                       f"Result object IDs {pp.pformat(object_ids)} for node '{output_node_binding}' binding?"
 
     if not results:
-        results.append(f"Biolink Model-compliant TRAPI Message!")
+        results.info(f"Biolink Model-compliant TRAPI Message!")
 
     return {
         "trapi_version": trapi_validator.get_trapi_version(),
