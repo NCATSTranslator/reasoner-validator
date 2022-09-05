@@ -1,5 +1,5 @@
 """TRAPI Validation Functions."""
-from typing import Optional, Dict, Set
+from typing import Optional, Dict, Set, Tuple
 
 import jsonschema
 
@@ -82,7 +82,7 @@ class TRAPIValidator(ValidationReporter):
             self.error(f"TRAPI {self.version} Query: '{e.message}'")
 
 
-def check_trapi_validity(instance, trapi_version: str) -> Dict[str, Set[str]]:
+def check_trapi_validity(instance, trapi_version: str) -> Tuple[bool, Dict[str, Set[str]]]:
     """
     Checks schema compliance of a Query component against a given TRAPI version.
 
@@ -98,4 +98,4 @@ def check_trapi_validity(instance, trapi_version: str) -> Dict[str, Set[str]]:
     """
     trapi_validator = TRAPIValidator(trapi_version=trapi_version)
     trapi_validator.is_valid_trapi_query(instance)
-    return trapi_validator.get_messages()
+    return trapi_validator.has_messages(), trapi_validator.get_messages()
