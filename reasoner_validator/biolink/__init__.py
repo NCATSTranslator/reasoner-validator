@@ -14,6 +14,7 @@ from linkml_runtime.linkml_model import ClassDefinition
 
 from reasoner_validator import ValidationReporter
 from reasoner_validator.util import SemVer, SemVerError
+from reasoner_validator.translator.sri import get_aliases
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,10 @@ pp = PrettyPrinter(indent=4)
 #       Limiting nodes and edges viewed may miss deeply embedded errors(?)
 _MAX_TEST_NODES = 1000
 _MAX_TEST_EDGES = 100
+
+# Maximum number of data points to scrutinize
+# in various parts TRAPI Query Response.Message
+TEST_DATA_SAMPLE_SIZE = 10
 
 
 def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional[str]:
@@ -546,7 +551,8 @@ def check_biolink_model_compliance_of_input_edge(
         biolink_version: Optional[str] = None
 ) -> Tuple[str, Optional[Dict[str, Set[str]]]]:
     """
-    Validate an input edge object contents against the current BMT Biolink Model release.
+    Validate an (SRI Testing style) input edge record
+    against a designated Biolink Model release.
 
     Sample method 'edge' with expected dictionary tags:
 
@@ -560,7 +566,8 @@ def check_biolink_model_compliance_of_input_edge(
 
     :param edge: basic contents of a templated input edge - S-P-O including concept Biolink Model categories
     :type edge: Dict[str,str]
-    :param biolink_version: Biolink Model (SemVer) version against which the edge object is to be validated
+    :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
+                            validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
     :returns: 2-tuple of Biolink Model version (str) and dictionary of validation messages (may be be empty)
     :rtype: Tuple[str, Optional[Dict[str, Set[str]]]]:
@@ -574,14 +581,16 @@ def check_biolink_model_compliance_of_query_graph(
         biolink_version: Optional[str] = None
 ) -> Tuple[str, Optional[Dict[str, Set[str]]]]:
     """
-    Validate a TRAPI-schema compliant Message Query Graph against the current BMT Biolink Model release.
+    Validate a TRAPI-schema compliant Message Query Graph
+    against a designated Biolink Model release.
 
     Since a Query graph is usually an incomplete knowledge graph specification,
     the validation undertaken is not 'strict'
 
     :param graph: query graph to be validated
     :type graph: Dict
-    :param biolink_version: Biolink Model (SemVer) version against which the query graph is to be validated
+    :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
+                            validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
     :return: 2-tuple of Biolink Model version (str) and dictionary of validation messages (may be be empty)
     :rtype: Tuple[str, Optional[Dict[str, Set[str]]]]
@@ -595,14 +604,149 @@ def check_biolink_model_compliance_of_knowledge_graph(
         biolink_version: Optional[str] = None
 ) -> Tuple[str, Optional[Dict[str, Set[str]]]]:
     """
-    Strict validation of a TRAPI-schema compliant Message Knowledge Graph against the active BMT Biolink Model release.
+    Strict validation of a TRAPI-schema compliant Message Knowledge Graph
+     against a designated Biolink Model release.
 
     :param graph: knowledge graph to be validated.
     :type graph: Dict
-    :param biolink_version: Biolink Model (SemVer) version against which the knowledge graph is to be validated
+    :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
+                            validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
     :return: 2-tuple of Biolink Model version (str) and dictionary of validation messages (may be be empty)
     :rtype: Tuple[str, Optional[Dict[str, Set[str]]]]
     """
     validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph, biolink_version=biolink_version)
     return validator.check_biolink_model_compliance(graph)
+
+
+
+def sample_results(results: List) -> List:
+    sample_size = min(TEST_DATA_SAMPLE_SIZE, len(results))
+    result_subsample = results[0:sample_size]
+    return result_subsample
+
+
+def sample_graph(graph: Dict) -> Dict:
+    kg_sample: Dict = {
+        "nodes": dict(),
+        "edges": dict()
+    }
+    sample_size = min(TEST_DATA_SAMPLE_SIZE, len(graph["edges"]))
+    n = 0
+    for key, edge in graph['edges'].items():
+        kg_sample['edges'][key] = edge
+        if 'subject' in edge and edge['subject'] in graph['nodes']:
+            kg_sample['nodes'][edge['subject']] = graph['nodes'][edge['subject']]
+        if 'object' in edge and edge['object'] in graph['nodes']:
+            kg_sample['nodes'][edge['object']] = graph['nodes'][edge['object']]
+        n += 1
+        if n > sample_size:
+            break
+
+    return kg_sample
+
+
+def check_biolink_model_compliance_of_trapi_response(
+        message: Dict,
+        biolink_version: Optional[str] = None
+) -> Tuple[str, Optional[Dict[str, Set[str]]]]:
+    """
+    One stop validation of all components of a TRAPI-schema compliant
+    Query Response.Message against a designated Biolink Model release.
+    Here, a TRAPI Response message is a Python Dictionary with three entries:
+
+    * Query Graph ("QGraph"): knowledge graph query input parameters
+    * Knowledge Graph: output knowledge (sub-)graph containing knowledge (Biolink Model compliant nodes, edges)
+                       returned from the target resource (KP, ARA) for the query.
+    * Results: a list of (annotated) node and edge bindings pointing into the Knowledge Graph, to represent the
+               specific answers (subgraphs) satisfying the query graph constraints.
+
+    :param message: Response.Message to be validated.
+    :type message: Dict
+    :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
+                            validated (Default: if None, use the Biolink Model Toolkit default version.
+    :type biolink_version: Optional[str] = None
+    :return: 2-tuple of Biolink Model version (str) and dictionary of validation messages (may be be empty)
+    :rtype: Tuple[str, Optional[Dict[str, Set[str]]]]
+    """
+
+    # Generally validate to top level structure of the Knowledge Graph...
+    kg = message['knowledge_graph']
+    is_valid = len(kg) > 0 and "nodes" in kg and len(kg["nodes"]) > 0 and "edges" in kg and len(kg["edges"]) > 0
+    #     test_report.test(
+    #         is_valid,
+    #         f"{error_msg_prefix} returned an empty TRAPI Message Knowledge Graph?"
+    #     )
+    if not is_valid:
+        return biolink_version, None
+
+    # ...then if not empty, validate a sample subgraph of the associated Knowledge Graph...
+    kg_sample = sample_graph(message['knowledge_graph'])
+    is_valid, error = is_valid_trapi(
+        instance=kg_sample,
+        trapi_version=trapi_version,
+        component="KnowledgeGraph"
+    )
+    #     test_report.test(
+    #         is_valid,
+    #         f"{error_msg_prefix} TRAPI response Knowledge Graph sample " +
+    #         f"is not compliant to TRAPI '{trapi_version}'?",
+    #         data_dump=f"Sample subgraph: {_output(kg_sample)}\nErrors: {error}"
+    #     )
+    if not is_valid:
+        return biolink_version, None
+
+    # Verify that the sample of the sample knowledge graph is
+    # compliant to the currently applicable Biolink Model release
+    model_version, errors = \
+        check_biolink_model_compliance_of_knowledge_graph(
+            graph=kg_sample,
+            biolink_version=biolink_version
+        )
+    #     test_report.test(
+    #         not errors,
+    #         f"{error_msg_prefix} TRAPI response Knowledge Graph sample is not compliant to " +
+    #         f"Biolink Model release '{model_version}': {_output(errors, flat=True)}?",
+    #         data_dump=_output(kg_sample)
+    #     )
+
+    # ...Verify that the response had some results...
+    is_valid = len(message['results']) > 0
+    #     test_report.test(
+    #         is_valid,
+    #         f"{error_msg_prefix} TRAPI response returned an empty TRAPI Message Result?"
+    #     )
+    #
+    if not is_valid:
+        return biolink_version, None
+    #
+    # Validate a subsample of the Message.Result data returned
+    results_sample = sample_results(message['results'])
+    is_valid, error = is_valid_trapi(results_sample, trapi_version=trapi_version, component="Result")
+    #     test_report.test(
+    #         is_valid,
+    #         f"{error_msg_prefix} TRAPI response Results " +
+    #         f"are not compliant to TRAPI '{trapi_version}'?",
+    #         data_dump=f"Sample Results: {_output(results_sample)}\nError: {error}"
+    #     )
+
+    if not is_valid:
+        return biolink_version, None
+
+    # TODO: here, we might wish to compare the Results against the content of the KnowledgeGraph,
+    #       but this is tricky to do solely with the subsamples, which may not completely overlap.
+
+    # ...Finally, check that the sample Results contained the object of the query
+    object_ids = [r['node_bindings'][output_node_binding][0]['id'] for r in results_sample]
+    if case[output_element] not in object_ids:
+        # The 'get_aliases' method uses the Translator NodeNormalizer to check if any of
+        # the aliases of the case[output_element] identifier are in the object_ids list
+        output_aliases = get_aliases(case[output_element])
+    #         test_report.test(
+    #             any([alias == object_id for alias in output_aliases for object_id in object_ids]),
+    #             f"{error_msg_prefix}: neither the input id '{case[output_element]}' nor resolved aliases " +
+    #             f"were returned in the Result object IDs for node '{output_node_binding}' binding?",
+    #             data_dump=f"Resolved aliases:\n{','.join(output_aliases)}\n" +
+    #                       f"Result object IDs:\n{_output(object_ids,flat=True)}"
+    #         )
+    raise NotImplementedError("Implement me!")
