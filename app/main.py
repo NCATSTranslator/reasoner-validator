@@ -40,7 +40,7 @@ async def validate(query: Query):
     trapi_validator = TRAPIValidator(trapi_version=latest.get(query.trapi_version))
     biolink_version = query.biolink_version
 
-    results: Optional[ValidationReporter] = ValidationReporter()
+    results: ValidationReporter = ValidationReporter()
     
     trapi_validator.is_valid_trapi_query(instance={"message": query.message})
     if trapi_validator.has_messages():

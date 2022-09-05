@@ -67,7 +67,7 @@ class TRAPIValidator(ValidationReporter):
 
         Returns
         -------
-        Outcome of validation is recorded in TRAPIValidator instance ("information", "warning" and "error") messages.
+        Validation ("information", "warning" and "error") messages are returned within the TRAPIValidator instance.
 
         Examples
         --------
@@ -82,7 +82,7 @@ class TRAPIValidator(ValidationReporter):
             self.error(f"TRAPI {self.version} Query: '{e.message}'")
 
 
-def check_trapi_validity(instance, trapi_version: str) -> Tuple[bool, Dict[str, Set[str]]]:
+def check_trapi_validity(instance, trapi_version: str) -> ValidationReporter:
     """
     Checks schema compliance of a Query component against a given TRAPI version.
 
@@ -94,8 +94,8 @@ def check_trapi_validity(instance, trapi_version: str) -> Tuple[bool, Dict[str, 
 
     Returns
     -------
-    Dict[str, Set[str]], of "information", "warnings" or "errors" indexed sets of string messages (may be empty)
+    ValidationReporter catalog of "information", "warnings" or "errors" indexed messages (may be empty)
     """
     trapi_validator = TRAPIValidator(trapi_version=trapi_version)
     trapi_validator.is_valid_trapi_query(instance)
-    return trapi_validator.has_messages(), trapi_validator.get_messages()
+    return trapi_validator
