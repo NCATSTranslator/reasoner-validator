@@ -1,5 +1,5 @@
 """TRAPI Validation Functions."""
-from typing import Optional
+from typing import Optional, Dict, Set
 
 import jsonschema
 
@@ -67,7 +67,7 @@ class TRAPIValidator(ValidationReporter):
 
         Returns
         -------
-        String outcome of validation, either "Valid TRAPI Message" or "Invalid TRAPI Message: <details of error>"
+        Outcome of validation is recorded in TRAPIValidator instance ("information", "warning" and "error") messages.
 
         Examples
         --------
@@ -80,3 +80,22 @@ class TRAPIValidator(ValidationReporter):
             )
         except jsonschema.ValidationError as e:
             self.error(f"TRAPI {self.version} Query: '{e.message}'")
+
+
+def check_trapi_validity(instance, trapi_version: str) -> Dict[str, Set[str]]:
+    """
+    Checks schema compliance of a Query component against a given TRAPI version.
+
+    Parameters
+    ----------
+    instance: Dict, of format {"message": {}}
+    trapi_version : str
+        version of component to validate against
+
+    Returns
+    -------
+    Dict[str, Set[str]], of "information", "warnings" or "errors" indexed sets of string messages (may be empty)
+    """
+    trapi_validator = TRAPIValidator(trapi_version=trapi_version)
+    trapi_validator.is_valid_trapi_query(instance)
+    return trapi_validator.get_messages()
