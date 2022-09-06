@@ -1,6 +1,11 @@
 """Error and Warning Reporting Module"""
 import copy
-from typing import Optional, Set, Dict
+from typing import Optional, Set, Dict, List
+from json import dumps
+
+
+def _output(json, flat=False):
+    return dumps(json, sort_keys=False, indent=None if flat else 4)
 
 
 class ValidationReporter:
@@ -63,6 +68,24 @@ class ValidationReporter:
 
     def has_errors(self) -> bool:
         return bool(self.messages["errors"])
+
+    def get_info(self) -> List:
+        return list(self.messages["information"])
+
+    def get_warnings(self) -> List:
+        return list(self.messages["warnings"])
+
+    def get_errors(self) -> List:
+        return list(self.messages["errors"])
+
+    def dump_info(self, flat=False) -> str:
+        return _output(self.messages["information"], flat)
+
+    def dump_warnings(self, flat=False) -> str:
+        return _output(self.messages["warnings"], flat)
+
+    def dump_errors(self, flat=False) -> str:
+        return _output(self.messages["errors"], flat)
 
     # TODO: should the return value be an immutable NamedTuple instead?
     def get_messages(self) -> Dict[str, Set[str]]:

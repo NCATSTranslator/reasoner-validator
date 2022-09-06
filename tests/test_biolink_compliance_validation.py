@@ -2,13 +2,14 @@
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
 from sys import stderr
-from typing import Tuple
+from typing import Tuple, Optional, Dict
 from pprint import PrettyPrinter
 import logging
 import pytest
 from sys import stderr
 from bmt import Toolkit
 
+from reasoner_validator import ValidationReporter
 from reasoner_validator.biolink import (
     TRAPIGraphType,
     BiolinkValidator,
@@ -1473,9 +1474,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
 )
 def test_check_provenance(query: Tuple):
     try:
-        errors = list()
-        test_report = TestReport(errors)
-        check_provenance(query[0], query[1], test_report)
+        test_report = check_provenance(query[0], query[1])
     except AssertionError as ae:
         assert query[2], "check_provenance() should pass!"
         assert str(ae).endswith(query[2]), "unexpected assertion error?"

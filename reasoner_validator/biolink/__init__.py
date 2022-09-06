@@ -619,7 +619,6 @@ def check_biolink_model_compliance_of_knowledge_graph(
     return validator.check_biolink_model_compliance(graph)
 
 
-
 def sample_results(results: List) -> List:
     sample_size = min(TEST_DATA_SAMPLE_SIZE, len(results))
     result_subsample = results[0:sample_size]
@@ -648,9 +647,8 @@ def sample_graph(graph: Dict) -> Dict:
 
 def check_provenance(
         ara_case,
-        ara_response,
-        test_report  # : TestReport
-):
+        ara_response
+) -> ValidationReporter:
     """
     Check to see whether the edge in the ARA response is marked with the expected KP.
 
