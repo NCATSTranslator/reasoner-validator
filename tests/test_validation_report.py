@@ -1,7 +1,7 @@
 """Testing Validation Report methods"""
 from typing import Dict, Set
 
-from reasoner_validator import ValidationReporter
+from reasoner_validator.report import ValidationReporter
 
 
 def test_messages():
@@ -52,5 +52,3 @@ def test_messages():
     assert "Second Validation Report: ERROR - this is a second error!" in messages["errors"]
     assert "Dave, this can only be due to human error!" in messages["errors"]
     assert "ERROR - Ka Boom!" in messages["errors"]
-
-

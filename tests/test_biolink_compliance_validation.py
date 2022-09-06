@@ -1,22 +1,22 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from sys import stderr
-from typing import Tuple, Optional, Dict
+from typing import Tuple, Optional, Dict, Union
 from pprint import PrettyPrinter
 import logging
 import pytest
 from sys import stderr
 from bmt import Toolkit
 
-from reasoner_validator import ValidationReporter
+from reasoner_validator.report import ValidationReporter
 from reasoner_validator.biolink import (
     TRAPIGraphType,
     BiolinkValidator,
     get_biolink_model_toolkit,
     check_biolink_model_compliance_of_input_edge,
     check_biolink_model_compliance_of_query_graph,
-    check_biolink_model_compliance_of_knowledge_graph, check_provenance
+    check_biolink_model_compliance_of_knowledge_graph,
+    check_provenance, check_biolink_model_compliance_of_trapi_response
 )
 
 logger = logging.getLogger(__name__)
@@ -75,7 +75,8 @@ def test_inverse_predicate():
     assert tk.get_inverse(predicate.name) == "has active component"
 
 
-def check_messages(messages, query):
+def check_messages(validator: ValidationReporter, query):
+    messages: Dict = validator.get_messages()
     if query:
         if 'ERROR' in query:
             assert any([error == query for error in messages['errors']])
@@ -273,8 +274,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"Validating Knowledge Graph {BLM_VERSION_SUFFIX}"
     ]
 )
 def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
-    model_version, messages = check_biolink_model_compliance_of_input_edge(edge=query[1], biolink_version=query[0])
-    check_messages(messages, query[2])
+    validator: BiolinkValidator = check_biolink_model_compliance_of_input_edge(edge=query[1], biolink_version=query[0])
+    check_messages(validator, query[2])
 
 
 @pytest.mark.parametrize(
@@ -630,8 +631,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
     ]
 )
 def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
-    model_version, messages = check_biolink_model_compliance_of_query_graph(graph=query[1], biolink_version=query[0])
-    check_messages(messages, query[2])
+    validator: BiolinkValidator = check_biolink_model_compliance_of_query_graph(graph=query[1], biolink_version=query[0])
+    check_messages(validator, query[2])
 
 
 @pytest.mark.parametrize(
@@ -1226,10 +1227,10 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
     ]
 )
 def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
-    model_version, messages = \
-        check_biolink_model_compliance_of_knowledge_graph(graph=query[1], biolink_version=query[0])
-    check_messages(messages, query[2])
-
+    validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
+        graph=query[1], biolink_version=query[0]
+    )
+    check_messages(validator, query[2])
 
 
 TEST_ARA_CASE_TEMPLATE = {
@@ -1250,7 +1251,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
     return test_case
 
 
-# check_provenance(ara_case, ara_response), triggers AssertError exceptions
+# check_provenance(ara_case, ara_response), returns a ValidatorReporter
 @pytest.mark.parametrize(
     "query",
     [
@@ -1473,11 +1474,147 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
     ]
 )
 def test_check_provenance(query: Tuple):
-    try:
-        test_report = check_provenance(query[0], query[1])
-    except AssertionError as ae:
-        assert query[2], "check_provenance() should pass!"
-        assert str(ae).endswith(query[2]), "unexpected assertion error?"
-        return
+    validator: BiolinkValidator = check_provenance(query[0], query[1])
+    check_messages(validator, query[2])
 
-    assert not query[2], f"check_provenance() should fail with assertion error: '{query[2]}'"
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (   # Query 0 - Completely empty Response.Message, QGraph trapped first....
+            {
+                "query_graph": None,
+                "knowledge_graph": None,
+                "results": None
+            },
+            "subject",
+            "a",
+            False,
+            None,
+            None,
+            "Validating TRAPI Response Message: ERROR - Query returned an empty TRAPI Message Query Graph?"
+        ),
+        (
+            {
+                # Query 1 - Partly empty Response.Message with a modest but workable query graph? KG trapped next?
+                "query_graph": {
+                    "nodes": {
+                        "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                        "drug": {
+                            "categories": ["biolink:Drug"]
+                        }
+                    },
+                    "edges": {
+                        "treats": {
+                            "subject": "drug",
+                            "predicates": ["biolink:treats"],
+                            "object": "type-2 diabetes"
+                        }
+                    }
+                },
+                "knowledge_graph": None,
+                "results": None
+            },
+            "subject",
+            "a",
+            False,
+            None,
+            None,
+            "Validating TRAPI Response Message: ERROR - Query returned an empty TRAPI Message Knowledge Graph?"
+        ),
+        (
+            {
+                # Query 2 - Partly empty Response.Message with a modest but
+                # workable query and knowledge graphs? Empty Results detected next?
+
+                # modest but workable query and knowledge graphs?
+                "query_graph": {
+                    "nodes": {
+                        "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                        "drug": {
+                            "categories": ["biolink:Drug"]
+                        }
+                    },
+                    "edges": {
+                        "treats": {
+                            "subject": "drug",
+                            "predicates": ["biolink:treats"],
+                            "object": "type-2 diabetes"
+                        }
+                    }
+                },
+                "knowledge_graph": {
+                    # Sample nodes
+                    'nodes': {
+                        "NCBIGene:29974": {
+                           "categories": [
+                               "biolink:Gene"
+                           ]
+                        },
+                        "PUBCHEM.COMPOUND:597": {
+                            "name": "cytosine",
+                            "categories": [
+                                "biolink:SmallMolecule"
+                            ],
+                            "attributes": [
+                                {
+                                    "attribute_source": "infores:chembl",
+                                    "attribute_type_id": "biolink:highest_FDA_approval_status",
+                                    "attributes": [],
+                                    "original_attribute_name": "max_phase",
+                                    "value": "FDA Clinical Research Phase 2",
+                                    "value_type_id": "biolink:FDA_approval_status_enum"
+                                }
+                            ]
+                        }
+                    },
+                    # Sample edge
+                    'edges': {
+                       "edge_1": {
+                           "subject": "NCBIGene:29974",
+                           "predicate": "biolink:interacts_with",
+                           "object": "PUBCHEM.COMPOUND:597",
+                           "attributes": [
+                               {
+                                   "attribute_source": "infores:hmdb",
+                                   "attribute_type_id": "biolink:primary_knowledge_source",
+                                   "attributes": [],
+                                   "description": "MolePro's HMDB target transformer",
+                                   "original_attribute_name": "biolink:primary_knowledge_source",
+                                   "value": "infores:hmdb",
+                                   "value_type_id": "biolink:InformationResource"
+                               },
+                               {
+                                   "attribute_source": "infores:hmdb",
+                                   "attribute_type_id": "biolink:aggregator_knowledge_source",
+                                   "attributes": [],
+                                   "description": "Molecular Data Provider",
+                                   "original_attribute_name": "biolink:aggregator_knowledge_source",
+                                   "value": "infores:molepro",
+                                   "value_type_id": "biolink:InformationResource"
+                               }
+                            ]
+                        }
+                    }
+                },
+                "results": None
+            },
+            "subject",
+            "a",
+            False,
+            None,
+            None,
+            "Validating TRAPI Response Message: ERROR - TRAPI response returned an empty TRAPI Message Result?"
+        )
+    ]
+)
+def test_check_biolink_model_compliance_of_trapi_response(query: Tuple[Union[Dict, str]]):
+    validator: ValidationReporter = check_biolink_model_compliance_of_trapi_response(
+        message=query[0],
+        output_element=query[1],
+        output_node_binding=query[2],
+        validate_provenance=query[3],
+        trapi_version=query[4],
+        biolink_version=query[5]
+    )
+    check_messages(validator, query[6])

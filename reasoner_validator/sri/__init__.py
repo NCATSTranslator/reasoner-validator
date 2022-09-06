@@ -2,12 +2,9 @@
 General SRI support methods are placed here, e.g. Node Normalizer service access?
 """
 from typing import Dict, List
-
-import requests
 from functools import lru_cache
-
 from json import JSONDecodeError
-
+import requests
 import logging
 
 from kgx.prefix_manager import PrefixManager

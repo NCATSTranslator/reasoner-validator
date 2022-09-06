@@ -6,15 +6,15 @@ from enum import Enum
 from functools import lru_cache
 from urllib.error import HTTPError
 from pprint import PrettyPrinter
-import re
 import logging
 
 from bmt import Toolkit
 from linkml_runtime.linkml_model import ClassDefinition
 
-from reasoner_validator import ValidationReporter, TRAPIValidator
+from reasoner_validator import is_curie
+from reasoner_validator.report import ValidationReporter
+from reasoner_validator.trapi import TRAPIValidator
 from reasoner_validator.util import SemVer, SemVerError
-from reasoner_validator.translator.sri import get_aliases
 
 logger = logging.getLogger(__name__)
 
@@ -106,70 +106,28 @@ class BiolinkValidator(ValidationReporter):
         :param biolink_version: caller specified Biolink Model version (default: None)
         :type biolink_version: Optional[str] or None
         """
-        self.bmt = get_biolink_model_toolkit(biolink_version=biolink_version)
+        self.bmt: Toolkit = get_biolink_model_toolkit(biolink_version=biolink_version)
+        resolved_biolink_version = self.bmt.get_model_version()
         ValidationReporter.__init__(
             self,
-            prefix=f"Validating {graph_type.value} against Biolink Model {self.get_biolink_model_version()}"
+            prefix=f"Validating {graph_type.value} against Biolink Model {resolved_biolink_version}",
+            biolink_version=resolved_biolink_version
         )
         self.graph_type = graph_type
         self.nodes: Set[str] = set()
 
-    def get_biolink_model_version(self) -> str:
-        """
-        :return: Biolink Model version currently targeted by the validator.
-        :rtype biolink_version: str
-        """
-        return self.bmt.get_model_version()
-
     def minimum_required_biolink_version(self, version: str) -> bool:
         """
-
         :param version: simple 'major.minor.patch' Biolink Model SemVer
         :return: True if current version is equal to, or newer than, a targeted 'minimum_version'
         """
         try:
-            current: SemVer = SemVer.from_string(self.bmt.get_model_version())
+            current: SemVer = SemVer.from_string(self.biolink_version)
             target: SemVer = SemVer.from_string(version)
             return current >= target
         except SemVerError as sve:
             logger.error(f"minimum_required_biolink_version() error: {str(sve)}")
             return False
-
-    @staticmethod
-    def is_curie(s: str) -> bool:
-        """
-        Check if a given string is a CURIE.
-
-        :param s: str, string to be validated as a CURIE
-        :return: bool, whether or not the given string is a CURIE
-        """
-        # Method copied from kgx.prefix_manager.PrefixManager...
-        if isinstance(s, str):
-            m = re.match(r"^[^ <()>:]*:[^/ :]+$", s)
-            return bool(m)
-        else:
-            return False
-
-    def get_reference(self, curie: str) -> Optional[str]:
-        """
-        Get the object_id reference of a given CURIE.
-
-        Parameters
-        ----------
-        curie: str
-            The CURIE
-
-        Returns
-        -------
-        Optional[str]
-            The reference of a CURIE
-
-        """
-        # Method adapted from kgx.prefix_manager.PrefixManager...
-        reference: Optional[str] = None
-        if self.is_curie(curie):
-            reference = curie.split(":", 1)[1]
-        return reference
 
     def get_result(self) -> Tuple[str, Optional[Dict[str, Set[str]]]]:
         """
@@ -352,7 +310,7 @@ class BiolinkValidator(ValidationReporter):
                     #
                     # TODO: not sure if this should only be a Pytest 'warning' rather than an Pytest 'error'
                     #
-                    if not self.is_curie(attribute_type_id):
+                    if not is_curie(attribute_type_id):
                         self.error(
                             f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' is not a CURIE?"
                         )
@@ -436,7 +394,7 @@ class BiolinkValidator(ValidationReporter):
         else:
             self.error(f"Input {context} identifier is missing?")
 
-    def check_biolink_model_compliance_of_input_edge(self, edge: Dict[str, str]) -> Tuple[str, Optional[List[str]]]:
+    def check_biolink_model_compliance_of_input_edge(self, edge: Dict[str, str]):
         """
         Validate a templated test input edge contents against the current BMT Biolink Model release.
 
@@ -452,8 +410,6 @@ class BiolinkValidator(ValidationReporter):
 
         :param edge: basic dictionary of a templated input edge - S-P-O including concept Biolink Model categories
         :type edge: Dict[str,str]
-        :return: Biolink Model version (str) and dictionary of validation messages (may be be empty)
-        :rtype: Tuple[str, Optional[Dict[str, Set[str]]]]
         """
         # data fields to be validated...
         subject_category_curie = edge['subject_category'] if 'subject_category' in edge else None
@@ -482,17 +438,13 @@ class BiolinkValidator(ValidationReporter):
             identifier=object_curie
         )
 
-        return self.get_result()
-
-    def check_biolink_model_compliance(self, graph: Dict) -> Tuple[str, Optional[Dict[str, Set[str]]]]:
+    def check_biolink_model_compliance(self, graph: Dict):
         """
         Validate a TRAPI-schema compliant Message graph-like data structure
         against the currently active Biolink Model Toolkit model version.
     
         :param graph: knowledge graph to be validated
         :type graph: Dict
-        :returns: 2-tuple of Biolink Model version (str) and dictionary of validation messages (may be be empty)
-        :rtype: Tuple[str, Optional[Dict[str, Set[str]]]]
         """
         if not graph:
             self.error(f"Empty graph?")
@@ -543,13 +495,11 @@ class BiolinkValidator(ValidationReporter):
                     if edges_seen >= _MAX_TEST_EDGES:
                         break
 
-        return self.get_result()
-
 
 def check_biolink_model_compliance_of_input_edge(
         edge: Dict[str, str],
         biolink_version: Optional[str] = None
-) -> Tuple[str, Optional[Dict[str, Set[str]]]]:
+) -> BiolinkValidator:
     """
     Validate an (SRI Testing style) input edge record
     against a designated Biolink Model release.
@@ -569,17 +519,18 @@ def check_biolink_model_compliance_of_input_edge(
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                             validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
-    :returns: 2-tuple of Biolink Model version (str) and dictionary of validation messages (may be be empty)
-    :rtype: Tuple[str, Optional[Dict[str, Set[str]]]]:
+    :returns: Biolink Model validator cataloging validation messages (may be empty)
+    :rtype: BiolinkValidator
     """
     validator = BiolinkValidator(graph_type=TRAPIGraphType.Edge_Object, biolink_version=biolink_version)
-    return validator.check_biolink_model_compliance_of_input_edge(edge)
+    validator.check_biolink_model_compliance_of_input_edge(edge)
+    return validator
 
 
 def check_biolink_model_compliance_of_query_graph(
         graph: Dict,
         biolink_version: Optional[str] = None
-) -> Tuple[str, Optional[Dict[str, Set[str]]]]:
+) -> BiolinkValidator:
     """
     Validate a TRAPI-schema compliant Message Query Graph
     against a designated Biolink Model release.
@@ -592,17 +543,19 @@ def check_biolink_model_compliance_of_query_graph(
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                             validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
-    :return: 2-tuple of Biolink Model version (str) and dictionary of validation messages (may be be empty)
-    :rtype: Tuple[str, Optional[Dict[str, Set[str]]]]
+
+    :returns: Biolink Model validator cataloging validation messages (may be empty)
+    :rtype: BiolinkValidator
     """
     validator = BiolinkValidator(graph_type=TRAPIGraphType.Query_Graph, biolink_version=biolink_version)
-    return validator.check_biolink_model_compliance(graph)
+    validator.check_biolink_model_compliance(graph)
+    return validator
 
 
 def check_biolink_model_compliance_of_knowledge_graph(
         graph: Dict,
         biolink_version: Optional[str] = None
-) -> Tuple[str, Optional[Dict[str, Set[str]]]]:
+) -> BiolinkValidator:
     """
     Strict validation of a TRAPI-schema compliant Message Knowledge Graph
      against a designated Biolink Model release.
@@ -612,11 +565,13 @@ def check_biolink_model_compliance_of_knowledge_graph(
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                             validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
-    :return: 2-tuple of Biolink Model version (str) and dictionary of validation messages (may be be empty)
-    :rtype: Tuple[str, Optional[Dict[str, Set[str]]]]
+
+    :returns: Biolink Model validator cataloging validation messages (may be empty)
+    :rtype: BiolinkValidator
     """
     validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph, biolink_version=biolink_version)
-    return validator.check_biolink_model_compliance(graph)
+    validator.check_biolink_model_compliance(graph)
+    return validator
 
 
 def sample_results(results: List) -> List:
@@ -648,13 +603,12 @@ def sample_graph(graph: Dict) -> Dict:
 def check_provenance(
         ara_case,
         ara_response
-) -> ValidationReporter:
+) -> BiolinkValidator:
     """
     Check to see whether the edge in the ARA response is marked with the expected KP.
 
     :param ara_case: ARA associated input data test case
     :param ara_response: TRAPI Response whose provenance is to be validated.
-    :param test_report: ErrorReport, class wrapper object for asserting and reporting errors
     """
     raise NotImplementedError("Implement me!")
     # error_msg_prefix = generate_test_error_msg_prefix(ara_case, test_name="check_provenance")
@@ -769,7 +723,7 @@ def check_biolink_model_compliance_of_trapi_response(
     validate_provenance: bool,
     trapi_version: str,
     biolink_version: Optional[str] = None
-) -> Tuple[str, ValidationReporter]:
+) -> ValidationReporter:
     """
     One stop validation of all components of a TRAPI-schema compliant
     Query Response.Message against a designated Biolink Model release.
@@ -795,89 +749,85 @@ def check_biolink_model_compliance_of_trapi_response(
                             validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
 
-    :return: 2-Tuple of Biolink Model version (SemVer str) applied to the validation and the outcome of the
-             validation consisting of a ValidationReporter catalog of informational, warning and error messages.
-    :rtype: Tuple[str, ValidationReporter]
+    :returns: Validator cataloging "information", "warning" and "error" messages (may be empty)
+    :rtype: ValidationReporter
     """
 
-    results: Optional[ValidationReporter] = ValidationReporter(prefix="Validating TRAPI Response Message")
+    validator: ValidationReporter = ValidationReporter(prefix="Validating TRAPI Response Message")
+
+    # Query Graph should be echoed and be non-empty
+    qg = message['query_graph']
+    if not (qg and len(qg) > 0):
+        validator.error("Query returned an empty TRAPI Message Query Graph?")
+        return validator
 
     # Generally validate to top level structure of the Knowledge Graph...
     kg = message['knowledge_graph']
-    if not (len(kg) > 0 and "nodes" in kg and len(kg["nodes"]) > 0 and "edges" in kg and len(kg["edges"]) > 0):
-        results.error("Query returned an empty TRAPI Message Knowledge Graph?")
-    else:
-        # ...then if not empty, validate a sample subgraph of the associated Knowledge Graph...
-        kg_sample = sample_graph(message['knowledge_graph'])
-        trapi_validator = TRAPIValidator(trapi_version=trapi_version)
-        trapi_validator.validate(
-            instance=kg_sample,
-            component="KnowledgeGraph"
-        )
-        if trapi_validator.has_messages():
-            # Record the error messages associated with the Knowledge Graph... don't continue
-            results.merge(trapi_validator)
-        else:
+    if not (kg and len(kg) > 0 and "nodes" in kg and len(kg["nodes"]) > 0 and "edges" in kg and len(kg["edges"]) > 0):
+        validator.error("Query returned an empty TRAPI Message Knowledge Graph?")
+        return validator
 
-            # Verify that the sample of the sample knowledge graph is
-            # compliant to the currently applicable Biolink Model release
-            model_version, errors = \
-                check_biolink_model_compliance_of_knowledge_graph(
-                    graph=kg_sample,
-                    biolink_version=biolink_version
-                )
-            #     test_report.test(
-            #         not errors,
-            #         f"{error_msg_prefix} TRAPI response Knowledge Graph sample is not compliant to " +
-            #         f"Biolink Model release '{model_version}': {_output(errors, flat=True)}?",
-            #         data_dump=_output(kg_sample)
-            #     )
+    # ...then if not empty, validate a sample subgraph of the associated Knowledge Graph...
+    kg_sample = sample_graph(message['knowledge_graph'])
+    trapi_validator = TRAPIValidator(trapi_version=trapi_version)
+    trapi_validator.validate(
+        instance=kg_sample,
+        component="KnowledgeGraph"
+    )
+    if trapi_validator.has_messages():
+        # Record the error messages associated with the Knowledge Graph... don't continue
+        validator.merge(trapi_validator)
+        return validator
 
-            # # ...Verify that the response had some results...
-            # is_valid = len(message['results']) > 0
-            # #     test_report.test(
-            # #         is_valid,
-            # #         f"{error_msg_prefix} TRAPI response returned an empty TRAPI Message Result?"
-            # #     )
-            # #
-            # if not is_valid:
-            #     return biolink_version, None
-            # #
-            # # Validate a subsample of the Message.Result data returned
-            # results_sample = sample_results(message['results'])
-            # is_valid, error = is_valid_trapi(results_sample, trapi_version=trapi_version, component="Result")
-            # #     test_report.test(
-            # #         is_valid,
-            # #         f"{error_msg_prefix} TRAPI response Results " +
-            # #         f"are not compliant to TRAPI '{trapi_version}'?",
-            # #         data_dump=f"Sample Results: {_output(results_sample)}\nError: {error}"
-            # #     )
-            #
-            # if not is_valid:
-            #     return biolink_version, None
-            #
-            # # TODO: here, we might wish to compare the Results against the content of the KnowledgeGraph,
-            # #       but this is tricky to do solely with the subsamples, which may not completely overlap.
-            #
-            # # ...Finally, check that the sample Results contained the object of the query
-            # object_ids = [r['node_bindings'][output_node_binding][0]['id'] for r in results_sample]
-            # if case[output_element] not in object_ids:
-            #     # The 'get_aliases' method uses the Translator NodeNormalizer to check if any of
-            #     # the aliases of the case[output_element] identifier are in the object_ids list
-            #     output_aliases = get_aliases(case[output_element])
-            # #         test_report.test(
-            # #             any([alias == object_id for alias in output_aliases for object_id in object_ids]),
-            # #             f"{error_msg_prefix}: neither the input id '{case[output_element]}' nor resolved aliases " +
-            # #             f"were returned in the Result object IDs for node '{output_node_binding}' binding?",
-            # #             data_dump=f"Resolved aliases:\n{','.join(output_aliases)}\n" +
-            # #                       f"Result object IDs:\n{_output(object_ids,flat=True)}"
-            # #         )
-            #
-            # if validate_provenance:
-            #     check_provenance(
-            #         ara_case=case,
-            #         ara_response=response_message,
-            #         test_report=test_report
-            #     )
+    # Verify that the sample of the sample knowledge graph is
+    # compliant to the currently applicable Biolink Model release
+    biolink_validator = check_biolink_model_compliance_of_knowledge_graph(
+        graph=kg_sample,
+        biolink_version=biolink_version
+    )
+    if biolink_validator.has_messages():
+        # Record the error messages associated with the Knowledge Graph... don't continue
+        validator.merge(biolink_validator)
+        return validator
 
-    return biolink_version, results
+    # ...Verify that the response had some results...
+    results = message['results']
+    if not (results and len(results) > 0):
+        validator.error("TRAPI response returned an empty TRAPI Message Result?")
+        return validator
+
+    # Validate a subsample of the Message.Result data returned
+    results_sample = sample_results(message['results'])
+    trapi_validator.validate(
+        instance=results_sample,
+        component="Result"
+    )
+    if trapi_validator.has_messages():
+        # Record the error messages associated with the Result set then... don't continue
+        validator.merge(trapi_validator)
+        return validator
+
+    # # TODO: here, we might wish to compare the Results against the content of the KnowledgeGraph,
+    # #       but this is tricky to do solely with the subsamples, which may not completely overlap.
+    # # ...Finally, check that the sample Results contained the object of the query
+    # object_ids = [r['node_bindings'][output_node_binding][0]['id'] for r in results_sample]
+    # if case[output_element] not in object_ids:
+    #     # The 'get_aliases' method uses the Translator NodeNormalizer to check if any of
+    #     # the aliases of the case[output_element] identifier are in the object_ids list
+    #     output_aliases = get_aliases(case[output_element])
+    #     if not any([alias == object_id for alias in output_aliases for object_id in object_ids]):
+    #         validator.error(
+    #             f"Neither the input id '{case[output_element]}' nor resolved aliases were " +
+    #             f"returned in the Result object IDs for node '{output_node_binding}' binding?"
+    #         )
+    #         # data_dump=f"Resolved aliases:\n{','.join(output_aliases)}\n" +
+    #         #           f"Result object IDs:\n{_output(object_ids,flat=True)}"
+    # #
+    # # if validate_provenance:
+    # #     check_provenance(
+    # #         ara_case=case,
+    # #         ara_response=response_message,
+    # #         test_report=test_report
+    # #     )
+
+    return validator

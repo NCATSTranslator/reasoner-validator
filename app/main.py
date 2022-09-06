@@ -1,13 +1,14 @@
 """
 FastAPI web service wrapper for TRAPI validator and Biolink Model compliance testing
 """
-from typing import Optional, Dict, List, Set
+from typing import Optional, Dict
 from pydantic import BaseModel
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
 
-from reasoner_validator import TRAPIValidator, ValidationReporter
+from reasoner_validator.report import ValidationReporter
+from reasoner_validator.trapi import TRAPIValidator
 from reasoner_validator.util import latest
 from reasoner_validator.biolink import (
     check_biolink_model_compliance_of_query_graph,
@@ -55,7 +56,7 @@ async def validate(query: Query):
         biolink_version, messages = \
             check_biolink_model_compliance_of_query_graph(
                 graph=query.message['query_graph'],
-                biolink_version=query.biolink_version
+                biolink_version=biolink_version
             )
         if any([message_set for message_set in messages.values()]):
             results.add_messages(messages)
@@ -69,7 +70,7 @@ async def validate(query: Query):
         biolink_version, messages = \
             check_biolink_model_compliance_of_knowledge_graph(
                 graph=query.message['knowledge_graph'],
-                biolink_version=query.biolink_version
+                biolink_version=biolink_version
             )
         if any([message_set for message_set in messages.values()]):
             results.add_messages(messages)
@@ -94,11 +95,7 @@ async def validate(query: Query):
     if not results:
         results.info(f"Biolink Model-compliant TRAPI Message!")
 
-    return {
-        "trapi_version": trapi_validator.get_trapi_version(),
-        "biolink_version": biolink_version,
-        "validation": results
-    }
+    return results.to_dict()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=80)

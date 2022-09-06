@@ -1,101 +1,41 @@
-"""TRAPI Validation Functions."""
-from typing import Optional, Dict, Set, Tuple
+import re
+from typing import Optional
 
-import jsonschema
-
-from .report import ValidationReporter
-from .util import load_schema
+CURIE_PATTERN = re.compile(r"^[^ <()>:]*:[^/ :]+$")
 
 
-class TRAPIValidator(ValidationReporter):
+def is_curie(s: str) -> bool:
     """
-    TRAPI Validator is a wrapper class for validating
-    conformance of JSON messages to the Translator Reasoner API.
+    Check if a given string is a CURIE.
+
+    :param s: str, string to be validated as a CURIE
+    :return: bool, whether or not the given string is a CURIE
     """
-    # Default major version resolves to latest TRAPI OpenAPI release,
-    # specifically 1.3.0, as of September 1st, 2022
-    DEFAULT_TRAPI_VERSION = "1"
-
-    def __init__(self, trapi_version: Optional[str] = None):
-        """
-        TRAPI Validator constructor.
-
-        Parameters
-        ----------
-        trapi_version : str
-            version of component to validate against
-        """
-        self.version = trapi_version if trapi_version else self.DEFAULT_TRAPI_VERSION
-        ValidationReporter.__init__(self, prefix=F"Validating against TRAPI {self.version}")
-
-    def get_trapi_version(self) -> str:
-        """
-        :return: str, TRAPI (SemVer) version
-        """
-        return self.version
-
-    def validate(self, instance, component):
-        """Validate instance against schema.
-
-        Parameters
-        ----------
-        instance
-            instance to validate
-        component : str
-            component to validate against
-
-        Raises
-        ------
-        `ValidationError <https://python-jsonschema.readthedocs.io/en/latest/errors/#jsonschema.exceptions.ValidationError>`_
-            If the instance is invalid.
-
-        Examples
-        --------
-        >>> TRAPIValidator(trapi_version="1.3.0").validate({"message": {}}, "Query")
-
-        """
-        schema = load_schema(self.version)[component]
-        jsonschema.validate(instance, schema)
-
-    def is_valid_trapi_query(self, instance):
-        """Make sure that the Message is a syntactically valid TRAPI Query JSON object.
-
-        Parameters
-        ----------
-        instance
-            instance to validate
-
-        Returns
-        -------
-        Validation ("information", "warning" and "error") messages are returned within the TRAPIValidator instance.
-
-        Examples
-        --------
-        >>> TRAPIValidator(trapi_version="1.3.0").is_valid_trapi_query({"message": {}})
-        """
-        try:
-            self.validate(
-                instance=instance,
-                component="Query"
-            )
-        except jsonschema.ValidationError as e:
-            self.error(f"TRAPI {self.version} Query: '{e.message}'")
+    # Method copied from kgx.prefix_manager.PrefixManager...
+    if isinstance(s, str):
+        m = CURIE_PATTERN.match(s)
+        return bool(m)
+    else:
+        return False
 
 
-def check_trapi_validity(instance, trapi_version: str) -> ValidationReporter:
+def get_reference(curie: str) -> Optional[str]:
     """
-    Checks schema compliance of a Query component against a given TRAPI version.
+    Get the object_id reference of a given CURIE.
 
     Parameters
     ----------
-    instance: Dict, of format {"message": {}}
-    trapi_version : str
-        version of component to validate against
+    curie: str
+        The CURIE
 
     Returns
     -------
-    ValidationReporter catalog of "information", "warnings" or "errors" indexed messages (may be empty)
+    Optional[str]
+        The reference of a CURIE
+
     """
-    trapi_validator = TRAPIValidator(trapi_version=trapi_version)
-    trapi_validator.is_valid_trapi_query(instance)
-    return trapi_validator
+    # Method adapted from kgx.prefix_manager.PrefixManager...
+    reference: Optional[str] = None
+    if is_curie(curie):
+        reference = curie.split(":", 1)[1]
+    return reference

@@ -9,14 +9,43 @@ def _output(json, flat=False):
 
 
 class ValidationReporter:
+    """
+    General wrapper for managing validation status messages: information, warnings and errors.
+    The TRAPI version and Biolink Model versions are also tracked for convenience at
+    this abstract level although their application is within specific pertinent subclasses.
+    """
 
-    def __init__(self, prefix: Optional[str] = None):
+    # Default major version resolves to latest TRAPI OpenAPI release,
+    # specifically 1.3.0, as of September 1st, 2022
+    DEFAULT_TRAPI_VERSION = "1"
+
+    def __init__(
+            self,
+            prefix: Optional[str] = None,
+            trapi_version: Optional[str] = None,
+            biolink_version: Optional[str] = None
+    ):
         self.prefix: str = prefix + ": " if prefix else ""
+        self.trapi_version = trapi_version if trapi_version else self.DEFAULT_TRAPI_VERSION
+        self.biolink_version = biolink_version
         self.messages: Dict[str, Set[str]] = {
             "information": set(),
             "warnings": set(),
             "errors": set()
         }
+
+    def get_trapi_version(self) -> str:
+        """
+        :return: str, TRAPI (SemVer) version
+        """
+        return self.trapi_version
+
+    def get_biolink_model_version(self) -> str:
+        """
+        :return: Biolink Model version currently targeted by the validator.
+        :rtype biolink_version: str
+        """
+        return self.biolink_version
 
     def info(self, err_msg: str):
         """
@@ -96,10 +125,25 @@ class ValidationReporter:
 
     def merge(self, reporter):
         """
-        Merge all the messages from a second ValidatorReporter, in the calling ValidatorReporter instance.
+        Merge all messages and metadata from a second ValidatorReporter,
+        into the calling ValidatorReporter instance.
+
         :param reporter: second ValidatorReporter
         """
         assert isinstance(reporter, ValidationReporter)
         for key in self.messages:
             self.messages[key].update(reporter.messages[key])
 
+        # First come, first serve... We only overwrite
+        # empty versions in the parent reporter
+        if not self.trapi_version:
+            self.trapi_version = reporter.trapi_version
+        if not self.biolink_version:
+            self.biolink_version = reporter.biolink_version
+
+    def to_dict(self) -> Dict:
+        return {
+            "trapi_version": self.trapi_version,
+            "biolink_version": self.biolink_version,
+            "messages": self.get_messages()
+        }
