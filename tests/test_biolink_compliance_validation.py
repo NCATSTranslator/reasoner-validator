@@ -32,7 +32,7 @@ LATEST_BIOLINK_MODEL = "2.4.8"
 
 def test_set_default_biolink_versioned_global_environment():
     validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
-    model_version = validator.get_biolink_model_version()
+    model_version = validator.get_biolink_version()
     print(
         f"\ntest_set_default_global_environment(): Biolink Model version is: '{str(model_version)}'",
         file=stderr, flush=True
@@ -45,7 +45,7 @@ def test_set_specific_biolink_versioned_global_environment():
         graph_type=TRAPIGraphType.Knowledge_Graph,
         biolink_version="1.8.2"
     )
-    assert validator.get_biolink_model_version() == "1.8.2"
+    assert validator.get_biolink_version() == "1.8.2"
 
 
 def test_minimum_required_biolink_version():

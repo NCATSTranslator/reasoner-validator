@@ -3,11 +3,16 @@ from typing import Dict, Set
 
 from reasoner_validator.report import ValidationReporter
 
+TEST_TRAPI_VERSION = "1.3.0"
+TEST_BIOLINK_VERSION = "2.4.8"
+
 
 def test_messages():
 
     # Loading and checking a first reporter
-    reporter1 = ValidationReporter(prefix="First Validation Report")
+    reporter1 = ValidationReporter(prefix="First Validation Report", trapi_version=TEST_TRAPI_VERSION)
+    assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
+    assert reporter1.get_biolink_version() is None
     assert not reporter1.has_messages()
     reporter1.info("this is information.")
     assert reporter1.has_messages()
@@ -20,16 +25,22 @@ def test_messages():
     assert reporter1.has_messages()
 
     # Testing merging of messages from a second reporter
-    reporter2 = ValidationReporter(prefix="Second Validation Report")
+    reporter2 = ValidationReporter(prefix="Second Validation Report", biolink_version=TEST_BIOLINK_VERSION)
+    assert reporter2.get_trapi_version() is "1"
+    assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
     reporter2.info("this is more information.")
     reporter2.warning("this is another warning?")
     reporter2.error("this is a second error!")
     reporter1.merge(reporter2)
-
+    assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
+    assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION
+    
     # No prefix...
     reporter3 = ValidationReporter()
     reporter3.error("Ka Boom!")
     reporter1.merge(reporter3)
+    assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
+    assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION
 
     # testing addition a few raw batch messages
     new_messages: Dict[str, Set[str]] = {
@@ -52,3 +63,10 @@ def test_messages():
     assert "Second Validation Report: ERROR - this is a second error!" in messages["errors"]
     assert "Dave, this can only be due to human error!" in messages["errors"]
     assert "ERROR - Ka Boom!" in messages["errors"]
+    
+    obj = reporter1.to_dict()
+    assert obj["trapi_version"] == TEST_TRAPI_VERSION
+    assert obj["biolink_version"] == TEST_BIOLINK_VERSION
+    assert "messages" in obj
+    assert "errors" in obj["messages"]
+    assert "ERROR - Ka Boom!" in obj["messages"]["errors"]

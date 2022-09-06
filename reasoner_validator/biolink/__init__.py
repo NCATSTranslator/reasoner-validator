@@ -761,6 +761,14 @@ def check_biolink_model_compliance_of_trapi_response(
         validator.error("Query returned an empty TRAPI Message Query Graph?")
         return validator
 
+    biolink_validator = check_biolink_model_compliance_of_query_graph(
+            graph=qg,
+            biolink_version=biolink_version
+        )
+    if biolink_validator.has_messages():
+        validator.merge(biolink_validator)
+        return validator
+
     # Generally validate to top level structure of the Knowledge Graph...
     kg = message['knowledge_graph']
     if not (kg and len(kg) > 0 and "nodes" in kg and len(kg["nodes"]) > 0 and "edges" in kg and len(kg["edges"]) > 0):

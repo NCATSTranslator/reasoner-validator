@@ -40,7 +40,7 @@ class ValidationReporter:
         """
         return self.trapi_version
 
-    def get_biolink_model_version(self) -> str:
+    def get_biolink_version(self) -> str:
         """
         :return: Biolink Model version currently targeted by the validator.
         :rtype biolink_version: str
@@ -131,8 +131,7 @@ class ValidationReporter:
         :param reporter: second ValidatorReporter
         """
         assert isinstance(reporter, ValidationReporter)
-        for key in self.messages:
-            self.messages[key].update(reporter.messages[key])
+        self.add_messages(reporter.get_messages())
 
         # First come, first serve... We only overwrite
         # empty versions in the parent reporter
