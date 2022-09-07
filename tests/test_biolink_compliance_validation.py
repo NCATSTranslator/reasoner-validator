@@ -1492,7 +1492,7 @@ def test_check_provenance(query: Tuple):
             False,
             None,
             None,
-            "Validating TRAPI Response Message: ERROR - Query returned an empty TRAPI Message Query Graph?"
+            "Validating TRAPI Response Message: WARNING - Query returned an empty TRAPI Message Query Graph?"
         ),
         (
             {
@@ -1520,7 +1520,7 @@ def test_check_provenance(query: Tuple):
             False,
             None,
             None,
-            "Validating TRAPI Response Message: ERROR - Query returned an empty TRAPI Message Knowledge Graph?"
+            "Validating TRAPI Response Message: WARNING - Query returned an empty TRAPI Message Knowledge Graph?"
         ),
         (
             {
@@ -1604,7 +1604,7 @@ def test_check_provenance(query: Tuple):
             False,
             None,
             None,
-            "Validating TRAPI Response Message: ERROR - TRAPI response returned an empty TRAPI Message Result?"
+            "Validating TRAPI Response Message: WARNING - TRAPI response returned an empty TRAPI Message Result?"
         )
     ]
 )

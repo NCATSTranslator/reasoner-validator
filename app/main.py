@@ -53,7 +53,7 @@ async def validate(query: Query):
         validator.warning(f"Empty TRAPI Message Query Graph?")
     else:
         # Verify that the provided TRAPI Message Query Graph is compliant to the current Biolink Model release
-        biolink_validator: BiolinkValidator  = \
+        biolink_validator: BiolinkValidator = \
             check_biolink_model_compliance_of_query_graph(
                 graph=query.message['query_graph'],
                 biolink_version=biolink_version

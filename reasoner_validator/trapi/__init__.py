@@ -33,9 +33,9 @@ class TRAPIValidator(ValidationReporter):
         Parameters
         ----------
         instance
-            instance to validate
+            dict, instance to validate
         component : str
-            component to validate against
+            str, TRAPI subschema to validate (e.g. 'Query', 'QueryGraph', 'KnowledgeGraph', 'Result'; Default: 'Query')
 
         Raises
         ------
@@ -44,51 +44,56 @@ class TRAPIValidator(ValidationReporter):
 
         Examples
         --------
-        >>> TRAPIValidator(trapi_version="1.3.0").validate({"message": {}}, "Query")
+        >>> TRAPIValidator(trapi_version="1.3.0").validate({"message": {}}, "QGraph")
 
         """
         schema = load_schema(self.trapi_version)[component]
         jsonschema.validate(instance, schema)
 
-    def is_valid_trapi_query(self, instance):
+    def is_valid_trapi_query(self, instance, component: str = "Query"):
         """Make sure that the Message is a syntactically valid TRAPI Query JSON object.
 
         Parameters
         ----------
-        instance
-            instance to validate
+        instance:
+            Dict, instance to validate
+        component:
+            str, TRAPI subschema to validate (e.g. 'Query', 'QueryGraph', 'KnowledgeGraph', 'Result'; Default: 'Query')
 
         Returns
         -------
-        Validation ("information", "warning" and "error") messages are returned within the TRAPIValidator instance.
+        Validation ("information", "warning" and "error") messages are returned within the host TRAPIValidator instance.
 
         Examples
         --------
-        >>> TRAPIValidator(trapi_version="1.3.0").is_valid_trapi_query({"message": {}})
+        >>> TRAPIValidator(trapi_version="1.3.0").is_valid_trapi_query({"message": {}}, component="Query")
         """
         try:
             self.validate(
                 instance=instance,
-                component="Query"
+                component=component
             )
         except jsonschema.ValidationError as e:
             self.error(f"TRAPI {self.trapi_version} Query: '{e.message}'")
 
 
-def check_trapi_validity(instance, trapi_version: str) -> ValidationReporter:
+def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPIValidator:
     """
     Checks schema compliance of a Query component against a given TRAPI version.
 
     Parameters
     ----------
-    instance: Dict, of format {"message": {}}
-    trapi_version : str
-        version of component to validate against
+    instance:
+        Dict, of format {"message": {}}
+    component:
+        str, TRAPI subschema to validate (e.g. 'Query', 'QueryGraph', 'KnowledgeGraph', 'Result'; Default: 'Query')
+    trapi_version:
+        str, version of component to validate against
 
     Returns
     -------
     ValidationReporter catalog of "information", "warnings" or "errors" indexed messages (may be empty)
     """
     trapi_validator = TRAPIValidator(trapi_version=trapi_version)
-    trapi_validator.is_valid_trapi_query(instance)
+    trapi_validator.is_valid_trapi_query(instance, component=component)
     return trapi_validator
