@@ -146,3 +146,19 @@ class ValidationReporter:
             "biolink_version": self.biolink_version,
             "messages": self.get_messages()
         }
+
+    def validate(self, validation_method, *args, **kwargs) -> bool:
+        """
+        Wrapper to allow validation_methods direct access to the ValidatorReporter.
+
+        :param validation_method: function which accepts this instance of the
+               ValidatorReporter as its first argument, for use in reporting validation errors.
+        :param args: any positional arguments to the validation_method, after the initial ValidatorReporter argument
+        :param kwargs: any (optional, additional) keyword arguments to the validation_method, after positional arguments
+        :return: bool, returns 'False' if validation method documented errors; True otherwise
+        """
+        validation_method(self, *args, **kwargs)
+        if self.has_errors():
+            return False
+        else:
+            return True

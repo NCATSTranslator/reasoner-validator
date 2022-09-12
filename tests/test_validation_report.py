@@ -70,3 +70,34 @@ def test_messages():
     assert "messages" in obj
     assert "errors" in obj["messages"]
     assert "ERROR - Ka Boom!" in obj["messages"]["errors"]
+
+
+def test_validator_method():
+    reporter = ValidationReporter(
+        prefix="Test Validator Method",
+        trapi_version=TEST_TRAPI_VERSION,
+        biolink_version=TEST_BIOLINK_VERSION
+    )
+
+    test_data: Dict = {
+        "some key": "some value"
+    }
+    test_parameters: Dict = {
+        "some parameter": "some parameter value",
+        "another parameter": "some other parameter value"
+    }
+
+    def validator_method(validator: ValidationReporter, arg, **case):
+        assert isinstance(arg, Dict)
+        assert arg['some key'] == "some value"
+        validator.warning("This is a Warning?")
+        assert len(case) == 2
+        assert case['some parameter'] == "some parameter value"
+        validator.error("This is an Error!")
+
+    reporter.validate(validator_method, test_data, **test_parameters)
+
+    messages: Dict[str, Set[str]] = reporter.get_messages()
+
+    assert "Test Validator Method: WARNING - This is a Warning?" in messages["warnings"]
+    assert "Test Validator Method: ERROR - This is an Error!" in messages["errors"]
