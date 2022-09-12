@@ -13,7 +13,7 @@ from linkml_runtime.linkml_model import ClassDefinition, Element
 
 from reasoner_validator import is_curie
 from reasoner_validator.report import ValidationReporter
-from reasoner_validator.trapi import TRAPIValidator, check_trapi_validity
+from reasoner_validator.trapi import TRAPIValidator, check_trapi_validity, check_node_edge_mappings
 from reasoner_validator.util import SemVer, SemVerError
 
 logger = logging.getLogger(__name__)
@@ -177,7 +177,7 @@ class BiolinkValidator(ValidationReporter):
 
         else:  # Query Graph node validation
 
-            if "ids" in slots:
+            if "ids" in slots and slots["ids"]:
                 ids = slots["ids"]
                 if not isinstance(ids, List):
                     self.error(f"Node '{node_id}.ids' slot value is not an array!")
@@ -799,6 +799,10 @@ def validate_knowledge_graph(validator: ValidationReporter, message: Dict):
         ):
             validator.warning("Query returned an empty TRAPI Message Knowledge Graph?")
         else:
+            mapping_validator: ValidationReporter = check_node_edge_mappings(knowledge_graph)
+            if mapping_validator.has_messages():
+                validator.merge(mapping_validator)
+
             # ...then if not empty, validate a subgraph sample of the associated
             # Knowledge Graph (since some TRAPI response kg's may be huge!)
             kg_sample = sample_graph(knowledge_graph)
@@ -907,7 +911,8 @@ def check_biolink_model_compliance_of_trapi_response(
         biolink_version=biolink_version
     )
     # Sequentially validate the Query Graph, Knowledge Graph the Results (which relies on the other two components)
-    if validator.validate(validate_query_graph, message) and validator.validate(validate_knowledge_graph, message):
-        validator.validate(validate_results, message)
+    if validator.apply_validation(validate_query_graph, message) and \
+            validator.apply_validation(validate_knowledge_graph, message):
+        validator.apply_validation(validate_results, message)
 
     return validator

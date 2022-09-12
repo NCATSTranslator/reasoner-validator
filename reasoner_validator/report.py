@@ -147,7 +147,7 @@ class ValidationReporter:
             "messages": self.get_messages()
         }
 
-    def validate(self, validation_method, *args, **kwargs) -> bool:
+    def apply_validation(self, validation_method, *args, **kwargs) -> bool:
         """
         Wrapper to allow validation_methods direct access to the ValidatorReporter.
 
