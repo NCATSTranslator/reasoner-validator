@@ -1,11 +1,23 @@
 """Error and Warning Reporting Module"""
 import copy
 from typing import Optional, Set, Dict, List
-from json import dumps
+from json import dumps, JSONEncoder
+
+
+class ReportJsonEncoder(JSONEncoder):
+    def default(self, o):
+        try:
+            iterable = iter(o)
+        except TypeError:
+            pass
+        else:
+            return list(iterable)
+        # Let the base class default method raise the TypeError
+        return JSONEncoder.default(self, o)
 
 
 def _output(json, flat=False):
-    return dumps(json, sort_keys=False, indent=None if flat else 4)
+    return dumps(json, cls=ReportJsonEncoder, sort_keys=False, indent=None if flat else 4)
 
 
 class ValidationReporter:
