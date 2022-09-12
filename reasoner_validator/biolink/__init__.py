@@ -459,7 +459,7 @@ class BiolinkValidator(ValidationReporter):
                 self.error(f"'{predicate}' is an unknown Biolink Model predicate!")
             elif self.minimum_required_biolink_version("2.2.0") and \
                     not self.bmt.is_translator_canonical_predicate(predicate):
-                self.error(f"predicate '{predicate}' is non-canonical!")
+                self.warning(f"predicate '{predicate}' is non-canonical!")
         else:  # is a Query Graph...
             if predicates is None:
                 # Query Graphs can have a missing or null predicates slot
@@ -475,7 +475,7 @@ class BiolinkValidator(ValidationReporter):
                         self.error(f"'{predicate}' is an unknown Biolink Model predicate!")
                     elif self.minimum_required_biolink_version("2.2.0") and \
                             not self.bmt.is_translator_canonical_predicate(predicate):
-                        self.error(f"predicate '{predicate}' is non-canonical!")
+                        self.warning(f"predicate '{predicate}' is non-canonical!")
         if not object_id:
             self.error(f"Edge '{edge_id}' has a missing or empty 'object' slot value!")
         elif object_id not in self.nodes:
@@ -579,7 +579,7 @@ class BiolinkValidator(ValidationReporter):
             self.error(err_msg)
         elif self.minimum_required_biolink_version("2.2.0") and \
                 not self.bmt.is_translator_canonical_predicate(predicate_curie):
-            self.error(f"Input predicate '{predicate_curie}' is non-canonical!")
+            self.warning(f"Input predicate '{predicate_curie}' is non-canonical!")
 
         self.validate_input_node(
             context='object',
