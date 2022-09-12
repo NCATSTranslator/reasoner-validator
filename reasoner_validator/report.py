@@ -176,10 +176,10 @@ class ValidationReporter:
             return True
 
     @staticmethod
-    def has_validation_errors(case: Optional[Dict] = None, root_key: str = 'validation') -> bool:
+    def has_validation_errors(tag: str, case: Dict) -> bool:
         """
 
-        :param root_key: top level string key of the case 'dictionary' input
+        :param tag: str, top level string key of the case 'dictionary' input
         :param case: Dict, containing error messages in a structurally similar
                      format to what is returned by the to_dict() method in this class.
         :return: True if the case contains validation messages
@@ -187,7 +187,7 @@ class ValidationReporter:
         #
         # The 'case' dictionary object could have a format something like this:
         #
-        #     root_key: {
+        #     tag: {
         #         "trapi_version": "1",
         #         "biolink_version": "2.4.7",
         #         "messages": {
@@ -201,10 +201,10 @@ class ValidationReporter:
         #     }
         #
         # and we have non-empty "errors"
-        if case is not None and root_key in case and \
-                'messages' in case[root_key] and \
-                'errors' in case[root_key]['messages'] and \
-                case[root_key]['messages']['errors']:
+        if case is not None and tag in case and \
+                'messages' in case[tag] and \
+                'errors' in case[tag]['messages'] and \
+                case[tag]['messages']['errors']:
             return True
         else:
             return False

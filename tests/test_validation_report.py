@@ -109,7 +109,7 @@ def test_validator_method():
     "query",
     [
         (
-                None,
+                'validation',
                 {
                     "validation": {
                         "trapi_version": "1.3",
@@ -126,7 +126,7 @@ def test_validator_method():
                 True
         ),
         (
-                None,
+                "validation",
                 {
                     "validation": {
                         "trapi_version": "1.3",
@@ -143,47 +143,9 @@ def test_validator_method():
                 },
                 False
         ),
-        (
-                "validation_report",
-                {
-                    "validation_report": {
-                        "trapi_version": "1.3",
-                        "biolink_version": "2.4.7",
-                        "messages": {
-                            "information": [],
-                            "warnings": [
-                                "Validation: WARNING - Input Biolink class 'biolink:ChemicalSubstance' is deprecated?",
-                                "Validation: WARNING - Input predicate 'biolink:participates_in' is non-canonical!"
-                            ],
-                            "errors": []
-                        }
-                    }
-                },
-                False
-        ),
-        (
-            "validation_report",
-            {
-                "validation_report": {
-                    "trapi_version": "1.3",
-                    "biolink_version": "2.4.7",
-                    "messages": {
-                        "information": [],
-                        "warnings": [],
-                        "errors": [
-                            "Validation: ERROR - this is an error"
-                        ]
-                    }
-                }
-            },
-            True
-        )
     ]
 )
 def test_has_validation_errors(query: Tuple):
     reporter = ValidationReporter()
-    if query[0] is not None:
-        assert reporter.has_validation_errors(case=query[1], root_key=query[0]) == query[2]
-    else:
-        assert reporter.has_validation_errors(query[1]) == query[2]
+    assert reporter.has_validation_errors(tag=query[0], case=query[1]) == query[2]
 
