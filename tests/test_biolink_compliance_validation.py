@@ -1009,7 +1009,7 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974' is missing its 'categories'!"
+            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974' is missing its categories!"
         ),
         (
             LATEST_BIOLINK_MODEL,

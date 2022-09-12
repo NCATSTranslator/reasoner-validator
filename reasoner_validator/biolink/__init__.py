@@ -172,7 +172,7 @@ class BiolinkValidator(ValidationReporter):
                             f"'{node_id}', the CURIE prefix namespace remains unmapped!"
                         )
             else:
-                self.error(f"Node '{node_id}' is missing its 'categories'!")
+                self.error(f"Node '{node_id}' is missing its categories!")
             # TODO: Do we need to (or can we) validate other Knowledge Graph node fields here? Perhaps yet?
 
         else:  # Query Graph node validation
