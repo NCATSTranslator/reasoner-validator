@@ -174,3 +174,37 @@ class ValidationReporter:
             return False
         else:
             return True
+
+    @staticmethod
+    def has_validation_errors(case: Optional[Dict] = None, root_key: str = 'validation') -> bool:
+        """
+
+        :param root_key: top level string key of the case 'dictionary' input
+        :param case: Dict, containing error messages in a structurally similar
+                     format to what is returned by the to_dict() method in this class.
+        :return: True if the case contains validation messages
+        """
+        #
+        # The 'case' dictionary object could have a format something like this:
+        #
+        #     root_key: {
+        #         "trapi_version": "1",
+        #         "biolink_version": "2.4.7",
+        #         "messages": {
+        #             "information": [],
+        #             "warnings": [
+        #                 "Validation: WARNING - Input Biolink class 'biolink:ChemicalSubstance' is deprecated?",
+        #                 "Validation: WARNING - Input predicate 'biolink:participates_in' is non-canonical!"
+        #             ],
+        #             "errors": []
+        #         }
+        #     }
+        #
+        # and we have non-empty "errors"
+        if case is not None and root_key in case and \
+                'messages' in case[root_key] and \
+                'errors' in case[root_key]['messages'] and \
+                case[root_key]['messages']['errors']:
+            return True
+        else:
+            return False

@@ -1,5 +1,6 @@
 """Testing Validation Report methods"""
-from typing import Dict, Set
+from typing import Dict, Set, Tuple
+import pytest
 
 from reasoner_validator.report import ValidationReporter
 
@@ -101,3 +102,88 @@ def test_validator_method():
 
     assert "Test Validator Method: WARNING - This is a Warning?" in messages["warnings"]
     assert "Test Validator Method: ERROR - This is an Error!" in messages["errors"]
+
+
+# has_validation_errors(root_key: str = 'validation', case: Optional[Dict] = None)
+@pytest.mark.parametrize(
+    "query",
+    [
+        (
+                None,
+                {
+                    "validation": {
+                        "trapi_version": "1.3",
+                        "biolink_version": "2.4.7",
+                        "messages": {
+                            "information": [],
+                            "warnings": [],
+                            "errors": [
+                                "Validation: ERROR - this is an error"
+                            ]
+                        }
+                    }
+                },
+                True
+        ),
+        (
+                None,
+                {
+                    "validation": {
+                        "trapi_version": "1.3",
+                        "biolink_version": "2.4.7",
+                        "messages": {
+                            "information": [],
+                            "warnings": [
+                                "Validation: WARNING - Input Biolink class 'biolink:ChemicalSubstance' is deprecated?",
+                                "Validation: WARNING - Input predicate 'biolink:participates_in' is non-canonical!"
+                            ],
+                            "errors": []
+                        }
+                    }
+                },
+                False
+        ),
+        (
+                "validation_report",
+                {
+                    "validation_report": {
+                        "trapi_version": "1.3",
+                        "biolink_version": "2.4.7",
+                        "messages": {
+                            "information": [],
+                            "warnings": [
+                                "Validation: WARNING - Input Biolink class 'biolink:ChemicalSubstance' is deprecated?",
+                                "Validation: WARNING - Input predicate 'biolink:participates_in' is non-canonical!"
+                            ],
+                            "errors": []
+                        }
+                    }
+                },
+                False
+        ),
+        (
+            "validation_report",
+            {
+                "validation_report": {
+                    "trapi_version": "1.3",
+                    "biolink_version": "2.4.7",
+                    "messages": {
+                        "information": [],
+                        "warnings": [],
+                        "errors": [
+                            "Validation: ERROR - this is an error"
+                        ]
+                    }
+                }
+            },
+            True
+        )
+    ]
+)
+def test_has_validation_errors(query: Tuple):
+    reporter = ValidationReporter()
+    if query[0] is not None:
+        assert reporter.has_validation_errors(case=query[1], root_key=query[0]) == query[2]
+    else:
+        assert reporter.has_validation_errors(query[1]) == query[2]
+
