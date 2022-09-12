@@ -22,7 +22,7 @@ app = FastAPI()
 # query_graph, knowledge_graph and results JSON tag-values
 #
 class Query(BaseModel):
-    trapi_version: Optional[str] = TRAPIValidator.DEFAULT_TRAPI_VERSION
+    trapi_version: Optional[str] = latest.get(TRAPIValidator.DEFAULT_TRAPI_VERSION)
 
     # default: latest Biolink Model Toolkit supported version
     biolink_version: Optional[str] = None

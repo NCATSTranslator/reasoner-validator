@@ -3,6 +3,8 @@ import copy
 from typing import Optional, Set, Dict, List
 from json import dumps, JSONEncoder
 
+from reasoner_validator.util import latest
+
 
 class ReportJsonEncoder(JSONEncoder):
     def default(self, o):
@@ -38,7 +40,7 @@ class ValidationReporter:
             biolink_version: Optional[str] = None
     ):
         self.prefix: str = prefix + ": " if prefix else ""
-        self.trapi_version = trapi_version if trapi_version else self.DEFAULT_TRAPI_VERSION
+        self.trapi_version = trapi_version if trapi_version else latest.get(self.DEFAULT_TRAPI_VERSION)
         self.biolink_version = biolink_version
         self.messages: Dict[str, Set[str]] = {
             "information": set(),

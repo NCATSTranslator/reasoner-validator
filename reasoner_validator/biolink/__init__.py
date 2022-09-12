@@ -110,7 +110,7 @@ class BiolinkValidator(ValidationReporter):
         resolved_biolink_version = self.bmt.get_model_version()
         ValidationReporter.__init__(
             self,
-            prefix=f"Validating {graph_type.value} against Biolink Model {resolved_biolink_version}",
+            prefix=f"Biolink Validation of {graph_type.value}",
             biolink_version=resolved_biolink_version
         )
         self.graph_type = graph_type

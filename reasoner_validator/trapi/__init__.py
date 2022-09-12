@@ -4,7 +4,7 @@ from typing import Optional, Dict
 import jsonschema
 
 from reasoner_validator.report import ValidationReporter
-from reasoner_validator.util import load_schema
+from reasoner_validator.util import load_schema, latest
 
 
 class TRAPIValidator(ValidationReporter):
@@ -21,10 +21,11 @@ class TRAPIValidator(ValidationReporter):
         trapi_version : str
             version of component to validate against
         """
+        resolved_biolink_version = latest.get(trapi_version)
         ValidationReporter.__init__(
             self,
-            prefix=F"Validating against TRAPI {trapi_version}",
-            trapi_version=trapi_version
+            prefix=F"TRAPI Validation",
+            trapi_version=resolved_biolink_version
         )
 
     def validate(self, instance, component):
