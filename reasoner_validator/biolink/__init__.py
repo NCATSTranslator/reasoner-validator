@@ -1,8 +1,7 @@
 """
 Version-specific Biolink Model semantic validation of knowledge graph components.
 """
-from typing import Optional, Any, Dict, List, Tuple, Set, Union
-from sys import stderr
+from typing import Optional, Any, Dict, List, Tuple, Set
 from enum import Enum
 from functools import lru_cache
 from urllib.error import HTTPError
@@ -232,34 +231,34 @@ class BiolinkValidator(ValidationReporter):
 
         :param context: parsing context (e.g. 'Node')
         :param name: name of putative Biolink element ('class')
-        :param strict_validation: if True, non-concrete and deprecated elements validates as 'error'; False, 'warning'
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue a 'warning'
 
         :return: Optional[Element], Biolink Element resolved to 'name' if element passed all validation; None otherwise.
         """
         element: Optional[Element] = self.bmt.get_element(name)
         if not element:
-            self.error(f"{context} element '{str(name)}' is an unknown Biolink class!")
+            self.error(f"{context} element '{str(name)}' is unknown!")
         elif element.deprecated:
             self.warning(
-                f"{context} Biolink class '{name}' is deprecated?"
+                f"{context} element '{name}' is deprecated?"
             )
             return None
         elif element.abstract:
             if strict_validation:
                 self.error(
-                    f"{context} Biolink class '{name}' is abstract, not a concrete category!"
+                    f"{context} element '{name}' is abstract!"
                 )
             else:
-                self.warning(f"{context} Biolink class '{name}' is abstract. Ignored in this context?")
+                self.warning(f"{context} element '{name}' is abstract. Ignored in this context?")
             return None
         elif self.bmt.is_mixin(name):
             # A mixin cannot be instantiated thus it should not be given as an input concept category
             if strict_validation:
                 self.error(
-                    f"{context} identifier '{name}' designates a mixin, not a concrete category!"
+                    f"{context} element '{name}' is a mixin!"
                 )
             else:
-                self.warning(f"{context} Biolink class '{name}' is a 'mixin'. Ignored in this context?")
+                self.warning(f"{context} element '{name}' is a mixin. Ignored in this context?")
             return None
         else:
             return element
@@ -268,12 +267,12 @@ class BiolinkValidator(ValidationReporter):
             self,
             edge: Dict,
             context: Optional[Dict] = None,
-            strict_validation: bool = False
+            strict_validation: bool = True
     ):
         """
         :param edge: Dict, the edge object associated wich some attributes are expected to be found
         :param context: Dict, (optional) ARA or KP context of the edge
-        :param strict_validation: bool, performance validation strictly if 'True'
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue a 'warning'
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
         if 'attributes' not in edge.keys():
@@ -424,14 +423,28 @@ class BiolinkValidator(ValidationReporter):
             if not found_primary_or_original_knowledge_source:
                 self.error(f"Edge has neither a 'primary' nor 'original' knowledge source!")
 
-    def validate_graph_edge(self, edge: Dict, strict_validation: bool = False):
+    def validate_predicate(self, context: str, predicate: str, strict_validation: bool = True):
+        # Validate the putative predicate as *not* being abstract, deprecated or a mixin
+        biolink_class = self.validate_element_status(
+            context=context,
+            name=predicate,
+            strict_validation=strict_validation
+        )
+        if biolink_class:
+            if not self.bmt.is_predicate(predicate):
+                self.error(f"{context} '{predicate}' is unknown!")
+            elif self.minimum_required_biolink_version("2.2.0") and \
+                    not self.bmt.is_translator_canonical_predicate(predicate):
+                self.warning(f"{context} '{predicate}' is non-canonical!")
+
+    def validate_graph_edge(self, edge: Dict, strict_validation: bool = True):
         """
         Validate slot properties of a relationship ('biolink:Association') edge.
 
         :param edge: dictionary of slot properties of the edge.
         :type edge: dict[str, str]
-        :param strict_validation: bool, True: report mixin or abstract Biolink class as errors; False: Just ignore class
-        :type strict_validation: bool, if True, applies a more stringent validation at certain levels. (default: False)
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue a 'warning'
+        :type strict_validation: bool, if True, applies a more stringent validation at certain levels. (default: True)
         """
         # logger.debug(edge)
         # edge data fields to be validated...
@@ -460,11 +473,12 @@ class BiolinkValidator(ValidationReporter):
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             if not predicate:
                 self.error(f"Edge '{edge_id}' has a missing or empty predicate slot!")
-            elif not self.bmt.is_predicate(predicate):
-                self.error(f"'{predicate}' is an unknown Biolink Model predicate!")
-            elif self.minimum_required_biolink_version("2.2.0") and \
-                    not self.bmt.is_translator_canonical_predicate(predicate):
-                self.warning(f"predicate '{predicate}' is non-canonical!")
+            else:
+                self.validate_predicate(
+                    context="Predicate",
+                    predicate=predicate,
+                    strict_validation=strict_validation
+                )
         else:  # is a Query Graph...
             if predicates is None:
                 # Query Graphs can have a missing or null predicates slot
@@ -476,11 +490,13 @@ class BiolinkValidator(ValidationReporter):
             else:
                 # Should now be a non-empty list of CURIES which are valid Biolink Predicates
                 for predicate in predicates:
-                    if not self.bmt.is_predicate(predicate):
-                        self.error(f"'{predicate}' is an unknown Biolink Model predicate!")
-                    elif self.minimum_required_biolink_version("2.2.0") and \
-                            not self.bmt.is_translator_canonical_predicate(predicate):
-                        self.warning(f"predicate '{predicate}' is non-canonical!")
+                    if not predicate:
+                        continue  # sanity check
+                    self.validate_predicate(
+                        context="Predicate",
+                        predicate=predicate,
+                        strict_validation=strict_validation
+                    )
         if not object_id:
             self.error(f"Edge '{edge_id}' has a missing or empty 'object' slot value!")
         elif object_id not in self.nodes:
@@ -507,7 +523,7 @@ class BiolinkValidator(ValidationReporter):
 
         :param context: str, label for context of concept whose category is being validated, i.e. 'Subject' or 'Object'
         :param category: str, CURIE of putative concept 'category'
-        :param strict_validation: bool, True report mixin or abstract categories as errors; Ignore otherwise if False
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue a 'warning'
         :return:
         """
         biolink_class: Optional[ClassDefinition] = None
@@ -528,20 +544,19 @@ class BiolinkValidator(ValidationReporter):
 
     def validate_input_node(self, context: str, category: Optional[str], identifier: Optional[str]):
 
-        biolink_class: Optional[ClassDefinition] = self.validate_category(f"Input {context}", category)
-
         if identifier:
+            biolink_class: Optional[ClassDefinition] = self.validate_category(f"{context}", category)
             if biolink_class:
                 possible_subject_categories = self.bmt.get_element_by_prefix(identifier)
                 if biolink_class.name not in possible_subject_categories:
-                    err_msg = f"Namespace prefix of input {context} " + \
-                              f"identifier '{identifier}' is unmapped to '{category}'!"
-                    self.error(err_msg)
+                    self.error(
+                        f"{context} identifier '{identifier}' namespace is unmapped to '{category}'!"
+                    )
             # else, we will have already reported an error in validate_category()
         else:
-            self.error(f"Input {context} identifier is missing!")
+            self.error(f"{context} identifier is missing!")
 
-    def check_biolink_model_compliance_of_input_edge(self, edge: Dict[str, str]):
+    def check_biolink_model_compliance_of_input_edge(self, edge: Dict[str, str], strict_validation: bool = True):
         """
         Validate a templated test input edge contents against the current BMT Biolink Model release.
 
@@ -557,43 +572,45 @@ class BiolinkValidator(ValidationReporter):
 
         :param edge: basic dictionary of a templated input edge - S-P-O including concept Biolink Model categories
         :type edge: Dict[str,str]
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue a 'warning'
+        :type strict_validation: bool, if True, applies a more stringent validation at certain levels. (default: True)
         """
         # data fields to be validated...
         subject_category_curie = edge['subject_category'] if 'subject_category' in edge else None
         object_category_curie = edge['object_category'] if 'object_category' in edge else None
-        predicate_curie = edge['predicate'] if 'predicate' in edge else None
+        predicate = edge['predicate'] if 'predicate' in edge else None
         subject_curie = edge['subject'] if 'subject' in edge else None
         object_curie = edge['object'] if 'object' in edge else None
 
         self.validate_input_node(
-            context='subject',
+            context='Subject',
             category=subject_category_curie,
             identifier=subject_curie
         )
-
-        if not (predicate_curie and self.bmt.is_predicate(predicate_curie)):
-            err_msg = f"Input predicate "
-            err_msg += f"'{predicate_curie}' is unknown!" if predicate_curie else "is missing!"
-            self.error(err_msg)
-        elif self.minimum_required_biolink_version("2.2.0") and \
-                not self.bmt.is_translator_canonical_predicate(predicate_curie):
-            self.warning(f"Input predicate '{predicate_curie}' is non-canonical!")
+        if not predicate:
+            self.error("Predicate is missing or empty!")
+        else:
+            self.validate_predicate(context="Predicate", predicate=predicate, strict_validation=strict_validation)
 
         self.validate_input_node(
-            context='object',
+            context='Object',
             category=object_category_curie,
             identifier=object_curie
         )
 
-    def check_biolink_model_compliance(self, graph: Dict, strict_validation: bool = False):
+    def check_biolink_model_compliance(
+            self,
+            graph: Dict,
+            strict_validation: bool = True
+    ):
         """
         Validate a TRAPI-schema compliant Message graph-like data structure
         against the currently active Biolink Model Toolkit model version.
     
         :param graph: knowledge graph to be validated
         :type graph: Dict
-        :param strict_validation: True report mixin or abstract categories as errors; Ignore otherwise if False
-        :type strict_validation: bool, if True, applies a more stringent validation at certain levels. (default: False)
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue a 'warning'
+        :type strict_validation: bool, if True, applies a more stringent validation at certain levels. (default: True)
         """
         if not graph:
             self.error(f"Empty graph!")
@@ -693,8 +710,8 @@ def check_biolink_model_compliance_of_query_graph(
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                             validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
-    :param strict_validation: True report mixin or abstract categories as errors; Ignore otherwise if False
-    :type strict_validation: bool, if True, applies a more stringent validation at certain levels. (default: False)
+    :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue a 'warning'
+    :type strict_validation: bool, if True, applies a more stringent validation at certain levels. (default: True)
 
     :returns: Biolink Model validator cataloging validation messages (may be empty)
     :rtype: BiolinkValidator
@@ -707,7 +724,7 @@ def check_biolink_model_compliance_of_query_graph(
 def check_biolink_model_compliance_of_knowledge_graph(
     graph: Dict,
     biolink_version: Optional[str] = None,
-    strict_validation: bool = False
+    strict_validation: bool = True
 ) -> BiolinkValidator:
     """
     Strict validation of a TRAPI-schema compliant Message Knowledge Graph
@@ -718,7 +735,7 @@ def check_biolink_model_compliance_of_knowledge_graph(
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                             validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
-    :param strict_validation: True report mixin or abstract categories as errors; Ignore otherwise if False
+    :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue a 'warning'
     :type strict_validation: bool, if True, applies a more stringent validation at certain levels.
 
     :returns: Biolink Model validator cataloging validation messages (may be empty)
