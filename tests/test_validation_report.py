@@ -27,7 +27,7 @@ def test_messages():
 
     # Testing merging of messages from a second reporter
     reporter2 = ValidationReporter(prefix="Second Validation Report", biolink_version=TEST_BIOLINK_VERSION)
-    assert reporter2.get_trapi_version() is "1"
+    assert reporter2.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
     reporter2.info("this is more information.")
     reporter2.warning("this is another warning?")
@@ -96,7 +96,7 @@ def test_validator_method():
         assert case['some parameter'] == "some parameter value"
         validator.error("This is an Error!")
 
-    reporter.validate(validator_method, test_data, **test_parameters)
+    reporter.apply_validation(validator_method, test_data, **test_parameters)
 
     messages: Dict[str, Set[str]] = reporter.get_messages()
 
