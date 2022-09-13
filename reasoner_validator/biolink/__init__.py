@@ -15,7 +15,7 @@ from linkml_runtime.linkml_model import ClassDefinition, Element
 from reasoner_validator import is_curie
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.trapi import TRAPIValidator, check_trapi_validity, check_node_edge_mappings
-from reasoner_validator.util import SemVer, SemVerError
+from reasoner_validator.versioning import SemVer, SemVerError
 
 logger = logging.getLogger(__name__)
 

@@ -1,10 +1,76 @@
 """TRAPI Validation Functions."""
+import copy
+from functools import lru_cache
+
 from typing import Optional, Dict
 
 import jsonschema
+import requests
+import yaml
+from yaml import CLoader as Loader
 
 from reasoner_validator.report import ValidationReporter
-from reasoner_validator.util import load_schema, latest
+from reasoner_validator.versioning import latest, versions, GIT_ORG, GIT_REPO
+
+
+@lru_cache()
+def _load_schema(trapi_version: str):
+    """Load schema from GitHub."""
+    result = requests.get(
+        f"https://raw.githubusercontent.com/{GIT_ORG}/{GIT_REPO}/v{trapi_version}/TranslatorReasonerAPI.yaml"
+    )
+    spec = yaml.load(result.text, Loader=Loader)
+    components = spec["components"]["schemas"]
+    for component, schema in components.items():
+        openapi_to_jsonschema(schema)
+    schemas = dict()
+    for component in components:
+        # build json schema against which we validate
+        subcomponents = copy.deepcopy(components)
+        schema = subcomponents.pop(component)
+        schema["components"] = {"schemas": subcomponents}
+        schemas[component] = schema
+    return schemas
+
+
+def load_schema(trapi_version: str):
+    """Load schema from GitHub."""
+    full_version = latest.get(trapi_version)
+    if full_version not in versions:
+        raise ValueError(f"No TRAPI version {trapi_version}")
+    return _load_schema(full_version)
+
+
+def fix_nullable(schema) -> None:
+    """Fix nullable schema."""
+    if "oneOf" in schema:
+        schema["oneOf"].append({"type": "null"})
+        return
+    if "anyOf" in schema:
+        schema["anyOf"].append({"type": "null"})
+        return
+    schema["oneOf"] = [
+        {
+            key: schema.pop(key)
+            for key in list(schema.keys())
+        },
+        {"type": "null"},
+    ]
+
+
+def openapi_to_jsonschema(schema) -> None:
+    """Convert OpenAPI schema to JSON schema."""
+    if "allOf" in schema:
+        # September 1, 2022 hacky patch to rewrite 'allOf' tagged subschemata to 'oneOf'
+        # TODO: TRAPI needs to change this in release 1.4
+        schema["oneOf"] = schema.pop("allOf")
+    if schema.get("type", None) == "object":
+        for tag, prop in schema.get("properties", dict()).items():
+            openapi_to_jsonschema(prop)
+    if schema.get("type", None) == "array":
+        openapi_to_jsonschema(schema.get("items", dict()))
+    if schema.pop("nullable", False):
+        fix_nullable(schema)
 
 
 class TRAPIValidator(ValidationReporter):

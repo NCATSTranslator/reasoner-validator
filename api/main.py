@@ -10,7 +10,7 @@ from fastapi import FastAPI, HTTPException
 
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.trapi import TRAPIValidator
-from reasoner_validator.util import latest
+from reasoner_validator.versioning import latest
 from reasoner_validator.biolink import check_biolink_model_compliance_of_trapi_response
 
 app = FastAPI()

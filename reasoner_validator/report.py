@@ -3,7 +3,7 @@ import copy
 from typing import Optional, Set, Dict, List
 from json import dumps, JSONEncoder
 
-from reasoner_validator.util import latest
+from reasoner_validator.versioning import latest
 
 
 class ReportJsonEncoder(JSONEncoder):
