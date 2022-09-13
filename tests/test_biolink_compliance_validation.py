@@ -86,10 +86,10 @@ def check_messages(validator: ValidationReporter, query):
         assert not (messages['errors'] or messages['warnings']), f"Unexpected messages seen {messages}"
 
 
-BLM_VERSION_SUFFIX = f"against Biolink Model {LATEST_BIOLINK_MODEL}"
-INPUT_EDGE_PREFIX = f"Validating Input Edge {BLM_VERSION_SUFFIX}"
-QUERY_GRAPH_PREFIX = f"Validating Query Graph {BLM_VERSION_SUFFIX}"
-KNOWLEDGE_GRAPH_PREFIX = f"Validating Knowledge Graph {BLM_VERSION_SUFFIX}"
+BLM_VERSION_PREFIX = f"Biolink Validation of"
+INPUT_EDGE_PREFIX = f"{BLM_VERSION_PREFIX} Input Edge"
+QUERY_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Query Graph"
+KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
 
 
 @pytest.mark.parametrize(
@@ -178,7 +178,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"Validating Knowledge Graph {BLM_VERSION_SUFFIX}"
                 'subject': 'DRUGBANK:DB00331',
                 'object': 'MONDO:0005148'
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Input predicate 'biolink:affected_by' is non-canonical!"
+            f"{INPUT_EDGE_PREFIX}: WARNING - Input predicate 'biolink:affected_by' is non-canonical!"
         ),
         (  # Query 8 - Missing subject
                 LATEST_BIOLINK_MODEL,  # Biolink Model Version
@@ -364,7 +364,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                 },
                 "edges": {}
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'type-2 diabetes.ids' slot array is empty!"
+            ""
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -504,7 +504,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - predicate 'biolink:affected_by' is non-canonical!"
+            f"{QUERY_GRAPH_PREFIX}: WARNING - predicate 'biolink:affected_by' is non-canonical!"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -638,11 +638,11 @@ def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
 TEST_ARA_CASE_TEMPLATE = {
     "idx": 0,
     "url": "http://test_ara_endpoint",
-    "ara_api_name": "test_ARA",
-    "ara_source": "infores:test_ara",
+    "ara_api_name": "Test_ARA",
+    "ara_source": "aragorn",
     "kp_api_name": "Test_KP_1",
-    "kp_source": "infores:panther",
-    "kp_source_type": "original"
+    "kp_source": "panther",
+    "kp_source_type": "primary"
 }
 
 
@@ -657,230 +657,224 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
     "query",
     [
         # (
-        #         "mock_ara_case",
-        #         "mock_ara_response",  # mock data has dumb edges: don't worry about the S-P-O, just the attributes
+        #         "mock_edge",  # mock data has dumb edges: don't worry about the S-P-O, just the attributes
+        #         "mock_context",
         #         "AssertError_message"
         # ),   # set 3rd argument to AssertError message if test edge should 'fail'; otherwise, empty string (for pass)
         (
-                # Query 0. No attributes key
-                get_ara_test_case(),
-                {  # ara_response
-                    "knowledge_graph": {
-                        "edges": {
-                        }
-                    },
-                },
-                "knowledge graph has no edges!"
+            # Query 0. 'attributes' key missing in edge record is None
+            {},
+            get_ara_test_case(),
+            "Edge has no 'attributes' key!"
         ),
         (
-                # Query 1. No attributes key
-                get_ara_test_case(),
-                {  # ara_response
-                    "knowledge_graph": {
-                        "edges": {
-                            "edge_1": {}
-                        }
-                    },
-                },
-                "has no 'attributes' key!"
+            # Query 1. Empty attributes
+            {
+                "attributes": None
+            },
+            get_ara_test_case(),
+            "Edge has empty attributes!"
         ),
+        (
+            # Query 2. Empty attributes
+            {
+                "attributes": []
+            },
+            get_ara_test_case(),
+            "Edge has empty attributes!"
+        ),
+        (
+            # Query 3. Empty attributes
+            {
+                "attributes": {}
+            },
+            get_ara_test_case(),
+            "Edge attributes are not a list!"
+        ),
+        (
+            # Query 4. attribute missing its 'attribute_type_id' field
+            {
+                "attributes": [
+                    {"value": ""}
+                ]
+            },
+            get_ara_test_case(),
+            "Edge attribute missing its 'attribute_type_id' field!"
+        ),
+        (
+            # Query 5. attribute missing its 'value' field
+            {
+                "attributes": [
+                    {"attribute_type_id": ""}
+                ]
+            },
+            get_ara_test_case(),
+            "Edge attribute missing its 'value' field!"
+        ),
+        (
+            # Query 6.
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "",
+                        "value": ""
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            "missing ARA knowledge source provenance!"
+        ),
+        (
+            # Query 7. missing ARA knowledge source provenance
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "",
+                        "value": ""
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            "missing ARA knowledge source provenance!"
+        ),
+        (
+            # Query 8. value is an empty list?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": []
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            "value is an empty list!"
+        ),
+        (
+            # Query 9. value has an unrecognized data type for a provenance attribute?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": 1234
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            "value has an unrecognized data type for a provenance attribute!"
+        ),
+        (
+            # Query 10. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:aragorn"
+                    },
+                    {
+                        "attribute_type_id": "biolink:original_knowledge_source",
+                        "value": "not_an_infores"
+                    }
+                ]
+            },
+            get_ara_test_case(),
+            "is not a well-formed InfoRes CURIE!"
+        ),
+        (
+            # Query 11. KP provenance value is missing?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:aragorn"
+                    }
+                ]
+            },
+            get_ara_test_case(),
+            "is missing as expected knowledge source provenance!"
+        ),
+        (
+            # Query 12. kp type is 'original'. Should draw a WARNING about deprecation
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:aragorn"
+                    },
+                    {
+                        "attribute_type_id": "biolink:original_knowledge_source",
+                        "value": "infores:panther"
+                    }
+                ]
+            },
+            get_ara_test_case(),
+            f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Attribute Type ID Biolink class " +
+            "'biolink:original_knowledge_source' is deprecated?"
+        ),
+        (
+            # Query 13. kp type is 'primary'. Should pass?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:aragorn"
+                    },
+                    {
+                        "attribute_type_id": "biolink:primary_knowledge_source",
+                        "value": "infores:panther"
+                    }
+                ]
+            },
+            get_ara_test_case(),
+            ""
+        ),
+        (
+            # Query 14. Missing 'primary' nor 'original' knowledge source
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:aragorn"
+                    },
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:panther"
+                    }
+                ]
 
+            },
+            get_ara_test_case({"kp_source_type": "aggregator"}),
+            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge has neither a 'primary' nor 'original' knowledge source!"
+        ),
         (
-                # Query 2. No attributes key
-                get_ara_test_case(),
-                {  # ara_response
-                    "knowledge_graph": {
-                        "edges": {
-                            "edge_1": {
-                                "attributes": {}
-                            }
-                        }
+            # Query 15. Is complete and should pass?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:aragorn"
                     },
-                },
-                "has no attributes!"
-        ),
-        (
-                # Query 3. missing ARA knowledge source provenance
-                get_ara_test_case(),
-                {  # ara_response
-                    "knowledge_graph": {
-                        "edges": {
-                            "edge_1": {
-                                "attributes": [
-                                    {
-                                        "attribute_type_id": "",  # could be set to anything ... blank is equivalent
-                                        "value": ""  # don't care...
-                                    },
-                                ]
-                            }
-                        }
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:panther"
+                    },
+                    {
+                        "attribute_type_id": "biolink:primary_knowledge_source",
+                        "value": "infores:my-primary-ks"
                     }
-                },
-                "missing ARA knowledge source provenance!"
-        ),
-        (
-                # Query 4. value is an empty list?
-                get_ara_test_case(),
-                {  # ara_response
-                    "knowledge_graph": {
-                        "edges": {
-                            "edge_1": {
-                                "attributes": [
-                                    {
-                                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                                        "value": []
-                                    },
-                                ]
-                            }
-                        }
-                    }
-                },
-                "value is an empty list!"
-        ),
-        (
-                # Query 5. value has an unrecognized data type for a provenance attribute?
-                get_ara_test_case(),
-                {  # ara_response
-                    "knowledge_graph": {
-                        "edges": {
-                            "edge_1": {
-                                "attributes": [
-                                    {
-                                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                                        "value": 1234
-                                    },
-                                ]
-                            }
-                        }
-                    }
-                },
-                "value has an unrecognized data type for a provenance attribute!"
-        ),
-        (
-                # Query 6. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
-                get_ara_test_case(),
-                {  # ara_response
-                    "knowledge_graph": {
-                        "edges": {
-                            "edge_1": {
-                                "attributes": [
-                                    {
-                                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                                        "value": "infores:test_ara"
-                                    },
-                                    {
-                                        "attribute_type_id": "biolink:original_knowledge_source",
-                                        "value": "not_an_infores"
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                },
-                "is not a well-formed InfoRes CURIE!"
-        ),
-        (
-                # Query 7. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
-                get_ara_test_case(),
-                {  # ara_response
-                    "knowledge_graph": {
-                        "edges": {
-                            "edge_1": {
-                                "attributes": [
-                                    {
-                                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                                        "value": "infores:test_ara"
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                },
-                "is missing as expected knowledge source provenance!"
-        ),
-        (
-                # Query 8. kp type is 'original'. Should pass?
-                get_ara_test_case(),
-                {  # ara_response
-                    "knowledge_graph": {
-                        "edges": {
-                            "edge_1": {
-                                "attributes": [
-                                    {
-                                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                                        "value": "infores:test_ara"
-                                    },
-                                    {
-                                        "attribute_type_id": "biolink:original_knowledge_source",
-                                        "value": "infores:panther"
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                },
-                ""
-        ),
-        (
-                # Query 9. Should pass?
-                get_ara_test_case({"kp_source_type": "aggregator"}),
-                {  # ara_response
-                    "knowledge_graph": {
-                        "edges": {
-                            "edge_1": {
-                                "attributes": [
-                                    {
-                                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                                        "value": "infores:test_ara"
-                                    },
-                                    {
-                                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                                        "value": "infores:panther"
-                                    }
-                                ]
-
-                            }
-                        }
-                    }
-                },
-                "has neither 'primary' nor 'original' knowledge source!"
-        ),
-        (
-                # Query 10. Is complete and should pass?
-                get_ara_test_case({"kp_source_type": "aggregator"}),
-                {  # ara_response
-                    "knowledge_graph": {
-                        "edges": {
-                            "edge_1": {
-                                "attributes": [
-                                    {
-                                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                                        "value": "infores:test_ara"
-                                    },
-                                    {
-                                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                                        "value": "infores:panther"
-                                    },
-                                    {
-                                        "attribute_type_id": "biolink:primary_knowledge_source",
-                                        "value": "infores:my_primary_ks"
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                },
-                ""
+                ]
+            },
+            get_ara_test_case({"kp_source_type": "aggregator"}),
+            ""
         )
     ]
 )
 def test_validate_attributes(query: Tuple):
-    pytest.skip("This test needs to be fixed!")
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
         biolink_version=LATEST_BIOLINK_MODEL
     )
-    validator.validate_attributes(query[0], query[1])
+    validator.validate_attributes(edge=query[0], context=query[1])
     check_messages(validator, query[2])
 
 
@@ -1182,7 +1176,7 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - predicate 'biolink:affected_by' is non-canonical!"
+            f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - predicate 'biolink:affected_by' is non-canonical!"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1239,8 +1233,7 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'NCBIGene:29974--biolink:interacts_with->PUBCHEM.COMPOUND:597' " +
-            "attribute '{'value': 'some value'}' missing its 'attribute_type_id'!"
+            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute is missing its 'attribute_type_id' key!"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1268,8 +1261,7 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'NCBIGene:29974--biolink:interacts_with->PUBCHEM.COMPOUND:597' " +
-            "attribute '{'attribute_type_id': 'biolink:knowledge_source'}' missing its 'value'!"
+            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute is missing its 'value' key!"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1297,8 +1289,7 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'NCBIGene:29974--biolink:interacts_with->PUBCHEM.COMPOUND:597' " +
-            "attribute_type_id 'not_a_curie' is not a CURIE!"
+            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute_type_id 'not_a_curie' is not a CURIE!"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1327,8 +1318,7 @@ def test_validate_attributes(query: Tuple):
                 }
             },
             f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - " +
-            f"Edge 'NCBIGene:29974--biolink:interacts_with->PUBCHEM.COMPOUND:597' " +
-            "attribute_type_id 'biolink:synonym' not a biolink:association_slot?"
+            f"Edge attribute_type_id 'biolink:synonym' is not a biolink:association_slot?"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1352,7 +1342,10 @@ def test_validate_attributes(query: Tuple):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:negated", "value": "some value"}]
+                        "attributes": [
+                            {"attribute_type_id": "biolink:negated", "value": "some value"},
+                            {"attribute_type_id": "biolink:primary_knowledge_source", "value": "infores:hmdb"}
+                        ]
                     }
                 }
             },
@@ -1384,8 +1377,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'NCBIGene:29974--biolink:interacts_with->PUBCHEM.COMPOUND:597' " +
-            "attribute_type_id 'foo:bar' has a CURIE prefix namespace unknown to Biolink!"
+            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute_type_id 'foo:bar' " +
+            f"has a CURIE prefix namespace unknown to Biolink!"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1413,12 +1406,10 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'NCBIGene:29974--biolink:interacts_with->PUBCHEM.COMPOUND:597' " +
-            "has missing or empty attributes!"
+            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge has no 'attributes' key!"
         ),
-        (
+        (   # Query 21:  # An earlier Biolink Model Version won't recognize a category not found in its version
             "1.8.2",
-            # Query 21:  # An earlier Biolink Model Version won't recognize a category not found in its version
             {
                 # Sample nodes
                 'nodes': {
@@ -1473,8 +1464,7 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            "Validating Knowledge Graph against Biolink Model 1.8.2: " +
-            "Node Biolink class 'biolink:SmallMolecule' is unknown!"
+            f"{KNOWLEDGE_GRAPH_PREFIX}: Node Biolink class 'biolink:SmallMolecule' is unknown!"
         )
     ]
 )
@@ -1496,7 +1486,7 @@ def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
             },
             None,
             None,
-            "Validating TRAPI Response Message: ERROR - Query returned an empty TRAPI Message Query Graph?"
+            "Validate TRAPI Response: ERROR - Response returned an empty Message Query Graph?"
         ),
         (
             {
@@ -1521,7 +1511,7 @@ def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
             },
             None,
             None,
-            "Validating TRAPI Response Message: WARNING - Query returned an empty TRAPI Message Knowledge Graph?"
+            "Validate TRAPI Response: WARNING - Response returned an empty Message Knowledge Graph?"
         ),
         (
             {
@@ -1602,7 +1592,7 @@ def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
             },
             None,
             None,
-            "Validating TRAPI Response Message: WARNING - TRAPI response returned an empty TRAPI Message Result?"
+            "Validate TRAPI Response: WARNING - Response returned empty Message Results?"
         )
     ]
 )

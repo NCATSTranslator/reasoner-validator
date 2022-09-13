@@ -2,6 +2,7 @@
 Version-specific Biolink Model semantic validation of knowledge graph components.
 """
 from typing import Optional, Any, Dict, List, Tuple, Set, Union
+from sys import stderr
 from enum import Enum
 from functools import lru_cache
 from urllib.error import HTTPError
@@ -265,159 +266,163 @@ class BiolinkValidator(ValidationReporter):
 
     def validate_attributes(
             self,
-            edge_id: str,
-            attributes: List,
-            strict_validation: bool,
-            test_case: Optional[Dict] = None
+            edge: Dict,
+            context: Optional[Dict] = None,
+            strict_validation: bool = False
     ):
         """
-
-        :param edge_id:
-        :param attributes:
-        :param strict_validation:
-        :param test_case:
-        :return:
+        :param edge: Dict, the edge object associated wich some attributes are expected to be found
+        :param context: Dict, (optional) ARA or KP context of the edge
+        :param strict_validation: bool, performance validation strictly if 'True'
+        :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
+        if 'attributes' not in edge.keys():
+            self.error(f"Edge has no 'attributes' key!")
+        elif not edge['attributes']:
+            self.error(f"Edge has empty attributes!")
+        elif not isinstance(edge['attributes'], List):
+            self.error(f"Edge attributes are not a list!")
+        else:
+            attributes = edge['attributes']
 
-        logger.debug(f"Validating attributes for edge '{edge_id}'")
+            ara_source: Optional[str] = None
+            kp_source: Optional[str] = None
+            kp_source_type: Optional[str] = None
+            if context:
+                ara_source = f"infores:{context['ara_source']}" \
+                    if 'ara_source' in context and context['ara_source'] else ""
+                kp_source = f"infores:{context['kp_source']}" \
+                    if 'kp_source' in context and context['kp_source'] else ""
+                kp_source_type = context['kp_source_type'] \
+                    if 'kp_source_type' in context and context['kp_source_type'] else 'aggregator'
+                kp_source_type = f"biolink:{kp_source_type}_knowledge_source"
 
-        ara_source: Optional[str] = None
-        kp_source: Optional[str] = None
-        kp_source_type: Optional[str] = None
-        if test_case:
-            ara_source = test_case['ara_source'] \
-                if 'ara_source' in test_case and test_case['ara_source'] else ""
-            kp_source = test_case['kp_source'] \
-                if 'kp_source' in test_case and test_case['kp_source'] else ""
-            kp_source_type = test_case['kp_source_type'] \
-                if 'kp_source_type' in test_case and test_case['kp_source_type'] else 'aggregator'
-            kp_source_type = f"biolink:{kp_source_type}_knowledge_source"
+            # Expecting ARA and KP 'aggregator_knowledge_source' attributes?
+            found_ara_knowledge_source = False
+            found_kp_knowledge_source = False
+            found_primary_or_original_knowledge_source = False
 
-        # Expecting ARA and KP 'aggregator_knowledge_source' attributes?
-        found_ara_knowledge_source = False
-        found_kp_knowledge_source = False
-        found_primary_or_original_knowledge_source = False
+            for attribute in attributes:
 
-        for attribute in attributes:
-
-            # Validate attribute_type_id
-            attribute_type_id: Optional[str] = attribute.get('attribute_type_id', None)
-
-            if not attribute_type_id:
-                self.error(f"Edge '{edge_id}' attribute '{str(attribute)}' missing its 'attribute_type_id'!")
-                continue
-
-            value: Optional[Union[List, str]] = attribute.get('value', None)
-            if not value:
-                self.error(f"Edge '{edge_id}' attribute '{str(attribute)}' missing its 'value'!")
-                continue
-
-            # TODO: there seems to be non-uniformity in provenance attribute values for some KP/ARA's in which a value
-            #       is returned as a Python list (of at least one element?) instead of a string. Here, to ensure full
-            #       coverage of the attribute values returned, we'll coerce scalar values into a list, then iterate.
-            if not isinstance(value, List):
-                if isinstance(value, str):
-                    value = [value]
+                # Validate attribute_type_id
+                if 'attribute_type_id' not in attribute:
+                    self.error("Edge attribute is missing its 'attribute_type_id' key!")
+                elif not attribute['attribute_type_id']:
+                    self.error("Edge attribute empty 'attribute_type_id' field!")
+                elif 'value' not in attribute:
+                    self.error("Edge attribute is missing its 'value' key!")
+                elif not attribute['value']:
+                    self.error("Edge attribute empty 'value' field!")
                 else:
-                    self.error(f"Attribute value has an unrecognized data type!")
-                    continue
+                    attribute_type_id: str = attribute['attribute_type_id']
+                    value = attribute['value']
 
-            if not is_curie(attribute_type_id):
-                self.error(
-                    f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' is not a CURIE!"
-                )
-            else:
-                # 'attribute_type_id' is a CURIE, but how well does it map?
-                prefix = attribute_type_id.split(":", 1)[0]
-                if prefix == 'biolink':
-                    biolink_class = self.validate_element_status(
-                        context="Attribute Type ID",
-                        name=attribute_type_id,
-                        strict_validation=strict_validation
-                    )
-                    if biolink_class:
-                        if not self.bmt.is_association_slot(attribute_type_id):
-                            self.warning(
-                                f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' " +
-                                "is not a biolink:association_slot?"
+                    # TODO: there seems to be non-uniformity in provenance attribute values for some KP/ARA's
+                    #       in which a value is returned as a Python list (of at least one element?) instead
+                    #       of a string. Here, to ensure full coverage of the attribute values returned,
+                    #       we'll coerce scalar values into a list, then iterate.
+                    if not isinstance(value, List):
+                        if isinstance(value, str):
+                            value = [value]
+                        else:
+                            self.error(f"Attribute value has an unrecognized data type '{type(value)}'!")
+                            continue
+
+                    if not is_curie(attribute_type_id):
+                        self.error(
+                            f"Edge attribute_type_id '{str(attribute_type_id)}' is not a CURIE!"
+                        )
+                    else:
+                        # 'attribute_type_id' is a CURIE, but how well does it map?
+                        prefix = attribute_type_id.split(":", 1)[0]
+                        if prefix == 'biolink':
+                            biolink_class = self.validate_element_status(
+                                context="Attribute Type ID",
+                                name=attribute_type_id,
+                                strict_validation=strict_validation
+                            )
+                            if biolink_class:
+                                if not self.bmt.is_association_slot(attribute_type_id):
+                                    self.warning(
+                                        f"Edge attribute_type_id '{str(attribute_type_id)}' " +
+                                        "is not a biolink:association_slot?"
+                                    )
+
+                                else:
+                                    # it is a Biolink 'association_slot' but now, validate what kind?
+
+                                    # TODO: only check knowledge_source provenance here for now.
+                                    #       Are there other association_slots to be validated here too?
+
+                                    # Check Edge Provenance attributes
+                                    if attribute_type_id not in \
+                                            [
+                                                "biolink:aggregator_knowledge_source",
+                                                "biolink:primary_knowledge_source",
+                                                "biolink:original_knowledge_source"
+
+                                            ]:
+
+                                        # TODO: not interested in any other attribute_type_id's at this moment
+                                        continue
+
+                                    if attribute_type_id in \
+                                            [
+                                                "biolink:primary_knowledge_source",
+                                                "biolink:original_knowledge_source"
+                                            ]:
+                                        found_primary_or_original_knowledge_source = True
+
+                                    # TODO: 'biolink:original_knowledge_source' KS is deprecated from Biolink 2.4.5
+                                    if self.minimum_required_biolink_version("2.4.5") and \
+                                       attribute_type_id == "biolink:original_knowledge_source":
+                                        self.warning(
+                                            f"Provenance attribute type 'biolink:original_knowledge_source' " +
+                                            f"is deprecated from Biolink Model release 2.4.5?"
+                                        )
+
+                                    # ... now, check the infores values against various expectations
+                                    for infores in value:
+
+                                        if not infores.startswith("infores:"):
+                                            self.error(
+                                                f"Edge has provenance value '{infores}' " +
+                                                f"which is not a well-formed InfoRes CURIE!"
+                                            )
+                                        else:
+                                            if ara_source and \
+                                                    attribute_type_id == "biolink:aggregator_knowledge_source" and \
+                                                    infores == ara_source:
+                                                found_ara_knowledge_source = True
+                                            elif kp_source and \
+                                                    attribute_type_id == kp_source_type and \
+                                                    infores == kp_source:
+                                                found_kp_knowledge_source = True
+
+                        # if not a Biolink association_slot, at least, check if it is known to Biolink
+                        elif not self.bmt.get_element_by_prefix(prefix):
+                            self.error(
+                                f"Edge attribute_type_id '{str(attribute_type_id)}' " +
+                                f"has a CURIE prefix namespace unknown to Biolink!"
+                            )
+                        else:
+                            self.info(
+                                f"Edge attribute_type_id '{str(attribute_type_id)}' " +
+                                f"has a non-Biolink CURIE prefix mapped to Biolink!"
                             )
 
-                        else:
-                            # it is a Biolink 'association_slot' but now, validate what kind?
+            # TODO: After all the attributes have been scanned, check for provenance
+            if ara_source and not found_ara_knowledge_source:
+                self.error(f"Edge is missing ARA knowledge source provenance!")
 
-                            # TODO: only check knowledge_source provenance here for now.
-                            #       Are there other association_slots to be validated here too?
+            if kp_source and not found_kp_knowledge_source:
+                self.error(
+                    f"Edge attribute values are missing expected " +
+                    f"Knowledge Provider '{kp_source}' '{kp_source_type}' provenance!"
+                )
 
-                            # Check Edge Provenance attributes
-                            if attribute_type_id not in \
-                                    [
-                                        "biolink:aggregator_knowledge_source",
-                                        "biolink:primary_knowledge_source",
-                                        "biolink:original_knowledge_source"
-
-                                    ]:
-
-                                # TODO: not interested in any other attribute_type_id's at this moment
-                                continue
-
-                            if attribute_type_id in \
-                                    [
-                                        "biolink:primary_knowledge_source",
-                                        "biolink:original_knowledge_source"
-                                    ]:
-                                found_primary_or_original_knowledge_source = True
-
-                            # TODO: 'biolink:original_knowledge_source' KS is deprecated from Biolink 2.4.5
-                            if self.minimum_required_biolink_version("2.4.5") and \
-                               attribute_type_id == "biolink:original_knowledge_source":
-                                self.warning(
-                                    f"Provenance attribute type 'biolink:original_knowledge_source' " +
-                                    f"is deprecated from Biolink Model release 2.4.5?"
-                                )
-
-                            # ... now, check the infores values against various expectations
-                            for infores in value:
-
-                                if not infores.startswith("infores:"):
-                                    self.error(
-                                        f"Edge '{edge_id}' has provenance value '{infores}' " +
-                                        f"which is not a well-formed InfoRes CURIE!"
-                                    )
-                                else:
-                                    if ara_source and attribute_type_id == "biolink:aggregator_knowledge_source":
-                                        # Checking specifically here whether the ARA provenance infores
-                                        # attribute value is published as an 'aggregator_knowledge_source'
-                                        if infores == ara_source:
-                                            found_ara_knowledge_source = True
-
-                                    # else check for special case of KP provenance is tagged this way
-                                    elif kp_source and attribute_type_id == kp_source_type and infores == kp_source:
-                                        found_kp_knowledge_source = True
-
-                # if not a Biolink association_slot, at least, check if it is known to Biolink
-                elif not self.bmt.get_element_by_prefix(prefix):
-                    self.error(
-                        f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' " +
-                        f"has a CURIE prefix namespace unknown to Biolink!"
-                    )
-                else:
-                    self.info(
-                        f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' " +
-                        f"has a non-Biolink CURIE prefix mapped to Biolink!"
-                    )
-
-        # After all the attributes have been scanned, check for provenance
-        if not found_ara_knowledge_source:
-            self.error(f"Edge '{edge_id}' is missing ARA knowledge source provenance!")
-
-        if not found_kp_knowledge_source:
-            self.error(
-                f"Edge '{edge_id}' attribute values are missing expected " +
-                f"Knowledge Provider '{kp_source}' '{kp_source_type}' provenance!"
-            )
-
-        if not found_primary_or_original_knowledge_source:
-            self.error(f"Edge '{edge_id}' has neither a 'primary' nor 'original' knowledge source!")
+            if not found_primary_or_original_knowledge_source:
+                self.error(f"Edge has neither a 'primary' nor 'original' knowledge source!")
 
     def validate_graph_edge(self, edge: Dict, strict_validation: bool = False):
         """
@@ -482,18 +487,11 @@ class BiolinkValidator(ValidationReporter):
             self.error(f"Edge 'object' id '{object_id}' is missing from the nodes catalog!")
 
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
-            # For now, we simply assume that *all* edges must have *some* attributes
-            # (at least, provenance related, but we don't explicitly test for them)
-            if 'attributes' not in edge.keys():
-                self.error(f"Edge '{edge_id}' has no 'attributes' key!")
-            elif not edge['attributes']:
-                self.error(f"Edge '{edge_id}' has missing or empty attributes!")
-            else:
-                self.validate_attributes(
-                    edge_id=edge_id,
-                    attributes=edge['attributes'],
-                    strict_validation=strict_validation
-                )
+            self.validate_attributes(
+                edge=edge,
+                strict_validation=strict_validation,
+                # context={}
+            )
         else:
             # TODO: do we need to validate Query Graph 'constraints' slot contents here?
             pass
@@ -765,7 +763,7 @@ def validate_query_graph(validator: ValidationReporter, message: Dict):
         # ... nor empty
         query_graph = message['query_graph']
         if not (query_graph and len(query_graph) > 0):
-            validator.error("Query returned an empty TRAPI Message Query Graph?")
+            validator.error("Response returned an empty Message Query Graph?")
         else:
             # Validate the TRAPI compliance of the Query Graph
             trapi_validator: TRAPIValidator = check_trapi_validity(
@@ -797,7 +795,7 @@ def validate_knowledge_graph(validator: ValidationReporter, message: Dict):
                 "nodes" in knowledge_graph and len(knowledge_graph["nodes"]) > 0 and
                 "edges" in knowledge_graph and len(knowledge_graph["edges"]) > 0
         ):
-            validator.warning("Query returned an empty TRAPI Message Knowledge Graph?")
+            validator.warning("Response returned an empty Message Knowledge Graph?")
         else:
             mapping_validator: ValidationReporter = check_node_edge_mappings(knowledge_graph)
             if mapping_validator.has_messages():
@@ -839,7 +837,7 @@ def validate_results(validator: ValidationReporter, message: Dict):
         results = message['results']
         # The Message.Results should not generally be empty?
         if not (results and len(results) > 0):
-            validator.warning("TRAPI response returned an empty TRAPI Message Result?")
+            validator.warning("Response returned empty Message Results?")
         else:
             # Validate a subsample of a non-empty Message.Result component.
             results_sample = sample_results(results)
@@ -906,7 +904,7 @@ def check_biolink_model_compliance_of_trapi_response(
     :rtype: ValidationReporter
     """
     validator: ValidationReporter = ValidationReporter(
-        prefix="Validating TRAPI Response Message",
+        prefix="Validate TRAPI Response",
         trapi_version=trapi_version,
         biolink_version=biolink_version
     )
