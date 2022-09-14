@@ -410,18 +410,18 @@ class BiolinkValidator(ValidationReporter):
                                 f"has a non-Biolink CURIE prefix mapped to Biolink!"
                             )
 
-            # TODO: After all the attributes have been scanned, check for provenance
+            # TODO: After all the attributes have been scanned, check for provenance. Treat as warnings for now
             if ara_source and not found_ara_knowledge_source:
-                self.error(f"Edge is missing ARA knowledge source provenance!")
+                self.warning(f"Edge is missing ARA knowledge source provenance!")
 
             if kp_source and not found_kp_knowledge_source:
-                self.error(
+                self.warning(
                     f"Edge attribute values are missing expected " +
                     f"Knowledge Provider '{kp_source}' '{kp_source_type}' provenance!"
                 )
 
             if not found_primary_or_original_knowledge_source:
-                self.error(f"Edge has neither a 'primary' nor 'original' knowledge source!")
+                self.warning(f"Edge has neither a 'primary' nor 'original' knowledge source!")
 
     def validate_predicate(self, context: str, predicate: str, strict_validation: bool = True):
         # Validate the putative predicate as *not* being abstract, deprecated or a mixin
