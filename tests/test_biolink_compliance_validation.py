@@ -211,7 +211,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'DRUGBANK:DB00331',
                 'object': 'MONDO:0005148'
             },
-            f"{INPUT_EDGE_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical!"
+            f"{INPUT_EDGE_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical?"
         ),
         (   # Query 11 - Missing subject
             LATEST_BIOLINK_MODEL,  # Biolink Model Version
@@ -221,7 +221,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'predicate': 'biolink:subclass_of',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Subject identifier is missing!"
+            f"{INPUT_EDGE_PREFIX}: ERROR - Subject node identifier is missing!"
         ),
         (   # Query 12 - Unmappable subject namespace
             LATEST_BIOLINK_MODEL,
@@ -232,8 +232,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'FOO:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Subject identifier 'FOO:0005453' namespace " +
-            f"is unmapped to 'biolink:AnatomicalEntity'!"
+            f"{INPUT_EDGE_PREFIX}: WARNING - Subject node identifier 'FOO:0005453' " +
+            "is unmapped to 'biolink:AnatomicalEntity'?"
         ),
         (  # Query 13 - missing object
             LATEST_BIOLINK_MODEL,  # Biolink Model Version
@@ -243,7 +243,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'predicate': 'biolink:subclass_of',
                 'subject': "UBERON:0005453"
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Object identifier is missing!"
+            f"{INPUT_EDGE_PREFIX}: ERROR - Object node identifier is missing!"
         ),
         (   # Query 14 - Unmappable object namespace
             LATEST_BIOLINK_MODEL,
@@ -254,8 +254,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'BAR:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Object identifier 'BAR:0035769' namespace " +
-            f"is unmapped to 'biolink:AnatomicalEntity'!"
+            f"{INPUT_EDGE_PREFIX}: WARNING - Object node identifier 'BAR:0035769' " +
+            "is unmapped to 'biolink:AnatomicalEntity'?"
         ),
         (   # Query 15 - Valid other model
             "1.8.2",
@@ -535,7 +535,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical!"
+            f"{QUERY_GRAPH_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical?"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -655,8 +655,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'type-2 diabetes' has identifiers ['FOO:12345', 'BAR:67890'] " +
-            "unmapped to the target categories: ['biolink:Disease', 'biolink:Gene']!"
+            f"{QUERY_GRAPH_PREFIX}: WARNING - Node 'type-2 diabetes' has identifiers ['FOO:12345', 'BAR:67890'] " +
+            "unmapped to the target categories: ['biolink:Disease', 'biolink:Gene']?"
         )
     ]
 )
@@ -875,7 +875,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
 
             },
             get_ara_test_case({"kp_source_type": "aggregator"}),
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge has neither a 'primary' nor 'original' knowledge source!"
+            f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge has neither a 'primary' nor 'original' knowledge source?"
         ),
         (
             # Query 15. Is complete and should pass?
@@ -1086,20 +1086,30 @@ def test_validate_attributes(query: Tuple):
                     "FOO:1234": {
                        "categories": [
                            "biolink:Gene"
-                       ]
+                       ],
+                    },
+                    "NCBIGene:29974": {
+                        "categories": [
+                            "biolink:Gene"
+                        ]
                     }
                 },
                 "edges": {
                     "edge_1": {
                         "subject": "FOO:1234",
                         "predicate": "biolink:interacts_with",
-                        "object": "FOO:1234",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "object": "NCBIGene:29974",
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:primary_knowledge_source",
+                                "value": "infores:my-kp"
+                            }
+                        ]
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - For all node categories [biolink:Gene] of " +
-            "'FOO:1234', the CURIE prefix namespace remains unmapped!"
+            f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Node 'FOO:1234' " +
+            f"is unmapped to the target categories: ['biolink:Gene']?"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1207,7 +1217,7 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical!"
+            f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical?"
         ),
         (
             LATEST_BIOLINK_MODEL,

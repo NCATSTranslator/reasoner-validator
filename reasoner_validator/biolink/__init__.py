@@ -138,12 +138,12 @@ class BiolinkValidator(ValidationReporter):
         """
         return self.bmt.get_model_version(), self.get_messages()
 
-    def validate_graph_node(self, node_id, slots: Dict[str, Any]):
+    def validate_graph_node(self, node_id: str, slots: Dict[str, Any]):
         """
         Validate slot properties (mainly 'categories') of a node.
 
         :param node_id: identifier of a concept node
-        :type node_id: str
+        :type node_id: str, node identifier
         :param slots: properties of the node
         :type slots: Dict
         """
@@ -167,10 +167,7 @@ class BiolinkValidator(ValidationReporter):
                             if category.name in possible_subject_categories:
                                 node_prefix_mapped = True
                     if not node_prefix_mapped:
-                        self.error(
-                            f"For all node categories [{','.join(categories)}] of " +
-                            f"'{node_id}', the CURIE prefix namespace remains unmapped!"
-                        )
+                        self.warning(f"Node '{node_id}' is unmapped to the target categories: {str(categories)}?")
             else:
                 self.error(f"Node '{node_id}' is missing its categories!")
             # TODO: Do we need to (or can we) validate other Knowledge Graph node fields here? Perhaps yet?
@@ -207,9 +204,10 @@ class BiolinkValidator(ValidationReporter):
                         identifier for identifier in id_prefix_mapped.keys() if not id_prefix_mapped[identifier]
                     ]
                     if unmapped_ids:
-                        self.error(
+                        self.warning(
                             f"Node '{node_id}' has identifiers {str(unmapped_ids)} " +
-                            f"unmapped to the target categories: {str(categories)}!")
+                            f"unmapped to the target categories: {str(categories)}?"
+                        )
 
             # else:  # null "categories" value is permitted in QNodes
 
@@ -412,16 +410,16 @@ class BiolinkValidator(ValidationReporter):
 
             # TODO: After all the attributes have been scanned, check for provenance. Treat as warnings for now
             if ara_source and not found_ara_knowledge_source:
-                self.warning(f"Edge is missing ARA knowledge source provenance!")
+                self.warning(f"Edge is missing ARA knowledge source provenance?")
 
             if kp_source and not found_kp_knowledge_source:
                 self.warning(
                     f"Edge attribute values are missing expected " +
-                    f"Knowledge Provider '{kp_source}' '{kp_source_type}' provenance!"
+                    f"Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?"
                 )
 
             if not found_primary_or_original_knowledge_source:
-                self.warning(f"Edge has neither a 'primary' nor 'original' knowledge source!")
+                self.warning(f"Edge has neither a 'primary' nor 'original' knowledge source?")
 
     def validate_predicate(self, context: str, predicate: str, strict_validation: bool = True):
         # Validate the putative predicate as *not* being abstract, deprecated or a mixin
@@ -435,7 +433,7 @@ class BiolinkValidator(ValidationReporter):
                 self.error(f"{context} '{predicate}' is unknown!")
             elif self.minimum_required_biolink_version("2.2.0") and \
                     not self.bmt.is_translator_canonical_predicate(predicate):
-                self.warning(f"{context} '{predicate}' is non-canonical!")
+                self.warning(f"{context} '{predicate}' is non-canonical?")
 
     def validate_graph_edge(self, edge: Dict, strict_validation: bool = True):
         """
@@ -542,19 +540,17 @@ class BiolinkValidator(ValidationReporter):
 
         return biolink_class
 
-    def validate_input_node(self, context: str, category: Optional[str], identifier: Optional[str]):
+    def validate_input_node(self, context: str, node_id: Optional[str], category: Optional[str]):
 
-        if identifier:
+        if node_id:
             biolink_class: Optional[ClassDefinition] = self.validate_category(f"{context}", category)
             if biolink_class:
-                possible_subject_categories = self.bmt.get_element_by_prefix(identifier)
+                possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
                 if biolink_class.name not in possible_subject_categories:
-                    self.error(
-                        f"{context} identifier '{identifier}' namespace is unmapped to '{category}'!"
-                    )
+                    self.warning(f"{context} node identifier '{node_id}' is unmapped to '{category}'?")
             # else, we will have already reported an error in validate_category()
         else:
-            self.error(f"{context} identifier is missing!")
+            self.error(f"{context} node identifier is missing!")
 
     def check_biolink_model_compliance_of_input_edge(self, edge: Dict[str, str], strict_validation: bool = True):
         """
@@ -584,8 +580,8 @@ class BiolinkValidator(ValidationReporter):
 
         self.validate_input_node(
             context='Subject',
-            category=subject_category_curie,
-            identifier=subject_curie
+            node_id=subject_curie,
+            category=subject_category_curie
         )
         if not predicate:
             self.error("Predicate is missing or empty!")
@@ -594,8 +590,8 @@ class BiolinkValidator(ValidationReporter):
 
         self.validate_input_node(
             context='Object',
-            category=object_category_curie,
-            identifier=object_curie
+            node_id=object_curie,
+            category=object_category_curie
         )
 
     def check_biolink_model_compliance(
