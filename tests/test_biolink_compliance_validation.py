@@ -655,8 +655,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'type-2 diabetes.ids' have ['FOO:12345', 'BAR:67890'] " +
-            "that are unmapped to any of the Biolink Model categories ['biolink:Disease', 'biolink:Gene']!"
+            f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'type-2 diabetes' has identifiers ['FOO:12345', 'BAR:67890'] " +
+            "unmapped to the target categories: ['biolink:Disease', 'biolink:Gene']!"
         )
     ]
 )

@@ -208,8 +208,8 @@ class BiolinkValidator(ValidationReporter):
                     ]
                     if unmapped_ids:
                         self.error(
-                            f"Node '{node_id}.ids' have {str(unmapped_ids)} " +
-                            f"that are unmapped to any of the Biolink Model categories {str(categories)}!")
+                            f"Node '{node_id}' has identifiers {str(unmapped_ids)} " +
+                            f"unmapped to the target categories: {str(categories)}!")
 
             # else:  # null "categories" value is permitted in QNodes
 
