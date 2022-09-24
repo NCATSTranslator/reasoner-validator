@@ -854,45 +854,49 @@ def validate_results(validator: ValidationReporter, message: Dict):
         validator.error("TRAPI Message is missing its Knowledge Graph?")
     else:
         results = message['results']
-        # The Message.Results should not generally be empty?
         if not (results and len(results) > 0):
-            validator.warning("Response returned empty Message Results?")
+            # The Message.results should not generally be empty?
+            validator.warning("Response returned empty Message.results?")
+        elif not isinstance(results, List):
+            # The Message.results should be an array of Result objects
+            validator.error("Response returned a non-array Message.results?")
         else:
-            # Validate a subsample of a non-empty Message.Result component.
+            # Validate a subsample of a non-empty Message.results component.
             results_sample = sample_results(results)
-            trapi_validator: TRAPIValidator = check_trapi_validity(
-                instance=results_sample,
-                component="Result",
-                trapi_version=validator.trapi_version
-            )
-            if trapi_validator.has_messages():
-                # Record the error messages associated with the Result set then... don't continue
-                validator.merge(trapi_validator)
-                return validator
+            for result in results_sample:
+                trapi_validator: TRAPIValidator = check_trapi_validity(
+                    instance=result,
+                    component="Result",
+                    trapi_version=validator.trapi_version
+                )
+                if trapi_validator.has_messages():
+                    # Record the error messages associated with the Result set then... don't continue
+                    validator.merge(trapi_validator)
+                    return validator
 
-            # TODO: here, we might wish to compare the Results against the contents of the KnowledgeGraph,
-            #       with respect to node input values from the QueryGraph but this is tricky to do solely
-            #       with the subsamples, which may not completely overlap.
+                # TODO: here, we might wish to compare the Results against the contents of the KnowledgeGraph,
+                #       with respect to node input values from the QueryGraph but this is tricky to do solely
+                #       with the subsamples, which may not completely overlap.
 
-            # ...Finally, check that the sample Results contained the object of the Query
+                # ...Finally, check that the sample Results contained the object of the Query
 
-            # The 'output_element' is 'subject' or 'object' target (unknown) of retrieval
-            # The 'output_node_binding' is (subject) 'a' or (object) 'b' keys in the QueryGraph.Nodes to be bound
-            # In principle, we detect which node in the QueryGraph has 'ids' associated with its node record and assume
-            # that the other edge node is the desired target (in the OneHop), so the 'ids' there should be in the output
+                # The 'output_element' is 'subject' or 'object' target (unknown) of retrieval
+                # The 'output_node_binding' is (subject) 'a' or (object) 'b' keys in the QueryGraph.Nodes to be bound
+                # In principle, we detect which node in the QueryGraph has 'ids' associated with its node record and assume
+                # that the other edge node is the desired target (in the OneHop), so the 'ids' there should be in the output
 
-            # object_ids = [r['node_bindings'][output_node_binding][0]['id'] for r in results_sample]
-            # if case[output_element] not in object_ids:
-            #     # The 'get_aliases' method uses the Translator NodeNormalizer to check if any of
-            #     # the aliases of the case[output_element] identifier are in the object_ids list
-            #     output_aliases = get_aliases(case[output_element])
-            #     if not any([alias == object_id for alias in output_aliases for object_id in object_ids]):
-            #         validator.error(
-            #             f"Neither the input id '{case[output_element]}' nor resolved aliases were " +
-            #             f"returned in the Result object IDs for node '{output_node_binding}' binding?"
-            #         )
-            #         # data_dump=f"Resolved aliases:\n{','.join(output_aliases)}\n" +
-            #         #           f"Result object IDs:\n{_output(object_ids,flat=True)}"
+                # object_ids = [r['node_bindings'][output_node_binding][0]['id'] for r in results_sample]
+                # if case[output_element] not in object_ids:
+                #     # The 'get_aliases' method uses the Translator NodeNormalizer to check if any of
+                #     # the aliases of the case[output_element] identifier are in the object_ids list
+                #     output_aliases = get_aliases(case[output_element])
+                #     if not any([alias == object_id for alias in output_aliases for object_id in object_ids]):
+                #         validator.error(
+                #             f"Neither the input id '{case[output_element]}' nor resolved aliases were " +
+                #             f"returned in the Result object IDs for node '{output_node_binding}' binding?"
+                #         )
+                #         # data_dump=f"Resolved aliases:\n{','.join(output_aliases)}\n" +
+                #         #           f"Result object IDs:\n{_output(object_ids,flat=True)}"
 
 
 def check_biolink_model_compliance_of_trapi_response(
