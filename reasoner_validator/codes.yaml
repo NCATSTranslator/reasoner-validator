@@ -19,10 +19,13 @@ predicate:
   inverse:
   symmetric:
 
-status:
-  info:
-    message1: ""
-  warning:
-    message1: ""
-  error:
-    message1: ""
+compliant: "Biolink Model-compliant TRAPI Message!"
+
+info:
+  abstract: "{element} element '{name}' is abstract."
+
+warning:
+  0: ""
+
+error:
+  0: ""

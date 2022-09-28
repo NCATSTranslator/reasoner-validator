@@ -9,14 +9,22 @@ TEST_BIOLINK_VERSION = "2.4.8"
 
 
 def test_message_loader():
-    assert CodeDictionary.tag_value("category") is not None
-    assert CodeDictionary.tag_value("category.abstract") is not None
-    assert CodeDictionary.tag_value("predicate") is not None
-    assert CodeDictionary.tag_value("status") is not None
+    assert CodeDictionary._code_value("category") is not None
+    assert CodeDictionary._code_value("category.abstract") is not None
+    assert CodeDictionary._code_value("predicate") is not None
+    assert CodeDictionary._code_value("compliant") == "Biolink Model-compliant TRAPI Message!"
+    assert CodeDictionary.display(code="compliant") == "Biolink Model-compliant TRAPI Message!"
+    assert CodeDictionary._code_value("info") is not None
+    assert CodeDictionary.display(
+        code="info.abstract",
+        element="ELEMENT",
+        name="NAME"
+    ) == "ELEMENT element 'NAME' is abstract."
+    assert CodeDictionary._code_value("warning") is not None
+    assert CodeDictionary._code_value("error") is not None
 
 
 def test_messages():
-
     # Loading and checking a first reporter
     reporter1 = ValidationReporter(prefix="First Validation Report", trapi_version=TEST_TRAPI_VERSION)
     assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION

@@ -23,7 +23,7 @@ class CodeDictionary:
         return cls.code_dictionary
 
     @classmethod
-    def _get_nested_tag_value(cls, data: Dict, path: List[str], pos: int) -> Optional[str]:
+    def _get_nested_code_value(cls, data: Dict, path: List[str], pos: int) -> Optional[str]:
         """
         Navigate dot delimited tag 'path' into a multi-level dictionary, to return its associated value.
 
@@ -40,10 +40,10 @@ class CodeDictionary:
         if pos == len(path):
             return data[tag]
         else:
-            return cls._get_nested_tag_value(data[tag], path, pos)
+            return cls._get_nested_code_value(data[tag], path, pos)
 
     @classmethod
-    def tag_value(cls, tag_path) -> Optional[str]:
+    def _code_value(cls, tag_path) -> Optional[str]:
         """
         Get value of specified dot delimited tag name
         :param tag_path:
@@ -54,7 +54,20 @@ class CodeDictionary:
 
         codes: Dict = cls._get_code_dictionary()
         parts = tag_path.split(".")
-        return cls._get_nested_tag_value(codes, parts, 0)
+        return cls._get_nested_code_value(codes, parts, 0)
+
+    @staticmethod
+    def display(**context):
+        assert context and 'code' in context  # should be non-empty, containing a code
+        code: str = context.pop('code')
+        template: str = CodeDictionary._code_value(code)
+        if context:
+            # Message template parameterized with additional named parameter
+            # message context, assumed to be referenced by the template
+            return template.format(**context)
+        else:
+            # simple scalar message without parameterization?
+            return template
 
 
 class ReportJsonEncoder(JSONEncoder):
@@ -112,6 +125,9 @@ class ValidationReporter:
         """
         return self.biolink_version
 
+    ############################
+    # Legacy messaging methods #
+    ############################
     def info(self, err_msg: str):
         """
         Capture an informative message to report from the Validator.
@@ -181,6 +197,15 @@ class ValidationReporter:
     def dump_errors(self, flat=False) -> str:
         return _output(self.messages["errors"], flat)
 
+    ############################
+    # Legacy messaging methods #
+    ############################
+    def report(self, code: str, **context):
+        pass
+
+    ############################
+    # General Instance methods #
+    ############################
     # TODO: should the return value be an immutable NamedTuple instead?
     def get_messages(self) -> Dict[str, Set[str]]:
         """

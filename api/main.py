@@ -49,7 +49,7 @@ async def validate(query: Query):
     )
 
     if not validator.has_messages():
-        validator.info(f"Biolink Model-compliant TRAPI Message!")
+        validator.info("Biolink Model-compliant TRAPI Message!")
 
     return validator.to_dict()
 
