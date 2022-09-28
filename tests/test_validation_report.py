@@ -2,10 +2,17 @@
 from typing import Dict, Set, Tuple
 import pytest
 
-from reasoner_validator.report import ValidationReporter
+from reasoner_validator.report import CodeDictionary, ValidationReporter
 
 TEST_TRAPI_VERSION = "1.3.0"
 TEST_BIOLINK_VERSION = "2.4.8"
+
+
+def test_message_loader():
+    assert CodeDictionary.tag_value("category") is not None
+    assert CodeDictionary.tag_value("category.abstract") is not None
+    assert CodeDictionary.tag_value("predicate") is not None
+    assert CodeDictionary.tag_value("status") is not None
 
 
 def test_messages():

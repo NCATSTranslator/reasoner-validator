@@ -1,9 +1,60 @@
 """Error and Warning Reporting Module"""
+from os.path import join, abspath, dirname
 import copy
 from typing import Optional, Set, Dict, List
 from json import dumps, JSONEncoder
+from yaml import load, BaseLoader
 
 from reasoner_validator.versioning import latest
+
+
+class CodeDictionary:
+
+    CODE_DICTIONARY: str = join(abspath(dirname(__file__)), "codes.yaml")
+
+    code_dictionary: Optional[Dict] = None
+
+    @classmethod
+    def _get_code_dictionary(cls) -> Dict:
+        if not cls.code_dictionary:
+            # Open the file and load the file
+            with open(cls.CODE_DICTIONARY, mode='r') as f:
+                cls.code_dictionary = load(f, Loader=BaseLoader)
+        return cls.code_dictionary
+
+    @classmethod
+    def _get_nested_tag_value(cls, data: Dict, path: List[str], pos: int) -> Optional[str]:
+        """
+        Navigate dot delimited tag 'path' into a multi-level dictionary, to return its associated value.
+
+        :param data: Dict, multi-level data dictionary
+        :param path: str, dotted JSON tag path
+        :param pos: int, zero-based current position in tag path
+        :return: string value of the multi-level tag, if available; 'None' otherwise if no tag value found in the path
+        """
+        tag = path[pos]
+        if tag not in data:
+            return None
+
+        pos += 1
+        if pos == len(path):
+            return data[tag]
+        else:
+            return cls._get_nested_tag_value(data[tag], path, pos)
+
+    @classmethod
+    def tag_value(cls, tag_path) -> Optional[str]:
+        """
+        Get value of specified dot delimited tag name
+        :param tag_path:
+        :return:
+        """
+        if not tag_path:
+            return None
+
+        codes: Dict = cls._get_code_dictionary()
+        parts = tag_path.split(".")
+        return cls._get_nested_tag_value(codes, parts, 0)
 
 
 class ReportJsonEncoder(JSONEncoder):
