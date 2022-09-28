@@ -1707,7 +1707,7 @@ def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
             },
             None,
             None,
-            "Validate TRAPI Response: WARNING - Response returned empty Message Results?"
+            "Validate TRAPI Response: WARNING - Response returned empty Message.results?"
         )
     ]
 )
