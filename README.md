@@ -52,7 +52,7 @@ pip install -r requirements-service.txt
 The module may afterwards be run, as follows:
 
 ```shell
-python -m app.main
+python -m api.main
 ```
 
 Go to  http://localhost/docs to see the service documentation and to use the simple UI to input TRAPI messages for validation.
