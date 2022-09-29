@@ -1128,7 +1128,7 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - The value of node 'NCBIGene:29974.categories' should be an array!"
+            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot value is not an array!"
         ),
         (
             LATEST_BIOLINK_MODEL,

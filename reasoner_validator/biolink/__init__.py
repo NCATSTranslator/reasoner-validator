@@ -850,7 +850,7 @@ def validate_query_graph(validator: ValidationReporter, message: Dict):
         # ... nor empty
         query_graph = message['query_graph']
         if not (query_graph and len(query_graph) > 0):
-            validator.error("Response returned an empty Message Query Graph?")
+            validator.error("Response returned an empty Message Query Graph!")
             validator.report(code="error.response.query_graph.empty")
         else:
             # Validate the TRAPI compliance of the Query Graph
