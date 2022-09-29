@@ -57,6 +57,71 @@ python -m api.main
 
 Go to  http://localhost/docs to see the service documentation and to use the simple UI to input TRAPI messages for validation.
 
+### Typical Output
+
+As an example of the kind of output to expect, if one posts the following JSON to the /validate endpoint:
+
+```json
+{
+  "trapi_version": "1.3.0",
+  "biolink_version": "2.4.8",
+  "message": {
+    "query_graph": {
+        "nodes": {
+            "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+            "drug": {"categories": ["biolink:Drug"]}
+        },
+        "edges": {
+            "treats": {"subject": "drug", "predicates": ["biolink:treats"], "object": "type-2 diabetes"}
+        }
+    },
+    "knowledge_graph": {
+        "nodes": {
+            "MONDO:0005148": {"name": "type-2 diabetes"},
+            "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
+        },
+        "edges": {
+            "df87ff82": {"subject": "CHEBI:6801", "predicate": "biolink:treats", "object": "MONDO:0005148"}
+        }
+    },
+    "results": [
+        {
+            "node_bindings": {
+                "type-2 diabetes": [{"id": "MONDO:0005148"}],
+                "drug": [{"id": "CHEBI:6801"}]
+            },
+            "edge_bindings": {
+                "treats": [{"id": "df87ff82"}]
+            }
+        }
+    ]
+  }
+}
+```
+
+one should typically get a response body like the following JSON validation result back:
+
+```json
+{
+  "trapi_version": "1.3.0",
+  "biolink_version": "2.4.8",
+  "report": [
+    {
+      "code": "warning.node.unmapped_prefix",
+      "node_id": "CHEBI:6801",
+      "categories": "['biolink:Drug']"
+    },
+    {
+      "code": "error.node.missing_categories",
+      "node_id": "MONDO:0005148"
+    },
+    {
+      "code": "error.edge.attribute.missing"
+    }
+  ]
+}
+```
+
 ### Running the Web Service within Docker
 
 The Reasoner Validator web service may be run inside a docker container, using Docker Compose.
