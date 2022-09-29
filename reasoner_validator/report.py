@@ -228,6 +228,9 @@ class ValidationReporter:
         assert isinstance(reporter, ValidationReporter)
         self.add_messages(reporter.get_messages())
 
+        # new coded messages also need to be merged!
+        self.coded_messages.extend(reporter.get_report())
+
         # First come, first serve... We only overwrite
         # empty versions in the parent reporter
         if not self.trapi_version:

@@ -52,7 +52,7 @@ async def validate(query: Query):
         validator.info("Biolink Model-compliant TRAPI Message!")
         validator.report(code="info.compliant")
 
-    return validator.to_dict()
+    return validator.report_to_dict()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=80)
