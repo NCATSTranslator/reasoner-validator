@@ -47,7 +47,7 @@ warning:
 
 error:
   validation: "TRAPI {trapi_version} Query: '{exception}'"
-  unknown: "{context} element '{str(name)}' is unknown!"
+  unknown: "{context} element '{name}' is unknown!"
   abstract: "{context} element '{name}' is abstract!"
   mixin: "{context} element '{name}' is a mixin!"
   empty_nodes: "No nodes found!"
