@@ -142,6 +142,7 @@ class TRAPIValidator(ValidationReporter):
             )
         except jsonschema.ValidationError as e:
             self.error(f"TRAPI {self.trapi_version} Query: '{e.message}'")
+            self.report(code="error.validation", trapi_version=self.trapi_version, exception=e.message)
 
 
 def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPIValidator:
@@ -184,6 +185,7 @@ class MappingValidator(ValidationReporter):
     def check_dangling_references(self, graph: Dict):
         if not ('nodes' in graph and graph['nodes'] and 'edges' in graph and graph['edges']):
             self.warning("Empty graph?")
+            self.report(code="warning.empty_kg")
         else:
             pass
 

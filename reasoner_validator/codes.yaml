@@ -29,6 +29,14 @@ info:
 
 warning:
   deprecated: "{context} element '{name}' is deprecated?"
+  empty_kg: "Response returned an empty Message Knowledge Graph?"
+  empty_results: "Response returned empty Message.results?"
+  node:
+    unmapped_prefix: "Node '{node_id}' is unmapped to the target categories: {categories}?"
+    identifiers_unmapped_to_categories: "Node '{node_id}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
+    identifier_unmapped_to_category: "{context} node identifier '{node_id}' is unmapped to '{category}'?"
+  predicate:
+    non_canonical: "Predicate '{predicate}' is non-canonical?"
   attribute_type_id:
     not_association_slot: "Edge attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?"
   provenance:
@@ -36,18 +44,45 @@ warning:
     missing_ara: "Edge is missing ARA knowledge source provenance?"
     not_an_infores: "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
     missing_primary: "Edge has neither a 'primary' nor 'original' knowledge source?"
-  node:
-    unmapped_prefix: "Node '{node_id}' is unmapped to the target categories: {categories}?"
-    identifiers_unmapped_to_categories: "Node '{node_id}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
-    identifier_unmapped_to_category: "{context} node identifier '{node_id}' is unmapped to '{category}'?"
-  predicate:
-    non_canonical: "Predicate '{predicate}' is non-canonical?"
 
 error:
+  validation: "TRAPI {trapi_version} Query: '{exception}'"
   unknown: "{context} element '{str(name)}' is unknown!"
-  attribute_type_id:
-    unknown_prefix: "Edge attribute_type_id '{attribute_type_id}' has a CURIE prefix namespace unknown to Biolink!"
   abstract: "{context} element '{name}' is abstract!"
   mixin: "{context} element '{name}' is a mixin!"
+  empty_graph: "Empty graph!"
+  empty_nodes: "No nodes found!"
+  empty_edges: "No edges found!"
+  response:
+    query_graph:
+      missing: "TRAPI Message is missing its Query Graph!"
+      empty: "Response returned an empty Message Query Graph?"
+    knowledge_graph:
+      missing: "TRAPI Message is missing its Knowledge Graph component!"
+    results:
+      missing: "TRAPI Message is missing its Results!"
+      non_array: "Response returned a non-array Message.results!"
+  predicate:
+    missing: "Predicate is missing or empty!"
+    unknown: "Predicate '{predicate}' is unknown!"
+  attribute_type_id:
+    unknown_prefix: "Edge attribute_type_id '{attribute_type_id}' has a CURIE prefix namespace unknown to Biolink!"
   node:
+    missing_identifier: "{context} node identifier is missing!"
     missing_categories: "Node '{node_id}' is missing its categories!"
+    ids_not_array: "Node '{node_id}.ids' slot value is not an array!"
+    empty_ids: "Node '{node_id}.ids' slot array is empty!"
+    categories_not_array: "Node '{node_id}.categories' slot value is not an array!"
+    empty_categories: "Node '{node_id}.categories' slot array is empty!"
+    is_set_not_boolean: "Node '{node_id}.is_set' slot is not a boolean value!"
+  edge:
+    subject:
+      missing: "Edge '{edge_id}' has a missing or empty 'subject' slot value!"
+      missing_from_nodes: "Edge 'subject' id '{object_id}' is missing from the nodes catalog!"
+    predicate:
+      missing: "Edge '{edge_id}' has a missing or empty predicate slot!"
+      not_array: "Edge '{edge_id}' predicate slot value is not an array!"
+      empty: "Edge '{edge_id}' predicate slot value is an empty array!"
+    object:
+      missing: "Edge '{edge_id}' has a missing or empty 'object' slot value!"
+      missing_from_nodes: "Edge 'object' id '{object_id}' is missing from the nodes catalog!"

@@ -1601,7 +1601,7 @@ def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
             },
             None,
             None,
-            "Validate TRAPI Response: ERROR - Response returned an empty Message Query Graph?"
+            "Validate TRAPI Response: ERROR - Response returned an empty Message Query Graph!"
         ),
         (
             {

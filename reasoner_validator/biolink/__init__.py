@@ -155,7 +155,8 @@ class BiolinkValidator(ValidationReporter):
             #       probably no longer relevant to the community?
             if 'categories' in slots:
                 if not isinstance(slots["categories"], List):
-                    self.error(f"The value of node '{node_id}.categories' should be an array!")
+                    self.error(f"Node '{node_id}.categories' slot value is not an array!")
+                    self.report(code="error.node.categories_not_array", node_id=node_id)
                 else:
                     categories = slots["categories"]
                     node_prefix_mapped: bool = False
@@ -186,8 +187,10 @@ class BiolinkValidator(ValidationReporter):
                 ids = slots["ids"]
                 if not isinstance(ids, List):
                     self.error(f"Node '{node_id}.ids' slot value is not an array!")
+                    self.report(code="error.node.ids_not_array", node_id=node_id)
                 elif not ids:
                     self.error(f"Node '{node_id}.ids' slot array is empty!")
+                    self.report(code="error.node.empty_ids", node_id=node_id)
             else:
                 ids: List[str] = list()  # null "ids" value is permitted in QNodes
 
@@ -195,8 +198,10 @@ class BiolinkValidator(ValidationReporter):
                 categories = slots["categories"]
                 if not isinstance(categories, List):
                     self.error(f"Node '{node_id}.categories' slot value is not an array!")
+                    self.report(code="error.node.categories_not_array", node_id=node_id)
                 elif not categories:
                     self.error(f"Node '{node_id}.categories' slot array is empty!")
+                    self.report(code="error.node.empty_categories", node_id=node_id)
                 else:
                     id_prefix_mapped: Dict = {identifier: False for identifier in ids}
                     for category in categories:
@@ -235,6 +240,7 @@ class BiolinkValidator(ValidationReporter):
                 is_set = slots["is_set"]
                 if not isinstance(is_set, bool):
                     self.error(f"Node '{node_id}.is_set' slot is not a boolean value!")
+                    self.report(code="error.node.is_set_not_boolean", node_id=node_id)
             # else:  # a null "is_set" value is permitted in QNodes but defaults to 'False'
 
             # constraints  # TODO: how do we validate node constraints?
@@ -395,9 +401,7 @@ class BiolinkValidator(ValidationReporter):
                                             "Provenance attribute type 'biolink:original_knowledge_source' " +
                                             "is deprecated from Biolink Model release 2.4.5?"
                                         )
-                                        self.report(
-                                            code="warning.provenance.deprecated"
-                                        )
+                                        self.report(code="warning.provenance.deprecated")
 
                                     # ... now, check the infores values against various expectations
                                     for infores in value:
@@ -478,6 +482,7 @@ class BiolinkValidator(ValidationReporter):
         if biolink_class:
             if not self.bmt.is_predicate(predicate):
                 self.error(f"Predicate '{predicate}' is unknown!")
+                self.report(code="error.predicate.unknown", predicate=predicate)
             elif self.minimum_required_biolink_version("2.2.0") and \
                     not self.bmt.is_translator_canonical_predicate(predicate):
                 self.warning(f"Predicate '{predicate}' is non-canonical?")
@@ -511,14 +516,14 @@ class BiolinkValidator(ValidationReporter):
 
         if not subject_id:
             self.error(f"Edge '{edge_id}' has a missing or empty 'subject' slot value!")
+            self.report(code="error.edge.subject.missing", edge_id=edge_id)
         elif subject_id not in self.nodes:
-            self.error(
-                f"Edge 'subject' id '{subject_id}' is missing from the nodes catalog!"
-            )
-
+            self.error(f"Edge 'subject' id '{subject_id}' is missing from the nodes catalog!")
+            self.report(code="error.edge.subject.missing_from_nodes", object_id=subject_id)
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             if not predicate:
                 self.error(f"Edge '{edge_id}' has a missing or empty predicate slot!")
+                self.report(code="error.edge.predicate.missing", edge_id=edge_id)
             else:
                 self.validate_predicate(predicate=predicate, strict_validation=strict_validation)
         else:  # is a Query Graph...
@@ -527,8 +532,10 @@ class BiolinkValidator(ValidationReporter):
                 pass
             elif not isinstance(predicates, List):
                 self.error(f"Edge '{edge_id}' predicate slot value is not an array!")
+                self.report(code="error.edge.predicate.not_array", edge_id=edge_id)
             elif len(predicates) == 0:
                 self.error(f"Edge '{edge_id}' predicate slot value is an empty array!")
+                self.report(code="error.edge.predicate.empty_array", edge_id=edge_id)
             else:
                 # Should now be a non-empty list of CURIES which are valid Biolink Predicates
                 for predicate in predicates:
@@ -537,9 +544,10 @@ class BiolinkValidator(ValidationReporter):
                     self.validate_predicate(predicate=predicate, strict_validation=strict_validation)
         if not object_id:
             self.error(f"Edge '{edge_id}' has a missing or empty 'object' slot value!")
+            self.report(code="error.edge.object.missing", edge_id=edge_id)
         elif object_id not in self.nodes:
             self.error(f"Edge 'object' id '{object_id}' is missing from the nodes catalog!")
-
+            self.report(code="error.edge.object.missing_from_nodes", object_id=object_id)
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             self.validate_attributes(edge=edge)
         else:
@@ -599,6 +607,7 @@ class BiolinkValidator(ValidationReporter):
             # else, we will have already reported an error in validate_category()
         else:
             self.error(f"{context} node identifier is missing!")
+            self.report(code="error.node.missing_identifier", context=context)
 
     def check_biolink_model_compliance_of_input_edge(self, edge: Dict[str, str], strict_validation: bool = False):
         """
@@ -633,6 +642,7 @@ class BiolinkValidator(ValidationReporter):
         )
         if not predicate:
             self.error("Predicate is missing or empty!")
+            self.report(code="error.predicate.missing")
         else:
             self.validate_predicate(predicate=predicate, strict_validation=strict_validation)
 
@@ -657,7 +667,8 @@ class BiolinkValidator(ValidationReporter):
         :type strict_validation: bool
         """
         if not graph:
-            self.error(f"Empty graph!")
+            self.error("Empty graph!")
+            self.report(code="error.empty_kg")
 
         # Access graph data fields to be validated
         nodes: Optional[Dict]
@@ -666,7 +677,8 @@ class BiolinkValidator(ValidationReporter):
         else:
             # Query Graphs can have an empty nodes catalog
             if self.graph_type is not TRAPIGraphType.Query_Graph:
-                self.error(f"No nodes found!")
+                self.error("No nodes found!")
+                self.report(code="error.empty_nodes")
             # else:  Query Graphs can omit the 'nodes' tag
             nodes = None
 
@@ -676,6 +688,7 @@ class BiolinkValidator(ValidationReporter):
         else:
             if self.graph_type is not TRAPIGraphType.Query_Graph:
                 self.error(f"No edges found!")
+                self.report(code="error.empty_edges")
             # else:  Query Graphs can omit the 'edges' tag
             edges = None
 
@@ -819,12 +832,14 @@ def sample_graph(graph: Dict) -> Dict:
 def validate_query_graph(validator: ValidationReporter, message: Dict):
     # Query Graph must not be missing...
     if 'query_graph' not in message:
-        validator.error("TRAPI Message is missing its Query Graph?")
+        validator.error("TRAPI Message is missing its Query Graph!")
+        validator.report(code="error.response.query_graph.missing")
     else:
         # ... nor empty
         query_graph = message['query_graph']
         if not (query_graph and len(query_graph) > 0):
             validator.error("Response returned an empty Message Query Graph?")
+            validator.report(code="error.response.query_graph.empty")
         else:
             # Validate the TRAPI compliance of the Query Graph
             trapi_validator: TRAPIValidator = check_trapi_validity(
@@ -847,7 +862,8 @@ def validate_query_graph(validator: ValidationReporter, message: Dict):
 def validate_knowledge_graph(validator: ValidationReporter, message: Dict):
     # The Knowledge Graph should not be missing
     if 'knowledge_graph' not in message:
-        validator.error("TRAPI Message is missing its Knowledge Graph component?")
+        validator.error("TRAPI Message is missing its Knowledge Graph component!")
+        validator.report(code="error.response.knowledge_graph.missing")
     else:
         knowledge_graph = message['knowledge_graph']
         # The Knowledge Graph should also not generally be empty? Issue a warning
@@ -857,6 +873,7 @@ def validate_knowledge_graph(validator: ValidationReporter, message: Dict):
                 "edges" in knowledge_graph and len(knowledge_graph["edges"]) > 0
         ):
             validator.warning("Response returned an empty Message Knowledge Graph?")
+            validator.report(code="warning.empty_kg")
         else:
             mapping_validator: ValidationReporter = check_node_edge_mappings(knowledge_graph)
             if mapping_validator.has_messages():
@@ -893,15 +910,18 @@ def validate_results(validator: ValidationReporter, message: Dict):
     #     :type output_node_binding: str
     # The Knowledge Graph should not be missing
     if 'results' not in message:
-        validator.error("TRAPI Message is missing its Knowledge Graph?")
+        validator.error("TRAPI Message is missing its Results!")
+        validator.report(code="error.response.results.missing")
     else:
         results = message['results']
         if not (results and len(results) > 0):
             # The Message.results should not generally be empty?
             validator.warning("Response returned empty Message.results?")
+            validator.report(code="warning.empty_results")
         elif not isinstance(results, List):
             # The Message.results should be an array of Result objects
-            validator.error("Response returned a non-array Message.results?")
+            validator.error("Response returned a non-array Message.results!")
+            validator.report(code="error.response.results.non_array")
         else:
             # Validate a subsample of a non-empty Message.results component.
             results_sample = sample_results(results)
