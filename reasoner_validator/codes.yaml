@@ -65,8 +65,9 @@ error:
   predicate:
     missing: "Predicate is missing or empty!"
     unknown: "Predicate '{predicate}' is unknown!"
-  attribute_type_id:
-    unknown_prefix: "Edge attribute_type_id '{attribute_type_id}' has a CURIE prefix namespace unknown to Biolink!"
+  category:
+    missing: "{context} has a missing Biolink category!"
+    invalid: "{context} identifier '{category}' is not a valid Biolink category!"
   node:
     missing_identifier: "{context} node identifier is missing!"
     missing_categories: "Node '{node_id}' is missing its categories!"
@@ -86,3 +87,16 @@ error:
     object:
       missing: "Edge '{edge_id}' has a missing or empty 'object' slot value!"
       missing_from_nodes: "Edge 'object' id '{object_id}' is missing from the nodes catalog!"
+    attribute:
+      missing: "Edge has no 'attributes' key!"
+      empty: "Edge has empty attributes!"
+      not_list: "Edge attributes are not a list!"
+      attribute_type_id:
+        missing: "Edge attribute is missing its 'attribute_type_id' key!"
+        empty: "Edge attribute empty 'attribute_type_id' field!"
+        not_curie: "Edge attribute_type_id '{attribute_type_id}' is not a CURIE!"
+        unknown_prefix: "Edge attribute_type_id '{attribute_type_id}' has a CURIE prefix namespace unknown to Biolink!"
+      value:
+        missing: "Edge attribute is missing its 'value' key!"
+        empty: "Edge attribute empty 'value' field!"
+        invalid_data_type: "Attribute value has an unrecognized data type '{data_type}'!"

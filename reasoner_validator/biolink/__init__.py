@@ -295,10 +295,13 @@ class BiolinkValidator(ValidationReporter):
         """
         if 'attributes' not in edge.keys():
             self.error(f"Edge has no 'attributes' key!")
+            self.report(code="error.edge.attribute.missing")
         elif not edge['attributes']:
             self.error(f"Edge has empty attributes!")
+            self.report(code="error.edge.attribute.empty")
         elif not isinstance(edge['attributes'], List):
             self.error(f"Edge attributes are not a list!")
+            self.report(code="error.edge.attribute.not_list")
         else:
             attributes = edge['attributes']
 
@@ -324,12 +327,16 @@ class BiolinkValidator(ValidationReporter):
                 # Validate attribute_type_id
                 if 'attribute_type_id' not in attribute:
                     self.error("Edge attribute is missing its 'attribute_type_id' key!")
+                    self.report(code="error.edge.attribute.attribute_type_id.missing")
                 elif not attribute['attribute_type_id']:
                     self.error("Edge attribute empty 'attribute_type_id' field!")
+                    self.report(code="error.edge.attribute.attribute_type_id.empty")
                 elif 'value' not in attribute:
                     self.error("Edge attribute is missing its 'value' key!")
+                    self.report(code="error.edge.attribute.value.missing")
                 elif not attribute['value']:
                     self.error("Edge attribute empty 'value' field!")
+                    self.report(code="error.edge.attribute.value.empty")
                 else:
                     attribute_type_id: str = attribute['attribute_type_id']
                     value = attribute['value']
@@ -343,11 +350,14 @@ class BiolinkValidator(ValidationReporter):
                             value = [value]
                         else:
                             self.error(f"Attribute value has an unrecognized data type '{type(value)}'!")
+                            self.report(code="error.edge.attribute.value.invalid_data_type", data_type=type(value))
                             continue
 
                     if not is_curie(attribute_type_id):
-                        self.error(
-                            f"Edge attribute_type_id '{str(attribute_type_id)}' is not a CURIE!"
+                        self.error(f"Edge attribute_type_id '{str(attribute_type_id)}' is not a CURIE!")
+                        self.report(
+                            code="error.edge.attribute.attribute_type_id.not_curie",
+                            attribute_type_id=str(attribute_type_id)
                         )
                     else:
                         # 'attribute_type_id' is a CURIE, but how well does it map?
@@ -432,7 +442,7 @@ class BiolinkValidator(ValidationReporter):
                                 f"has a CURIE prefix namespace unknown to Biolink!"
                             )
                             self.report(
-                                code="error.attribute_type_id.unknown_prefix",
+                                code="error.edge.attribute.attribute_type_id.unknown_prefix",
                                 attribute_type_id=str(attribute_type_id)
                             )
 
@@ -578,9 +588,11 @@ class BiolinkValidator(ValidationReporter):
             )
             if biolink_class and not self.bmt.is_category(category):
                 self.error(f"{context} identifier '{category}' is not a valid Biolink category!")
+                self.report(code="error.category.invalid", context=context, category=category)
                 biolink_class = None
         else:
             self.error(f"{context} has a missing Biolink category!")
+            self.report(code="error.category.missing", context=context)
 
         return biolink_class
 
