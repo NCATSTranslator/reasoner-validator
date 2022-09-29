@@ -50,7 +50,6 @@ error:
   unknown: "{context} element '{str(name)}' is unknown!"
   abstract: "{context} element '{name}' is abstract!"
   mixin: "{context} element '{name}' is a mixin!"
-  empty_graph: "Empty graph!"
   empty_nodes: "No nodes found!"
   empty_edges: "No edges found!"
   response:

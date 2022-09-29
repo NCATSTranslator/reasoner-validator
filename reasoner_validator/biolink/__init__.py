@@ -679,8 +679,9 @@ class BiolinkValidator(ValidationReporter):
         :type strict_validation: bool
         """
         if not graph:
-            self.error("Empty graph!")
-            self.report(code="error.empty_kg")
+            self.warning("Empty graph!")
+            self.report(code="warning.empty_kg")
+            return  # nothing really more to do here!
 
         # Access graph data fields to be validated
         nodes: Optional[Dict]
