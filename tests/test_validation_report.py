@@ -1,5 +1,5 @@
 """Testing Validation Report methods"""
-from typing import Dict, Set, Tuple
+from typing import Dict, Set, Tuple, List
 import pytest
 
 from reasoner_validator.report import CodeDictionary, ValidationReporter
@@ -12,16 +12,36 @@ def test_message_loader():
     assert CodeDictionary._code_value("category") is not None
     assert CodeDictionary._code_value("category.abstract") is not None
     assert CodeDictionary._code_value("predicate") is not None
-    assert CodeDictionary._code_value("compliant") == "Biolink Model-compliant TRAPI Message!"
-    assert CodeDictionary.display(code="compliant") == "Biolink Model-compliant TRAPI Message!"
+    assert CodeDictionary._code_value("info.compliant") == "Biolink Model-compliant TRAPI Message!"
+
     assert CodeDictionary._code_value("info") is not None
-    assert CodeDictionary.display(
-        code="info.abstract",
-        element="ELEMENT",
-        name="NAME"
-    ) == "ELEMENT element 'NAME' is abstract."
+
     assert CodeDictionary._code_value("warning") is not None
     assert CodeDictionary._code_value("error") is not None
+
+
+def test_message_display():
+    assert CodeDictionary.display(code="info.compliant") == "Biolink Model-compliant TRAPI Message!"
+    assert CodeDictionary.display(
+        code="info.abstract",
+        context="ELEMENT",
+        name="NAME"
+    ) == "ELEMENT element 'NAME' is abstract."
+
+
+def test_message_report():
+    reporter = ValidationReporter(prefix="First Validation Report", trapi_version=TEST_TRAPI_VERSION)
+    reporter.report(code="info.compliant")
+    reporter.report(
+        code="info.abstract",
+        context="ELEMENT",
+        name="NAME"
+    )
+    report: List[Dict[str, str]] = reporter.get_report()
+    assert len(report) > 0
+    messages: List[str] = [CodeDictionary.display(**coded_message) for coded_message in report]
+    assert "Biolink Model-compliant TRAPI Message!" in messages
+    assert "ELEMENT element 'NAME' is abstract." in messages
 
 
 def test_messages():

@@ -111,6 +111,8 @@ class ValidationReporter:
             "warnings": set(),
             "errors": set()
         }
+        # new code reporting format?
+        self.coded_messages: List[Dict[str, str]] = list()
 
     def get_trapi_version(self) -> str:
         """
@@ -200,8 +202,11 @@ class ValidationReporter:
     ############################
     # Legacy messaging methods #
     ############################
-    def report(self, code: str, **context):
-        pass
+    def report(self, **message):
+        self.coded_messages.append(message)
+
+    def get_report(self) -> List[Dict[str, str]]:
+        return copy.deepcopy(self.coded_messages)
 
     ############################
     # General Instance methods #
@@ -235,6 +240,13 @@ class ValidationReporter:
             "trapi_version": self.trapi_version,
             "biolink_version": self.biolink_version,
             "messages": self.get_messages()
+        }
+
+    def report_to_dict(self) -> Dict:
+        return {
+            "trapi_version": self.trapi_version,
+            "biolink_version": self.biolink_version,
+            "report": self.get_report()
         }
 
     def apply_validation(self, validation_method, *args, **kwargs) -> bool:

@@ -174,8 +174,10 @@ class BiolinkValidator(ValidationReporter):
                                 node_prefix_mapped = True
                     if not node_prefix_mapped:
                         self.warning(f"Node '{node_id}' is unmapped to the target categories: {str(categories)}?")
+                        self.report(code="warning.node.unmapped_prefix", node_id=node_id, categories=str(categories))
             else:
                 self.error(f"Node '{node_id}' is missing its categories!")
+                self.report(code="error.node.missing_categories", node_id=node_id)
             # TODO: Do we need to (or can we) validate other Knowledge Graph node fields here? Perhaps yet?
 
         else:  # Query Graph node validation
@@ -220,6 +222,12 @@ class BiolinkValidator(ValidationReporter):
                             f"Node '{node_id}' has identifiers {str(unmapped_ids)} " +
                             f"unmapped to the target categories: {str(categories)}?"
                         )
+                        self.report(
+                            code="warning.node.identifiers_unmapped_to_categories",
+                            node_id=node_id,
+                            unmapped_ids=str(unmapped_ids),
+                            categories=str(categories)
+                        )
 
             # else:  # null "categories" value is permitted in QNodes
 
@@ -248,27 +256,27 @@ class BiolinkValidator(ValidationReporter):
         element: Optional[Element] = self.bmt.get_element(name)
         if not element:
             self.error(f"{context} element '{str(name)}' is unknown!")
+            self.report(code="error.unknown", context=context, name=name)
         elif element.deprecated:
-            self.warning(
-                f"{context} element '{name}' is deprecated?"
-            )
+            self.warning(f"{context} element '{name}' is deprecated?")
+            self.report(code="warning.deprecated", context=context, name=name)
             return None
         elif element.abstract:
             if strict_validation:
-                self.error(
-                    f"{context} element '{name}' is abstract!"
-                )
+                self.error(f"{context} element '{name}' is abstract!")
+                self.report(code="error.abstract", context=context, name=name)
             else:
                 self.info(f"{context} element '{name}' is abstract.")
+                self.report(code="info.abstract", context=context, name=name)
             return None
         elif self.bmt.is_mixin(name):
             # A mixin cannot be instantiated thus it should not be given as an input concept category
             if strict_validation:
-                self.error(
-                    f"{context} element '{name}' is a mixin!"
-                )
+                self.error(f"{context} element '{name}' is a mixin!")
+                self.report(code="error.mixin", context=context, name=name)
             else:
                 self.info(f"{context} element '{name}' is a mixin.")
+                self.report(code="info.mixin", context=context, name=name)
             return None
         else:
             return element
@@ -350,6 +358,10 @@ class BiolinkValidator(ValidationReporter):
                                         f"Edge attribute_type_id '{str(attribute_type_id)}' " +
                                         "is not a biolink:association_slot?"
                                     )
+                                    self.report(
+                                        code="warning.attribute_type_id.not_association_slot",
+                                        attribute_type_id=str(attribute_type_id)
+                                    )
 
                                 else:
                                     # it is a Biolink 'association_slot' but now, validate what kind?
@@ -380,8 +392,11 @@ class BiolinkValidator(ValidationReporter):
                                     if self.minimum_required_biolink_version("2.4.5") and \
                                        attribute_type_id == "biolink:original_knowledge_source":
                                         self.warning(
-                                            f"Provenance attribute type 'biolink:original_knowledge_source' " +
-                                            f"is deprecated from Biolink Model release 2.4.5?"
+                                            "Provenance attribute type 'biolink:original_knowledge_source' " +
+                                            "is deprecated from Biolink Model release 2.4.5?"
+                                        )
+                                        self.report(
+                                            code="warning.provenance.deprecated"
                                         )
 
                                     # ... now, check the infores values against various expectations
@@ -390,7 +405,11 @@ class BiolinkValidator(ValidationReporter):
                                         if not infores.startswith("infores:"):
                                             self.error(
                                                 f"Edge has provenance value '{infores}' " +
-                                                f"which is not a well-formed InfoRes CURIE!"
+                                                "which is not a well-formed InfoRes CURIE!"
+                                            )
+                                            self.report(
+                                                code="error.provenance.not_an_infores",
+                                                infores=infores
                                             )
                                         else:
                                             if ara_source and \
@@ -408,24 +427,40 @@ class BiolinkValidator(ValidationReporter):
                                 f"Edge attribute_type_id '{str(attribute_type_id)}' " +
                                 f"has a CURIE prefix namespace unknown to Biolink!"
                             )
+                            self.report(
+                                code="error.attribute_type_id.unknown_prefix",
+                                attribute_type_id=str(attribute_type_id)
+                            )
+
                         else:
                             self.info(
                                 f"Edge attribute_type_id '{str(attribute_type_id)}' " +
                                 f"has a non-Biolink CURIE prefix mapped to Biolink!"
                             )
+                            self.report(
+                                code="info.attribute_type_id.non_biolink_prefix",
+                                attribute_type_id=str(attribute_type_id)
+                            )
 
             # TODO: After all the attributes have been scanned, check for provenance. Treat as warnings for now
             if ara_source and not found_ara_knowledge_source:
-                self.warning(f"Edge is missing ARA knowledge source provenance?")
+                self.warning("Edge is missing ARA knowledge source provenance?")
+                self.report(code="warning.provenance.missing_ara")
 
             if kp_source and not found_kp_knowledge_source:
                 self.warning(
-                    f"Edge attribute values are missing expected " +
+                    "Edge attribute values are missing expected " +
                     f"Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?"
+                )
+                self.report(
+                    code="warning.attribute_type_id.not_association_slot",
+                    kp_source=kp_source,
+                    kp_source_type=kp_source_type
                 )
 
             if not found_primary_or_original_knowledge_source:
-                self.warning(f"Edge has neither a 'primary' nor 'original' knowledge source?")
+                self.warning("Edge has neither a 'primary' nor 'original' knowledge source?")
+                self.report(code="warning.provenance.missing_primary")
 
     def validate_predicate(self, predicate: str, strict_validation: bool):
         """
@@ -446,6 +481,7 @@ class BiolinkValidator(ValidationReporter):
             elif self.minimum_required_biolink_version("2.2.0") and \
                     not self.bmt.is_translator_canonical_predicate(predicate):
                 self.warning(f"Predicate '{predicate}' is non-canonical?")
+                self.report(code="warning.predicate.non_canonical", predicate=predicate)
 
     def validate_graph_edge(self, edge: Dict, strict_validation: bool):
         """
@@ -554,6 +590,12 @@ class BiolinkValidator(ValidationReporter):
                 possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
                 if biolink_class.name not in possible_subject_categories:
                     self.warning(f"{context} node identifier '{node_id}' is unmapped to '{category}'?")
+                    self.report(
+                        code="warning.node.identifier_unmapped_to_category",
+                        context=context,
+                        node_id=node_id,
+                        category=category
+                    )
             # else, we will have already reported an error in validate_category()
         else:
             self.error(f"{context} node identifier is missing!")
