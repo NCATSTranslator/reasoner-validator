@@ -106,12 +106,6 @@ class ValidationReporter:
         self.prefix: str = prefix + ": " if prefix else ""
         self.trapi_version = trapi_version if trapi_version else latest.get(self.DEFAULT_TRAPI_VERSION)
         self.biolink_version = biolink_version
-        self.messages: Dict[str, Set[str]] = {
-            "information": set(),
-            "warnings": set(),
-            "errors": set()
-        }
-        # new code reporting format?
         self.coded_messages: List[Dict[str, str]] = list()
 
     def get_trapi_version(self) -> str:
@@ -127,50 +121,8 @@ class ValidationReporter:
         """
         return self.biolink_version
 
-    ############################
-    # Legacy messaging methods #
-    ############################
-    def info(self, err_msg: str):
-        """
-        Capture an informative message to report from the Validator.
-
-        :param err_msg: error message to report.
-        :type err_msg: str
-        """
-        self.messages["information"].add(f"{self.prefix}INFO - {err_msg}")
-
-    def warning(self, err_msg: str):
-        """
-        Capture a warning message to report from the Validator.
-
-        :param err_msg: error message to report.
-        :type err_msg: str
-        """
-        self.messages["warnings"].add(f"{self.prefix}WARNING - {err_msg}")
-
-    def error(self, err_msg: str):
-        """
-        Capture an error message to report from the Validator.
-
-        :param err_msg: error message to report.
-        :type err_msg: str
-        """
-        self.messages["errors"].add(f"{self.prefix}ERROR - {err_msg}")
-
-    def add_messages(self, new_messages: Dict[str, Set[str]]):
-        """
-        Batch addition of a dictionary of messages to a ValidatorReporter instance..
-
-        :param new_messages: Dict[str, Set[str]], with key one of
-                             "information", "warnings" or "errors",
-                              with Sets of associated message strings.
-        """
-        for key in self.messages:
-            if key in new_messages:
-                self.messages[key].update(new_messages[key])
-
     def has_messages(self) -> bool:
-        return bool(self.messages["information"] or self.messages["warnings"] or self.messages["errors"])
+        return bool(self.coded_messages)
 
     def has_information(self) -> bool:
         return bool(self.messages["information"])
@@ -190,18 +142,6 @@ class ValidationReporter:
     def get_errors(self) -> List:
         return list(self.messages["errors"])
 
-    def dump_info(self, flat=False) -> str:
-        return _output(self.messages["information"], flat)
-
-    def dump_warnings(self, flat=False) -> str:
-        return _output(self.messages["warnings"], flat)
-
-    def dump_errors(self, flat=False) -> str:
-        return _output(self.messages["errors"], flat)
-
-    ############################
-    # Legacy messaging methods #
-    ############################
     def report(self, **message):
         self.coded_messages.append(message)
 
@@ -211,13 +151,6 @@ class ValidationReporter:
     ############################
     # General Instance methods #
     ############################
-    # TODO: should the return value be an immutable NamedTuple instead?
-    def get_messages(self) -> Dict[str, Set[str]]:
-        """
-        :return: Dict[str, Set[str]], of "information", "warnings" or "errors" indexed sets of string messages
-        """
-        return copy.deepcopy(self.messages)
-
     def merge(self, reporter):
         """
         Merge all messages and metadata from a second ValidatorReporter,
@@ -226,7 +159,6 @@ class ValidationReporter:
         :param reporter: second ValidatorReporter
         """
         assert isinstance(reporter, ValidationReporter)
-        self.add_messages(reporter.get_messages())
 
         # new coded messages also need to be merged!
         self.coded_messages.extend(reporter.get_report())
@@ -239,13 +171,6 @@ class ValidationReporter:
             self.biolink_version = reporter.biolink_version
 
     def to_dict(self) -> Dict:
-        return {
-            "trapi_version": self.trapi_version,
-            "biolink_version": self.biolink_version,
-            "messages": self.get_messages()
-        }
-
-    def report_to_dict(self) -> Dict:
         return {
             "trapi_version": self.trapi_version,
             "biolink_version": self.biolink_version,

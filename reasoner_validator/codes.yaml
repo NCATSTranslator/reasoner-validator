@@ -61,6 +61,7 @@ error:
     results:
       missing: "TRAPI Message is missing its Results!"
       non_array: "Response returned a non-array Message.results!"
+      missing_bindings: "Neither the input id '{input_id}' nor resolved aliases were returned in the Result object IDs for node '{output_node_binding}' binding?"
   predicate:
     missing: "Predicate is missing or empty!"
     unknown: "Predicate '{predicate}' is unknown!"

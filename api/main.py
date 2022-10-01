@@ -49,10 +49,9 @@ async def validate(query: Query):
     )
 
     if not validator.has_messages():
-        validator.info("Biolink Model-compliant TRAPI Message!")
         validator.report(code="info.compliant")
 
-    return validator.report_to_dict()
+    return validator.to_dict()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=80)
