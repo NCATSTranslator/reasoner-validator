@@ -129,7 +129,7 @@ class BiolinkValidator(ValidationReporter):
             logger.error(f"minimum_required_biolink_version() error: {str(sve)}")
             return False
 
-    def get_result(self) -> Tuple[str, Optional[Dict[str, Set[str]]]]:
+    def get_result(self) -> Tuple[str, Optional[Dict[str, List[Dict]]]]:
         """
         Get result of validation.
 
@@ -876,8 +876,9 @@ def validate_results(validator: ValidationReporter, message: Dict):
 
                 # The 'output_element' is 'subject' or 'object' target (unknown) of retrieval
                 # The 'output_node_binding' is (subject) 'a' or (object) 'b' keys in the QueryGraph.Nodes to be bound
-                # In principle, we detect which node in the QueryGraph has 'ids' associated with its node record and assume
-                # that the other edge node is the desired target (in the OneHop), so the 'ids' there should be in the output
+                # In principle, we detect which node in the QueryGraph has 'ids' associated with its node record
+                # and assume that the other edge node is the desired target (in the OneHop), so the 'ids'
+                # there should be in the output
 
                 # object_ids = [r['node_bindings'][output_node_binding][0]['id'] for r in results_sample]
                 # if case[output_element] not in object_ids:

@@ -1,7 +1,7 @@
 """Error and Warning Reporting Module"""
 from os.path import join, abspath, dirname
 import copy
-from typing import Optional, Set, Dict, List
+from typing import Optional, Dict, List
 from json import dumps, JSONEncoder
 from yaml import load, BaseLoader
 
@@ -57,14 +57,15 @@ class CodeDictionary:
         return cls._get_nested_code_value(codes, parts, 0)
 
     @staticmethod
-    def display(**context):
-        assert context and 'code' in context  # should be non-empty, containing a code
-        code: str = context.pop('code')
-        template: str = CodeDictionary._code_value(code)
-        if context:
+    def display(**message):
+        assert message and 'code' in message  # should be non-empty, containing a code
+        code: str = message.pop('code')
+        template: Optional[str] = CodeDictionary._code_value(code)
+        assert template, f"CodeDictionary.display(): unknown message code {code}"
+        if message:
             # Message template parameterized with additional named parameter
             # message context, assumed to be referenced by the template
-            return template.format(**context)
+            return template.format(**message)
         else:
             # simple scalar message without parameterization?
             return template
@@ -97,6 +98,12 @@ class ValidationReporter:
     # specifically 1.3.0, as of September 1st, 2022
     DEFAULT_TRAPI_VERSION = "1"
 
+    _message_type_name: Dict[str, str] = {
+        "info": "information",
+        "warning": "warnings",
+        "error": "errors"
+    }
+
     def __init__(
             self,
             prefix: Optional[str] = None,
@@ -106,7 +113,11 @@ class ValidationReporter:
         self.prefix: str = prefix + ": " if prefix else ""
         self.trapi_version = trapi_version if trapi_version else latest.get(self.DEFAULT_TRAPI_VERSION)
         self.biolink_version = biolink_version
-        self.coded_messages: List[Dict[str, str]] = list()
+        self.messages: Dict[str, List] = {
+            "information": list(),
+            "warnings": list(),
+            "errors": list()
+        }
 
     def get_trapi_version(self) -> str:
         """
@@ -122,7 +133,7 @@ class ValidationReporter:
         return self.biolink_version
 
     def has_messages(self) -> bool:
-        return bool(self.coded_messages)
+        return self.has_information() or self.has_warnings() or self.has_errors()
 
     def has_information(self) -> bool:
         return bool(self.messages["information"])
@@ -133,20 +144,30 @@ class ValidationReporter:
     def has_errors(self) -> bool:
         return bool(self.messages["errors"])
 
-    def get_info(self) -> List:
-        return list(self.messages["information"])
+    def report(self, code: str, **message):
+        code_id_parts: List[str] = code.split('.')
+        message_type: str = code_id_parts[0]
+        if message_type in ['info', 'warning', 'error']:
+            message_type = self._message_type_name[message_type]
+            message['code'] = code
+            self.messages[message_type].append(message)
+        else:
+            raise NotImplementedError(f"ValidationReport.report(): {code} is unknown code type: {code_id_parts[0]}")
 
-    def get_warnings(self) -> List:
-        return list(self.messages["warnings"])
+    def add_messages(self, new_messages: Dict[str, List]):
+        """
+        Batch addition of a dictionary of messages to a ValidatorReporter instance..
 
-    def get_errors(self) -> List:
-        return list(self.messages["errors"])
+        :param new_messages: Dict[str, List], with key one of
+                             "information", "warnings" or "errors",
+                              with Lists of associated message strings.
+        """
+        for key in self.messages:
+            if key in new_messages:
+                self.messages[key].extend(new_messages[key])
 
-    def report(self, **message):
-        self.coded_messages.append(message)
-
-    def get_report(self) -> List[Dict[str, str]]:
-        return copy.deepcopy(self.coded_messages)
+    def get_messages(self) -> Dict[str, List]:
+        return copy.deepcopy(self.messages)
 
     ############################
     # General Instance methods #
@@ -161,7 +182,7 @@ class ValidationReporter:
         assert isinstance(reporter, ValidationReporter)
 
         # new coded messages also need to be merged!
-        self.coded_messages.extend(reporter.get_report())
+        self.add_messages(reporter.get_messages())
 
         # First come, first serve... We only overwrite
         # empty versions in the parent reporter
@@ -174,7 +195,7 @@ class ValidationReporter:
         return {
             "trapi_version": self.trapi_version,
             "biolink_version": self.biolink_version,
-            "report": self.get_report()
+            "report": self.get_messages()
         }
 
     def apply_validation(self, validation_method, *args, **kwargs) -> bool:

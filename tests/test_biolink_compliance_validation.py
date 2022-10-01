@@ -1,7 +1,7 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import Tuple, Optional, Dict, Union
+from typing import Tuple, Optional, Dict, Union, List
 from pprint import PrettyPrinter
 import logging
 import pytest
@@ -76,17 +76,17 @@ def test_inverse_predicate():
 
 
 def check_messages(validator: ValidationReporter, query):
-    messages: Dict = validator.get_messages()
+    messages: Dict[str, List[Dict]] = validator.get_messages()
+    # 'query' should be found in code.yaml
     if query:
         if 'ERROR' in query:
-            assert any([error == query for error in messages['errors']])
+            assert any([error['code'] == query for error in messages['errors']])
         elif 'WARNING' in query:
-            assert any([warning == query for warning in messages['warnings']])
+            assert any([warning['code'] == query for warning in messages['warnings']])
         elif 'INFO' in query:
-            assert any([info == query for info in messages['information']])
+            assert any([info['code'] == query for info in messages['information']])
     else:  # no errors or warnings expected? Assert absence of such messages?
-        assert not (messages['errors'] or messages['warnings'] or messages['information']), \
-            f"Unexpected messages seen {messages}"
+        assert not validator.has_messages(), f"Unexpected messages seen {messages}"
 
 
 BLM_VERSION_PREFIX = f"Biolink Validation of"

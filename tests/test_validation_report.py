@@ -24,9 +24,14 @@ def test_message_display():
     assert CodeDictionary.display(code="info.compliant") == "Biolink Model-compliant TRAPI Message!"
     assert CodeDictionary.display(
         code="info.abstract",
-        context="ELEMENT",
+        message="ELEMENT",
         name="NAME"
     ) == "ELEMENT element 'NAME' is abstract."
+
+
+def test_unknown_message_code():
+    with pytest.raises(AssertionError):
+        CodeDictionary.display(code="foo.bar")
 
 
 def test_message_report():
@@ -37,7 +42,7 @@ def test_message_report():
         context="ELEMENT",
         name="NAME"
     )
-    report: List[Dict[str, str]] = reporter.get_report()
+    report: Dict[str, List] = reporter.get_messages()
     assert len(report) > 0
     messages: List[str] = [CodeDictionary.display(**coded_message) for coded_message in report]
     assert "Biolink Model-compliant TRAPI Message!" in messages
