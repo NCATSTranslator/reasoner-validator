@@ -113,7 +113,7 @@ class BiolinkValidator(ValidationReporter):
             prefix=f"Biolink Validation of {graph_type.value}",
             biolink_version=resolved_biolink_version
         )
-        self.graph_type = graph_type
+        self.graph_type: TRAPIGraphType = graph_type
         self.nodes: Set[str] = set()
 
     def minimum_required_biolink_version(self, version: str) -> bool:
@@ -616,7 +616,7 @@ class BiolinkValidator(ValidationReporter):
         :type strict_validation: bool
         """
         if not graph:
-            self.report(code="warning.response.knowledge_graph")
+            self.report(code="warning.graph.empty", context=self.graph_type)
             return  # nothing really more to do here!
 
         # Access graph data fields to be validated

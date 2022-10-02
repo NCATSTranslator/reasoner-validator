@@ -28,6 +28,8 @@ info:
     non_biolink_prefix: "Edge attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink!"
 
 warning:
+  graph:
+    empty: "{context} data is empty?"
   deprecated: "{context} element '{name}' is deprecated?"
   response:
     knowledge_graph:

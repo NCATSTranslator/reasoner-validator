@@ -372,7 +372,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             {},
             # Query Graphs can have empty 'nodes', so we should just issue a warning
             # f"{QUERY_GRAPH_PREFIX}: WARNING - Empty graph!"
-            "warning.empty_kg"
+            "warning.graph.empty"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -578,8 +578,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            # f"{QUERY_GRAPH_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical?"
-            "warning.predicate.non_canonical"
+            # f"{QUERY_GRAPH_PREFIX}: WARNING - Edge predicate 'biolink:affected_by' is non-canonical?"
+            "warning.edge.predicate.non_canonical"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1093,7 +1093,7 @@ def test_validate_attributes(query: Tuple):
             # Query 1: Empty graph - caught by missing 'nodes' key
             {},
             # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Response returned an empty Message Knowledge Graph?"
-            "warning.response.knowledge_graph"
+            "warning.graph.empty"
         ),
         (
             LATEST_BIOLINK_MODEL,
