@@ -50,8 +50,10 @@ warning:
     provenance:
       deprecated: "Provenance attribute type 'biolink:original_knowledge_source' is deprecated from Biolink Model release 2.4.5?"
       not_an_infores: "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
-      missing_ara: "Edge is missing ARA knowledge source provenance?"
-      missing_kp_source: "Edge attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?"
+      ara:
+        missing: "Edge is missing ARA knowledge source provenance?"
+      kp:
+        missing: "Edge attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?"
       missing_primary: "Edge has neither a 'primary' nor 'original' knowledge source?"
 
 error:
@@ -104,10 +106,10 @@ error:
       empty: "Edge has empty attributes!"
       not_list: "Edge attributes are not a list!"
       type_id:
-        missing: "Edge attribute is missing its 'attribute_type_id' key!"
-        empty: "Edge attribute empty 'attribute_type_id' field!"
+        missing: "Edge attribute is missing its 'attribute_type_id' property!"
+        empty: "Edge attribute empty 'attribute_type_id' property!"
         not_curie: "Edge attribute_type_id '{attribute_type_id}' is not a CURIE!"
       value:
-        missing: "Edge attribute is missing its 'value' key!"
-        empty: "Edge attribute empty 'value' field!"
+        missing: "Edge attribute is missing its 'value' property!"
+        empty: "Edge attribute empty 'value' property!"
         invalid_data_type: "Attribute value has an unrecognized data type '{data_type}'!"

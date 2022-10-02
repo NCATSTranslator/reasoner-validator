@@ -412,11 +412,11 @@ class BiolinkValidator(ValidationReporter):
 
             # TODO: After all the attributes have been scanned, check for provenance. Treat as warnings for now
             if ara_source and not found_ara_knowledge_source:
-                self.report(code="warning.provenance.missing_ara")
+                self.report(code="warning.provenance.ara.missing")
 
             if kp_source and not found_kp_knowledge_source:
                 self.report(
-                    code="warning.attribute.type_id.missing_kp_source",
+                    code="warning.edge.provenance.kp.missing",
                     kp_source=kp_source,
                     kp_source_type=kp_source_type
                 )

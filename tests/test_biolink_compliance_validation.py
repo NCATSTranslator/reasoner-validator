@@ -238,8 +238,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'DRUGBANK:DB00331',
                 'object': 'MONDO:0005148'
             },
-            # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical?"
-            "warning.predicate.non_canonical"
+            # f"{INPUT_EDGE_PREFIX}: WARNING - Edge predicate 'biolink:affected_by' is non-canonical?"
+            "warning.edge.predicate.non_canonical"
         ),
         (   # Query 12 - Missing subject
             LATEST_BIOLINK_MODEL,  # Biolink Model Version
@@ -809,7 +809,8 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             # Query 0. 'attributes' key missing in edge record is None
             {},
             get_ara_test_case(),
-            "Edge has no 'attributes' key!"
+            # "Edge has no 'attributes' key!"
+            "error.edge.attribute.missing"
         ),
         (
             # Query 1. Empty attributes
@@ -817,7 +818,8 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                 "attributes": None
             },
             get_ara_test_case(),
-            "Edge has empty attributes!"
+            # "Edge has empty attributes!"
+            "error.edge.attribute.empty"
         ),
         (
             # Query 2. Empty attributes
@@ -825,15 +827,17 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                 "attributes": []
             },
             get_ara_test_case(),
-            "Edge has empty attributes!"
+            # "Edge has empty attributes!"
+            "error.edge.attribute.empty"
         ),
         (
             # Query 3. Empty attributes
             {
-                "attributes": {}
+                "attributes": {"not_a_list"}
             },
             get_ara_test_case(),
-            "Edge attributes are not a list!"
+            # "Edge attributes are not a list!"
+            "error.edge.attribute.not_list"
         ),
         (
             # Query 4. attribute missing its 'attribute_type_id' field
@@ -843,46 +847,36 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                 ]
             },
             get_ara_test_case(),
-            "Edge attribute missing its 'attribute_type_id' field!"
+            # "Edge attribute missing its 'attribute_type_id' property!"
+            "error.edge.attribute.type_id.missing"
         ),
         (
             # Query 5. attribute missing its 'value' field
             {
                 "attributes": [
-                    {"attribute_type_id": ""}
+                    {"attribute_type_id": "biolink:p_value"}
                 ]
             },
             get_ara_test_case(),
-            "Edge attribute missing its 'value' field!"
+            # "Edge attribute missing its 'value' property!"
+            "error.edge.attribute.value.missing"
         ),
         (
-            # Query 6.
+            # Query 6. Missing ARA knowledge source provenance?
             {
                 "attributes": [
                     {
-                        "attribute_type_id": "",
-                        "value": ""
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:sri-reference-kg"
                     },
                 ]
             },
             get_ara_test_case(),
-            "missing ARA knowledge source provenance!"
+            # "missing ARA knowledge source provenance!"
+            "warning.edge.provenance.ara.missing"
         ),
         (
-            # Query 7. missing ARA knowledge source provenance
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "",
-                        "value": ""
-                    },
-                ]
-            },
-            get_ara_test_case(),
-            "missing ARA knowledge source provenance!"
-        ),
-        (
-            # Query 8. value is an empty list?
+            # Query 7. value is an empty list?
             {
                 "attributes": [
                     {
@@ -892,10 +886,11 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                 ]
             },
             get_ara_test_case(),
-            "value is an empty list!"
+            # "value is an empty list!"
+            "error.edge.attribute.value.empty"
         ),
         (
-            # Query 9. value has an unrecognized data type for a provenance attribute?
+            # Query 8. value has an unrecognized data type for a provenance attribute?
             {
                 "attributes": [
                     {
@@ -905,10 +900,11 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                 ]
             },
             get_ara_test_case(),
-            "value has an unrecognized data type for a provenance attribute!"
+            # "value has an unrecognized data type for an attribute!"
+            "error.edge.attribute.value.invalid_data_type"
         ),
         (
-            # Query 10. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            # Query 9. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
             {
                 "attributes": [
                     {
@@ -922,10 +918,11 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                 ]
             },
             get_ara_test_case(),
-            "is not a well-formed InfoRes CURIE!"
+            # "is not a well-formed InfoRes CURIE!"
+            "error.edge.attribute.type_id.not_curie"
         ),
         (
-            # Query 11. KP provenance value is missing?
+            # Query 10. KP provenance value is missing?
             {
                 "attributes": [
                     {
@@ -935,10 +932,11 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                 ]
             },
             get_ara_test_case(),
-            "is missing as expected knowledge source provenance!"
+            # "is missing as expected knowledge source provenance!"
+            "warning.edge.provenance.kp.missing"
         ),
         (
-            # Query 12. kp type is 'original'. Should draw a WARNING about deprecation
+            # Query 11. kp type is 'original'. Should draw a WARNING about deprecation
             {
                 "attributes": [
                     {
@@ -952,11 +950,12 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                 ]
             },
             get_ara_test_case(),
-            f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Attribute Type ID element " +
-            "'biolink:original_knowledge_source' is deprecated?"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Attribute Type ID element " +
+            # "'biolink:original_knowledge_source' is deprecated?"
+            "warning.edge.provenance.deprecated"
         ),
         (
-            # Query 13. kp type is 'primary'. Should pass?
+            # Query 12. kp type is 'primary'. Should pass?
             {
                 "attributes": [
                     {
@@ -973,7 +972,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             ""
         ),
         (
-            # Query 14. Missing 'primary' nor 'original' knowledge source
+            # Query 13. Missing 'primary' nor 'original' knowledge source
             {
                 "attributes": [
                     {
@@ -987,8 +986,9 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                 ]
 
             },
-            get_ara_test_case({"kp_source_type": "aggregator"}),
-            f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge has neither a 'primary' nor 'original' knowledge source?"
+            # get_ara_test_case({"kp_source_type": "aggregator"}),
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge has neither a 'primary' nor 'original' knowledge source?"
+            "warning.edge.provenance.missing_primary"
         ),
         (
             # Query 15. Is complete and should pass?
