@@ -808,7 +808,7 @@ def validate_knowledge_graph(validator: ValidationReporter, message: Dict):
                 "nodes" in knowledge_graph and len(knowledge_graph["nodes"]) > 0 and
                 "edges" in knowledge_graph and len(knowledge_graph["edges"]) > 0
         ):
-            validator.report(code="warning.empty_kg")
+            validator.report(code="warning.response.knowledge_graph.empty")
         else:
             mapping_validator: ValidationReporter = check_node_edge_mappings(knowledge_graph)
             if mapping_validator.has_messages():
@@ -849,8 +849,8 @@ def validate_results(validator: ValidationReporter, message: Dict):
     else:
         results = message['results']
         if not (results and len(results) > 0):
-            # The Message.results should not generally be empty?
-            validator.report(code="warning.empty_results")
+            # The Message.results should not generally be None or empty?
+            validator.report(code="warning.response.results.empty")
         elif not isinstance(results, List):
             # The Message.results should be an array of Result objects
             validator.report(code="error.response.results.non_array")
@@ -927,8 +927,11 @@ def check_biolink_model_compliance_of_trapi_response(
         trapi_version=trapi_version,
         biolink_version=biolink_version
     )
-    # Sequentially validate the Query Graph, Knowledge Graph the Results (which relies on the other two components)
-    if validator.apply_validation(validate_query_graph, message) and \
+    if not message:
+        validator.report("error.response.message.empty")
+    # Sequentially validate the Query Graph, Knowledge Graph then validate
+    # the Results (which rely on the validity of the other two components)
+    elif validator.apply_validation(validate_query_graph, message) and \
             validator.apply_validation(validate_knowledge_graph, message):
         validator.apply_validation(validate_results, message)
 

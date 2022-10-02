@@ -29,8 +29,11 @@ info:
 
 warning:
   deprecated: "{context} element '{name}' is deprecated?"
-  empty_kg: "Response returned an empty Message Knowledge Graph?"
-  empty_results: "Response returned empty Message.results?"
+  response:
+    knowledge_graph:
+      empty: "Response returned an empty Message Knowledge Graph?"
+    results:
+      empty: "Response returned empty Message.results?"
   node:
     unmapped_prefix: "Node '{node_id}' is unmapped to the target categories: {categories}?"
     identifiers_unmapped_to_categories: "Node '{node_id}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
@@ -54,13 +57,15 @@ error:
   empty_nodes: "No nodes found!"
   empty_edges: "No edges found!"
   response:
+    message:
+      empty: "Response returned an empty Message Query Graph!"
     query_graph:
       missing: "TRAPI Message is missing its Query Graph!"
       empty: "Response returned an empty Message Query Graph?"
     knowledge_graph:
       missing: "TRAPI Message is missing its Knowledge Graph component!"
     results:
-      missing: "TRAPI Message is missing its Results!"
+      missing: "TRAPI Message is missing its Results component!"
       non_array: "Response returned a non-array Message.results!"
       missing_bindings: "Neither the input id '{input_id}' nor resolved aliases were returned in the Result object IDs for node '{output_node_binding}' binding?"
   predicate:
