@@ -9,24 +9,35 @@ TEST_BIOLINK_VERSION = "2.4.8"
 
 
 def test_message_loader():
+    assert CodeDictionary._code_value("") is None
+
     assert CodeDictionary._code_value("category") is not None
     assert CodeDictionary._code_value("category.abstract") is not None
     assert CodeDictionary._code_value("predicate") is not None
-    assert CodeDictionary._code_value("info.compliant") == "Biolink Model-compliant TRAPI Message!"
-
+    assert CodeDictionary._code_value("info.compliant")[1] == "Biolink Model-compliant TRAPI Message!"
     assert CodeDictionary._code_value("info") is not None
-
     assert CodeDictionary._code_value("warning") is not None
     assert CodeDictionary._code_value("error") is not None
 
+    assert CodeDictionary._code_value("foo.bar") is None
+
 
 def test_message_display():
-    assert CodeDictionary.display(code="info.compliant") == "Biolink Model-compliant TRAPI Message!"
+    assert CodeDictionary.display(code="error.empty_nodes") == "ERROR - No nodes found!"
     assert CodeDictionary.display(
         code="info.abstract",
-        message="ELEMENT",
+        context="ELEMENT",
         name="NAME"
-    ) == "ELEMENT element 'NAME' is abstract."
+    ) == "INFO - ELEMENT element 'NAME' is abstract."
+
+
+def test_validator_reporter_message_display():
+    reporter = ValidationReporter(prefix="Test Validation Report", trapi_version=TEST_TRAPI_VERSION)
+    assert reporter.display(
+        code="info.abstract",
+        context="ELEMENT",
+        name="NAME"
+    ) == "Test Validation Report: INFO - ELEMENT element 'NAME' is abstract."
 
 
 def test_unknown_message_code():
@@ -42,11 +53,12 @@ def test_message_report():
         context="ELEMENT",
         name="NAME"
     )
-    report: Dict[str, List] = reporter.get_messages()
-    assert len(report) > 0
-    messages: List[str] = [CodeDictionary.display(**coded_message) for coded_message in report]
-    assert "Biolink Model-compliant TRAPI Message!" in messages
-    assert "ELEMENT element 'NAME' is abstract." in messages
+    report: Dict[str, List[Dict]] = reporter.get_messages()
+    assert 'information' in report
+    assert len(report['information']) > 0
+    messages: List[str] = [CodeDictionary.display(**coded_message) for coded_message in report['information']]
+    assert "INFO - Biolink Model-compliant TRAPI Message!" in messages
+    assert "INFO - ELEMENT element 'NAME' is abstract." in messages
 
 
 def test_messages():
@@ -55,65 +67,92 @@ def test_messages():
     assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter1.get_biolink_version() is None
     assert not reporter1.has_messages()
-    reporter1.info("this is information.")
+    reporter1.report("info.compliant")
     assert reporter1.has_messages()
     assert reporter1.has_information()
     assert not reporter1.has_warnings()
     assert not reporter1.has_errors()
-    reporter1.warning("this is a warning?")
+    reporter1.report("warning.empty_kg")
     assert reporter1.has_warnings()
-    reporter1.error("this is an error!")
-    assert reporter1.has_messages()
+    reporter1.report("error.empty_nodes")
+    assert reporter1.has_errors()
 
     # Testing merging of messages from a second reporter
     reporter2 = ValidationReporter(prefix="Second Validation Report", biolink_version=TEST_BIOLINK_VERSION)
     assert reporter2.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
-    reporter2.info("this is more information.")
-    reporter2.warning("this is another warning?")
-    reporter2.error("this is a second error!")
+    reporter2.report("info.mixin", context="some_context", name="biolink:this_is_a_mixin")
+    reporter2.report("warning.empty_results")
+    reporter2.report("error.empty_edges")
     reporter1.merge(reporter2)
     assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION
     
     # No prefix...
     reporter3 = ValidationReporter()
-    reporter3.error("Ka Boom!")
+    reporter3.report("error.response.query_graph.missing")
     reporter1.merge(reporter3)
     assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION
 
     # testing addition a few raw batch messages
-    new_messages: Dict[str, Set[str]] = {
-            "information": {"Hello Dolly...", "Well,... hello Dolly"},
-            "warnings": {"Warning, Will Robinson, warning!"},
-            "errors": {"Dave, this can only be due to human error!"}
+    new_messages: Dict[str, List[Dict]] = {
+            "information": [
+                {
+                    'code': "info.abstract",
+                    'context': "Well,... hello",
+                    'name': "Dolly"
+                }
+            ],
+            "warnings": [
+                {
+                    'code': "warning.node.unmapped_prefix",
+                    'node_id': "Will Robinson",
+                    'categories': "Lost in Space"
+                }
+            ],
+            "errors": [
+                {
+                    'code': "error.trapi.validation",
+                    'trapi_version': "6.6.6",
+                    'exception': "Dave, this can only be due to human error!"
+                }
+            ]
     }
     reporter1.add_messages(new_messages)
 
     # Verify what we have
-    messages: Dict[str, Set[str]] = reporter1.get_messages()
-    assert "First Validation Report: INFO - this is information." in messages["information"]
-    assert "Second Validation Report: INFO - this is more information." in messages["information"]
-    assert "Hello Dolly..." in messages["information"]
-    assert "Well,... hello Dolly" in messages["information"]
-    assert "First Validation Report: WARNING - this is a warning?" in messages["warnings"]
-    assert "Second Validation Report: WARNING - this is another warning?" in messages["warnings"]
-    assert "Warning, Will Robinson, warning!" in messages["warnings"]
-    assert "First Validation Report: ERROR - this is an error!" in messages["errors"]
-    assert "Second Validation Report: ERROR - this is a second error!" in messages["errors"]
-    assert "Dave, this can only be due to human error!" in messages["errors"]
-    assert "ERROR - Ka Boom!" in messages["errors"]
+    messages: Dict[str, List[Dict]] = reporter1.get_messages()
+
+    assert "information" in messages
+    assert len(messages['information']) > 0
+    information: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['information']]
+    assert "INFO - Well,... hello element 'Dolly' is abstract." in information
+
+    assert "warnings" in messages
+    assert len(messages['warnings']) > 0
+    warnings: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['warnings']]
+    assert "WARNING - Node 'Will Robinson' is unmapped to the target categories: Lost in Space?" in warnings
+
+    assert "errors" in messages
+    assert len(messages['errors']) > 0
+    errors: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['errors']]
+    assert "ERROR - TRAPI 6.6.6 Query: 'Dave, this can only be due to human error!'" in errors
     
     obj = reporter1.to_dict()
     assert obj["trapi_version"] == TEST_TRAPI_VERSION
     assert obj["biolink_version"] == TEST_BIOLINK_VERSION
     assert "messages" in obj
     assert "errors" in obj["messages"]
-    assert "ERROR - Ka Boom!" in obj["messages"]["errors"]
+    assert "error.trapi.validation" in [entry['code'] for entry in obj["messages"]["errors"]]
+    assert "Dave, this can only be due to human error!"\
+           in [
+               entry['exception'] for entry in obj["messages"]["errors"] if 'exception' in entry
+           ]
 
 
 def test_validator_method():
+
     reporter = ValidationReporter(
         prefix="Test Validator Method",
         trapi_version=TEST_TRAPI_VERSION,
@@ -131,17 +170,25 @@ def test_validator_method():
     def validator_method(validator: ValidationReporter, arg, **case):
         assert isinstance(arg, Dict)
         assert arg['some key'] == "some value"
-        validator.warning("This is a Warning?")
+        validator.report("warning.provenance.not_an_infores", infores="foo:bar")
         assert len(case) == 2
         assert case['some parameter'] == "some parameter value"
-        validator.error("This is an Error!")
+        assert case['another parameter'] == "some other parameter value"
+        validator.report("error.node.missing_identifier", context="Fake")
 
     reporter.apply_validation(validator_method, test_data, **test_parameters)
 
-    messages: Dict[str, Set[str]] = reporter.get_messages()
+    messages: Dict[str, List[Dict]] = reporter.get_messages()
 
-    assert "Test Validator Method: WARNING - This is a Warning?" in messages["warnings"]
-    assert "Test Validator Method: ERROR - This is an Error!" in messages["errors"]
+    assert "warnings" in messages
+    assert len(messages['warnings']) > 0
+    warnings: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['warnings']]
+    assert "WARNING - Edge has provenance value 'foo:bar' which is not a well-formed InfoRes CURIE!" in warnings
+
+    assert "errors" in messages
+    assert len(messages['errors']) > 0
+    errors: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['errors']]
+    assert "ERROR - Fake node identifier is missing!" in errors
 
 
 # has_validation_errors(root_key: str = 'validation', case: Optional[Dict] = None)
@@ -158,7 +205,7 @@ def test_validator_method():
                             "information": [],
                             "warnings": [],
                             "errors": [
-                                "Validation: ERROR - this is an error"
+                                ""
                             ]
                         }
                     }
@@ -174,8 +221,15 @@ def test_validator_method():
                         "messages": {
                             "information": [],
                             "warnings": [
-                                "Validation: WARNING - Input Biolink class 'biolink:ChemicalSubstance' is deprecated?",
-                                "Validation: WARNING - Input predicate 'biolink:participates_in' is non-canonical!"
+                                {
+                                    'code': "warning.deprecated",
+                                    'context': "Input",
+                                    "name": "biolink:ChemicalSubstance"
+                                },
+                                {
+                                    'code': "warning.predicate.non_canonical",
+                                    'predicate': "biolink:participates_in"
+                                }
                             ],
                             "errors": []
                         }

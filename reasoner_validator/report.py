@@ -1,7 +1,7 @@
 """Error and Warning Reporting Module"""
 from os.path import join, abspath, dirname
 import copy
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 from json import dumps, JSONEncoder
 from yaml import load, BaseLoader
 
@@ -43,32 +43,38 @@ class CodeDictionary:
             return cls._get_nested_code_value(data[tag], path, pos)
 
     @classmethod
-    def _code_value(cls, tag_path) -> Optional[str]:
+    def _code_value(cls, code) -> Optional[Tuple[str, str]]:
         """
         Get value of specified dot delimited tag name
-        :param tag_path:
-        :return:
+        :param code:
+        :return: Optional[Tuple[str, str]], 2-tuple of the code type (i.e. info, warning, error) and the
+                 validation message template; None if empty code or code unknown in the code dictionary
         """
-        if not tag_path:
+        if not code:
             return None
 
         codes: Dict = cls._get_code_dictionary()
-        parts = tag_path.split(".")
-        return cls._get_nested_code_value(codes, parts, 0)
+        code_path = code.split(".")
+        value = cls._get_nested_code_value(codes, code_path, 0)
+        if value is not None:
+            return code_path[0], value
+        else:
+            return None
 
     @staticmethod
     def display(**message):
         assert message and 'code' in message  # should be non-empty, containing a code
         code: str = message.pop('code')
-        template: Optional[str] = CodeDictionary._code_value(code)
-        assert template, f"CodeDictionary.display(): unknown message code {code}"
+        value: Optional[Tuple[str, str]] = CodeDictionary._code_value(code)
+        assert value, f"CodeDictionary.display(): unknown message code {code}"
+        message_type, template = value
         if message:
             # Message template parameterized with additional named parameter
             # message context, assumed to be referenced by the template
-            return template.format(**message)
+            return f"{message_type.upper()} - {template.format(**message)}"
         else:
             # simple scalar message without parameterization?
-            return template
+            return f"{message_type.upper()} - {template}"
 
 
 class ReportJsonEncoder(JSONEncoder):
@@ -163,17 +169,17 @@ class ValidationReporter:
 
     def add_messages(self, new_messages: Dict[str, List]):
         """
-        Batch addition of a dictionary of messages to a ValidatorReporter instance..
+        Batch addition of a dictionary of messages to a ValidatorReporter instance.
 
         :param new_messages: Dict[str, List], with key one of
                              "information", "warnings" or "errors",
-                              with Lists of associated message strings.
+                              with Lists of (structured) messages.
         """
         for key in self.messages:
             if key in new_messages:
                 self.messages[key].extend(new_messages[key])
 
-    def get_messages(self) -> Dict[str, List]:
+    def get_messages(self) -> Dict[str, List[Dict]]:
         return copy.deepcopy(self.messages)
 
     ############################
@@ -202,7 +208,7 @@ class ValidationReporter:
         return {
             "trapi_version": self.trapi_version,
             "biolink_version": self.biolink_version,
-            "report": self.get_messages()
+            "messages": self.get_messages()
         }
 
     def apply_validation(self, validation_method, *args, **kwargs) -> bool:
@@ -239,8 +245,15 @@ class ValidationReporter:
         #         "messages": {
         #             "information": [],
         #             "warnings": [
-        #                 "Validation: WARNING - Input Biolink class 'biolink:ChemicalSubstance' is deprecated?",
-        #                 "Validation: WARNING - Input predicate 'biolink:participates_in' is non-canonical!"
+        #                 {
+        #                     'code': "warning.deprecated",
+        #                     'context': "Input",
+        #                     "name": "biolink:ChemicalSubstance"
+        #                 },
+        #                 {
+        #                     'code': "warning.predicate.non_canonical",
+        #                     'predicate': "biolink:participates_in"
+        #                 }
         #             ],
         #             "errors": []
         #         }
@@ -254,3 +267,13 @@ class ValidationReporter:
             return True
         else:
             return False
+
+    def display(self, **message) -> str:
+        """
+        Augmented message display wrapper prepends
+        the ValidationReporter prefix to a
+        resolved coded validation message.
+
+        :return: str, full validation message
+        """
+        return self.prefix + CodeDictionary.display(**message)

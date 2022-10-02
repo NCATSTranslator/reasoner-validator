@@ -46,7 +46,8 @@ warning:
     missing_primary: "Edge has neither a 'primary' nor 'original' knowledge source?"
 
 error:
-  validation: "TRAPI {trapi_version} Query: '{exception}'"
+  trapi:
+    validation: "TRAPI {trapi_version} Query: '{exception}'"
   unknown: "{context} element '{name}' is unknown!"
   abstract: "{context} element '{name}' is abstract!"
   mixin: "{context} element '{name}' is a mixin!"
@@ -83,7 +84,7 @@ error:
     predicate:
       missing: "Edge '{edge_id}' has a missing or empty predicate slot!"
       not_array: "Edge '{edge_id}' predicate slot value is not an array!"
-      empty: "Edge '{edge_id}' predicate slot value is an empty array!"
+      empty_array: "Edge '{edge_id}' predicate slot value is an empty array!"
     object:
       missing: "Edge '{edge_id}' has a missing or empty 'object' slot value!"
       missing_from_nodes: "Edge 'object' id '{object_id}' is missing from the nodes catalog!"

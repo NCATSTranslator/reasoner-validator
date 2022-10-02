@@ -90,7 +90,7 @@ class TRAPIValidator(ValidationReporter):
         resolved_biolink_version = latest.get(trapi_version)
         ValidationReporter.__init__(
             self,
-            prefix=F"TRAPI Validation",
+            prefix="TRAPI Validation",
             trapi_version=resolved_biolink_version
         )
 
@@ -141,7 +141,7 @@ class TRAPIValidator(ValidationReporter):
                 component=component
             )
         except jsonschema.ValidationError as e:
-            self.report(code="error.validation", trapi_version=self.trapi_version, exception=e.message)
+            self.report(code="error.trapi.validation", trapi_version=self.trapi_version, exception=e.message)
 
 
 def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPIValidator:
@@ -178,7 +178,7 @@ class MappingValidator(ValidationReporter):
         """
         ValidationReporter.__init__(
             self,
-            prefix=F"Validating Knowledge Graph Node and Edge Mappings"
+            prefix="Validating Knowledge Graph Node and Edge Mappings"
         )
 
     def check_dangling_references(self, graph: Dict):

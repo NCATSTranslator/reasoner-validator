@@ -79,7 +79,8 @@ def check_messages(validator: ValidationReporter, code):
     messages: Dict[str, List[Dict]] = validator.get_messages()
     if code:
         # TODO: 'code' should be found in code.yaml
-        # assert code in ???
+        # value: Optional[Tuple[str, str]] = CodeDictionary._code_value(code)
+        # assert value is not None
         message_type = validator.get_message_type(code)
         if message_type == "error":
             assert any([error['code'] == code for error in messages['errors']])
@@ -119,7 +120,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Subject has a missing Biolink category!"
+            # f"{INPUT_EDGE_PREFIX}: ERROR - Subject has a missing Biolink category!"
+            "error.category.missing"
         ),
         (   # Query 2 - Invalid subject category
             LATEST_BIOLINK_MODEL,
@@ -130,7 +132,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Subject element 'biolink:NotACategory' is unknown!"
+            # f"{INPUT_EDGE_PREFIX}: ERROR - Subject element 'biolink:NotACategory' is unknown!"
+            "error.unknown"
         ),
         (   # Query 3 - Missing object category
             LATEST_BIOLINK_MODEL,
@@ -140,7 +143,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Object has a missing Biolink category!"
+            # f"{INPUT_EDGE_PREFIX}: ERROR - Object has a missing Biolink category!"
+            "error.category.missing"
         ),
         (   # Query 4 - Invalid object category
             LATEST_BIOLINK_MODEL,
@@ -151,7 +155,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Object element 'biolink:NotACategory' is unknown!"
+            # f"{INPUT_EDGE_PREFIX}: ERROR - Object element 'biolink:NotACategory' is unknown!"
+            "error.unknown"
         ),
         (   # Query 5 - Missing predicate
             LATEST_BIOLINK_MODEL,
@@ -161,7 +166,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Predicate is missing or empty!"
+            # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate is missing or empty!"
+            "error.predicate.missing"
         ),
         (   # Query 6 - Empty predicate
             LATEST_BIOLINK_MODEL,
@@ -172,7 +178,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Predicate is missing or empty!"
+            # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate is missing or empty!"
+            "error.predicate.missing"
         ),
         (   # Query 7 - Predicate is deprecated
             LATEST_BIOLINK_MODEL,
@@ -183,7 +190,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'NDC:0002-8215-01',  # a form of insulin
                 'object': 'MONDO:0005148'  # type 2 diabetes?
             },
-            f"{INPUT_EDGE_PREFIX}: WARNING - Predicate element 'biolink:approved_to_treat' is deprecated?"
+            # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate element 'biolink:approved_to_treat' is deprecated?"
+            "warning.deprecated"
         ),
         (   # Query 8 - Predicate is abstract
             LATEST_BIOLINK_MODEL,
@@ -194,7 +202,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'PMID:1234',
                 'object': 'ORCID:56789'
             },
-            f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:contributor' is abstract."
+            # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:contributor' is abstract."
+            "info.abstract"
         ),
         (   # Query 9 - Predicate is a mixin
             LATEST_BIOLINK_MODEL,
@@ -205,7 +214,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:regulates' is a mixin."
+            # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:regulates' is a mixin."
+            "info.mixin"
         ),
         (   # Query 10 - Invalid or unknown predicate
             LATEST_BIOLINK_MODEL,
@@ -216,7 +226,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:not_a_predicate' is unknown!"
+            # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:not_a_predicate' is unknown!"
+            "error.unknown"
         ),
         (   # Query 11 - Non-canonical directed predicate
             LATEST_BIOLINK_MODEL,
@@ -227,7 +238,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'DRUGBANK:DB00331',
                 'object': 'MONDO:0005148'
             },
-            f"{INPUT_EDGE_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical?"
+            # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical?"
+            "warning.predicate.non_canonical"
         ),
         (   # Query 12 - Missing subject
             LATEST_BIOLINK_MODEL,  # Biolink Model Version
@@ -237,7 +249,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'predicate': 'biolink:subclass_of',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Subject node identifier is missing!"
+            # f"{INPUT_EDGE_PREFIX}: ERROR - Subject node identifier is missing!"
+            "error.node.missing_identifier"
         ),
         (   # Query 13 - Unmappable subject namespace
             LATEST_BIOLINK_MODEL,
@@ -248,8 +261,9 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'FOO:0005453',
                 'object': 'UBERON:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: WARNING - Subject node identifier 'FOO:0005453' " +
-            "is unmapped to 'biolink:AnatomicalEntity'?"
+            # f"{INPUT_EDGE_PREFIX}: WARNING - Subject node identifier 'FOO:0005453' " +
+            # "is unmapped to 'biolink:AnatomicalEntity'?"
+            "warning.node.identifier_unmapped_to_category"
         ),
         (   # Query 14 - missing object
             LATEST_BIOLINK_MODEL,  # Biolink Model Version
@@ -259,7 +273,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'predicate': 'biolink:subclass_of',
                 'subject': "UBERON:0005453"
             },
-            f"{INPUT_EDGE_PREFIX}: ERROR - Object node identifier is missing!"
+            # f"{INPUT_EDGE_PREFIX}: ERROR - Object node identifier is missing!"
+            "error.node.missing_identifier"
         ),
         (   # Query 15 - Unmappable object namespace
             LATEST_BIOLINK_MODEL,
@@ -270,8 +285,9 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'BAR:0035769'
             },
-            f"{INPUT_EDGE_PREFIX}: WARNING - Object node identifier 'BAR:0035769' " +
-            "is unmapped to 'biolink:AnatomicalEntity'?"
+            # f"{INPUT_EDGE_PREFIX}: WARNING - Object node identifier 'BAR:0035769' " +
+            # "is unmapped to 'biolink:AnatomicalEntity'?"
+            "warning.node.identifier_unmapped_to_category"
         ),
         (   # Query 16 - Valid other model
             "1.8.2",
@@ -293,7 +309,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'DRUGBANK:DB00945',
                 'object': 'UniProtKB:P23219'
             },
-            f"{INPUT_EDGE_PREFIX}: WARNING - Subject element 'biolink:ChemicalSubstance' is deprecated?"
+            # f"{INPUT_EDGE_PREFIX}: WARNING - Subject element 'biolink:ChemicalSubstance' is deprecated?"
+            "warning.deprecated"
         ),
         (   # Query 18 - inform that the input category is a mixin?
             LATEST_BIOLINK_MODEL,
@@ -304,7 +321,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'HGNC:9604',
                 'object': 'UniProtKB:P23219'
             },
-            f"{INPUT_EDGE_PREFIX}: INFO - Subject element 'biolink:GeneOrGeneProduct' is a mixin."
+            # f"{INPUT_EDGE_PREFIX}: INFO - Subject element 'biolink:GeneOrGeneProduct' is a mixin."
+            "info.mixin"
         ),
         (   # Query 19 - inform that the input category is abstract?
             LATEST_BIOLINK_MODEL,
@@ -315,7 +333,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'isbn:1234',
                 'object': 'ORCID:1234'
             },
-            f"{INPUT_EDGE_PREFIX}: INFO - Subject element 'biolink:AdministrativeEntity' is abstract."
+            # f"{INPUT_EDGE_PREFIX}: INFO - Subject element 'biolink:AdministrativeEntity' is abstract."
+            "info.abstract"
         )
     ]
 )
@@ -352,7 +371,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             # Query 1: Empty query graph
             {},
             # Query Graphs can have empty 'nodes', so we should just issue a warning
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Empty graph!"
+            # f"{QUERY_GRAPH_PREFIX}: WARNING - Empty graph!"
+            "warning.empty_kg"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -400,7 +420,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                 },
                 "edges": {}
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'type-2 diabetes.ids' slot value is not an array!"
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'type-2 diabetes.ids' slot value is not an array!"
+            "error.node.ids_not_array"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -424,7 +445,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                 },
                 "edges": {}
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot value is not an array!"
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot value is not an array!"
+            "error.node.categories_not_array"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -437,7 +459,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                 },
                 "edges": {}
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot array is empty!"
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot array is empty!"
+            "error.node.empty_categories"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -450,7 +473,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                 },
                 "edges": {}
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Query Graph Node element 'biolink:InvalidCategory' is unknown!"
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Query Graph Node element 'biolink:InvalidCategory' is unknown!"
+            "error.unknown"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -490,8 +514,9 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'drug--biolink:treats->type-2 diabetes' " +
-            f"predicate slot value is not an array!"
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'drug--biolink:treats->type-2 diabetes' " +
+            # f"predicate slot value is not an array!"
+            "error.edge.predicate.not_array"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -511,7 +536,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'drug--[]->type-2 diabetes' predicate slot value is an empty array!"
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'drug--[]->type-2 diabetes' predicate slot value is an empty array!"
+            "error.edge.predicate.empty_array"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -531,7 +557,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Predicate element 'biolink:invalid_predicate' is unknown!"
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Predicate element 'biolink:invalid_predicate' is unknown!"
+            "error.unknown"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -551,7 +578,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical?"
+            # f"{QUERY_GRAPH_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical?"
+            "warning.predicate.non_canonical"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -570,8 +598,9 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'None--['biolink:treats']->type-2 diabetes' " +
-            "has a missing or empty 'subject' slot value!"
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'None--['biolink:treats']->type-2 diabetes' " +
+            # "has a missing or empty 'subject' slot value!"
+            "error.edge.subject.missing"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -588,7 +617,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'subject' id 'drug' is missing from the nodes catalog!"
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'subject' id 'drug' is missing from the nodes catalog!"
+            "error.subject.missing_from_nodes"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -607,8 +637,9 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'drug--['biolink:treats']->None' " +
-            f"has a missing or empty 'object' slot value!"
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'drug--['biolink:treats']->None' " +
+            # f"has a missing or empty 'object' slot value!"
+            "error.edge.object.missing"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -627,7 +658,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'object' id 'type-2 diabetes' is missing from the nodes catalog!"
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'object' id 'type-2 diabetes' is missing from the nodes catalog!"
+            "error.edge.object.missing_from_nodes"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -648,7 +680,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'drug.is_set' slot is not a boolean value!"
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'drug.is_set' slot is not a boolean value!"
+            "error.node.is_set_not_boolean"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -671,8 +704,9 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: WARNING - Node 'type-2 diabetes' has identifiers ['FOO:12345', 'BAR:67890'] " +
-            "unmapped to the target categories: ['biolink:Disease', 'biolink:Gene']?"
+            # f"{QUERY_GRAPH_PREFIX}: WARNING - Node 'type-2 diabetes' has identifiers ['FOO:12345', 'BAR:67890'] " +
+            # "unmapped to the target categories: ['biolink:Disease', 'biolink:Gene']?"
+            "warning.node.identifiers_unmapped_to_categories"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -692,7 +726,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: INFO - Query Graph Node element 'biolink:BiologicalEntity' is abstract."
+            # f"{QUERY_GRAPH_PREFIX}: INFO - Query Graph Node element 'biolink:BiologicalEntity' is abstract."
+            "info.abstract"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -712,7 +747,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: INFO - Query Graph Node element 'biolink:ChemicalOrDrugOrTreatment' is a mixin."
+            # f"{QUERY_GRAPH_PREFIX}: INFO - Query Graph Node element 'biolink:ChemicalOrDrugOrTreatment' is a mixin."
+            "info.mixin"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -732,7 +768,8 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            f"{QUERY_GRAPH_PREFIX}: INFO - Predicate element 'biolink:increases_amount_or_activity_of' is a mixin."
+            # f"{QUERY_GRAPH_PREFIX}: INFO - Predicate element 'biolink:increases_amount_or_activity_of' is a mixin."
+            "info.mixin"
         )
     ]
 )
