@@ -75,16 +75,18 @@ def test_inverse_predicate():
     assert tk.get_inverse(predicate.name) == "has active component"
 
 
-def check_messages(validator: ValidationReporter, query):
+def check_messages(validator: ValidationReporter, code):
     messages: Dict[str, List[Dict]] = validator.get_messages()
-    # 'query' should be found in code.yaml
-    if query:
-        if 'ERROR' in query:
-            assert any([error['code'] == query for error in messages['errors']])
-        elif 'WARNING' in query:
-            assert any([warning['code'] == query for warning in messages['warnings']])
-        elif 'INFO' in query:
-            assert any([info['code'] == query for info in messages['information']])
+    if code:
+        # TODO: 'code' should be found in code.yaml
+        # assert code in ???
+        message_type = validator.get_message_type(code)
+        if message_type == "error":
+            assert any([error['code'] == code for error in messages['errors']])
+        elif message_type == "warning":
+            assert any([warning['code'] == code for warning in messages['warnings']])
+        elif message_type == "info":
+            assert any([info['code'] == code for info in messages['information']])
     else:  # no errors or warnings expected? Assert absence of such messages?
         assert not validator.has_messages(), f"Unexpected messages seen {messages}"
 

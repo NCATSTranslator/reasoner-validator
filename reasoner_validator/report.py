@@ -144,15 +144,22 @@ class ValidationReporter:
     def has_errors(self) -> bool:
         return bool(self.messages["errors"])
 
-    def report(self, code: str, **message):
+    @staticmethod
+    def get_message_type(code: str) -> str:
         code_id_parts: List[str] = code.split('.')
         message_type: str = code_id_parts[0]
         if message_type in ['info', 'warning', 'error']:
-            message_type = self._message_type_name[message_type]
-            message['code'] = code
-            self.messages[message_type].append(message)
+            return message_type
         else:
-            raise NotImplementedError(f"ValidationReport.report(): {code} is unknown code type: {code_id_parts[0]}")
+            raise NotImplementedError(
+                f"ValidationReport.get_message_type(): {code} is unknown code type: {message_type}"
+            )
+
+    def report(self, code: str, **message):
+        message_type = self.get_message_type(code)
+        message_set = self._message_type_name[message_type]
+        message['code'] = code  # add the code into the message
+        self.messages[message_set].append(message)
 
     def add_messages(self, new_messages: Dict[str, List]):
         """

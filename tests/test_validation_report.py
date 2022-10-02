@@ -188,4 +188,3 @@ def test_validator_method():
 def test_has_validation_errors(query: Tuple):
     reporter = ValidationReporter()
     assert reporter.has_validation_errors(tag=query[0], case=query[1]) == query[2]
-
