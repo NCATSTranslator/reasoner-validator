@@ -121,7 +121,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'object': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Subject has a missing Biolink category!"
-            "error.category.missing"
+            "error.node.category.missing"
         ),
         (   # Query 2 - Invalid subject category
             LATEST_BIOLINK_MODEL,
@@ -144,7 +144,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'object': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Object has a missing Biolink category!"
-            "error.category.missing"
+            "error.node.category.missing"
         ),
         (   # Query 4 - Invalid object category
             LATEST_BIOLINK_MODEL,
@@ -1092,7 +1092,8 @@ def test_validate_attributes(query: Tuple):
             LATEST_BIOLINK_MODEL,
             # Query 1: Empty graph - caught by missing 'nodes' key
             {},
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No nodes found!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Response returned an empty Message Knowledge Graph?"
+            "warning.response.knowledge_graph"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1100,7 +1101,8 @@ def test_validate_attributes(query: Tuple):
             {
                 "nodes": {}
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No nodes found!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No nodes found!"
+            "error.empty_nodes"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1114,7 +1116,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No edges found!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No edges found!"
+            "error.empty_edges"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1129,7 +1132,8 @@ def test_validate_attributes(query: Tuple):
                 },
                 "edges": {}
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No edges found!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No edges found!"
+            "error.empty_edges"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1147,7 +1151,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974' is missing its categories!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974' is missing its categories!"
+            "error.node.category.missing"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1167,7 +1172,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot value is not an array!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot value is not an array!"
+            "error.node.categories_not_array"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1189,7 +1195,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Knowledge Graph Node element 'biolink:Nonsense_Category' is unknown!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Knowledge Graph Node element 'biolink:Nonsense_Category' is unknown!"
+            "error.unknown"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1221,8 +1228,9 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Node 'FOO:1234' " +
-            f"is unmapped to the target categories: ['biolink:Gene']?"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Node 'FOO:1234' " +
+            # f"is unmapped to the target categories: ['biolink:Gene']?"
+            "warning.node.unmapped_prefix"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1245,8 +1253,9 @@ def test_validate_attributes(query: Tuple):
                 }
             },
             # ditto for predicate and object... but identical code pattern thus we only test missing subject id here
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'None--biolink:interacts_with->NCBIGene:29974' " +
-            "has a missing or empty 'subject' slot value!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'None--biolink:interacts_with->NCBIGene:29974' " +
+            # "has a missing or empty 'subject' slot value!"
+            "error.edge.subject.missing"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1274,7 +1283,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'subject' id 'NCBIGene:12345' is missing from the nodes catalog!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'subject' id 'NCBIGene:12345' is missing from the nodes catalog!"
+            "error.edge.subject.missing_from_nodes"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1302,7 +1312,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Predicate element 'biolink:unknown_predicate' is unknown!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Predicate element 'biolink:unknown_predicate' is unknown!"
+            "error.unknown"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1330,7 +1341,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Predicate 'biolink:affected_by' is non-canonical?"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge predicate 'biolink:affected_by' is non-canonical?"
+            "warning.edge.predicate.non_canonical"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1358,8 +1370,9 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'object' id " +
-            f"'PUBCHEM.COMPOUND:678' is missing from the nodes catalog!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'object' id " +
+            # f"'PUBCHEM.COMPOUND:678' is missing from the nodes catalog!"
+            "error.edge.object.missing_from_nodes"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1387,7 +1400,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute is missing its 'attribute_type_id' key!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute is missing its 'attribute_type_id' key!"
+            "error.edge.attribute.type_id.missing"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1415,7 +1429,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute is missing its 'value' key!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute is missing its 'value' key!"
+            "error.edge.attribute.value.missing"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1443,7 +1458,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute_type_id 'not_a_curie' is not a CURIE!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute_type_id 'not_a_curie' is not a CURIE!"
+            "error.edge.attribute.type_id.not_curie"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1471,8 +1487,9 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - " +
-            f"Edge attribute_type_id 'biolink:synonym' is not a biolink:association_slot?"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge attribute_type_id "
+            # "'biolink:synonym' is not a biolink:association_slot?"
+            "warning.edge.attribute.type_id.not_association_slot"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1531,8 +1548,9 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute_type_id 'foo:bar' " +
-            f"has a CURIE prefix namespace unknown to Biolink!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge attribute_type_id 'foo:bar' " +
+            # f"has a CURIE prefix namespace unknown to Biolink!"
+            "warning.edge.attribute.type_id.unknown_prefix"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1560,7 +1578,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge has no 'attributes' key!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge has no 'attributes' key!"
+            "error.edge.attribute.missing"
         ),
         (   # Query 21:  # An earlier Biolink Model Version won't recognize a category not found in its version
             "1.8.2",
@@ -1618,7 +1637,8 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            f"{KNOWLEDGE_GRAPH_PREFIX}: Knowledge Graph Node element 'biolink:SmallMolecule' is unknown!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Knowledge Graph Node element 'biolink:SmallMolecule' is unknown!"
+            "error.unknown"
         )
     ]
 )

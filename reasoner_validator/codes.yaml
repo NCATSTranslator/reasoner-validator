@@ -38,15 +38,19 @@ warning:
     unmapped_prefix: "Node '{node_id}' is unmapped to the target categories: {categories}?"
     identifiers_unmapped_to_categories: "Node '{node_id}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
     identifier_unmapped_to_category: "{context} node identifier '{node_id}' is unmapped to '{category}'?"
-  predicate:
-    non_canonical: "Predicate '{predicate}' is non-canonical?"
-  attribute_type_id:
-    not_association_slot: "Edge attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?"
-  provenance:
-    deprecated: "Provenance attribute type 'biolink:original_knowledge_source' is deprecated from Biolink Model release 2.4.5?"
-    missing_ara: "Edge is missing ARA knowledge source provenance?"
-    not_an_infores: "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
-    missing_primary: "Edge has neither a 'primary' nor 'original' knowledge source?"
+  edge:
+    predicate:
+      non_canonical: "Edge predicate '{predicate}' is non-canonical?"
+    attribute:
+      type_id:
+        not_association_slot: "Edge attribute_type_id '{attribute_type_id}' not a biolink:association_slot?"
+        unknown_prefix: "Edge attribute_type_id '{attribute_type_id}' has a CURIE prefix namespace unknown to Biolink!"
+    provenance:
+      deprecated: "Provenance attribute type 'biolink:original_knowledge_source' is deprecated from Biolink Model release 2.4.5?"
+      not_an_infores: "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
+      missing_ara: "Edge is missing ARA knowledge source provenance?"
+      missing_kp_source: "Edge attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?"
+      missing_primary: "Edge has neither a 'primary' nor 'original' knowledge source?"
 
 error:
   trapi:
@@ -71,10 +75,10 @@ error:
   predicate:
     missing: "Predicate is missing or empty!"
     unknown: "Predicate '{predicate}' is unknown!"
-  category:
-    missing: "{context} has a missing Biolink category!"
-    invalid: "{context} identifier '{category}' is not a valid Biolink category!"
   node:
+    category:
+      missing: "{context} {node_id} has a missing Biolink category!"
+      invalid: "{context} identifier '{category}' is not a valid Biolink category!"
     missing_identifier: "{context} node identifier is missing!"
     missing_categories: "Node '{node_id}' is missing its categories!"
     ids_not_array: "Node '{node_id}.ids' slot value is not an array!"
@@ -97,11 +101,10 @@ error:
       missing: "Edge has no 'attributes' key!"
       empty: "Edge has empty attributes!"
       not_list: "Edge attributes are not a list!"
-      attribute_type_id:
+      type_id:
         missing: "Edge attribute is missing its 'attribute_type_id' key!"
         empty: "Edge attribute empty 'attribute_type_id' field!"
         not_curie: "Edge attribute_type_id '{attribute_type_id}' is not a CURIE!"
-        unknown_prefix: "Edge attribute_type_id '{attribute_type_id}' has a CURIE prefix namespace unknown to Biolink!"
       value:
         missing: "Edge attribute is missing its 'value' key!"
         empty: "Edge attribute empty 'value' field!"

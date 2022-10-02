@@ -163,6 +163,7 @@ class BiolinkValidator(ValidationReporter):
                         category: Optional[ClassDefinition] = \
                             self.validate_category(
                                 context="Knowledge Graph Node",
+                                node_id=node_id,
                                 category=category,
                                 # Knowledge Graph Node categories
                                 # cannot be 'abstract' or 'mixin'
@@ -175,8 +176,9 @@ class BiolinkValidator(ValidationReporter):
                     if not node_prefix_mapped:
                         self.report(code="warning.node.unmapped_prefix", node_id=node_id, categories=str(categories))
             else:
-                self.report(code="error.node.missing_categories", node_id=node_id)
-            # TODO: Do we need to (or can we) validate other Knowledge Graph node fields here? Perhaps yet?
+                self.report(code="error.node.category.missing", context=self.graph_type, node_id=node_id)
+
+            # TODO: Do we need to (or can we) validate here, any other Knowledge Graph node fields? Perhaps not yet?
 
         else:  # Query Graph node validation
 
@@ -202,6 +204,7 @@ class BiolinkValidator(ValidationReporter):
                         category: Optional[ClassDefinition] = \
                             self.validate_category(
                                 context="Query Graph Node",
+                                node_id=node_id,
                                 category=category,
                                 # Knowledge Graph Node categories are
                                 # permitted to be 'abstract' or 'mixin'
@@ -305,9 +308,9 @@ class BiolinkValidator(ValidationReporter):
 
                 # Validate attribute_type_id
                 if 'attribute_type_id' not in attribute:
-                    self.report(code="error.edge.attribute.attribute_type_id.missing")
+                    self.report(code="error.edge.attribute.type_id.missing")
                 elif not attribute['attribute_type_id']:
-                    self.report(code="error.edge.attribute.attribute_type_id.empty")
+                    self.report(code="error.edge.attribute.type_id.empty")
                 elif 'value' not in attribute:
                     self.report(code="error.edge.attribute.value.missing")
                 elif not attribute['value']:
@@ -329,7 +332,7 @@ class BiolinkValidator(ValidationReporter):
 
                     if not is_curie(attribute_type_id):
                         self.report(
-                            code="error.edge.attribute.attribute_type_id.not_curie",
+                            code="error.edge.attribute.type_id.not_curie",
                             attribute_type_id=str(attribute_type_id)
                         )
                     else:
@@ -344,7 +347,7 @@ class BiolinkValidator(ValidationReporter):
                             if biolink_class:
                                 if not self.bmt.is_association_slot(attribute_type_id):
                                     self.report(
-                                        code="warning.attribute_type_id.not_association_slot",
+                                        code="warning.edge.attribute.type_id.not_association_slot",
                                         attribute_type_id=str(attribute_type_id)
                                     )
 
@@ -392,16 +395,18 @@ class BiolinkValidator(ValidationReporter):
                                                     infores == kp_source:
                                                 found_kp_knowledge_source = True
 
-                        # if not a Biolink association_slot, at least, check if it is known to Biolink
+                        # if not a Biolink association_slot, at least,
+                        # check if it is an id prefix known to Biolink.
+                        # We won't call it a hard error, but issue a warning
                         elif not self.bmt.get_element_by_prefix(prefix):
                             self.report(
-                                code="error.edge.attribute.attribute_type_id.unknown_prefix",
+                                code="warning.edge.attribute.type_id.unknown_prefix",
                                 attribute_type_id=str(attribute_type_id)
                             )
 
                         else:
                             self.report(
-                                code="info.attribute_type_id.non_biolink_prefix",
+                                code="info.attribute.type_id.non_biolink_prefix",
                                 attribute_type_id=str(attribute_type_id)
                             )
 
@@ -411,7 +416,7 @@ class BiolinkValidator(ValidationReporter):
 
             if kp_source and not found_kp_knowledge_source:
                 self.report(
-                    code="warning.attribute_type_id.not_association_slot",
+                    code="warning.attribute.type_id.missing_kp_source",
                     kp_source=kp_source,
                     kp_source_type=kp_source_type
                 )
@@ -437,7 +442,7 @@ class BiolinkValidator(ValidationReporter):
                 self.report(code="error.predicate.unknown", predicate=predicate)
             elif self.minimum_required_biolink_version("2.2.0") and \
                     not self.bmt.is_translator_canonical_predicate(predicate):
-                self.report(code="warning.predicate.non_canonical", predicate=predicate)
+                self.report(code="warning.edge.predicate.non_canonical", predicate=predicate)
 
     def validate_graph_edge(self, edge: Dict, strict_validation: bool):
         """
@@ -501,6 +506,7 @@ class BiolinkValidator(ValidationReporter):
     def validate_category(
             self,
             context: str,
+            node_id: Optional[str],
             category: Optional[str],
             strict_validation: bool = True
     ) -> ClassDefinition:
@@ -508,6 +514,7 @@ class BiolinkValidator(ValidationReporter):
         Validate a Biolink category.
 
         :param context: str, label for context of concept whose category is being validated, i.e. 'Subject' or 'Object'
+        :param node_id: str, CURIE of concept node whose category is being validated
         :param category: str, CURIE of putative concept 'category'
         :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
         :return:
@@ -521,10 +528,10 @@ class BiolinkValidator(ValidationReporter):
                     strict_validation=strict_validation
             )
             if biolink_class and not self.bmt.is_category(category):
-                self.report(code="error.category.invalid", context=context, category=category)
+                self.report(code="error.node.category.invalid", context=context, category=category)
                 biolink_class = None
         else:
-            self.report(code="error.category.missing", context=context)
+            self.report(code="error.node.category.missing", context=context, node_id=node_id)
 
         return biolink_class
 
@@ -533,6 +540,7 @@ class BiolinkValidator(ValidationReporter):
         if node_id:
             biolink_class: Optional[ClassDefinition] = self.validate_category(
                 context=f"{context}",
+                node_id=node_id,
                 category=category,
                 # we allow 'abstract' and 'mixin' type
                 # categories in input query data
@@ -608,7 +616,7 @@ class BiolinkValidator(ValidationReporter):
         :type strict_validation: bool
         """
         if not graph:
-            self.report(code="warning.empty_kg")
+            self.report(code="warning.response.knowledge_graph")
             return  # nothing really more to do here!
 
         # Access graph data fields to be validated
