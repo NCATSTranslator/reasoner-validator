@@ -72,7 +72,7 @@ def test_messages():
     assert reporter1.has_information()
     assert not reporter1.has_warnings()
     assert not reporter1.has_errors()
-    reporter1.report("warning.empty_kg")
+    reporter1.report("warning.graph.empty")
     assert reporter1.has_warnings()
     reporter1.report("error.empty_nodes")
     assert reporter1.has_errors()
@@ -82,7 +82,7 @@ def test_messages():
     assert reporter2.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
     reporter2.report("info.mixin", context="some_context", name="biolink:this_is_a_mixin")
-    reporter2.report("warning.empty_results")
+    reporter2.report("warning.response.results.empty")
     reporter2.report("error.empty_edges")
     reporter1.merge(reporter2)
     assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
@@ -170,11 +170,11 @@ def test_validator_method():
     def validator_method(validator: ValidationReporter, arg, **case):
         assert isinstance(arg, Dict)
         assert arg['some key'] == "some value"
-        validator.report("warning.provenance.not_an_infores", infores="foo:bar")
+        validator.report("error.edge.provenance.not_an_infores", infores="foo:bar")
         assert len(case) == 2
         assert case['some parameter'] == "some parameter value"
         assert case['another parameter'] == "some other parameter value"
-        validator.report("error.node.missing_identifier", context="Fake")
+        validator.report("warning.graph.empty", context="Fake")
 
     reporter.apply_validation(validator_method, test_data, **test_parameters)
 
@@ -183,12 +183,12 @@ def test_validator_method():
     assert "warnings" in messages
     assert len(messages['warnings']) > 0
     warnings: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['warnings']]
-    assert "WARNING - Edge has provenance value 'foo:bar' which is not a well-formed InfoRes CURIE!" in warnings
+    assert "WARNING - Fake data is empty?" in warnings
 
     assert "errors" in messages
     assert len(messages['errors']) > 0
     errors: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['errors']]
-    assert "ERROR - Fake node identifier is missing!" in errors
+    assert "ERROR - Edge has provenance value 'foo:bar' which is not a well-formed InfoRes CURIE!" in errors
 
 
 # has_validation_errors(root_key: str = 'validation', case: Optional[Dict] = None)
