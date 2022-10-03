@@ -21,11 +21,24 @@ app = FastAPI()
 # just use an open-ended dictionary which should have
 # query_graph, knowledge_graph and results JSON tag-values
 #
+
+# Dictionary of validation context identifying the  ARA and KP
+# sources subject to edge provenance attribute validation
+# (key-value examples as given here)
+class Sources(BaseModel):
+    ara_source: Optional[str] = "aragorn",
+    kp_source: Optional[str] = "panther",
+    kp_source_type: Optional[str] = "primary"
+
+
 class Query(BaseModel):
     trapi_version: Optional[str] = latest.get(TRAPIValidator.DEFAULT_TRAPI_VERSION)
 
     # default: latest Biolink Model Toolkit supported version
     biolink_version: Optional[str] = None
+
+    # See Sources above
+    sources: Optional[Sources] = Sources(ara_source="aragorn", kp_source="panther", kp_source_type="primary")
 
     message: Dict
 
@@ -36,16 +49,20 @@ async def validate(query: Query):
     if not query.message:
         raise HTTPException(status_code=400, detail="Empty input message?")
 
-    trapi_version = latest.get(query.trapi_version)
+    trapi_version: str = latest.get(query.trapi_version)
     print(f"trapi_version == {trapi_version}", file=stderr)
 
-    biolink_version = query.biolink_version
+    biolink_version: str = query.biolink_version
     print(f"biolink_version == {biolink_version}", file=stderr)
+
+    sources: Optional[Sources] = query.sources
+    print(f"Validation Context == {sources}", file=stderr)
 
     validator: ValidationReporter = check_biolink_model_compliance_of_trapi_response(
         message=query.message,
         trapi_version=trapi_version,
-        biolink_version=biolink_version
+        biolink_version=biolink_version,
+        sources=sources.dict()
     )
 
     if not validator.has_messages():

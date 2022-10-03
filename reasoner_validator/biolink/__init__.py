@@ -96,22 +96,29 @@ class BiolinkValidator(ValidationReporter):
     """
     Wrapper class for Biolink Model validation.
     """
-    def __init__(self, graph_type: TRAPIGraphType, biolink_version: Optional[str] = None):
+    def __init__(
+        self,
+        graph_type: TRAPIGraphType,
+        biolink_version: Optional[str] = None,
+        sources: Optional[Dict[str, str]] = None
+    ):
         """
         Biolink Validator constructor.
 
         :param graph_type: type of graph data being validated
         :type graph_type: TRAPIGraphType
-
         :param biolink_version: caller specified Biolink Model version (default: None)
         :type biolink_version: Optional[str] or None
+        :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+        :type sources: Optional[Dict[str,str]]
         """
         self.bmt: Toolkit = get_biolink_model_toolkit(biolink_version=biolink_version)
         resolved_biolink_version = self.bmt.get_model_version()
         ValidationReporter.__init__(
             self,
             prefix=f"Biolink Validation of {graph_type.value}",
-            biolink_version=resolved_biolink_version
+            biolink_version=resolved_biolink_version,
+            sources=sources
         )
         self.graph_type: TRAPIGraphType = graph_type
         self.nodes: Set[str] = set()
@@ -272,10 +279,9 @@ class BiolinkValidator(ValidationReporter):
         else:
             return element
 
-    def validate_attributes(self, edge: Dict, context: Optional[Dict] = None):
+    def validate_attributes(self, edge: Dict):
         """
         :param edge: Dict, the edge object associated wich some attributes are expected to be found
-        :param context: Dict, (optional) ARA or KP context of the edge
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
         if 'attributes' not in edge.keys():
@@ -290,13 +296,13 @@ class BiolinkValidator(ValidationReporter):
             ara_source: Optional[str] = None
             kp_source: Optional[str] = None
             kp_source_type: Optional[str] = None
-            if context:
-                ara_source = f"infores:{context['ara_source']}" \
-                    if 'ara_source' in context and context['ara_source'] else ""
-                kp_source = f"infores:{context['kp_source']}" \
-                    if 'kp_source' in context and context['kp_source'] else ""
-                kp_source_type = context['kp_source_type'] \
-                    if 'kp_source_type' in context and context['kp_source_type'] else 'aggregator'
+            if self.sources:
+                ara_source = f"infores:{self.sources['ara_source']}" \
+                    if 'ara_source' in self.sources and self.sources['ara_source'] else ""
+                kp_source = f"infores:{self.sources['kp_source']}" \
+                    if 'kp_source' in self.sources and self.sources['kp_source'] else ""
+                kp_source_type = self.sources['kp_source_type'] \
+                    if 'kp_source_type' in self.sources and self.sources['kp_source_type'] else 'aggregator'
                 kp_source_type = f"biolink:{kp_source_type}_knowledge_source"
 
             # Expecting ARA and KP 'aggregator_knowledge_source' attributes?
@@ -687,7 +693,10 @@ def check_biolink_model_compliance_of_input_edge(
     :returns: Biolink Model validator cataloging validation messages (may be empty)
     :rtype: BiolinkValidator
     """
-    validator = BiolinkValidator(graph_type=TRAPIGraphType.Edge_Object, biolink_version=biolink_version)
+    validator = BiolinkValidator(
+        graph_type=TRAPIGraphType.Edge_Object,
+        biolink_version=biolink_version
+    )
     validator.check_biolink_model_compliance_of_input_edge(edge)
     return validator
 
@@ -715,7 +724,10 @@ def check_biolink_model_compliance_of_query_graph(
     :returns: Biolink Model validator cataloging validation messages (may be empty)
     :rtype: BiolinkValidator
     """
-    validator = BiolinkValidator(graph_type=TRAPIGraphType.Query_Graph, biolink_version=biolink_version)
+    validator = BiolinkValidator(
+        graph_type=TRAPIGraphType.Query_Graph,
+        biolink_version=biolink_version
+    )
     validator.check_biolink_model_compliance(graph, strict_validation)
     return validator
 
@@ -723,6 +735,7 @@ def check_biolink_model_compliance_of_query_graph(
 def check_biolink_model_compliance_of_knowledge_graph(
     graph: Dict,
     biolink_version: Optional[str] = None,
+    sources: Optional[Dict] = None,
     strict_validation: bool = True
 ) -> BiolinkValidator:
     """
@@ -734,13 +747,19 @@ def check_biolink_model_compliance_of_knowledge_graph(
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                             validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
+    :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+    :type sources: Dict
     :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
     :type strict_validation: bool = True
 
     :returns: Biolink Model validator cataloging validation messages (may be empty)
     :rtype: BiolinkValidator
     """
-    validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph, biolink_version=biolink_version)
+    validator = BiolinkValidator(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        biolink_version=biolink_version,
+        sources=sources
+    )
     validator.check_biolink_model_compliance(graph, strict_validation)
     return validator
 
@@ -834,7 +853,8 @@ def validate_knowledge_graph(validator: ValidationReporter, message: Dict):
             # compliant to the currently applicable Biolink Model release
             biolink_validator = check_biolink_model_compliance_of_knowledge_graph(
                 graph=kg_sample,
-                biolink_version=validator.biolink_version
+                biolink_version=validator.biolink_version,
+                sources=validator.sources
             )
             if biolink_validator.has_messages():
                 validator.merge(biolink_validator)
@@ -901,7 +921,8 @@ def validate_results(validator: ValidationReporter, message: Dict):
 def check_biolink_model_compliance_of_trapi_response(
     message: Dict,
     trapi_version: str,
-    biolink_version: Optional[str] = None
+    biolink_version: Optional[str] = None,
+    sources: Optional[Dict] = None
 ) -> ValidationReporter:
     """
     One stop validation of all components of a TRAPI-schema compliant
@@ -921,6 +942,8 @@ def check_biolink_model_compliance_of_trapi_response(
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                             validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
+    :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+    :type sources: Dict
 
     :returns: Validator cataloging "information", "warning" and "error" messages (may be empty)
     :rtype: ValidationReporter
@@ -928,7 +951,8 @@ def check_biolink_model_compliance_of_trapi_response(
     validator: ValidationReporter = ValidationReporter(
         prefix="Validate TRAPI Response",
         trapi_version=trapi_version,
-        biolink_version=biolink_version
+        biolink_version=biolink_version,
+        sources=sources
     )
     if not message:
         validator.report("error.response.message.empty")

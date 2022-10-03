@@ -114,11 +114,20 @@ class ValidationReporter:
             self,
             prefix: Optional[str] = None,
             trapi_version: Optional[str] = None,
-            biolink_version: Optional[str] = None
+            biolink_version: Optional[str] = None,
+            sources: Optional[Dict] = None
     ):
+        """
+
+        :param prefix:
+        :param trapi_version:
+        :param biolink_version:
+        :param sources:
+        """
         self.prefix: str = prefix + ": " if prefix else ""
         self.trapi_version = trapi_version if trapi_version else latest.get(self.DEFAULT_TRAPI_VERSION)
         self.biolink_version = biolink_version
+        self.sources: Optional[Dict] = sources
         self.messages: Dict[str, List] = {
             "information": list(),
             "warnings": list(),

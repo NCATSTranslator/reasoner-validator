@@ -1038,9 +1038,10 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
 def test_validate_attributes(query: Tuple):
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
-        biolink_version=LATEST_BIOLINK_MODEL
+        biolink_version=LATEST_BIOLINK_MODEL,
+        sources=query[1]
     )
-    validator.validate_attributes(edge=query[0], context=query[1])
+    validator.validate_attributes(edge=query[0])
     check_messages(validator, query[2])
 
 
