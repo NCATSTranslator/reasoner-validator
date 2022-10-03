@@ -912,17 +912,39 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "value": "infores:aragorn"
                     },
                     {
-                        "attribute_type_id": "biolink:original_knowledge_source",
-                        "value": "not_an_infores"
+                        "attribute_type_id": "biolink:primary_knowledge_source",
+                        "value": "infores:panther"
+                    },
+                    {
+                        "attribute_type_id": "non_a_curie",
+                        "value": "something"
                     }
                 ]
             },
             get_ara_test_case(),
-            # "is not a well-formed InfoRes CURIE!"
+            # "is not a well-formed CURIE!"
             "error.edge.attribute.type_id.not_curie"
         ),
         (
-            # Query 10. KP provenance value is missing?
+            # Query 10. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:aragorn"
+                    },
+                    {
+                        "attribute_type_id": "biolink:primary_knowledge_source",
+                        "value": "panther"
+                    }
+                ]
+            },
+            get_ara_test_case(),
+            # "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
+            "error.edge.provenance.not_an_infores"
+        ),
+        (
+            # Query 11. KP provenance value is missing?
             {
                 "attributes": [
                     {
@@ -936,7 +958,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "warning.edge.provenance.kp.missing"
         ),
         (
-            # Query 11. kp type is 'original'. Should draw a WARNING about deprecation
+            # Query 12. kp type is 'original'. Should draw a WARNING about deprecation
             {
                 "attributes": [
                     {
@@ -952,10 +974,10 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             get_ara_test_case(),
             # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Attribute Type ID element " +
             # "'biolink:original_knowledge_source' is deprecated?"
-            "warning.edge.provenance.deprecated"
+            "warning.deprecated"
         ),
         (
-            # Query 12. kp type is 'primary'. Should pass?
+            # Query 13. kp type is 'primary'. Should pass?
             {
                 "attributes": [
                     {
@@ -972,7 +994,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             ""
         ),
         (
-            # Query 13. Missing 'primary' nor 'original' knowledge source
+            # Query 14. Missing 'primary' nor 'original' knowledge source
             {
                 "attributes": [
                     {
@@ -986,7 +1008,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                 ]
 
             },
-            # get_ara_test_case({"kp_source_type": "aggregator"}),
+            get_ara_test_case({"kp_source_type": "aggregator"}),
             # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge has neither a 'primary' nor 'original' knowledge source?"
             "warning.edge.provenance.missing_primary"
         ),

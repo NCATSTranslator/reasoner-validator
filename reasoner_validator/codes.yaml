@@ -48,8 +48,6 @@ warning:
         not_association_slot: "Edge attribute_type_id '{attribute_type_id}' not a biolink:association_slot?"
         unknown_prefix: "Edge attribute_type_id '{attribute_type_id}' has a CURIE prefix namespace unknown to Biolink!"
     provenance:
-      deprecated: "Provenance attribute type 'biolink:original_knowledge_source' is deprecated from Biolink Model release 2.4.5?"
-      not_an_infores: "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
       ara:
         missing: "Edge is missing ARA knowledge source provenance?"
       kp:
@@ -113,3 +111,5 @@ error:
         missing: "Edge attribute is missing its 'value' property!"
         empty: "Edge attribute empty 'value' property!"
         invalid_data_type: "Attribute value has an unrecognized data type '{data_type}'!"
+    provenance:
+      not_an_infores: "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"

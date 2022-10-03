@@ -376,15 +376,10 @@ class BiolinkValidator(ValidationReporter):
                                             ]:
                                         found_primary_or_original_knowledge_source = True
 
-                                    # TODO: 'biolink:original_knowledge_source' KS is deprecated from Biolink 2.4.5
-                                    if self.minimum_required_biolink_version("2.4.5") and \
-                                       attribute_type_id == "biolink:original_knowledge_source":
-                                        self.report(code="warning.provenance.deprecated")
-
                                     # ... now, check the infores values against various expectations
                                     for infores in value:
                                         if not infores.startswith("infores:"):
-                                            self.report(code="error.provenance.not_an_infores", infores=infores)
+                                            self.report(code="error.edge.provenance.not_an_infores", infores=infores)
                                         else:
                                             if ara_source and \
                                                     attribute_type_id == "biolink:aggregator_knowledge_source" and \
@@ -412,7 +407,7 @@ class BiolinkValidator(ValidationReporter):
 
             # TODO: After all the attributes have been scanned, check for provenance. Treat as warnings for now
             if ara_source and not found_ara_knowledge_source:
-                self.report(code="warning.provenance.ara.missing")
+                self.report(code="warning.edge.provenance.ara.missing")
 
             if kp_source and not found_kp_knowledge_source:
                 self.report(
@@ -422,7 +417,7 @@ class BiolinkValidator(ValidationReporter):
                 )
 
             if not found_primary_or_original_knowledge_source:
-                self.report(code="warning.provenance.missing_primary")
+                self.report(code="warning.edge.provenance.missing_primary")
 
     def validate_predicate(self, predicate: str, strict_validation: bool):
         """
