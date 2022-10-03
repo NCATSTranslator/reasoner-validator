@@ -1,5 +1,5 @@
 """Testing Validation Report methods"""
-from typing import Dict, Set, Tuple, List
+from typing import Dict, Tuple, List
 import pytest
 
 from reasoner_validator.report import CodeDictionary, ValidationReporter
