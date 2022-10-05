@@ -1,15 +1,15 @@
 """TRAPI Validation Functions."""
+from typing import Optional
 import copy
 from functools import lru_cache
 
-from typing import Optional, Dict
-
 import jsonschema
 import requests
-import yaml
-from yaml import CLoader as Loader
+
+from yaml import load, CLoader as Loader
 
 from reasoner_validator.report import ValidationReporter
+from reasoner_validator.trapi.mapping import check_node_edge_mappings
 from reasoner_validator.versioning import latest, versions, GIT_ORG, GIT_REPO
 
 
@@ -19,7 +19,7 @@ def _load_schema(trapi_version: str):
     result = requests.get(
         f"https://raw.githubusercontent.com/{GIT_ORG}/{GIT_REPO}/v{trapi_version}/TranslatorReasonerAPI.yaml"
     )
-    spec = yaml.load(result.text, Loader=Loader)
+    spec = load(result.text, Loader=Loader)
     components = spec["components"]["schemas"]
     for component, schema in components.items():
         openapi_to_jsonschema(schema)
@@ -73,12 +73,15 @@ def openapi_to_jsonschema(schema) -> None:
         fix_nullable(schema)
 
 
-class TRAPIValidator(ValidationReporter):
+class TRAPISchemaValidator(ValidationReporter):
     """
     TRAPI Validator is a wrapper class for validating
     conformance of JSON messages to the Translator Reasoner API.
     """
-    def __init__(self, trapi_version: Optional[str] = None):
+    def __init__(
+            self,
+            trapi_version: Optional[str] = None
+    ):
         """
         TRAPI Validator constructor.
 
@@ -111,7 +114,7 @@ class TRAPIValidator(ValidationReporter):
 
         Examples
         --------
-        >>> TRAPIValidator(trapi_version="1.3.0").validate({"message": {}}, "QGraph")
+        >>> TRAPISchemaValidator(trapi_version="1.3.0").validate({"message": {}}, "QGraph")
 
         """
         schema = load_schema(self.trapi_version)[component]
@@ -133,7 +136,7 @@ class TRAPIValidator(ValidationReporter):
 
         Examples
         --------
-        >>> TRAPIValidator(trapi_version="1.3.0").is_valid_trapi_query({"message": {}}, component="Query")
+        >>> TRAPISchemaValidator(trapi_version="1.3.0").is_valid_trapi_query({"message": {}}, component="Query")
         """
         try:
             self.validate(
@@ -144,7 +147,7 @@ class TRAPIValidator(ValidationReporter):
             self.report(code="error.trapi.validation", trapi_version=self.trapi_version, exception=e.message)
 
 
-def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPIValidator:
+def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPISchemaValidator:
     """
     Checks schema compliance of a Query component against a given TRAPI version.
 
@@ -161,35 +164,6 @@ def check_trapi_validity(instance, trapi_version: str, component: str = "Query")
     -------
     ValidationReporter catalog of "information", "warnings" or "errors" indexed messages (may be empty)
     """
-    trapi_validator = TRAPIValidator(trapi_version=trapi_version)
+    trapi_validator = TRAPISchemaValidator(trapi_version=trapi_version)
     trapi_validator.is_valid_trapi_query(instance, component=component)
     return trapi_validator
-
-
-class MappingValidator(ValidationReporter):
-    """
-    The Mapping Validator is a wrapper class for detecting
-    dangling references between nodes and edges of a graph.
-    This is more of a TRAPI expectation (that all nodes and edges identifiers refer to one another)
-    """
-    def __init__(self):
-        """
-        Mapping Validator constructor.
-        """
-        ValidationReporter.__init__(
-            self,
-            prefix="Validating Knowledge Graph Node and Edge Mappings"
-        )
-
-    def check_dangling_references(self, graph: Dict):
-        if not ('nodes' in graph and graph['nodes'] and 'edges' in graph and graph['edges']):
-            self.report(code="warning.empty_kg")
-        else:
-            pass
-
-
-# Detect 'dangling nodes/edges' by iterating through node <-> edge mappings)
-def check_node_edge_mappings(graph: Dict) -> MappingValidator:
-    validator: MappingValidator = MappingValidator()
-    validator.check_dangling_references(graph)
-    return validator

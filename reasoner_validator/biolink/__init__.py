@@ -11,9 +11,8 @@ import logging
 from bmt import Toolkit
 from linkml_runtime.linkml_model import ClassDefinition, Element
 
-from reasoner_validator import is_curie
+from reasoner_validator.sri.util import is_curie
 from reasoner_validator.report import ValidationReporter
-from reasoner_validator.trapi import TRAPIValidator, check_trapi_validity, check_node_edge_mappings
 from reasoner_validator.versioning import SemVer, SemVerError
 
 logger = logging.getLogger(__name__)
@@ -25,10 +24,6 @@ pp = PrettyPrinter(indent=4)
 #       Limiting nodes and edges viewed may miss deeply embedded errors(?)
 _MAX_TEST_NODES = 1000
 _MAX_TEST_EDGES = 100
-
-# Maximum number of data points to scrutinize
-# in various parts TRAPI Query Response.Message
-TEST_DATA_SAMPLE_SIZE = 10
 
 
 def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional[str]:
@@ -100,7 +95,8 @@ class BiolinkValidator(ValidationReporter):
         self,
         graph_type: TRAPIGraphType,
         biolink_version: Optional[str] = None,
-        sources: Optional[Dict[str, str]] = None
+        sources: Optional[Dict[str, str]] = None,
+        strict_validation: bool = False
     ):
         """
         Biolink Validator constructor.
@@ -118,7 +114,8 @@ class BiolinkValidator(ValidationReporter):
             self,
             prefix=f"Biolink Validation of {graph_type.value}",
             biolink_version=resolved_biolink_version,
-            sources=sources
+            sources=sources,
+            strict_validation=strict_validation
         )
         self.graph_type: TRAPIGraphType = graph_type
         self.nodes: Set[str] = set()
@@ -281,7 +278,7 @@ class BiolinkValidator(ValidationReporter):
 
     def validate_attributes(self, edge: Dict):
         """
-        :param edge: Dict, the edge object associated wich some attributes are expected to be found
+        :param edge: Dict, the edge object associated with some attributes are expected to be found
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
         if 'attributes' not in edge.keys():
@@ -761,205 +758,4 @@ def check_biolink_model_compliance_of_knowledge_graph(
         sources=sources
     )
     validator.check_biolink_model_compliance(graph, strict_validation)
-    return validator
-
-
-def sample_results(results: List) -> List:
-    sample_size = min(TEST_DATA_SAMPLE_SIZE, len(results))
-    result_subsample = results[0:sample_size]
-    return result_subsample
-
-
-def sample_graph(graph: Dict) -> Dict:
-    kg_sample: Dict = {
-        "nodes": dict(),
-        "edges": dict()
-    }
-    sample_size = min(TEST_DATA_SAMPLE_SIZE, len(graph["edges"]))
-    n = 0
-    for key, edge in graph['edges'].items():
-        kg_sample['edges'][key] = edge
-        if 'subject' in edge and edge['subject'] in graph['nodes']:
-            kg_sample['nodes'][edge['subject']] = graph['nodes'][edge['subject']]
-        if 'object' in edge and edge['object'] in graph['nodes']:
-            kg_sample['nodes'][edge['object']] = graph['nodes'][edge['object']]
-        n += 1
-        if n > sample_size:
-            break
-
-    return kg_sample
-
-
-def validate_query_graph(validator: ValidationReporter, message: Dict):
-    # Query Graph must not be missing...
-    if 'query_graph' not in message:
-        validator.report(code="error.response.query_graph.missing")
-    else:
-        # ... nor empty
-        query_graph = message['query_graph']
-        if not (query_graph and len(query_graph) > 0):
-            validator.report(code="error.response.query_graph.empty")
-        else:
-            # Validate the TRAPI compliance of the Query Graph
-            trapi_validator: TRAPIValidator = check_trapi_validity(
-                instance=query_graph,
-                component="QueryGraph",
-                trapi_version=validator.trapi_version
-            )
-            if trapi_validator.has_messages():
-                validator.merge(trapi_validator)
-
-            # Validate the Biolink Model compliance of the Query Graph
-            biolink_validator = check_biolink_model_compliance_of_query_graph(
-                graph=query_graph,
-                biolink_version=validator.biolink_version
-            )
-            if biolink_validator.has_messages():
-                validator.merge(biolink_validator)
-
-
-def validate_knowledge_graph(validator: ValidationReporter, message: Dict):
-    # The Knowledge Graph should not be missing
-    if 'knowledge_graph' not in message:
-        validator.report(code="error.response.knowledge_graph.missing")
-    else:
-        knowledge_graph = message['knowledge_graph']
-        # The Knowledge Graph should also not generally be empty? Issue a warning
-        if not (
-                knowledge_graph and len(knowledge_graph) > 0 and
-                "nodes" in knowledge_graph and len(knowledge_graph["nodes"]) > 0 and
-                "edges" in knowledge_graph and len(knowledge_graph["edges"]) > 0
-        ):
-            validator.report(code="warning.response.knowledge_graph.empty")
-        else:
-            mapping_validator: ValidationReporter = check_node_edge_mappings(knowledge_graph)
-            if mapping_validator.has_messages():
-                validator.merge(mapping_validator)
-
-            # ...then if not empty, validate a subgraph sample of the associated
-            # Knowledge Graph (since some TRAPI response kg's may be huge!)
-            kg_sample = sample_graph(knowledge_graph)
-
-            # Verify that the sample of the knowledge graph is TRAPI compliant
-            trapi_validator: TRAPIValidator = check_trapi_validity(
-                instance=kg_sample,
-                component="KnowledgeGraph",
-                trapi_version=validator.trapi_version
-            )
-            if trapi_validator.has_messages():
-                validator.merge(trapi_validator)
-
-            # Verify that the sample of the knowledge graph is
-            # compliant to the currently applicable Biolink Model release
-            biolink_validator = check_biolink_model_compliance_of_knowledge_graph(
-                graph=kg_sample,
-                biolink_version=validator.biolink_version,
-                sources=validator.sources
-            )
-            if biolink_validator.has_messages():
-                validator.merge(biolink_validator)
-
-
-def validate_results(validator: ValidationReporter, message: Dict):
-
-    #     :param output_element: test target, as edge 'subject' or 'object'
-    #     :type output_element: str
-    #     :param output_node_binding: node 'a' or 'b' of the ('one hop') QGraph test query
-    #     :type output_node_binding: str
-    # The Knowledge Graph should not be missing
-    if 'results' not in message:
-        validator.report(code="error.response.results.missing")
-    else:
-        results = message['results']
-        if not (results and len(results) > 0):
-            # The Message.results should not generally be None or empty?
-            validator.report(code="warning.response.results.empty")
-        elif not isinstance(results, List):
-            # The Message.results should be an array of Result objects
-            validator.report(code="error.response.results.non_array")
-        else:
-            # Validate a subsample of a non-empty Message.results component.
-            results_sample = sample_results(results)
-            for result in results_sample:
-                trapi_validator: TRAPIValidator = check_trapi_validity(
-                    instance=result,
-                    component="Result",
-                    trapi_version=validator.trapi_version
-                )
-                if trapi_validator.has_messages():
-                    # Record the error messages associated with the Result set then... don't continue
-                    validator.merge(trapi_validator)
-                    return validator
-
-                # TODO: here, we might wish to compare the Results against the contents of the KnowledgeGraph,
-                #       with respect to node input values from the QueryGraph but this is tricky to do solely
-                #       with the subsamples, which may not completely overlap.
-
-                # ...Finally, check that the sample Results contained the object of the Query
-
-                # The 'output_element' is 'subject' or 'object' target (unknown) of retrieval
-                # The 'output_node_binding' is (subject) 'a' or (object) 'b' keys in the QueryGraph.Nodes to be bound
-                # In principle, we detect which node in the QueryGraph has 'ids' associated with its node record
-                # and assume that the other edge node is the desired target (in the OneHop), so the 'ids'
-                # there should be in the output
-
-                # object_ids = [r['node_bindings'][output_node_binding][0]['id'] for r in results_sample]
-                # if case[output_element] not in object_ids:
-                #     # The 'get_aliases' method uses the Translator NodeNormalizer to check if any of
-                #     # the aliases of the case[output_element] identifier are in the object_ids list
-                #     output_aliases = get_aliases(case[output_element])
-                #     if not any([alias == object_id for alias in output_aliases for object_id in object_ids]):
-                #         validator.report(
-                #             code=error.results.missing_bindings,
-                #             input_id=case[output_element],
-                #             output_node_binding=output_node_binding
-                #         )
-                #         # data_dump=f"Resolved aliases:\n{','.join(output_aliases)}\n" +
-                #         #           f"Result object IDs:\n{_output(object_ids,flat=True)}"
-
-
-def check_biolink_model_compliance_of_trapi_response(
-    message: Dict,
-    trapi_version: str,
-    biolink_version: Optional[str] = None,
-    sources: Optional[Dict] = None
-) -> ValidationReporter:
-    """
-    One stop validation of all components of a TRAPI-schema compliant
-    Query Response.Message against a designated Biolink Model release.
-    Here, a TRAPI Response message is a Python Dictionary with three entries:
-
-    * Query Graph ("QGraph"): knowledge graph query input parameters
-    * Knowledge Graph: output knowledge (sub-)graph containing knowledge (Biolink Model compliant nodes, edges)
-                       returned from the target resource (KP, ARA) for the query.
-    * Results: a list of (annotated) node and edge bindings pointing into the Knowledge Graph, to represent the
-               specific answers (subgraphs) satisfying the query graph constraints.
-
-    :param message: Response.Message to be validated.
-    :type message: Dict
-    :param trapi_version: version of component against which to validate the message (mandatory, no default assumed).
-    :type trapi_version: str
-    :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
-                            validated (Default: if None, use the Biolink Model Toolkit default version.
-    :type biolink_version: Optional[str] = None
-    :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
-    :type sources: Dict
-
-    :returns: Validator cataloging "information", "warning" and "error" messages (may be empty)
-    :rtype: ValidationReporter
-    """
-    validator: ValidationReporter = ValidationReporter(
-        prefix="Validate TRAPI Response",
-        trapi_version=trapi_version,
-        biolink_version=biolink_version,
-        sources=sources
-    )
-    if not message:
-        validator.report("error.response.message.empty")
-    # Sequentially validate the Query Graph, Knowledge Graph then validate
-    # the Results (which rely on the validity of the other two components)
-    elif validator.apply_validation(validate_query_graph, message) and \
-            validator.apply_validation(validate_knowledge_graph, message):
-        validator.apply_validation(validate_results, message)
-
     return validator

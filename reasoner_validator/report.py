@@ -115,19 +115,27 @@ class ValidationReporter:
             prefix: Optional[str] = None,
             trapi_version: Optional[str] = None,
             biolink_version: Optional[str] = None,
-            sources: Optional[Dict] = None
+            sources: Optional[Dict] = None,
+            strict_validation: bool = False
     ):
         """
-
-        :param prefix:
-        :param trapi_version:
-        :param biolink_version:
-        :param sources:
+        :param prefix: named context of the Validator, used as a prefix in validation messages.
+        :type prefix: str
+        :param trapi_version: version of component against which to validate the message (mandatory, no default assumed).
+        :type trapi_version: str
+        :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
+                                validated (Default: if None, use the Biolink Model Toolkit default version.
+        :type biolink_version: Optional[str] = None
+        :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+        :type sources: Dict
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; None or False, issue a 'warning'
+        :type strict_validation: Optional[bool] = None
         """
         self.prefix: str = prefix + ": " if prefix else ""
         self.trapi_version = trapi_version if trapi_version else latest.get(self.DEFAULT_TRAPI_VERSION)
         self.biolink_version = biolink_version
         self.sources: Optional[Dict] = sources
+        self.strict_validation: Optional[bool] = strict_validation
         self.messages: Dict[str, List] = {
             "information": list(),
             "warnings": list(),
@@ -146,6 +154,9 @@ class ValidationReporter:
         :rtype biolink_version: str
         """
         return self.biolink_version
+
+    def is_strict_validation(self) -> bool:
+        return self.strict_validation
 
     def has_messages(self) -> bool:
         return self.has_information() or self.has_warnings() or self.has_errors()

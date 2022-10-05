@@ -8,10 +8,9 @@ from pydantic import BaseModel
 import uvicorn
 from fastapi import FastAPI, HTTPException
 
-from reasoner_validator.report import ValidationReporter
-from reasoner_validator.trapi import TRAPIValidator
+from reasoner_validator.trapi import TRAPISchemaValidator
 from reasoner_validator.versioning import latest
-from reasoner_validator.biolink import check_biolink_model_compliance_of_trapi_response
+from reasoner_validator import TRAPIResponseValidator
 
 app = FastAPI()
 
@@ -32,13 +31,17 @@ class Sources(BaseModel):
 
 
 class Query(BaseModel):
-    trapi_version: Optional[str] = latest.get(TRAPIValidator.DEFAULT_TRAPI_VERSION)
+    trapi_version: Optional[str] = latest.get(TRAPISchemaValidator.DEFAULT_TRAPI_VERSION)
 
     # default: latest Biolink Model Toolkit supported version
     biolink_version: Optional[str] = None
 
     # See Sources above
     sources: Optional[Sources] = Sources(ara_source="aragorn", kp_source="panther", kp_source_type="primary")
+
+    # Apply strict validation of element abstract or mixin status of category, attribute_type_id and predicate elements
+    # and detection of absent Knowledge Graph Edge predicate and attributes (despite 'nullable: true' model permission)
+    strict_validation: Optional[bool] = None
 
     message: Dict
 
@@ -58,12 +61,16 @@ async def validate(query: Query):
     sources: Optional[Sources] = query.sources
     print(f"Validation Context == {sources}", file=stderr)
 
-    validator: ValidationReporter = check_biolink_model_compliance_of_trapi_response(
-        message=query.message,
+    strict_validation: bool = query.strict_validation if query.strict_validation else False
+    print(f"Validation Context == {str(strict_validation)}", file=stderr)
+
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=trapi_version,
         biolink_version=biolink_version,
-        sources=sources.dict()
+        sources=sources.dict(),
+        strict_validation=strict_validation
     )
+    validator.check_compliance_of_trapi_response(message=query.message)
 
     if not validator.has_messages():
         validator.report(code="info.compliant")

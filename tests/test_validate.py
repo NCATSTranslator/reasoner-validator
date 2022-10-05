@@ -4,7 +4,7 @@ import pytest
 
 from jsonschema.exceptions import ValidationError
 
-from reasoner_validator.trapi import TRAPIValidator, openapi_to_jsonschema
+from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema
 
 TEST_VERSIONS = "1", "1.2", "1.2.0", "1.3", "1.3.0"
 
@@ -40,11 +40,11 @@ def test_openapi_to_jsonschema(query):
 @pytest.mark.parametrize("query", TEST_VERSIONS)
 def test_query_and_version_completion(query):
     """Test TRAPIValidator(trapi_version=query).validate()."""
-    TRAPIValidator(trapi_version=query).validate({
+    TRAPISchemaValidator(trapi_version=query).validate({
         "message": {},
     }, "Query")
     with pytest.raises(ValidationError):
-        TRAPIValidator(trapi_version=query).validate({
+        TRAPISchemaValidator(trapi_version=query).validate({
             "foo": {},
             "bar": {},
         }, "Query")
@@ -53,11 +53,11 @@ def test_query_and_version_completion(query):
 @pytest.mark.parametrize("query", TEST_VERSIONS)
 def test_edgebinding(query):
     """Test TRAPIValidator(trapi_version=query).validate_EdgeBinding()."""
-    TRAPIValidator(trapi_version=query).validate({
+    TRAPISchemaValidator(trapi_version=query).validate({
         "id": "hello",
     }, "EdgeBinding")
     with pytest.raises(ValidationError):
-        TRAPIValidator(trapi_version=query).validate({
+        TRAPISchemaValidator(trapi_version=query).validate({
             "foo": {},
         }, "EdgeBinding")
 
@@ -68,7 +68,7 @@ def test_nullable(query):
     qnode = {
         "categories": None
     }
-    TRAPIValidator(trapi_version=query).validate(qnode, "QNode")
+    TRAPISchemaValidator(trapi_version=query).validate(qnode, "QNode")
     # I cannot really trigger anything using 'with pytest.raises(ValidationError)'
     # since QNode has 'additionalProperties: true' but no 'required:' properties
 
@@ -81,9 +81,9 @@ def test_nullable_message_properties(query):
         "query_graph": None,
         "results": None,
     }
-    TRAPIValidator(trapi_version=query).validate(message, "Message")
+    TRAPISchemaValidator(trapi_version=query).validate(message, "Message")
     with pytest.raises(ValidationError):
-        TRAPIValidator(trapi_version=query).validate({
+        TRAPISchemaValidator(trapi_version=query).validate({
             "foo": {},  # additionalProperties: false and 'foo' is not a documented property...
         }, "Message")
 
@@ -100,9 +100,9 @@ def test_nullable_query_level_properties(query):
         "log_level": None,
         "workflow": None
     }
-    TRAPIValidator(trapi_version=query).validate(trapi_query, "Query")
+    TRAPISchemaValidator(trapi_version=query).validate(trapi_query, "Query")
     with pytest.raises(ValidationError):
-        TRAPIValidator(trapi_version=query).validate({
+        TRAPISchemaValidator(trapi_version=query).validate({
             "foo": {},  # missing required: message
         }, "Query")
 
@@ -120,9 +120,9 @@ def test_nullable_async_query_level_properties(query):
         "log_level": None,
         "workflow": None
     }
-    TRAPIValidator(trapi_version=query).validate(async_trapi_query, "AsyncQuery")
+    TRAPISchemaValidator(trapi_version=query).validate(async_trapi_query, "AsyncQuery")
     with pytest.raises(ValidationError):
-        TRAPIValidator(trapi_version=query).validate({
+        TRAPISchemaValidator(trapi_version=query).validate({
             "foo": {},  # missing required: callback, message
         }, "AsyncQuery")
 
@@ -138,9 +138,9 @@ def test_nullable_response_properties(query):
         },
         "workflow": None
     }
-    TRAPIValidator(trapi_version=query).validate(async_trapi_query, "Response")
+    TRAPISchemaValidator(trapi_version=query).validate(async_trapi_query, "Response")
     with pytest.raises(ValidationError):
-        TRAPIValidator(trapi_version=query).validate({
+        TRAPISchemaValidator(trapi_version=query).validate({
             "foo": {},  # missing required: message
         }, "Response")
 
@@ -177,9 +177,9 @@ def test_message_results_component_validation(query):
         },
         "score": None
     }
-    TRAPIValidator(trapi_version=query).validate(sample_message_result, "Result")
+    TRAPISchemaValidator(trapi_version=query).validate(sample_message_result, "Result")
     with pytest.raises(ValidationError):
-        TRAPIValidator(trapi_version=query).validate({
+        TRAPISchemaValidator(trapi_version=query).validate({
             # missing required: node_bindings, edge_bindings
             "foo": {},
             "bar": {},
@@ -198,9 +198,9 @@ def test_message_node_binding_component_validation(query):
         "query_id": None
     }
 
-    TRAPIValidator(trapi_version=query).validate(sample_node_binding, "NodeBinding")
+    TRAPISchemaValidator(trapi_version=query).validate(sample_node_binding, "NodeBinding")
     with pytest.raises(ValidationError):
-        TRAPIValidator(trapi_version=query).validate({
+        TRAPISchemaValidator(trapi_version=query).validate({
             # missing required: id
             "foo": {},
             "bar": {},
@@ -215,15 +215,15 @@ def test_message_attribute_component_validation(query):
         "value": "value",
         "value_type_id": None
     }
-    TRAPIValidator(trapi_version=query).validate(sample_attribute, "Attribute")
+    TRAPISchemaValidator(trapi_version=query).validate(sample_attribute, "Attribute")
     with pytest.raises(ValidationError):
-        TRAPIValidator(trapi_version=query).validate({
+        TRAPISchemaValidator(trapi_version=query).validate({
             # missing required: attribute_type_id, value; plus, 'additionalProperties: false'
             "foo": {},
             "bar": {},
         }, "Attribute")
     with pytest.raises(ValidationError):
-        TRAPIValidator(trapi_version=query).validate({
+        TRAPISchemaValidator(trapi_version=query).validate({
             # these two attributes don't have 'nullable: true' so they should have values
             "attribute_type_id": None,
             "value": None
@@ -238,15 +238,15 @@ def test_message_edge_component_validation(query):
         "predicate": None,
         "object": "anObject"
     }
-    TRAPIValidator(trapi_version=query).validate(sample_attribute, "Edge")
+    TRAPISchemaValidator(trapi_version=query).validate(sample_attribute, "Edge")
     with pytest.raises(ValidationError):
-        TRAPIValidator(trapi_version=query).validate({
+        TRAPISchemaValidator(trapi_version=query).validate({
             # missing required: subject, object
             "foo": {},
             "bar": {},
         }, "Edge")
     with pytest.raises(ValidationError):
-        TRAPIValidator(trapi_version=query).validate({
+        TRAPISchemaValidator(trapi_version=query).validate({
             # subject, object are not nullable, so...
             "subject": None,
             "object": None
