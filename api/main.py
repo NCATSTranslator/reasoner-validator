@@ -25,9 +25,9 @@ app = FastAPI()
 # sources subject to edge provenance attribute validation
 # (key-value examples as given here)
 class Sources(BaseModel):
-    ara_source: Optional[str] = "aragorn",
-    kp_source: Optional[str] = "panther",
-    kp_source_type: Optional[str] = "primary"
+    ara_source: Optional[str] = None,
+    kp_source: Optional[str] = None,
+    kp_source_type: Optional[str] = None
 
 
 class Query(BaseModel):

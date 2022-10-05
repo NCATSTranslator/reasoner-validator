@@ -294,10 +294,14 @@ class BiolinkValidator(ValidationReporter):
             kp_source: Optional[str] = None
             kp_source_type: Optional[str] = None
             if self.sources:
-                ara_source = f"infores:{self.sources['ara_source']}" \
-                    if 'ara_source' in self.sources and self.sources['ara_source'] else ""
-                kp_source = f"infores:{self.sources['kp_source']}" \
-                    if 'kp_source' in self.sources and self.sources['kp_source'] else ""
+                if 'ara_source' in self.sources and self.sources['ara_source']:
+                    ara_source: str = self.sources['ara_source']
+                    if not ara_source.startswith("infores:"):
+                        ara_source = f"infores:{ara_source}"
+                if 'kp_source' in self.sources and self.sources['kp_source']:
+                    kp_source: str = self.sources['kp_source']
+                    if not kp_source.startswith("infores:"):
+                        kp_source = f"infores:{kp_source}"
                 kp_source_type = self.sources['kp_source_type'] \
                     if 'kp_source_type' in self.sources and self.sources['kp_source_type'] else 'aggregator'
                 kp_source_type = f"biolink:{kp_source_type}_knowledge_source"
