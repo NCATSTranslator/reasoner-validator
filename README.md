@@ -29,9 +29,15 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 
 ```json
 {
-  "trapi_version": "1.0",
-  "biolink_version": "2.2.16",
-  "message": "<TRAPI JSON message blob...>"
+  "trapi_version": "1.3.0",
+  "biolink_version": "2.4.8",
+  "sources": {
+    "ara_source": "infores:aragorn",
+    "kp_source": "infores:panther",
+    "kp_source_type": "primary"
+  },
+  "strict_validation": true,
+  "message": {...}
 }
 ```
 
@@ -39,7 +45,9 @@ The request body consists of JSON data structure with two top level tag:
 
 - An **optional** `trapi_version` tag can be given a value of the TRAPI version against which the message will be validated, expressed as a SemVer string (defaults to 'latest' if omitted; partial SemVer strings are resolved to their 'latest' minor and patch releases). 
 - An **optional** `biolink_version` tag can be given a value of the Biolink Model version against which the message knowledge graph semantic contents will be validated, expressed as a SemVer string (defaults to 'latest' Biolink Model Toolkit supported version, if omitted). 
-- A **mandatory** `message` tag should have as its value the complete TRAPI **Message** JSON data structure to be validated.
+- An **optional** `sources` with an object dictionary (example shown) specifying the ARA and KP sources involved in the TRAPI call (specified by infores CURIE) and the expected KP provenance source type, i.e. 'primary' implies that the KP is tagged as a 'biolink:primary_knowledge_source'. Optional in that the root "sources" or any of the subsidiary tags may be omitted (default to None)
+- An **optional** `strict_validation` flag (default: None or 'false'). If 'true' then follow strict validation rules, such as treating as 'error' states the use of `category`, `predicate` and `attribute_type_id` that are of type `abstract` or `mixin`  as errors. 
+- A **mandatory** `message` tag should have as its value the complete TRAPI **Message** JSON data structure to be validated (see example below).
 
 ### Running the Web Service Directly
 
@@ -52,10 +60,75 @@ pip install -r requirements-service.txt
 The module may afterwards be run, as follows:
 
 ```shell
-python -m app.main
+python -m api.main
 ```
 
 Go to  http://localhost/docs to see the service documentation and to use the simple UI to input TRAPI messages for validation.
+
+### Typical Output
+
+As an example of the kind of output to expect, if one posts the following JSON message data to the **/validate** endpoint:
+
+```json
+{
+  "trapi_version": "1.3.0",
+  "biolink_version": "2.4.8",
+  "message": {
+    "query_graph": {
+        "nodes": {
+            "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+            "drug": {"categories": ["biolink:Drug"]}
+        },
+        "edges": {
+            "treats": {"subject": "drug", "predicates": ["biolink:treats"], "object": "type-2 diabetes"}
+        }
+    },
+    "knowledge_graph": {
+        "nodes": {
+            "MONDO:0005148": {"name": "type-2 diabetes"},
+            "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
+        },
+        "edges": {
+            "df87ff82": {"subject": "CHEBI:6801", "predicate": "biolink:treats", "object": "MONDO:0005148"}
+        }
+    },
+    "results": [
+        {
+            "node_bindings": {
+                "type-2 diabetes": [{"id": "MONDO:0005148"}],
+                "drug": [{"id": "CHEBI:6801"}]
+            },
+            "edge_bindings": {
+                "treats": [{"id": "df87ff82"}]
+            }
+        }
+    ]
+  }
+}
+```
+
+one should typically get a response body like the following JSON validation result back:
+
+```json
+{
+  "trapi_version": "1.3.0",
+  "biolink_version": "2.4.8",
+  "report": [
+    {
+      "code": "warning.node.unmapped_prefix",
+      "node_id": "CHEBI:6801",
+      "categories": "['biolink:Drug']"
+    },
+    {
+      "code": "error.node.missing_categories",
+      "node_id": "MONDO:0005148"
+    },
+    {
+      "code": "error.edge.attribute.missing"
+    }
+  ]
+}
+```
 
 ### Running the Web Service within Docker
 

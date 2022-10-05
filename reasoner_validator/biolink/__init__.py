@@ -6,13 +6,14 @@ from enum import Enum
 from functools import lru_cache
 from urllib.error import HTTPError
 from pprint import PrettyPrinter
-import re
 import logging
 
 from bmt import Toolkit
-from linkml_runtime.linkml_model import ClassDefinition
+from linkml_runtime.linkml_model import ClassDefinition, Element
 
-from reasoner_validator.util import SemVer, SemVerError
+from reasoner_validator.sri.util import is_curie
+from reasoner_validator.report import ValidationReporter
+from reasoner_validator.versioning import SemVer, SemVerError
 
 logger = logging.getLogger(__name__)
 
@@ -69,8 +70,8 @@ def get_biolink_model_toolkit(biolink_version: Optional[str] = None) -> Toolkit:
         # then log the error but just use default as a workaround?
         try:
             biolink_schema = _get_biolink_model_schema(biolink_version=biolink_version)
-            bmtk = Toolkit(biolink_schema)
-            return bmtk
+            bmt = Toolkit(biolink_schema)
+            return bmt
         except (TypeError, HTTPError) as ex:
             logger.error(str(ex))
 
@@ -79,184 +80,162 @@ def get_biolink_model_toolkit(biolink_version: Optional[str] = None) -> Toolkit:
     return Toolkit()
 
 
-class TrapiGraphType(Enum):
+class TRAPIGraphType(Enum):
     """ Enum type of Biolink Model compliant graph data being validated."""
     Edge_Object = "Input Edge"
     Query_Graph = "Query Graph"
     Knowledge_Graph = "Knowledge Graph"
 
 
-class BiolinkValidator:
+class BiolinkValidator(ValidationReporter):
     """
     Wrapper class for Biolink Model validation.
     """
-    def __init__(self, graph_type: TrapiGraphType, biolink_version: Optional[str] = None):
+    def __init__(
+        self,
+        graph_type: TRAPIGraphType,
+        biolink_version: Optional[str] = None,
+        sources: Optional[Dict[str, str]] = None,
+        strict_validation: bool = False
+    ):
         """
-        BiolinkValidator constructor.
+        Biolink Validator constructor.
 
         :param graph_type: type of graph data being validated
-        :type graph_type: TrapiGraphType
+        :type graph_type: TRAPIGraphType
         :param biolink_version: caller specified Biolink Model version (default: None)
         :type biolink_version: Optional[str] or None
+        :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+        :type sources: Optional[Dict[str,str]]
         """
-        self.graph_type = graph_type
-        self.bmtk = get_biolink_model_toolkit(biolink_version=biolink_version)
-        self.errors: Set[str] = set()
+        self.bmt: Toolkit = get_biolink_model_toolkit(biolink_version=biolink_version)
+        resolved_biolink_version = self.bmt.get_model_version()
+        ValidationReporter.__init__(
+            self,
+            prefix=f"Biolink Validation of {graph_type.value}",
+            biolink_version=resolved_biolink_version,
+            sources=sources,
+            strict_validation=strict_validation
+        )
+        self.graph_type: TRAPIGraphType = graph_type
         self.nodes: Set[str] = set()
-
-    def report_error(self, err_msg: str):
-        """
-        Capture an annotated error message to report from the BiolinkValidator.
-
-        :param err_msg: error message to report.
-        :type err_msg: str
-        """
-        self.errors.add(f"BLM Version {self.get_biolink_model_version()} Error in {self.graph_type.value}: {err_msg}")
-
-    def get_biolink_model_version(self) -> str:
-        """
-        :return: Biolink Model version currently targeted by the validator.
-        :rtype biolink_version: str
-        """
-        return self.bmtk.get_model_version()
 
     def minimum_required_biolink_version(self, version: str) -> bool:
         """
-
         :param version: simple 'major.minor.patch' Biolink Model SemVer
         :return: True if current version is equal to, or newer than, a targeted 'minimum_version'
         """
         try:
-            current: SemVer = SemVer.from_string(self.bmtk.get_model_version())
+            current: SemVer = SemVer.from_string(self.biolink_version)
             target: SemVer = SemVer.from_string(version)
             return current >= target
         except SemVerError as sve:
             logger.error(f"minimum_required_biolink_version() error: {str(sve)}")
             return False
 
-    @staticmethod
-    def is_curie(s: str) -> bool:
-        """
-        Check if a given string is a CURIE.
-
-        :param s: str, string to be validated as a CURIE
-        :return: bool, whether or not the given string is a CURIE
-        """
-        # Method copied from kgx.prefix_manager.PrefixManager...
-        if isinstance(s, str):
-            m = re.match(r"^[^ <()>:]*:[^/ :]+$", s)
-            return bool(m)
-        else:
-            return False
-
-    def get_reference(self, curie: str) -> Optional[str]:
-        """
-        Get the object_id reference of a given CURIE.
-
-        Parameters
-        ----------
-        curie: str
-            The CURIE
-
-        Returns
-        -------
-        Optional[str]
-            The reference of a CURIE
-
-        """
-        # Method adapted from kgx.prefix_manager.PrefixManager...
-        reference: Optional[str] = None
-        if self.is_curie(curie):
-            reference = curie.split(":", 1)[1]
-        return reference
-
-    def get_result(self) -> Tuple[str, Optional[List[str]]]:
+    def get_result(self) -> Tuple[str, Optional[Dict[str, List[Dict]]]]:
         """
         Get result of validation.
-        :return: model version of the validation and list of detected errors.
-        :rtype Tuple[str, Optional[List[str]]]
-        """
-        return self.bmtk.get_model_version(), list(self.errors)
 
-    def validate_graph_node(self, node_id, slots: Dict[str, Any]):
+        :return: model version of the validation and dictionary of reported validation messages.
+        :rtype Tuple[str, Optional[Dict[str, Set[str]]]]
+        """
+        return self.bmt.get_model_version(), self.get_messages()
+
+    def validate_graph_node(self, node_id: str, slots: Dict[str, Any]):
         """
         Validate slot properties (mainly 'categories') of a node.
 
         :param node_id: identifier of a concept node
-        :type node_id: str
+        :type node_id: str, node identifier
         :param slots: properties of the node
         :type slots: Dict
         """
         logger.debug(f"{node_id}: {str(slots)}")
 
-        if self.graph_type is TrapiGraphType.Knowledge_Graph:
+        if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             # TODO: this will fail for an earlier TRAPI data schema version
             #       which didn't use the tag 'categories' for nodes...
             #       probably no longer relevant to the community?
             if 'categories' in slots:
                 if not isinstance(slots["categories"], List):
-                    self.report_error(f"The value of node '{node_id}.categories' should be an array?")
+                    self.report(code="error.node.categories_not_array", node_id=node_id)
                 else:
                     categories = slots["categories"]
                     node_prefix_mapped: bool = False
                     for category in categories:
                         category: Optional[ClassDefinition] = \
-                            self.validate_category(context="Node", category=category, strict_validation=False)
+                            self.validate_category(
+                                context="Knowledge Graph Node",
+                                node_id=node_id,
+                                category=category,
+                                # Knowledge Graph Node categories
+                                # cannot be 'abstract' or 'mixin'
+                                strict_validation=True
+                            )
                         if category:
-                            possible_subject_categories = self.bmtk.get_element_by_prefix(node_id)
+                            possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
                             if category.name in possible_subject_categories:
                                 node_prefix_mapped = True
                     if not node_prefix_mapped:
-                        self.report_error(
-                            f"For all node categories [{','.join(categories)}] of " +
-                            f"'{node_id}', the CURIE prefix namespace remains unmapped?"
-                        )
+                        self.report(code="warning.node.unmapped_prefix", node_id=node_id, categories=str(categories))
             else:
-                self.report_error(f"Node '{node_id}' is missing its 'categories'?")
-            # TODO: Do we need to (or can we) validate other Knowledge Graph node fields here? Perhaps yet?
+                self.report(code="error.node.category.missing", context=self.graph_type, node_id=node_id)
+
+            # TODO: Do we need to (or can we) validate here, any other Knowledge Graph node fields? Perhaps not yet?
 
         else:  # Query Graph node validation
 
-            if "ids" in slots:
+            if "ids" in slots and slots["ids"]:
                 ids = slots["ids"]
                 if not isinstance(ids, List):
-                    self.report_error(f"Node '{node_id}.ids' slot value is not an array?")
+                    self.report(code="error.node.ids_not_array", node_id=node_id)
                 elif not ids:
-                    self.report_error(f"Node '{node_id}.ids' slot array is empty?")
+                    self.report(code="error.node.empty_ids", node_id=node_id)
             else:
                 ids: List[str] = list()  # null "ids" value is permitted in QNodes
 
             if "categories" in slots:
                 categories = slots["categories"]
                 if not isinstance(categories, List):
-                    self.report_error(f"Node '{node_id}.categories' slot value is not an array?")
+                    self.report(code="error.node.categories_not_array", node_id=node_id)
                 elif not categories:
-                    self.report_error(f"Node '{node_id}.categories' slot array is empty?")
+                    self.report(code="error.node.empty_categories", node_id=node_id)
                 else:
                     id_prefix_mapped: Dict = {identifier: False for identifier in ids}
                     for category in categories:
                         # category validation may report an error internally
                         category: Optional[ClassDefinition] = \
-                            self.validate_category(context="Node", category=category, strict_validation=False)
+                            self.validate_category(
+                                context="Query Graph Node",
+                                node_id=node_id,
+                                category=category,
+                                # Knowledge Graph Node categories are
+                                # permitted to be 'abstract' or 'mixin'
+                                strict_validation=False
+                            )
                         if category:
                             for identifier in ids:  # may be empty list if not provided...
-                                possible_subject_categories = self.bmtk.get_element_by_prefix(identifier)
+                                possible_subject_categories = self.bmt.get_element_by_prefix(identifier)
                                 if category.name in possible_subject_categories:
                                     id_prefix_mapped[identifier] = True
                     unmapped_ids = [
                         identifier for identifier in id_prefix_mapped.keys() if not id_prefix_mapped[identifier]
                     ]
                     if unmapped_ids:
-                        self.report_error(
-                            f"Node '{node_id}.ids' have {str(unmapped_ids)} " +
-                            f"that are unmapped to any of the Biolink Model categories {str(categories)}?")
+                        self.report(
+                            code="warning.node.identifiers_unmapped_to_categories",
+                            node_id=node_id,
+                            unmapped_ids=str(unmapped_ids),
+                            categories=str(categories)
+                        )
 
             # else:  # null "categories" value is permitted in QNodes
 
             if 'is_set' in slots:
                 is_set = slots["is_set"]
                 if not isinstance(is_set, bool):
-                    self.report_error(f"Node '{node_id}.is_set' slot is not a boolean value?")
+                    self.report(code="error.node.is_set_not_boolean", node_id=node_id)
             # else:  # a null "is_set" value is permitted in QNodes but defaults to 'False'
 
             # constraints  # TODO: how do we validate node constraints?
@@ -265,20 +244,223 @@ class BiolinkValidator:
     def set_nodes(self, nodes: Set):
         self.nodes.update(nodes)
 
-    def validate_graph_edge(self, edge: Dict):
+    def validate_element_status(self, context: str, name: str, strict_validation: bool) -> Optional[Element]:
+        """
+        Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.
+
+        :param context: parsing context (e.g. 'Node')
+        :param name: name of putative Biolink element ('class')
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue a 'warning'
+
+        :return: Optional[Element], Biolink Element resolved to 'name' if element passed all validation; None otherwise.
+        """
+        element: Optional[Element] = self.bmt.get_element(name)
+        if not element:
+            self.report(code="error.unknown", context=context, name=name)
+        elif element.deprecated:
+            self.report(code="warning.deprecated", context=context, name=name)
+            return None
+        elif element.abstract:
+            if strict_validation:
+                self.report(code="error.abstract", context=context, name=name)
+            else:
+                self.report(code="info.abstract", context=context, name=name)
+            return None
+        elif self.bmt.is_mixin(name):
+            # A mixin cannot be instantiated thus it should not be given as an input concept category
+            if strict_validation:
+                self.report(code="error.mixin", context=context, name=name)
+            else:
+                self.report(code="info.mixin", context=context, name=name)
+            return None
+        else:
+            return element
+
+    def validate_attributes(self, edge: Dict):
+        """
+        :param edge: Dict, the edge object associated with some attributes are expected to be found
+        :return: None (validation messages captured in the 'self' BiolinkValidator context)
+        """
+        if 'attributes' not in edge.keys():
+            self.report(code="error.edge.attribute.missing")
+        elif not edge['attributes']:
+            self.report(code="error.edge.attribute.empty")
+        elif not isinstance(edge['attributes'], List):
+            self.report(code="error.edge.attribute.not_list")
+        else:
+            attributes = edge['attributes']
+
+            ara_source: Optional[str] = None
+            kp_source: Optional[str] = None
+            kp_source_type: Optional[str] = None
+            if self.sources:
+                if 'ara_source' in self.sources and self.sources['ara_source']:
+                    ara_source: str = self.sources['ara_source']
+                    if not ara_source.startswith("infores:"):
+                        ara_source = f"infores:{ara_source}"
+                if 'kp_source' in self.sources and self.sources['kp_source']:
+                    kp_source: str = self.sources['kp_source']
+                    if not kp_source.startswith("infores:"):
+                        kp_source = f"infores:{kp_source}"
+                kp_source_type = self.sources['kp_source_type'] \
+                    if 'kp_source_type' in self.sources and self.sources['kp_source_type'] else 'aggregator'
+                kp_source_type = f"biolink:{kp_source_type}_knowledge_source"
+
+            # Expecting ARA and KP 'aggregator_knowledge_source' attributes?
+            found_ara_knowledge_source = False
+            found_kp_knowledge_source = False
+            found_primary_or_original_knowledge_source = False
+
+            for attribute in attributes:
+
+                # Validate attribute_type_id
+                if 'attribute_type_id' not in attribute:
+                    self.report(code="error.edge.attribute.type_id.missing")
+                elif not attribute['attribute_type_id']:
+                    self.report(code="error.edge.attribute.type_id.empty")
+                elif 'value' not in attribute:
+                    self.report(code="error.edge.attribute.value.missing")
+                elif not attribute['value']:
+                    self.report(code="error.edge.attribute.value.empty")
+                else:
+                    attribute_type_id: str = attribute['attribute_type_id']
+                    value = attribute['value']
+
+                    # TODO: there seems to be non-uniformity in provenance attribute values for some KP/ARA's
+                    #       in which a value is returned as a Python list (of at least one element?) instead
+                    #       of a string. Here, to ensure full coverage of the attribute values returned,
+                    #       we'll coerce scalar values into a list, then iterate.
+                    if not isinstance(value, List):
+                        if isinstance(value, str):
+                            value = [value]
+                        else:
+                            self.report(code="error.edge.attribute.value.invalid_data_type", data_type=type(value))
+                            continue
+
+                    if not is_curie(attribute_type_id):
+                        self.report(
+                            code="error.edge.attribute.type_id.not_curie",
+                            attribute_type_id=str(attribute_type_id)
+                        )
+                    else:
+                        # 'attribute_type_id' is a CURIE, but how well does it map?
+                        prefix = attribute_type_id.split(":", 1)[0]
+                        if prefix == 'biolink':
+                            biolink_class = self.validate_element_status(
+                                context="Attribute Type ID",
+                                name=attribute_type_id,
+                                strict_validation=True
+                            )
+                            if biolink_class:
+                                if not self.bmt.is_association_slot(attribute_type_id):
+                                    self.report(
+                                        code="warning.edge.attribute.type_id.not_association_slot",
+                                        attribute_type_id=str(attribute_type_id)
+                                    )
+
+                                else:
+                                    # it is a Biolink 'association_slot' but now, validate what kind?
+
+                                    # TODO: only check knowledge_source provenance here for now.
+                                    #       Are there other association_slots to be validated here too?
+
+                                    # Check Edge Provenance attributes
+                                    if attribute_type_id not in \
+                                            [
+                                                "biolink:aggregator_knowledge_source",
+                                                "biolink:primary_knowledge_source",
+                                                "biolink:original_knowledge_source"
+
+                                            ]:
+
+                                        # TODO: not interested in any other attribute_type_id's at this moment
+                                        continue
+
+                                    if attribute_type_id in \
+                                            [
+                                                "biolink:primary_knowledge_source",
+                                                "biolink:original_knowledge_source"
+                                            ]:
+                                        found_primary_or_original_knowledge_source = True
+
+                                    # ... now, check the infores values against various expectations
+                                    for infores in value:
+                                        if not infores.startswith("infores:"):
+                                            self.report(code="error.edge.provenance.not_an_infores", infores=infores)
+                                        else:
+                                            if ara_source and \
+                                                    attribute_type_id == "biolink:aggregator_knowledge_source" and \
+                                                    infores == ara_source:
+                                                found_ara_knowledge_source = True
+                                            elif kp_source and \
+                                                    attribute_type_id == kp_source_type and \
+                                                    infores == kp_source:
+                                                found_kp_knowledge_source = True
+
+                        # if not a Biolink association_slot, at least,
+                        # check if it is an id prefix known to Biolink.
+                        # We won't call it a hard error, but issue a warning
+                        elif not self.bmt.get_element_by_prefix(prefix):
+                            self.report(
+                                code="warning.edge.attribute.type_id.unknown_prefix",
+                                attribute_type_id=str(attribute_type_id)
+                            )
+
+                        else:
+                            self.report(
+                                code="info.attribute.type_id.non_biolink_prefix",
+                                attribute_type_id=str(attribute_type_id)
+                            )
+
+            # TODO: After all the attributes have been scanned, check for provenance. Treat as warnings for now
+            if ara_source and not found_ara_knowledge_source:
+                self.report(code="warning.edge.provenance.ara.missing")
+
+            if kp_source and not found_kp_knowledge_source:
+                self.report(
+                    code="warning.edge.provenance.kp.missing",
+                    kp_source=kp_source,
+                    kp_source_type=kp_source_type
+                )
+
+            if not found_primary_or_original_knowledge_source:
+                self.report(code="warning.edge.provenance.missing_primary")
+
+    def validate_predicate(self, predicate: str, strict_validation: bool):
+        """
+        :param predicate: putative Biolink Model predicate to be validated
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
+        :type strict_validation: bool = False
+        :return:
+        """
+        # Validate the putative predicate as *not* being abstract, deprecated or a mixin
+        biolink_class = self.validate_element_status(
+            context="Predicate",
+            name=predicate,
+            strict_validation=strict_validation
+        )
+        if biolink_class:
+            if not self.bmt.is_predicate(predicate):
+                self.report(code="error.predicate.unknown", predicate=predicate)
+            elif self.minimum_required_biolink_version("2.2.0") and \
+                    not self.bmt.is_translator_canonical_predicate(predicate):
+                self.report(code="warning.edge.predicate.non_canonical", predicate=predicate)
+
+    def validate_graph_edge(self, edge: Dict, strict_validation: bool):
         """
         Validate slot properties of a relationship ('biolink:Association') edge.
 
         :param edge: dictionary of slot properties of the edge.
         :type edge: dict[str, str]
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
+        :type strict_validation: bool
         """
         # logger.debug(edge)
-
         # edge data fields to be validated...
         subject_id = edge['subject'] if 'subject' in edge else None
 
         predicates = predicate = None
-        if self.graph_type is TrapiGraphType.Knowledge_Graph:
+        if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             predicate = edge['predicate'] if 'predicate' in edge else None
             edge_label = predicate
         else:
@@ -287,85 +469,38 @@ class BiolinkValidator:
             edge_label = str(predicates)
 
         object_id = edge['object'] if 'object' in edge else None
-        attributes: List = edge['attributes'] if 'attributes' in edge else None
 
         edge_id = f"{str(subject_id)}--{edge_label}->{str(object_id)}"
 
         if not subject_id:
-            self.report_error(f"Edge '{edge_id}' has a missing or empty 'subject' slot value?")
+            self.report(code="error.edge.subject.missing", edge_id=edge_id)
         elif subject_id not in self.nodes:
-            self.report_error(
-                f"Edge 'subject' id '{subject_id}' is missing from the nodes catalog?"
-            )
-
-        if self.graph_type is TrapiGraphType.Knowledge_Graph:
+            self.report(code="error.edge.subject.missing_from_nodes", object_id=subject_id)
+        if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             if not predicate:
-                self.report_error(f"Edge '{edge_id}' has a missing or empty predicate slot?")
-            elif not self.bmtk.is_predicate(predicate):
-                self.report_error(f"'{predicate}' is an unknown Biolink Model predicate?")
-            elif self.minimum_required_biolink_version("2.2.0") and \
-                    not self.bmtk.is_translator_canonical_predicate(predicate):
-                self.report_error(f"predicate '{predicate}' is non-canonical?")
+                self.report(code="error.edge.predicate.missing", edge_id=edge_id)
+            else:
+                self.validate_predicate(predicate=predicate, strict_validation=strict_validation)
         else:  # is a Query Graph...
             if predicates is None:
                 # Query Graphs can have a missing or null predicates slot
                 pass
             elif not isinstance(predicates, List):
-                self.report_error(f"Edge '{edge_id}' predicate slot value is not an array?")
-            elif len(predicates) is 0:
-                self.report_error(f"Edge '{edge_id}' predicate slot value is an empty array?")
+                self.report(code="error.edge.predicate.not_array", edge_id=edge_id)
+            elif len(predicates) == 0:
+                self.report(code="error.edge.predicate.empty_array", edge_id=edge_id)
             else:
                 # Should now be a non-empty list of CURIES which are valid Biolink Predicates
                 for predicate in predicates:
-                    if not self.bmtk.is_predicate(predicate):
-                        self.report_error(f"'{predicate}' is an unknown Biolink Model predicate?")
-                    elif self.minimum_required_biolink_version("2.2.0") and \
-                            not self.bmtk.is_translator_canonical_predicate(predicate):
-                        self.report_error(f"predicate '{predicate}' is non-canonical?")
+                    if not predicate:
+                        continue  # sanity check
+                    self.validate_predicate(predicate=predicate, strict_validation=strict_validation)
         if not object_id:
-            self.report_error(f"Edge '{edge_id}' has a missing or empty 'object' slot value?")
+            self.report(code="error.edge.object.missing", edge_id=edge_id)
         elif object_id not in self.nodes:
-            self.report_error(f"Edge 'object' id '{object_id}' is missing from the nodes catalog?")
-
-        if self.graph_type is TrapiGraphType.Knowledge_Graph:
-            if not attributes:
-                # For now, we simply assume that *all* edges must have *some* attributes
-                # (at least, provenance related, but we don't explicitly test for them)
-                self.report_error(f"Edge '{edge_id}' has missing or empty attributes?")
-            else:
-                # TODO: attempt some deeper attribute validation here
-                for attribute in attributes:
-                    attribute_type_id: Optional[str] = attribute.get('attribute_type_id', None)
-                    if not attribute_type_id:
-                        self.report_error(
-                            f"Edge '{edge_id}' attribute '{str(attribute)}' missing its 'attribute_type_id'?"
-                        )
-                        continue
-                    value: Optional[str] = attribute.get('value', None)
-                    if not value:
-                        self.report_error(
-                            f"Edge '{edge_id}' attribute '{str(attribute)}' missing its 'value'?"
-                        )
-                        continue
-                    #
-                    # TODO: not sure if this should only be a Pytest 'warning' rather than an Pytest 'error'
-                    #
-                    if not self.is_curie(attribute_type_id):
-                        self.report_error(
-                            f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' is not a CURIE?"
-                        )
-                    elif not self.bmtk.is_association_slot(attribute_type_id):
-                        self.report_error(
-                            f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' " +
-                            "not a biolink:association_slot?"
-                        )
-                        # if not a Biolink association_slot, at least, check if it is known to Biolink
-                        prefix = attribute_type_id.split(":", 1)[0]
-                        if not (prefix == 'biolink' or self.bmtk.get_element_by_prefix(prefix)):
-                            self.report_error(
-                                f"Edge '{edge_id}' attribute_type_id '{str(attribute_type_id)}' " +
-                                f"has a CURIE prefix namespace unknown to Biolink?"
-                            )
+            self.report(code="error.edge.object.missing_from_nodes", object_id=object_id)
+        if self.graph_type is TRAPIGraphType.Knowledge_Graph:
+            self.validate_attributes(edge=edge)
         else:
             # TODO: do we need to validate Query Graph 'constraints' slot contents here?
             pass
@@ -373,67 +508,60 @@ class BiolinkValidator:
     def validate_category(
             self,
             context: str,
+            node_id: Optional[str],
             category: Optional[str],
             strict_validation: bool = True
     ) -> ClassDefinition:
         """
+        Validate a Biolink category.
 
         :param context: str, label for context of concept whose category is being validated, i.e. 'Subject' or 'Object'
+        :param node_id: str, CURIE of concept node whose category is being validated
         :param category: str, CURIE of putative concept 'category'
-        :param strict_validation: bool, True report mixin or abstract categories as errors; Ignore otherwise if False
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
         :return:
         """
         biolink_class: Optional[ClassDefinition] = None
         if category:
-            biolink_class = self.bmtk.get_element(category)
-            if biolink_class:
-                if biolink_class.deprecated:
-                    self.report_error(
-                        f"{context} Biolink class '{category}' is deprecated: {biolink_class.deprecated}?"
-                    )
-                    biolink_class = None
-                elif biolink_class.abstract:
-                    if strict_validation:
-                        self.report_error(
-                            f"{context} Biolink class '{category}' is abstract, not a concrete category?"
-                        )
-                    else:
-                        logger.info(f"{context} Biolink class '{category}' is abstract. Ignored in this context.")
-                    biolink_class = None
-                elif self.bmtk.is_mixin(category):
-                    # A mixin cannot be instantiated so it should not be given as an input concept category
-                    if strict_validation:
-                        self.report_error(
-                            f"{context} identifier '{category}' designates a mixin, not a concrete category?"
-                        )
-                    else:
-                        logger.info(f"{context} Biolink class '{category}' is a 'mixin'. Ignored in this context.")
-                    biolink_class = None
-                elif not self.bmtk.is_category(category):
-                    self.report_error(f"{context} identifier '{category}' is not a valid Biolink category?")
-                    biolink_class = None
-            else:
-                self.report_error(f"{context} Biolink class '{category}' is unknown?")
+            # this method reports unknown Biolink Elements
+            biolink_class = self.validate_element_status(
+                    context=context,
+                    name=category,
+                    strict_validation=strict_validation
+            )
+            if biolink_class and not self.bmt.is_category(category):
+                self.report(code="error.node.category.invalid", context=context, category=category)
+                biolink_class = None
         else:
-            self.report_error(f"{context} category identifier is missing?")
+            self.report(code="error.node.category.missing", context=context, node_id=node_id)
 
         return biolink_class
 
-    def validate_input_node(self, context: str, category: Optional[str], identifier: Optional[str]):
+    def validate_input_edge_node(self, context: str, node_id: Optional[str], category: Optional[str]):
 
-        biolink_class: Optional[ClassDefinition] = self.validate_category(f"Input {context}", category)
-
-        if identifier:
+        if node_id:
+            biolink_class: Optional[ClassDefinition] = self.validate_category(
+                context=f"{context}",
+                node_id=node_id,
+                category=category,
+                # we allow 'abstract' and 'mixin' type
+                # categories in input query data
+                strict_validation=False
+            )
             if biolink_class:
-                possible_subject_categories = self.bmtk.get_element_by_prefix(identifier)
+                possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
                 if biolink_class.name not in possible_subject_categories:
-                    err_msg = f"Namespace prefix of input {context} identifier '{identifier}' is unmapped to '{category}'?"
-                    self.report_error(err_msg)
+                    self.report(
+                        code="warning.node.identifier_unmapped_to_category",
+                        context=context,
+                        node_id=node_id,
+                        category=category
+                    )
             # else, we will have already reported an error in validate_category()
         else:
-            self.report_error(f"Input {context} identifier is missing?")
+            self.report(code="error.node.missing_identifier", context=context)
 
-    def check_biolink_model_compliance_of_input_edge(self, edge: Dict[str, str]) -> Tuple[str, Optional[List[str]]]:
+    def check_biolink_model_compliance_of_input_edge(self, edge: Dict[str, str], strict_validation: bool = False):
         """
         Validate a templated test input edge contents against the current BMT Biolink Model release.
 
@@ -449,50 +577,49 @@ class BiolinkValidator:
 
         :param edge: basic dictionary of a templated input edge - S-P-O including concept Biolink Model categories
         :type edge: Dict[str,str]
-        :return: Biolink Model version (str) and List[str] (possibly empty) of error messages
-        :rtype: Tuple[str, List[str]]
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
+        :type strict_validation: bool = False
         """
         # data fields to be validated...
         subject_category_curie = edge['subject_category'] if 'subject_category' in edge else None
         object_category_curie = edge['object_category'] if 'object_category' in edge else None
-        predicate_curie = edge['predicate'] if 'predicate' in edge else None
+        predicate = edge['predicate'] if 'predicate' in edge else None
         subject_curie = edge['subject'] if 'subject' in edge else None
         object_curie = edge['object'] if 'object' in edge else None
 
-        self.validate_input_node(
-            context='subject',
-            category=subject_category_curie,
-            identifier=subject_curie
+        self.validate_input_edge_node(
+            context='Subject',
+            node_id=subject_curie,
+            category=subject_category_curie
+        )
+        if not predicate:
+            self.report(code="error.predicate.missing")
+        else:
+            self.validate_predicate(predicate=predicate, strict_validation=strict_validation)
+
+        self.validate_input_edge_node(
+            context='Object',
+            node_id=object_curie,
+            category=object_category_curie
         )
 
-        if not (predicate_curie and self.bmtk.is_predicate(predicate_curie)):
-            err_msg = f"Input predicate "
-            err_msg += f"'{predicate_curie}' is unknown?" if predicate_curie else "is missing?"
-            self.report_error(err_msg)
-        elif self.minimum_required_biolink_version("2.2.0") and \
-                not self.bmtk.is_translator_canonical_predicate(predicate_curie):
-            self.report_error(f"Input predicate '{predicate_curie}' is non-canonical?")
-
-        self.validate_input_node(
-            context='object',
-            category=object_category_curie,
-            identifier=object_curie
-        )
-
-        return self.get_result()
-
-    def check_biolink_model_compliance(self, graph: Dict) -> Tuple[str, Optional[List[str]]]:
+    def check_biolink_model_compliance(
+            self,
+            graph: Dict,
+            strict_validation: bool
+    ):
         """
         Validate a TRAPI-schema compliant Message graph-like data structure
         against the currently active Biolink Model Toolkit model version.
     
         :param graph: knowledge graph to be validated
         :type graph: Dict
-        :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
-        :rtype: Tuple[str, Optional[List[str]]]
+        :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
+        :type strict_validation: bool
         """
         if not graph:
-            self.report_error(f"Empty graph?")
+            self.report(code="warning.graph.empty", context=self.graph_type)
+            return  # nothing really more to do here!
 
         # Access graph data fields to be validated
         nodes: Optional[Dict]
@@ -500,8 +627,8 @@ class BiolinkValidator:
             nodes = graph['nodes']
         else:
             # Query Graphs can have an empty nodes catalog
-            if self.graph_type is not TrapiGraphType.Query_Graph:
-                self.report_error(f"No nodes found?")
+            if self.graph_type is not TRAPIGraphType.Query_Graph:
+                self.report(code="error.empty_nodes")
             # else:  Query Graphs can omit the 'nodes' tag
             nodes = None
 
@@ -509,8 +636,8 @@ class BiolinkValidator:
         if 'edges' in graph and graph['edges']:
             edges = graph['edges']
         else:
-            if self.graph_type is not TrapiGraphType.Query_Graph:
-                self.report_error(f"No edges found?")
+            if self.graph_type is not TRAPIGraphType.Query_Graph:
+                self.report(code="error.empty_edges")
             # else:  Query Graphs can omit the 'edges' tag
             edges = None
 
@@ -534,21 +661,20 @@ class BiolinkValidator:
                 for edge in edges.values():
 
                     # print(f"{str(edge)}", flush=True)
-                    self.validate_graph_edge(edge)
+                    self.validate_graph_edge(edge, strict_validation=strict_validation)
 
                     edges_seen += 1
                     if edges_seen >= _MAX_TEST_EDGES:
                         break
 
-        return self.get_result()
-
 
 def check_biolink_model_compliance_of_input_edge(
         edge: Dict[str, str],
         biolink_version: Optional[str] = None
-) -> Tuple[str, Optional[List[str]]]:
+) -> BiolinkValidator:
     """
-    Validate an input edge object contents against the current BMT Biolink Model release.
+    Validate an (SRI Testing style) input edge record
+    against a designated Biolink Model release.
 
     Sample method 'edge' with expected dictionary tags:
 
@@ -562,49 +688,78 @@ def check_biolink_model_compliance_of_input_edge(
 
     :param edge: basic contents of a templated input edge - S-P-O including concept Biolink Model categories
     :type edge: Dict[str,str]
-    :param biolink_version: Biolink Model (SemVer) version against which the edge object is to be validated
+    :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
+                            validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
-    :returns: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
-    :rtype: Tuple[str, Optional[List[str]]]
+    :returns: Biolink Model validator cataloging validation messages (may be empty)
+    :rtype: BiolinkValidator
     """
-    validator = BiolinkValidator(graph_type=TrapiGraphType.Edge_Object, biolink_version=biolink_version)
-    return validator.check_biolink_model_compliance_of_input_edge(edge)
+    validator = BiolinkValidator(
+        graph_type=TRAPIGraphType.Edge_Object,
+        biolink_version=biolink_version
+    )
+    validator.check_biolink_model_compliance_of_input_edge(edge)
+    return validator
 
 
 def check_biolink_model_compliance_of_query_graph(
         graph: Dict,
-        biolink_version: Optional[str] = None
-) -> Tuple[str, Optional[List[str]]]:
+        biolink_version: Optional[str] = None,
+        strict_validation: bool = False
+) -> BiolinkValidator:
     """
-    Validate a TRAPI-schema compliant Message Query Graph against the current BMT Biolink Model release.
+    Validate a TRAPI-schema compliant Message Query Graph
+    against a designated Biolink Model release.
 
     Since a Query graph is usually an incomplete knowledge graph specification,
     the validation undertaken is not 'strict'
 
     :param graph: query graph to be validated
     :type graph: Dict
-    :param biolink_version: Biolink Model (SemVer) version against which the query graph is to be validated
+    :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
+                            validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
-    :return: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
-    :rtype: Tuple[str, Optional[List[str]]]
+    :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
+    :type strict_validation: bool = False
+
+    :returns: Biolink Model validator cataloging validation messages (may be empty)
+    :rtype: BiolinkValidator
     """
-    validator = BiolinkValidator(graph_type=TrapiGraphType.Query_Graph, biolink_version=biolink_version)
-    return validator.check_biolink_model_compliance(graph)
+    validator = BiolinkValidator(
+        graph_type=TRAPIGraphType.Query_Graph,
+        biolink_version=biolink_version
+    )
+    validator.check_biolink_model_compliance(graph, strict_validation)
+    return validator
 
 
 def check_biolink_model_compliance_of_knowledge_graph(
-        graph: Dict,
-        biolink_version: Optional[str] = None
-) -> Tuple[str, Optional[List[str]]]:
+    graph: Dict,
+    biolink_version: Optional[str] = None,
+    sources: Optional[Dict] = None,
+    strict_validation: bool = True
+) -> BiolinkValidator:
     """
-    Strict validation of a TRAPI-schema compliant Message Knowledge Graph against the active BMT Biolink Model release.
+    Strict validation of a TRAPI-schema compliant Message Knowledge Graph
+     against a designated Biolink Model release.
 
     :param graph: knowledge graph to be validated.
     :type graph: Dict
-    :param biolink_version: Biolink Model (SemVer) version against which the knowledge graph is to be validated
+    :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
+                            validated (Default: if None, use the Biolink Model Toolkit default version.
     :type biolink_version: Optional[str] = None
-    :return: 2-tuple of Biolink Model version (str) and List[str] (possibly empty) of error messages
-    :rtype: Tuple[str, Optional[List[str]]]
+    :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+    :type sources: Dict
+    :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
+    :type strict_validation: bool = True
+
+    :returns: Biolink Model validator cataloging validation messages (may be empty)
+    :rtype: BiolinkValidator
     """
-    validator = BiolinkValidator(graph_type=TrapiGraphType.Knowledge_Graph, biolink_version=biolink_version)
-    return validator.check_biolink_model_compliance(graph)
+    validator = BiolinkValidator(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        biolink_version=biolink_version,
+        sources=sources
+    )
+    validator.check_biolink_model_compliance(graph, strict_validation)
+    return validator

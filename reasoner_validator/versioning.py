@@ -1,22 +1,18 @@
 """Utilities."""
-from os import environ
-import copy
-from functools import lru_cache
 import re
 from typing import NamedTuple, Optional
-
+from os import environ
 import requests
-import yaml
 try:
     from yaml import CLoader as Loader
 except ImportError:
     from yaml import Loader
 
+
 # Undocumented possible local environmental variable
 # override of the ReasonerAPI schema access endpoint
 GIT_ORG = environ.setdefault('GIT_ORGANIZATION', "NCATSTranslator")
 GIT_REPO = environ.setdefault('GIT_REPOSITORY', "ReasonerAPI")
-
 
 response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/releases")
 releases = response.json()
@@ -26,10 +22,11 @@ versions = [
     if release["tag_name"].startswith("v")
 ]
 
+
 semver_pattern = re.compile(
     r"^(?P<major>0|[1-9]\d*)(\.(?P<minor>0|[1-9]\d*)(\.(?P<patch>0|[1-9]\d*))?)?" +
-    r"(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?"
-    r"(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
+    r"(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][\da-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][\da-zA-Z-]*))*))?"
+    r"(?:\+(?P<buildmetadata>[\da-zA-Z-]+(?:\.[\da-zA-Z-]+)*))?$"
 )
 
 
@@ -161,63 +158,3 @@ for version in versions:
             buildmetadata
         ))
     # TODO: we won't bother with buildmetadata for now
-
-
-def fix_nullable(schema) -> None:
-    """Fix nullable schema."""
-    if "oneOf" in schema:
-        schema["oneOf"].append({"type": "null"})
-        return
-    if "anyOf" in schema:
-        schema["anyOf"].append({"type": "null"})
-        return
-    schema["oneOf"] = [
-        {
-            key: schema.pop(key)
-            for key in list(schema.keys())
-        },
-        {"type": "null"},
-    ]
-
-
-def openapi_to_jsonschema(schema) -> None:
-    """Convert OpenAPI schema to JSON schema."""
-    if "allOf" in schema:
-        # September 1, 2022 hacky patch to rewrite 'allOf' tagged subschemata to 'oneOf'
-        # TODO: TRAPI needs to change this in release 1.4
-        schema["oneOf"] = schema.pop("allOf")
-    if schema.get("type", None) == "object":
-        for tag, prop in schema.get("properties", dict()).items():
-            openapi_to_jsonschema(prop)
-    if schema.get("type", None) == "array":
-        openapi_to_jsonschema(schema.get("items", dict()))
-    if schema.pop("nullable", False):
-        fix_nullable(schema)
-
-
-def load_schema(trapi_version: str):
-    """Load schema from GitHub."""
-    full_version = latest.get(trapi_version)
-    if full_version not in versions:
-        raise ValueError(f"No TRAPI version {trapi_version}")
-    return _load_schema(full_version)
-
-
-@lru_cache()
-def _load_schema(trapi_version: str):
-    """Load schema from GitHub."""
-    result = requests.get(
-        f"https://raw.githubusercontent.com/{GIT_ORG}/{GIT_REPO}/v{trapi_version}/TranslatorReasonerAPI.yaml"
-    )
-    spec = yaml.load(result.text, Loader=Loader)
-    components = spec["components"]["schemas"]
-    for component, schema in components.items():
-        openapi_to_jsonschema(schema)
-    schemas = dict()
-    for component in components:
-        # build json schema against which we validate
-        subcomponents = copy.deepcopy(components)
-        schema = subcomponents.pop(component)
-        schema["components"] = {"schemas": subcomponents}
-        schemas[component] = schema
-    return schemas
