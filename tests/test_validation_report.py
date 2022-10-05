@@ -7,6 +7,7 @@ from reasoner_validator.report import CodeDictionary, ValidationReporter
 TEST_TRAPI_VERSION = "1.3.0"
 TEST_BIOLINK_VERSION = "2.4.8"
 
+
 def check_messages(validator: ValidationReporter, code):
     messages: Dict[str, List[Dict]] = validator.get_messages()
     if code:
