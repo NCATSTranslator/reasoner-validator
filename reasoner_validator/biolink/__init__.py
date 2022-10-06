@@ -418,22 +418,32 @@ class BiolinkValidator(ValidationReporter):
             if not found_primary_or_original_knowledge_source:
                 self.report(code="warning.edge.provenance.missing_primary")
 
-    def validate_predicate(self, predicate: str):
+    def validate_predicate(self, edge_id: str, predicate: str):
         """
         :param predicate: putative Biolink Model predicate to be validated
         :return:
         """
         # Validate the putative predicate as *not* being abstract, deprecated or a mixin
         biolink_class = self.validate_element_status(
-            context="Predicate",
+            context=f"{self.graph_type} {edge_id} Predicate",
             name=predicate
         )
         if biolink_class:
             if not self.bmt.is_predicate(predicate):
-                self.report(code="error.predicate.unknown", predicate=predicate)
+                self.report(
+                    code="error.edge.predicate.unknown",
+                    context=self.graph_type,
+                    edge_id=edge_id,
+                    predicate=predicate
+                )
             elif self.minimum_required_biolink_version("2.2.0") and \
                     not self.bmt.is_translator_canonical_predicate(predicate):
-                self.report(code="warning.edge.predicate.non_canonical", predicate=predicate)
+                self.report(
+                    code="warning.edge.predicate.non_canonical",
+                    context=self.graph_type,
+                    edge_id=edge_id,
+                    predicate=predicate
+                )
 
     def validate_graph_edge(self, edge: Dict):
         """
@@ -465,9 +475,9 @@ class BiolinkValidator(ValidationReporter):
             self.report(code="error.edge.subject.missing_from_nodes", object_id=subject_id)
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             if not predicate:
-                self.report(code="error.edge.predicate.missing", edge_id=edge_id)
+                self.report(code="error.edge.predicate.missing", context=self.graph_type, edge_id=edge_id)
             else:
-                self.validate_predicate(predicate=predicate)
+                self.validate_predicate(edge_id=edge_id, predicate=predicate)
         else:  # is a Query Graph...
             if predicates is None:
                 # Query Graphs can have a missing or null predicates slot
@@ -481,7 +491,7 @@ class BiolinkValidator(ValidationReporter):
                 for predicate in predicates:
                     if not predicate:
                         continue  # sanity check
-                    self.validate_predicate(predicate=predicate)
+                    self.validate_predicate(edge_id=edge_id, predicate=predicate)
         if not object_id:
             self.report(code="error.edge.object.missing", edge_id=edge_id)
         elif object_id not in self.nodes:
@@ -566,15 +576,17 @@ class BiolinkValidator(ValidationReporter):
         subject_curie = edge['subject'] if 'subject' in edge else None
         object_curie = edge['object'] if 'object' in edge else None
 
+        edge_id = f"{str(subject_curie)}--{predicate}->{str(object_curie)}"
+
         self.validate_input_edge_node(
             context='Subject',
             node_id=subject_curie,
             category=subject_category_curie
         )
         if not predicate:
-            self.report(code="error.predicate.missing")
+            self.report(code="error.edge.predicate.missing", context=self.graph_type, edge_id=edge_id)
         else:
-            self.validate_predicate(predicate=predicate)
+            self.validate_predicate(edge_id=edge_id, predicate=predicate)
 
         self.validate_input_edge_node(
             context='Object',
