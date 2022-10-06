@@ -179,6 +179,9 @@ class ValidationReporter:
     def dump_errors(self, flat=False) -> str:
         return _output(self.messages["errors"], flat)
 
+    def dump_messages(self, flat=False) -> str:
+        return _output(self.messages, flat)
+
     @staticmethod
     def get_message_type(code: str) -> str:
         code_id_parts: List[str] = code.split('.')
@@ -278,26 +281,26 @@ class ValidationReporter:
         # The 'case' dictionary object could have a format something like this:
         #
         #     tag: {
-        #         "trapi_version": "1",
-        #         "biolink_version": "2.4.7",
+        #         "trapi_version": "1.3",
+        #         "biolink_version": "3.0.2",
         #         "messages": {
         #             "information": [],
         #             "warnings": [
-        #                 {
-        #                     'code': "warning.deprecated",
-        #                     'context': "Input",
-        #                     "name": "biolink:ChemicalSubstance"
-        #                 },
         #                 {
         #                     'code': "warning.predicate.non_canonical",
         #                     'predicate': "biolink:participates_in"
         #                 }
         #             ],
-        #             "errors": []
+        #             "errors": [
+        #                 {
+        #                     'code': "error.knowledge_graph.empty_nodes"
+        #                 }
+        #             ]
         #         }
         #     }
         #
-        # and we have non-empty "errors"
+        # where 'tag' == 'messages' and we have a non-empty "errors" set of messages
+        #
         if case is not None and tag in case and \
                 'messages' in case[tag] and \
                 'errors' in case[tag]['messages'] and \

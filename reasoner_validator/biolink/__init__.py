@@ -613,7 +613,7 @@ class BiolinkValidator(ValidationReporter):
         else:
             # Query Graphs can have an empty nodes catalog
             if self.graph_type is not TRAPIGraphType.Query_Graph:
-                self.report(code="error.empty_nodes")
+                self.report(code="error.knowledge_graph.empty_nodes")
             # else:  Query Graphs can omit the 'nodes' tag
             nodes = None
 
@@ -622,7 +622,7 @@ class BiolinkValidator(ValidationReporter):
             edges = graph['edges']
         else:
             if self.graph_type is not TRAPIGraphType.Query_Graph:
-                self.report(code="error.empty_edges")
+                self.report(code="error.knowledge_graph.empty_edges")
             # else:  Query Graphs can omit the 'edges' tag
             edges = None
 

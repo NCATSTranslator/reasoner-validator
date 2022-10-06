@@ -1107,7 +1107,7 @@ def test_validate_attributes(query: Tuple):
                 "nodes": {}
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No nodes found!"
-            "error.empty_nodes"
+            "error.knowledge_graph.empty_nodes"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1122,7 +1122,7 @@ def test_validate_attributes(query: Tuple):
                 }
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No edges found!"
-            "error.empty_edges"
+            "error.knowledge_graph.empty_edges"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1138,7 +1138,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {}
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No edges found!"
-            "error.empty_edges"
+            "error.knowledge_graph.empty_edges"
         ),
         (
             LATEST_BIOLINK_MODEL,

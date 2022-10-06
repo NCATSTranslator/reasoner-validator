@@ -67,7 +67,7 @@ class TRAPIResponseValidator(ValidationReporter):
         :rtype: ValidationReporter
         """
         if not message:
-            self.report("error.response.message.empty")
+            self.report("error.trapi.response.message.empty")
         # Sequentially validate the Query Graph, Knowledge Graph then validate
         # the Results (which rely on the validity of the other two components)
         elif self.has_valid_query_graph(message) and \
@@ -103,12 +103,12 @@ class TRAPIResponseValidator(ValidationReporter):
     def has_valid_query_graph(self, message: Dict) -> bool:
         # Query Graph must not be missing...
         if 'query_graph' not in message:
-            self.report(code="error.response.query_graph.missing")
+            self.report(code="error.trapi.response.query_graph.missing")
         else:
             # ... nor empty
             query_graph = message['query_graph']
             if not (query_graph and len(query_graph) > 0):
-                self.report(code="error.response.query_graph.empty")
+                self.report(code="error.trapi.response.query_graph.empty")
             else:
                 # Validate the TRAPI compliance of the Query Graph
                 trapi_validator: TRAPISchemaValidator = check_trapi_validity(
@@ -138,7 +138,7 @@ class TRAPIResponseValidator(ValidationReporter):
     def has_valid_knowledge_graph(self, message: Dict) -> bool:
         # The Knowledge Graph should not be missing
         if 'knowledge_graph' not in message:
-            self.report(code="error.response.knowledge_graph.missing")
+            self.report(code="error.trapi.response.knowledge_graph.missing")
         else:
             knowledge_graph = message['knowledge_graph']
             # The Knowledge Graph should also not generally be empty? Issue a warning
@@ -193,7 +193,7 @@ class TRAPIResponseValidator(ValidationReporter):
 
         # The Message.Results key should not be missing?
         if 'results' not in message:
-            self.report(code="error.response.results.missing")
+            self.report(code="error.trapi.response.results.missing")
         else:
             results = message['results']
             if not (results and len(results) > 0):
@@ -202,7 +202,7 @@ class TRAPIResponseValidator(ValidationReporter):
                 # the whole Message, but no more validation tests are needed
             elif not isinstance(results, List):
                 # The Message.results should be an array of Result objects
-                self.report(code="error.response.results.non_array")
+                self.report(code="error.trapi.response.results.non_array")
             else:
                 # Validate a subsample of a non-empty Message.results component.
                 results_sample = self.sample_results(results)

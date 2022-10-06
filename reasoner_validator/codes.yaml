@@ -21,11 +21,12 @@ predicate:
 
 # TODO: decide if some of these yaml tag paths are too verbose (and what to use instead?)
 info:
-  compliant: "Biolink Model-compliant TRAPI Message!"
+  excluded: "User excluded S-P-O triple '{edge_id}' or all test case S-P-O triples from resource test location."
+  compliant: "Biolink Model-compliant TRAPI Message."
   abstract: "{context} element '{name}' is abstract."
   mixin: "{context} element '{name}' is a mixin."
   attribute_type_id:
-    non_biolink_prefix: "Edge attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink!"
+    non_biolink_prefix: "Edge attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink."
 
 warning:
   graph:
@@ -55,25 +56,30 @@ warning:
       missing_primary: "Edge has neither a 'primary' nor 'original' knowledge source?"
 
 error:
-  trapi:
-    validation: "TRAPI {trapi_version} Query: '{exception}'"
+  non_compliant: "S-P-O statement '{edge_id}' is not compliant to Biolink Model {biolink_release}"
   unknown: "{context} element '{name}' is unknown!"
   abstract: "{context} element '{name}' is abstract!"
   mixin: "{context} element '{name}' is a mixin!"
-  empty_nodes: "No nodes found!"
-  empty_edges: "No edges found!"
-  response:
-    message:
-      empty: "Response returned an empty Message Query Graph!"
-    query_graph:
-      missing: "TRAPI Message is missing its Query Graph!"
-      empty: "Response returned an empty Message Query Graph?"
-    knowledge_graph:
-      missing: "TRAPI Message is missing its Knowledge Graph component!"
-    results:
-      missing: "TRAPI Message is missing its Results component!"
-      non_array: "Response returned a non-array Message.results!"
-      missing_bindings: "Neither the input id '{input_id}' nor resolved aliases were returned in the Result object IDs for node '{output_node_binding}' binding?"
+  trapi:
+    validation: "TRAPI {trapi_version} Query: '{exception}'"
+    request:
+      invalid: "{context} could not generate a valid TRAPI query request object?"
+    response:
+      unexpected_http_code: "TRAPI Response has an unexpected HTTP status code: '{status_code}'?"
+      message:
+        empty: "Response returned an empty Message Query Graph!"
+      query_graph:
+        missing: "TRAPI Message is missing its Query Graph!"
+        empty: "Response returned an empty Message Query Graph?"
+      knowledge_graph:
+        missing: "TRAPI Message is missing its Knowledge Graph component!"
+      results:
+        missing: "TRAPI Message is missing its Results component!"
+        non_array: "Response returned a non-array Message.results!"
+        missing_bindings: "Neither the input id '{input_id}' nor resolved aliases were returned in the Result object IDs for node '{output_node_binding}' binding?"
+  knowledge_graph:
+    empty_nodes: "No nodes found!"
+    empty_edges: "No edges found!"
   node:
     category:
       missing: "{context} {node_id} has a missing Biolink category!"

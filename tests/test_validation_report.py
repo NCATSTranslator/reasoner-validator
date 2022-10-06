@@ -30,14 +30,13 @@ def check_messages(validator: ValidationReporter, code, no_errors: bool = False)
             assert not validator.has_messages(), f"Unexpected messages seen {messages}"
 
 
-
 def test_message_loader():
     assert CodeDictionary._code_value("") is None
 
     assert CodeDictionary._code_value("category") is not None
     assert CodeDictionary._code_value("category.abstract") is not None
     assert CodeDictionary._code_value("predicate") is not None
-    assert CodeDictionary._code_value("info.compliant")[1] == "Biolink Model-compliant TRAPI Message!"
+    assert CodeDictionary._code_value("info.compliant")[1] == "Biolink Model-compliant TRAPI Message."
     assert CodeDictionary._code_value("info") is not None
     assert CodeDictionary._code_value("warning") is not None
     assert CodeDictionary._code_value("error") is not None
@@ -46,7 +45,7 @@ def test_message_loader():
 
 
 def test_message_display():
-    assert CodeDictionary.display(code="error.empty_nodes") == "ERROR - No nodes found!"
+    assert CodeDictionary.display(code="error.knowledge_graph.empty_nodes") == "ERROR - No nodes found!"
     assert CodeDictionary.display(
         code="info.abstract",
         context="ELEMENT",
@@ -80,7 +79,7 @@ def test_message_report():
     assert 'information' in report
     assert len(report['information']) > 0
     messages: List[str] = [CodeDictionary.display(**coded_message) for coded_message in report['information']]
-    assert "INFO - Biolink Model-compliant TRAPI Message!" in messages
+    assert "INFO - Biolink Model-compliant TRAPI Message." in messages
     assert "INFO - ELEMENT element 'NAME' is abstract." in messages
 
 
@@ -97,7 +96,7 @@ def test_messages():
     assert not reporter1.has_errors()
     reporter1.report("warning.graph.empty")
     assert reporter1.has_warnings()
-    reporter1.report("error.empty_nodes")
+    reporter1.report("error.knowledge_graph.empty_nodes")
     assert reporter1.has_errors()
 
     # Testing merging of messages from a second reporter
@@ -106,14 +105,14 @@ def test_messages():
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
     reporter2.report("info.mixin", context="some_context", name="biolink:this_is_a_mixin")
     reporter2.report("warning.response.results.empty")
-    reporter2.report("error.empty_edges")
+    reporter2.report("error.knowledge_graph.empty_edges")
     reporter1.merge(reporter2)
     assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION
     
     # No prefix...
     reporter3 = ValidationReporter()
-    reporter3.report("error.response.query_graph.missing")
+    reporter3.report("error.trapi.response.query_graph.missing")
     reporter1.merge(reporter3)
     assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION

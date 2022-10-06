@@ -200,7 +200,7 @@ _TEST_RESULTS_2 = [
             None,
             None,
             # "Validate TRAPI Response: ERROR - Response returned an empty Message Query Graph!"
-            "error.response.message.empty"
+            "error.trapi.response.message.empty"
         ),
         (   # Query 1 - Response.Message also devoid of content, missing QGraph trapped first....
             {
@@ -212,7 +212,7 @@ _TEST_RESULTS_2 = [
             None,
             None,
             # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Query Graph!"
-            "error.response.query_graph.missing"
+            "error.trapi.response.query_graph.missing"
         ),
         (   # Query 2 - Response.Message also devoid of content, null QGraph trapped first....
             {
@@ -225,7 +225,7 @@ _TEST_RESULTS_2 = [
             None,
             None,
             # "Validate TRAPI Response: ERROR - Response returned an null or empty Message Query Graph!"
-            "error.response.query_graph.empty"
+            "error.trapi.response.query_graph.empty"
         ),
         (
             # Query 3 - Partly empty Response.Message with a modest but
@@ -240,7 +240,7 @@ _TEST_RESULTS_2 = [
             None,
             None,
             # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Knowledge Graph component?"
-            "error.response.knowledge_graph.missing"
+            "error.trapi.response.knowledge_graph.missing"
         ),
         (
             # Query 4 - Partly empty Response.Message with a modest
@@ -270,7 +270,7 @@ _TEST_RESULTS_2 = [
             None,
             None,
             # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Results component!"
-            "error.response.results.missing"
+            "error.trapi.response.results.missing"
         ),
         (
             # Query 6 - Partly empty Response.Message with a modest but workable query and
@@ -300,7 +300,7 @@ _TEST_RESULTS_2 = [
             None,
             None,
             # "Validate TRAPI Response: ERROR - Response returned a non-array Message.results!"
-            "error.response.results.non_array"
+            "error.trapi.response.results.non_array"
         ),
         (
             # Query 8 - Partly empty Response.Message with a modest but workable query and
