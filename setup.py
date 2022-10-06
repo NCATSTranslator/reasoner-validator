@@ -7,7 +7,7 @@ with open("README.md", "r") as stream:
 NAME = 'reasoner-validator'
 
 # Significant API change with respect to validation messaging
-VERSION = '3.0.1'
+VERSION = '3.0.2'
 
 DESCRIPTION = 'Validation tools for Reasoner API'
 URL = 'https://github.com/NCATSTranslator/reasoner-validator'
@@ -30,7 +30,12 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="MIT",
-    packages=["reasoner_validator", "reasoner_validator.biolink"],
+    packages=[
+        "reasoner_validator",
+        "reasoner_validator.biolink",
+        "reasoner_validator.sri",
+        "reasoner_validator.trapi"
+    ],
     package_data={},
     include_package_data=True,
     install_requires=[
