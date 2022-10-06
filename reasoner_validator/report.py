@@ -170,6 +170,15 @@ class ValidationReporter:
     def has_errors(self) -> bool:
         return bool(self.messages["errors"])
 
+    def dump_info(self, flat=False) -> str:
+        return _output(self.messages["information"], flat)
+
+    def dump_warnings(self, flat=False) -> str:
+        return _output(self.messages["warnings"], flat)
+
+    def dump_errors(self, flat=False) -> str:
+        return _output(self.messages["errors"], flat)
+
     @staticmethod
     def get_message_type(code: str) -> str:
         code_id_parts: List[str] = code.split('.')
@@ -201,6 +210,15 @@ class ValidationReporter:
 
     def get_messages(self) -> Dict[str, List[Dict]]:
         return copy.deepcopy(self.messages)
+
+    def get_info(self) -> List:
+        return copy.deepcopy(self.messages["information"])
+
+    def get_warnings(self) -> List:
+        return copy.deepcopy(self.messages["warnings"])
+
+    def get_errors(self) -> List:
+        return copy.deepcopy(self.messages["errors"])
 
     ############################
     # General Instance methods #
