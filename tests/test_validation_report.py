@@ -8,7 +8,7 @@ TEST_TRAPI_VERSION = "1.3.0"
 TEST_BIOLINK_VERSION = "2.4.8"
 
 
-def check_messages(validator: ValidationReporter, code):
+def check_messages(validator: ValidationReporter, code, no_errors: bool = False):
     messages: Dict[str, List[Dict]] = validator.get_messages()
     if code:
         # TODO: 'code' should be found in code.yaml
@@ -21,8 +21,14 @@ def check_messages(validator: ValidationReporter, code):
             assert any([warning['code'] == code for warning in messages['warnings']])
         elif message_type == "info":
             assert any([info['code'] == code for info in messages['information']])
-    else:  # no errors or warnings expected? Assert absence of such messages?
-        assert not validator.has_messages(), f"Unexpected messages seen {messages}"
+    else:
+        if no_errors:
+            # just don't want any hard errors; info and warnings are ok?
+            assert not validator.has_errors(), f"Unexpected error messages seen {messages}"
+        else:
+            # no expected at all? Assert the absence of such messages?
+            assert not validator.has_messages(), f"Unexpected messages seen {messages}"
+
 
 
 def test_message_loader():

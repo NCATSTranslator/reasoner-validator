@@ -122,7 +122,10 @@ class TRAPIResponseValidator(ValidationReporter):
                 # Validate the Biolink Model compliance of the Query Graph
                 biolink_validator = check_biolink_model_compliance_of_query_graph(
                     graph=query_graph,
-                    biolink_version=self.biolink_version
+                    biolink_version=self.biolink_version,
+                    # the ValidationReporter calling this function *might*
+                    # have an explicit strict_validation override (if not None)
+                    strict_validation=self.strict_validation
                 )
                 if biolink_validator.has_messages():
                     self.merge(biolink_validator)
@@ -171,6 +174,8 @@ class TRAPIResponseValidator(ValidationReporter):
                     graph=kg_sample,
                     biolink_version=self.biolink_version,
                     sources=self.sources,
+                    # the ValidationReporter calling this function *might*
+                    # have an explicit strict_validation override (if not None)
                     strict_validation=self.strict_validation
                 )
                 if biolink_validator.has_messages():
