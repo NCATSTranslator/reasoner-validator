@@ -149,7 +149,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'object': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate is missing or empty!"
-            "error.predicate.missing"
+            "error.edge.predicate.missing"
         ),
         (   # Query 6 - Empty predicate
             LATEST_BIOLINK_MODEL,
@@ -161,7 +161,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'object': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate is missing or empty!"
-            "error.predicate.missing"
+            "error.edge.predicate.missing"
         ),
         (   # Query 7 - Predicate is deprecated
             LATEST_BIOLINK_MODEL,
