@@ -177,7 +177,7 @@ class BiolinkValidator(ValidationReporter):
                     if not node_prefix_mapped:
                         self.report(code="warning.node.unmapped_prefix", node_id=node_id, categories=str(categories))
             else:
-                self.report(code="error.node.category.missing", context=self.graph_type, node_id=node_id)
+                self.report(code="error.node.category.missing", context=self.graph_type.value, node_id=node_id)
 
             # TODO: Do we need to (or can we) validate here, any other Knowledge Graph node fields? Perhaps not yet?
 
@@ -425,14 +425,14 @@ class BiolinkValidator(ValidationReporter):
         """
         # Validate the putative predicate as *not* being abstract, deprecated or a mixin
         biolink_class = self.validate_element_status(
-            context=f"{self.graph_type} {edge_id} Predicate",
+            context=f"{self.graph_type.value} {edge_id} Predicate",
             name=predicate
         )
         if biolink_class:
             if not self.bmt.is_predicate(predicate):
                 self.report(
                     code="error.edge.predicate.unknown",
-                    context=self.graph_type,
+                    context=self.graph_type.value,
                     edge_id=edge_id,
                     predicate=predicate
                 )
@@ -440,7 +440,7 @@ class BiolinkValidator(ValidationReporter):
                     not self.bmt.is_translator_canonical_predicate(predicate):
                 self.report(
                     code="warning.edge.predicate.non_canonical",
-                    context=self.graph_type,
+                    context=self.graph_type.value,
                     edge_id=edge_id,
                     predicate=predicate
                 )
@@ -475,7 +475,7 @@ class BiolinkValidator(ValidationReporter):
             self.report(code="error.edge.subject.missing_from_nodes", object_id=subject_id)
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             if not predicate:
-                self.report(code="error.edge.predicate.missing", context=self.graph_type, edge_id=edge_id)
+                self.report(code="error.edge.predicate.missing", context=self.graph_type.value, edge_id=edge_id)
             else:
                 self.validate_predicate(edge_id=edge_id, predicate=predicate)
         else:  # is a Query Graph...
@@ -584,7 +584,7 @@ class BiolinkValidator(ValidationReporter):
             category=subject_category_curie
         )
         if not predicate:
-            self.report(code="error.edge.predicate.missing", context=self.graph_type, edge_id=edge_id)
+            self.report(code="error.edge.predicate.missing", context=self.graph_type.value, edge_id=edge_id)
         else:
             self.validate_predicate(edge_id=edge_id, predicate=predicate)
 
@@ -603,7 +603,7 @@ class BiolinkValidator(ValidationReporter):
         :type graph: Dict
         """
         if not graph:
-            self.report(code="warning.graph.empty", context=self.graph_type)
+            self.report(code="warning.graph.empty", context=self.graph_type.value)
             return  # nothing really more to do here!
 
         # Access graph data fields to be validated
