@@ -63,7 +63,7 @@ error:
   trapi:
     validation: "TRAPI {trapi_version} Query: '{exception}'"
     request:
-      invalid: "{context} could not generate a valid TRAPI query request object?"
+      invalid: "{context} could not generate a valid TRAPI query request object because {reason}?"
     response:
       unexpected_http_code: "TRAPI Response has an unexpected HTTP status code: '{status_code}'?"
       message:
