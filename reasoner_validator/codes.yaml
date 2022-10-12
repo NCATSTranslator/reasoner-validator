@@ -114,6 +114,5 @@ error:
       value:
         missing: "Edge attribute is missing its 'value' property!"
         empty: "Edge attribute empty 'value' property!"
-        invalid_data_type: "Attribute value has an unrecognized data type '{data_type}'!"
     provenance:
       not_an_infores: "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"

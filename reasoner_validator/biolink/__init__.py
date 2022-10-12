@@ -324,11 +324,7 @@ class BiolinkValidator(ValidationReporter):
                     #       of a string. Here, to ensure full coverage of the attribute values returned,
                     #       we'll coerce scalar values into a list, then iterate.
                     if not isinstance(value, List):
-                        if isinstance(value, str):
-                            value = [value]
-                        else:
-                            self.report(code="error.edge.attribute.value.invalid_data_type", data_type=type(value))
-                            continue
+                        value = [value]
 
                     if not is_curie(attribute_type_id):
                         self.report(
