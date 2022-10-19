@@ -872,21 +872,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.edge.attribute.value.empty"
         ),
         (
-            # Query 8. value has an unrecognized data type for a provenance attribute?
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": 1234
-                    },
-                ]
-            },
-            get_ara_test_case(),
-            # "value has an unrecognized data type for an attribute!"
-            "error.edge.attribute.value.invalid_data_type"
-        ),
-        (
-            # Query 9. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            # Query 8. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
             {
                 "attributes": [
                     {
@@ -908,7 +894,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.edge.attribute.type_id.not_curie"
         ),
         (
-            # Query 10. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            # Query 9. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
             {
                 "attributes": [
                     {
@@ -926,7 +912,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.edge.provenance.not_an_infores"
         ),
         (
-            # Query 11. KP provenance value is missing?
+            # Query 10. KP provenance value is missing?
             {
                 "attributes": [
                     {
@@ -940,7 +926,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "warning.edge.provenance.kp.missing"
         ),
         (
-            # Query 12. kp type is 'original'. Should draw a WARNING about deprecation
+            # Query 11. kp type is 'original'. Should draw a WARNING about deprecation
             {
                 "attributes": [
                     {
@@ -959,7 +945,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "warning.deprecated"
         ),
         (
-            # Query 13. kp type is 'primary'. Should pass?
+            # Query 12. kp type is 'primary'. Should pass?
             {
                 "attributes": [
                     {
@@ -976,7 +962,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             ""
         ),
         (
-            # Query 14. Missing 'primary' nor 'original' knowledge source
+            # Query 13. Missing 'primary' nor 'original' knowledge source
             {
                 "attributes": [
                     {
@@ -995,7 +981,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "warning.edge.provenance.missing_primary"
         ),
         (
-            # Query 15. Is complete and should pass?
+            # Query 14. Is complete and should pass?
             {
                 "attributes": [
                     {

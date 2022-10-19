@@ -6,7 +6,7 @@ with open("README.md", "r") as stream:
 
 NAME = 'reasoner-validator'
 
-# Significant API change with respect to validation messaging
+# Significant API change from release 3.0.0 with respect to validation messaging
 VERSION = '3.0.5'
 
 DESCRIPTION = 'Validation tools for Reasoner API'
