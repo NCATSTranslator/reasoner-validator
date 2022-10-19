@@ -30,7 +30,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 ```json
 {
   "trapi_version": "1.3.0",
-  "biolink_version": "2.4.8",
+  "biolink_version": "3.0.5",
   "sources": {
     "ara_source": "infores:aragorn",
     "kp_source": "infores:panther",
