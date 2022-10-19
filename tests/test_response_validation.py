@@ -57,7 +57,7 @@ _TEST_NODES_1 = {
 _TEST_EDGES_1 = {
        "edge_1": {
            "subject": "NCBIGene:29974",
-           "predicate": "biolink:interacts_with",
+           "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
            "attributes": [
                {
@@ -103,7 +103,7 @@ _TEST_RESULTS_1 = [
 _TEST_EDGES_2 = {
        "edge_1": {
            "subject": "NCBIGene:29974",
-           "predicate": "biolink:interacts_with",
+           "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
            "attributes": [
                {
