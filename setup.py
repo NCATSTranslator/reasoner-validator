@@ -7,8 +7,8 @@ with open("README.md", "r") as stream:
 NAME = 'reasoner-validator'
 
 # Significant API change from release 3.0.0 with respect to validation messaging
-# Release 3.1.0 is now somewhat pinned on Biolink Model 3.0.5 or later
-VERSION = '3.1.0'
+# Release 3.1.* is now expecting Biolink Model 3.0.5 or later
+VERSION = '3.1.1'
 
 DESCRIPTION = 'Validation tools for Reasoner API'
 URL = 'https://github.com/NCATSTranslator/reasoner-validator'
@@ -19,6 +19,9 @@ AUTHOR = 'Richard Bruskiewich, Patrick Wang'
 EMAIL = 'richard.bruskiewich@delphinai.com'
 REQUIRES_PYTHON = '>=3.8'
 LICENSE = 'MIT'
+
+with open("requirements.txt", "r") as FH:
+    REQUIREMENTS = FH.readlines()
 
 setup(
     name=NAME,
@@ -39,16 +42,7 @@ setup(
     ],
     package_data={},
     include_package_data=True,
-    install_requires=[
-        "jsonschema",
-        "pyyaml",
-        "requests",
-        "linkml-runtime>=1.3.1",
-        "linkml>=1.3.2",
-        "prefixcommons==0.1.11",
-        "tomli<2.0.0,>=0.2.6",
-        "bmt==0.8.4"
-    ],
+    install_requires=[r for r in REQUIREMENTS if not r.startswith("#")],
     classifiers=[
         "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: MIT License",
