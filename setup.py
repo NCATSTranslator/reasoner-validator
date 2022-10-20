@@ -19,6 +19,9 @@ EMAIL = 'richard.bruskiewich@delphinai.com'
 REQUIRES_PYTHON = '>=3.8'
 LICENSE = 'MIT'
 
+with open("requirements.txt", "r") as FH:
+    REQUIREMENTS = FH.readlines()
+
 setup(
     name=NAME,
     author=AUTHOR,
@@ -38,16 +41,7 @@ setup(
     ],
     package_data={},
     include_package_data=True,
-    install_requires=[
-        "jsonschema",
-        "pyyaml",
-        "requests",
-        "linkml-runtime>=1.3.1",
-        "linkml>=1.3.2",
-        "prefixcommons==0.1.11",
-        "tomli<2.0.0,>=0.2.6",
-        "bmt==0.8.4"
-    ],
+    install_requires=[r for r in REQUIREMENTS if not r.startswith("#")],
     classifiers=[
         "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: MIT License",
