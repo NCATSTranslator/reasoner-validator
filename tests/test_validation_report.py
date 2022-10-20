@@ -45,7 +45,7 @@ def test_message_loader():
 
 
 def test_message_display():
-    assert CodeDictionary.display(code="error.knowledge_graph.empty_nodes") == "ERROR - No nodes found!"
+    assert CodeDictionary.display(code="error.knowledge_graph.nodes.empty") == "ERROR - No nodes found!"
     assert CodeDictionary.display(
         code="info.abstract",
         context="ELEMENT",
@@ -96,7 +96,7 @@ def test_messages():
     assert not reporter1.has_errors()
     reporter1.report("warning.graph.empty")
     assert reporter1.has_warnings()
-    reporter1.report("error.knowledge_graph.empty_nodes")
+    reporter1.report("error.knowledge_graph.nodes.empty")
     assert reporter1.has_errors()
 
     # Testing merging of messages from a second reporter
@@ -105,7 +105,7 @@ def test_messages():
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
     reporter2.report("info.mixin", context="some_context", name="biolink:this_is_a_mixin")
     reporter2.report("warning.response.results.empty")
-    reporter2.report("error.knowledge_graph.empty_edges")
+    reporter2.report("error.knowledge_graph.edges.empty")
     reporter1.merge(reporter2)
     assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION

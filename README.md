@@ -10,7 +10,9 @@ This package provides software methods to Translator components (e.g. Knowledge 
 
 See [the full documentation](https://reasoner-validator.readthedocs.io/) and [the contributor guidelines](https://github.com/NCATSTranslator/reasoner-validator/blob/master/.github/CONTRIBUTING.md).
 
-### Building
+# Using the Package
+
+## Building the Documentation Locally
 
 To build the documentation:
 

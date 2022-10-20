@@ -232,7 +232,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'object': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Subject node identifier is missing!"
-            "error.node.missing_identifier"
+            "error.node.id.missing"
         ),
         (   # Query 13 - Unmappable subject namespace
             LATEST_BIOLINK_MODEL,
@@ -256,7 +256,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': "UBERON:0005453"
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Object node identifier is missing!"
-            "error.node.missing_identifier"
+            "error.node.id.missing"
         ),
         (   # Query 15 - Unmappable object namespace
             LATEST_BIOLINK_MODEL,
@@ -428,25 +428,11 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                 "edges": {}
             },
             # f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot value is not an array!"
-            "error.node.categories_not_array"
+            "error.qnode.categories.not_array"
         ),
         (
             LATEST_BIOLINK_MODEL,
             # Query 8: Node "categories" is an empty array?
-            {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": []
-                    }
-                },
-                "edges": {}
-            },
-            # f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot array is empty!"
-            "error.qnode.empty_categories"
-        ),
-        (
-            LATEST_BIOLINK_MODEL,
-            # Query 9: Node "categories" is an empty array?
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -460,7 +446,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 10: Sample small valid TRAPI Query Graph with null predicates (allowed)
+            # Query 9: Sample small valid TRAPI Query Graph with null predicates (allowed)
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -480,7 +466,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 11: ... but if present, predicates must be an array!
+            # Query 10: ... but if present, predicates must be an array!
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -502,7 +488,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 12: ... but if present, predicates must have at least one predicate in the array
+            # Query 11: ... but if present, predicates must have at least one predicate in the array
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -523,7 +509,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 13: ... but if present, predicates must be valid for the specified Biolink Model version...
+            # Query 12: ... but if present, predicates must be valid for the specified Biolink Model version...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -544,7 +530,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 14: ... and must also be canonical predicates?
+            # Query 13: ... and must also be canonical predicates?
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -565,7 +551,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 15: 'Subject' id used in edge is mandatory
+            # Query 14: 'Subject' id used in edge is mandatory
             {
                 "nodes": {
                     "drug": {
@@ -586,7 +572,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 16: 'Subject' id used in edge is missing from the nodes catalog?
+            # Query 15: 'Subject' id used in edge is missing from the nodes catalog?
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]}
@@ -604,7 +590,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 17: 'Object' id used in edge is mandatory
+            # Query 16: 'Object' id used in edge is mandatory
             {
                 "nodes": {
                     "drug": {
@@ -625,7 +611,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 18: 'Object' id used in edge is missing from the nodes catalog?
+            # Query 17: 'Object' id used in edge is missing from the nodes catalog?
             {
                 "nodes": {
                     "drug": {
@@ -645,7 +631,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 19: Node 'is_set' value is not a boolean
+            # Query 18: Node 'is_set' value is not a boolean
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -663,11 +649,11 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                 }
             },
             # f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'drug.is_set' slot is not a boolean value!"
-            "error.qnode.is_set_not_boolean"
+            "error.qnode.is_set.not_boolean"
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 20: Unmapped node ids against any of the specified Biolink Model categories
+            # Query 19: Unmapped node ids against any of the specified Biolink Model categories
             {
                 "nodes": {
                     "type-2 diabetes": {
@@ -692,7 +678,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 21: Abstract category in query graph
+            # Query 20: Abstract category in query graph
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -713,7 +699,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 22: Mixin category in query graph
+            # Query 21: Mixin category in query graph
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -734,7 +720,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL,
-            # Query 23: Query edge predicate is a mixin
+            # Query 22: Query edge predicate is a mixin
             {
                 "nodes": {
                     "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
@@ -872,21 +858,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.edge.attribute.value.empty"
         ),
         (
-            # Query 8. value has an unrecognized data type for a provenance attribute?
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": 1234
-                    },
-                ]
-            },
-            get_ara_test_case(),
-            # "value has an unrecognized data type for an attribute!"
-            "error.edge.attribute.value.invalid_data_type"
-        ),
-        (
-            # Query 9. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            # Query 8. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
             {
                 "attributes": [
                     {
@@ -908,7 +880,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.edge.attribute.type_id.not_curie"
         ),
         (
-            # Query 10. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            # Query 9. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
             {
                 "attributes": [
                     {
@@ -926,7 +898,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.edge.provenance.not_an_infores"
         ),
         (
-            # Query 11. KP provenance value is missing?
+            # Query 10. KP provenance value is missing?
             {
                 "attributes": [
                     {
@@ -940,7 +912,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "warning.edge.provenance.kp.missing"
         ),
         (
-            # Query 12. kp type is 'original'. Should draw a WARNING about deprecation
+            # Query 11. kp type is 'original'. Should draw a WARNING about deprecation
             {
                 "attributes": [
                     {
@@ -959,7 +931,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "warning.deprecated"
         ),
         (
-            # Query 13. kp type is 'primary'. Should pass?
+            # Query 12. kp type is 'primary'. Should pass?
             {
                 "attributes": [
                     {
@@ -976,7 +948,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             ""
         ),
         (
-            # Query 14. Missing 'primary' nor 'original' knowledge source
+            # Query 13. Missing 'primary' nor 'original' knowledge source
             {
                 "attributes": [
                     {
@@ -995,7 +967,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "warning.edge.provenance.missing_primary"
         ),
         (
-            # Query 15. Is complete and should pass?
+            # Query 14. Is complete and should pass?
             {
                 "attributes": [
                     {
@@ -1107,7 +1079,7 @@ def test_validate_attributes(query: Tuple):
                 "nodes": {}
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No nodes found!"
-            "error.knowledge_graph.empty_nodes"
+            "error.knowledge_graph.nodes.empty"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1122,7 +1094,7 @@ def test_validate_attributes(query: Tuple):
                 }
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No edges found!"
-            "error.knowledge_graph.empty_edges"
+            "error.knowledge_graph.edges.empty"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1138,7 +1110,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {}
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No edges found!"
-            "error.knowledge_graph.empty_edges"
+            "error.knowledge_graph.edges.empty"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -1178,7 +1150,7 @@ def test_validate_attributes(query: Tuple):
                 }
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot value is not an array!"
-            "error.node.categories_not_array"
+            "error.node.categories.not_array"
         ),
         (
             LATEST_BIOLINK_MODEL,
