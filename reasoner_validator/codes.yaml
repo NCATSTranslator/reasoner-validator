@@ -37,10 +37,13 @@ warning:
       empty: "Response returned an empty Message Knowledge Graph?"
     results:
       empty: "Response returned empty Message.results?"
+  qnode:
+    ids:
+      unmapped_to_categories: "Node '{node_id}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
   node:
     unmapped_prefix: "Node '{node_id}' is unmapped to the target categories: {categories}?"
-    identifiers_unmapped_to_categories: "Node '{node_id}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
-    identifier_unmapped_to_category: "{context} node identifier '{node_id}' is unmapped to '{category}'?"
+    id:
+      unmapped_to_category: "{context} node identifier '{node_id}' is unmapped to '{category}'?"
   edge:
     predicate:
       non_canonical: "{context} edge {edge_id} predicate '{predicate}' is non-canonical?"
@@ -78,17 +81,29 @@ error:
         non_array: "Response returned a non-array Message.results!"
         missing_bindings: "Neither the input id '{input_id}' nor resolved aliases were returned in the Result object IDs for node '{output_node_binding}' binding?"
   knowledge_graph:
-    empty_nodes: "No nodes found!"
-    empty_edges: "No edges found!"
+    nodes:
+      empty: "No nodes found!"
+    edges:
+      empty: "No edges found!"
+  qnode:
+    ids:
+      not_array: "Node '{node_id}.ids' slot value is not an array!"
+    categories:
+      not_array: "Node '{node_id}.categories' slot value is not an array!"
+    is_set:
+      not_boolean: "Node '{node_id}.is_set' slot is not a boolean value!"
   node:
     category:
       missing: "{context} {node_id} has a missing Biolink category!"
       invalid: "{context} identifier '{category}' is not a valid Biolink category!"
-    missing_identifier: "{context} node identifier is missing!"
+    id:
+      missing: "{context} node identifier is missing!"
     missing_categories: "Node '{node_id}' is missing its categories!"
-    ids_not_array: "Node '{node_id}.ids' slot value is not an array!"
+    ids:
+      not_array: "Node '{node_id}.ids' slot value is not an array!"
     empty_ids: "Node '{node_id}.ids' slot array is empty!"
-    categories_not_array: "Node '{node_id}.categories' slot value is not an array!"
+    categories:
+      not_array: "Node '{node_id}.categories' slot value is not an array!"
     empty_categories: "Node '{node_id}.categories' slot array is empty!"
     is_set_not_boolean: "Node '{node_id}.is_set' slot is not a boolean value!"
   edge:

@@ -245,7 +245,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Subject node identifier 'FOO:0005453' " +
             # "is unmapped to 'biolink:AnatomicalEntity'?"
-            "warning.node.identifier_unmapped_to_category"
+            "warning.node.id.unmapped_to_category"
         ),
         (   # Query 14 - missing object
             LATEST_BIOLINK_MODEL,  # Biolink Model Version
@@ -269,7 +269,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Object node identifier 'BAR:0035769' " +
             # "is unmapped to 'biolink:AnatomicalEntity'?"
-            "warning.node.identifier_unmapped_to_category"
+            "warning.node.id.unmapped_to_category"
         ),
         (   # Query 16 - Valid other model
             "1.8.2",
@@ -403,7 +403,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                 "edges": {}
             },
             # f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'type-2 diabetes.ids' slot value is not an array!"
-            "error.node.ids_not_array"
+            "error.qnode.ids.not_array"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -442,7 +442,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                 "edges": {}
             },
             # f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot array is empty!"
-            "error.node.empty_categories"
+            "error.qnode.empty_categories"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -663,7 +663,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                 }
             },
             # f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'drug.is_set' slot is not a boolean value!"
-            "error.node.is_set_not_boolean"
+            "error.qnode.is_set_not_boolean"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -688,7 +688,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             },
             # f"{QUERY_GRAPH_PREFIX}: WARNING - Node 'type-2 diabetes' has identifiers ['FOO:12345', 'BAR:67890'] " +
             # "unmapped to the target categories: ['biolink:Disease', 'biolink:Gene']?"
-            "warning.node.identifiers_unmapped_to_categories"
+            "warning.qnode.ids.unmapped_to_categories"
         ),
         (
             LATEST_BIOLINK_MODEL,
