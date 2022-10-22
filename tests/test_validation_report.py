@@ -45,9 +45,9 @@ def test_message_loader():
 
 
 def test_message_display():
-    assert CodeDictionary.display(code="error.knowledge_graph.empty_nodes") == "ERROR - No nodes found!"
+    assert CodeDictionary.display(code="error.knowledge_graph.nodes.empty") == "ERROR - No nodes found!"
     assert CodeDictionary.display(
-        code="info.abstract",
+        code="info.biolink.element.abstract",
         context="ELEMENT",
         name="NAME"
     ) == "INFO - ELEMENT element 'NAME' is abstract."
@@ -56,7 +56,7 @@ def test_message_display():
 def test_validator_reporter_message_display():
     reporter = ValidationReporter(prefix="Test Validation Report", trapi_version=TEST_TRAPI_VERSION)
     assert reporter.display(
-        code="info.abstract",
+        code="info.biolink.element.abstract",
         context="ELEMENT",
         name="NAME"
     ) == "Test Validation Report: INFO - ELEMENT element 'NAME' is abstract."
@@ -71,7 +71,7 @@ def test_message_report():
     reporter = ValidationReporter(prefix="First Validation Report", trapi_version=TEST_TRAPI_VERSION)
     reporter.report(code="info.compliant")
     reporter.report(
-        code="info.abstract",
+        code="info.biolink.element.abstract",
         context="ELEMENT",
         name="NAME"
     )
@@ -96,16 +96,16 @@ def test_messages():
     assert not reporter1.has_errors()
     reporter1.report("warning.graph.empty")
     assert reporter1.has_warnings()
-    reporter1.report("error.knowledge_graph.empty_nodes")
+    reporter1.report("error.knowledge_graph.nodes.empty")
     assert reporter1.has_errors()
 
     # Testing merging of messages from a second reporter
     reporter2 = ValidationReporter(prefix="Second Validation Report", biolink_version=TEST_BIOLINK_VERSION)
     assert reporter2.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
-    reporter2.report("info.mixin", context="some_context", name="biolink:this_is_a_mixin")
+    reporter2.report("info.biolink.element.mixin", context="some_context", name="biolink:this_is_a_mixin")
     reporter2.report("warning.response.results.empty")
-    reporter2.report("error.knowledge_graph.empty_edges")
+    reporter2.report("error.knowledge_graph.edges.empty")
     reporter1.merge(reporter2)
     assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION
@@ -121,7 +121,7 @@ def test_messages():
     new_messages: Dict[str, List[Dict]] = {
             "information": [
                 {
-                    'code': "info.abstract",
+                    'code': "info.biolink.element.abstract",
                     'context': "Well,... hello",
                     'name': "Dolly"
                 }

@@ -8,11 +8,27 @@
 This package provides software methods to Translator components (e.g. Knowledge Providers and Autonomous Relay Agents) using *any version* of the
 [Translator Reasoner API (TRAPI)](https://github.com/NCATSTranslator/ReasonerAPI/blob/master/README.md) and the [Biolink Model](https://github.com/biolink/biolink-model/blob/master/README.md).
 
-See [the full documentation](https://reasoner-validator.readthedocs.io/) and [the contributor guidelines](https://github.com/NCATSTranslator/reasoner-validator/blob/master/.github/CONTRIBUTING.md).
+See [the full documentation](https://translator-reasoner-validator.readthedocs.io/en/latest/) and [the contributor guidelines](https://github.com/NCATSTranslator/reasoner-validator/blob/master/.github/CONTRIBUTING.md).
 
-### Building
+# Using the Package
 
-To build the documentation:
+## Installing the Module
+
+```bash
+pip install reasoner-validator
+```
+
+## Installing the Module Locally from Source
+
+```bash
+git clone https://github.com/NCATSTranslator/reasoner-validator.git
+cd reasoner-validator
+pip install -e .
+```
+
+## Building the Documentation Locally
+
+To build the documentation locally:
 
 ```bash
 cd docs
@@ -156,7 +172,15 @@ docker-compose down
 
 Of course, the above docker-compose commands may be customized by the user to suit their needs. Note that the docker implementation assumes the use of uvicorn
 
-## Validation Web Service Limitations (implied Future Work?)
+## Summary of Releases
+
+The Reasoner Validator package is evolving along with progress in TRAPI and Biolink standards within the NCATS Biomedical Knowledge Translator.
+
+* 1.* releases - very preliminary releases of the validation code, now obsolete
+* 2.* releases - had a base TRAPI schema 'validate' with errors throwing a Python exception; later minor iterations added in Biolink Model validation returning a flat dictionary of arcane string messages
+* 3.* releases - wrapped the all validation with a ValidatorReporter class serving to collect and return validation messages in a disciplined, codified manner (as a [master YAML file with hierarchically-indexed Python string templates](reasoner_validator/codes.yaml))
+
+## Code Limitations (implied Future Work?)
 
 - This release of the Reasoner Validator Web Service will detect TRAPI 1.0.* releases but doesn't strive to be completely backwards compatible with them (considering that they are less relevant now). 
 - The web service validation doesn't do deep validation of the Results part of a TRAPI Message
