@@ -187,8 +187,9 @@ class BiolinkValidator(ValidationReporter):
                 ids = slots["ids"]
                 if not isinstance(ids, List):
                     self.report(code="error.qnode.ids.not_array", node_id=node_id)
-                else:
-                    ids = list()
+                    # we'll pretend that the ids were mistakenly
+                    # just a scalar string, then continue validating
+                    ids = [ids]
             else:
                 ids = list()  # a null "ids" value is permitted in QNodes
 
@@ -249,22 +250,22 @@ class BiolinkValidator(ValidationReporter):
         """
         element: Optional[Element] = self.bmt.get_element(name)
         if not element:
-            self.report(code="error.unknown", context=context, name=name)
+            self.report(code="error.biolink.element.unknown", context=context, name=name)
         elif element.deprecated:
-            self.report(code="warning.deprecated", context=context, name=name)
+            self.report(code="warning.biolink.element.deprecated", context=context, name=name)
             return None
         elif element.abstract:
             if self.strict_validation:
-                self.report(code="error.abstract", context=context, name=name)
+                self.report(code="error.biolink.element.abstract", context=context, name=name)
             else:
-                self.report(code="info.abstract", context=context, name=name)
+                self.report(code="info.biolink.element.abstract", context=context, name=name)
             return None
         elif self.bmt.is_mixin(name):
             # A mixin cannot be instantiated thus it should not be given as an input concept category
             if self.strict_validation:
-                self.report(code="error.mixin", context=context, name=name)
+                self.report(code="error.biolink.element.mixin", context=context, name=name)
             else:
-                self.report(code="info.mixin", context=context, name=name)
+                self.report(code="info.biolink.element.mixin", context=context, name=name)
             return None
         else:
             return element

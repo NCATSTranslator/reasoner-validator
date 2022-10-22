@@ -23,15 +23,19 @@ predicate:
 info:
   excluded: "User excluded S-P-O triple '{edge_id}' or all test case S-P-O triples from resource test location."
   compliant: "Biolink Model-compliant TRAPI Message."
-  abstract: "{context} element '{name}' is abstract."
-  mixin: "{context} element '{name}' is a mixin."
+  biolink:
+    element:
+      abstract: "{context} element '{name}' is abstract."
+      mixin: "{context} element '{name}' is a mixin."
   attribute_type_id:
     non_biolink_prefix: "Edge attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink."
 
 warning:
   graph:
     empty: "{context} data is empty?"
-  deprecated: "{context} element '{name}' is deprecated?"
+  biolink:
+    element:
+      deprecated: "{context} element '{name}' is deprecated?"
   response:
     knowledge_graph:
       empty: "Response returned an empty Message Knowledge Graph?"
@@ -60,9 +64,11 @@ warning:
 
 error:
   non_compliant: "S-P-O statement '{edge_id}' is not compliant to Biolink Model {biolink_release}"
-  unknown: "{context} element '{name}' is unknown!"
-  abstract: "{context} element '{name}' is abstract!"
-  mixin: "{context} element '{name}' is a mixin!"
+  biolink:
+    element:
+      unknown: "{context} element '{name}' is unknown!"
+      abstract: "{context} element '{name}' is abstract!"
+      mixin: "{context} element '{name}' is a mixin!"
   trapi:
     validation: "TRAPI {trapi_version} Query: '{exception}'"
     request:

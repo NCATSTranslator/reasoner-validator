@@ -469,7 +469,7 @@ _TEST_RESULTS_2 = [
             None,
             None,
             True,
-            "error.abstract"
+            "error.biolink.element.abstract"
         )
     ]
 )
