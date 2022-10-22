@@ -4,5 +4,4 @@ requests
 kgx
 linkml-runtime
 linkml==1.3.8
-# bmt>=0.8.10
-bmt @ git+https://github.com/biolink/biolink-model-toolkit.git@v0.8.4-patch-release#egg=bmt
+bmt>=0.8.12

@@ -24,10 +24,9 @@ logger.setLevel("DEBUG")
 
 pp = PrettyPrinter(indent=4)
 
-# "Latest" Biolink Model Version (in the BM 2 series)
-# Note: different BMT versions may have different defaults, e.g. 2.2.16 in BMT 0.8.4
-# TODO: updating this to 3.0.1 will break a few things in the test, e.g. the test for non-canonical
-LATEST_BIOLINK_MODEL = "2.4.8"
+# October 19, 2022 - as of reasoner-validator 3.1.0, we don't pretend to support Biolink Models any earlier than 3.0.3
+# If earlier biolink model compliance testing is desired, then reasoner-validator version 3.0.5 or earlier can be used.
+LATEST_BIOLINK_MODEL = "3.0.3"
 
 
 def test_set_default_biolink_versioned_global_environment():
@@ -170,12 +169,12 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             LATEST_BIOLINK_MODEL,
             {
                 'subject_category': 'biolink:Drug',
-                'object_category': 'biolink:Disease',
-                'predicate': 'biolink:approved_to_treat',
+                'object_category': 'biolink:Protein',
+                'predicate': 'biolink:has_real_world_evidence_of_association_with',
                 'subject': 'NDC:0002-8215-01',  # a form of insulin
                 'object': 'MONDO:0005148'  # type 2 diabetes?
             },
-            # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate element 'biolink:approved_to_treat' is deprecated?"
+            # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate element 'has_real_world_evidence_of_association_with' is deprecated?"
             "warning.biolink.element.deprecated"
         ),
         (   # Query 8 - Predicate is abstract
@@ -1041,7 +1040,7 @@ def test_validate_attributes(query: Tuple):
                 'edges': {
                    "edge_1": {
                        "subject": "NCBIGene:29974",
-                       "predicate": "biolink:interacts_with",
+                       "predicate": "biolink:physically_interacts_with",
                        "object": "PUBCHEM.COMPOUND:597",
                        "attributes": [
                            {
@@ -1125,7 +1124,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                    "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
                         "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
@@ -1146,7 +1145,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
                         "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
@@ -1192,7 +1191,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
                         "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
@@ -1267,7 +1266,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "FOO:1234",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
                         "attributes": [
                             {
@@ -1296,7 +1295,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         # "subject": "",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
                         "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
@@ -1327,7 +1326,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:12345",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
                         "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
@@ -1472,7 +1471,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:678",
                         "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
@@ -1502,7 +1501,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
                         "attributes": [{"value": "some value"}]
                     }
@@ -1531,7 +1530,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
                         "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
@@ -1560,7 +1559,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
                         "attributes": [{"attribute_type_id": "not_a_curie", "value": "some value"}]
                     }
@@ -1589,7 +1588,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
                         "attributes": [{"attribute_type_id": "biolink:synonym", "value": "some synonym"}]
                     }
@@ -1619,7 +1618,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
                         "attributes": [
                             {"attribute_type_id": "biolink:negated", "value": "some value"},
@@ -1650,7 +1649,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
                         "attributes": [{"attribute_type_id": "foo:bar", "value": "some value"}]
                     }
@@ -1680,7 +1679,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
                         # "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
@@ -1720,7 +1719,7 @@ def test_validate_attributes(query: Tuple):
                 'edges': {
                    "edge_1": {
                        "subject": "NCBIGene:29974",
-                       "predicate": "biolink:interacts_with",
+                       "predicate": "biolink:physically_interacts_with",
                        "object": "PUBCHEM.COMPOUND:597",
                        "attributes": [
                            {
