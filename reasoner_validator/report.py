@@ -144,46 +144,81 @@ class ValidationReporter:
 
     def get_trapi_version(self) -> str:
         """
-        :return: str, TRAPI (SemVer) version
+        :return: str, TRAPI (SemVer) version currently targeted by the ValidationReporter.
         """
         return self.trapi_version
 
     def get_biolink_version(self) -> str:
         """
-        :return: Biolink Model version currently targeted by the validator.
+        :return: Biolink Model version currently targeted by the ValidationReporter.
         :rtype biolink_version: str
         """
         return self.biolink_version
 
     def is_strict_validation(self) -> bool:
+        """
+        :return: bool, value of validation strictness set in the ValidationReporter.
+        """
         return self.strict_validation
 
     def has_messages(self) -> bool:
+        """Predicate to detect any recorded validation messages.
+        :return: bool, True if ValidationReporter has any non-empty messages.
+        """
         return self.has_information() or self.has_warnings() or self.has_errors()
 
     def has_information(self) -> bool:
+        """Predicate to detect any recorded information messages.
+        :return: bool, True if ValidationReporter has any information messages.
+        """
         return bool(self.messages["information"])
 
     def has_warnings(self) -> bool:
+        """Predicate to detect any recorded warning messages.
+        :return: bool, True if ValidationReporter has any warning messages.
+        """
         return bool(self.messages["warnings"])
 
     def has_errors(self) -> bool:
+        """Predicate to detect any recorded error messages.
+        :return: bool, True if ValidationReporter has any error messages.
+        """
         return bool(self.messages["errors"])
 
     def dump_info(self, flat=False) -> str:
+        """Dump information messages as JSON.
+        :param flat: render output as 'flat' JSON (default: False)
+        :return: str, JSON formatted string of information messages.
+        """
         return _output(self.messages["information"], flat)
 
     def dump_warnings(self, flat=False) -> str:
+        """Dump warning messages as JSON.
+        :param flat: render output as 'flat' JSON (default: False)
+        :return: str, JSON formatted string of warning messages.
+        """
         return _output(self.messages["warnings"], flat)
 
     def dump_errors(self, flat=False) -> str:
+        """Dump error messages as JSON.
+        :param flat: render output as 'flat' JSON (default: False)
+        :return: str, JSON formatted string of error messages.
+        """
         return _output(self.messages["errors"], flat)
 
     def dump_messages(self, flat=False) -> str:
+        """Dump all messages as JSON.
+        :param flat: render output as 'flat' JSON (default: False)
+        :return: str, JSON formatted string of all messages.
+        """
         return _output(self.messages, flat)
 
     @staticmethod
     def get_message_type(code: str) -> str:
+        """Get type of message code.
+        :param code: message code
+        :return: message type, one of 'info', 'warning' or 'error'
+        """
         code_id_parts: List[str] = code.split('.')
         message_type: str = code_id_parts[0]
         if message_type in ['info', 'warning', 'error']:
@@ -194,6 +229,12 @@ class ValidationReporter:
             )
 
     def report(self, code: str, **message):
+        """
+        Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters)
+        :param code: 
+        :param message: named parameters representing extra (str-formatted) context for the given code message
+        :return: None (internally record the validation message)
+        """
         message_type = self.get_message_type(code)
         message_set = self._message_type_name[message_type]
         message['code'] = code  # add the code into the message
@@ -201,7 +242,7 @@ class ValidationReporter:
 
     def add_messages(self, new_messages: Dict[str, List]):
         """
-        Batch addition of a dictionary of messages to a ValidatorReporter instance.
+        Batch addition of a dictionary of messages to a ValidationReporter instance.
 
         :param new_messages: Dict[str, List], with key one of
                              "information", "warnings" or "errors",
@@ -212,15 +253,31 @@ class ValidationReporter:
                 self.messages[key].extend(new_messages[key])
 
     def get_messages(self) -> Dict[str, List[Dict]]:
+        """
+        Get copy of all messages as a Python data structure.
+        :return: Dict (copy) of all validation messages in the ValidationReporter.
+        """
         return copy.deepcopy(self.messages)
 
     def get_info(self) -> List:
+        """
+        Get copy of all recorded information messages.
+        :return: List, copy of all information messages.
+        """
         return copy.deepcopy(self.messages["information"])
 
     def get_warnings(self) -> List:
+        """
+        Get copy of all recorded warning messages.
+        :return: List, copy of all warning messages.
+        """
         return copy.deepcopy(self.messages["warnings"])
 
     def get_errors(self) -> List:
+        """
+        Get copy of all recorded error messages.
+        :return: List, copy of all error messages.
+        """
         return copy.deepcopy(self.messages["errors"])
 
     ############################
@@ -228,10 +285,10 @@ class ValidationReporter:
     ############################
     def merge(self, reporter):
         """
-        Merge all messages and metadata from a second ValidatorReporter,
-        into the calling ValidatorReporter instance.
+        Merge all messages and metadata from a second ValidationReporter,
+        into the calling ValidationReporter instance.
 
-        :param reporter: second ValidatorReporter
+        :param reporter: second ValidationReporter
         """
         assert isinstance(reporter, ValidationReporter)
 
@@ -246,6 +303,11 @@ class ValidationReporter:
             self.biolink_version = reporter.biolink_version
 
     def to_dict(self) -> Dict:
+        """
+        Export ValidationReporter contents as a Python dictionary
+        (including TRAPI version, Biolink Model version and messages)
+        :return: Dict
+        """
         return {
             "trapi_version": self.trapi_version,
             "biolink_version": self.biolink_version,
@@ -254,11 +316,11 @@ class ValidationReporter:
 
     def apply_validation(self, validation_method, *args, **kwargs) -> bool:
         """
-        Wrapper to allow validation_methods direct access to the ValidatorReporter.
+        Wrapper to allow validation_methods direct access to the ValidationReporter.
 
         :param validation_method: function which accepts this instance of the
-               ValidatorReporter as its first argument, for use in reporting validation errors.
-        :param args: any positional arguments to the validation_method, after the initial ValidatorReporter argument
+               ValidationReporter as its first argument, for use in reporting validation errors.
+        :param args: any positional arguments to the validation_method, after the initial ValidationReporter argument
         :param kwargs: any (optional, additional) keyword arguments to the validation_method, after positional arguments
         :return: bool, returns 'False' if validation method documented errors; True otherwise
         """
@@ -271,8 +333,8 @@ class ValidationReporter:
     @staticmethod
     def has_validation_errors(tag: str, case: Dict) -> bool:
         """
-
-        :param tag: str, top level string key of the case 'dictionary' input
+        Check if test case has validation errors.
+        :param tag: str, top level string key in the 'case' whose value is the validation messages 'dictionary'
         :param case: Dict, containing error messages in a structurally similar
                      format to what is returned by the to_dict() method in this class.
         :return: True if the case contains validation messages
@@ -314,7 +376,6 @@ class ValidationReporter:
         Augmented message display wrapper prepends
         the ValidationReporter prefix to a
         resolved coded validation message.
-
-        :return: str, full validation message
+        :return: str, fully rendered validation message
         """
         return self.prefix + CodeDictionary.display(**message)

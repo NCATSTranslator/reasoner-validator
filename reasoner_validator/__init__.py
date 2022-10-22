@@ -76,12 +76,22 @@ class TRAPIResponseValidator(ValidationReporter):
 
     @staticmethod
     def sample_results(results: List) -> List:
+        """
+
+        :param results: List, original list of Results
+        :return: List, TEST_DATA_SAMPLE_SIZE sized subset of Results
+        """
         sample_size = min(TEST_DATA_SAMPLE_SIZE, len(results))
         result_subsample = results[0:sample_size]
         return result_subsample
 
     @staticmethod
     def sample_graph(graph: Dict) -> Dict:
+        """
+
+        :param graph: Dict, original knowledge graph
+        :return: Dict, TEST_DATA_SAMPLE_SIZE sized subset of knowledge graph
+        """
         kg_sample: Dict = {
             "nodes": dict(),
             "edges": dict()
@@ -101,6 +111,11 @@ class TRAPIResponseValidator(ValidationReporter):
         return kg_sample
 
     def has_valid_query_graph(self, message: Dict) -> bool:
+        """
+        Validate a TRAPI Query Graph.
+        :param message: input message expected to contain the 'query_graph'
+        :return: bool, False, if validation errors
+        """
         # Query Graph must not be missing...
         if 'query_graph' not in message:
             self.report(code="error.trapi.response.query_graph.missing")
@@ -136,6 +151,11 @@ class TRAPIResponseValidator(ValidationReporter):
         return False if self.has_errors() else True
 
     def has_valid_knowledge_graph(self, message: Dict) -> bool:
+        """
+        Validate a TRAPI Knowledge Graph.
+        :param message: input message expected to contain the 'knowledge_graph'
+        :return: bool, False, if validation errors
+        """
         # The Knowledge Graph should not be missing
         if 'knowledge_graph' not in message:
             self.report(code="error.trapi.response.knowledge_graph.missing")
@@ -185,6 +205,11 @@ class TRAPIResponseValidator(ValidationReporter):
         return False if self.has_errors() else True
 
     def has_valid_results(self, message: Dict) -> bool:
+        """
+        Validate a TRAPI Results.
+        :param message: input message expected to contain the 'results'
+        :return: bool, False, if validation errors
+        """
 
         #     :param output_element: test target, as edge 'subject' or 'object'
         #     :type output_element: str

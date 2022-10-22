@@ -13,18 +13,20 @@ Note that the functioning of this release is not backwards compatible with 2.2.*
 Installation
 ============
 
-Pypi Package
-------------
+As Pypi Package
+---------------
 
 .. code-block:: bash
 
   pip install reasoner-validator
 
-Git Repository
---------------
+From Github
+-----------
 
 .. code-block:: bash
 
+    git checkout https://github.com/NCATSTranslator/reasoner-validator.git
+    cd reasoner-validator
     pip install -e .
 
 Basic Programmatic Usage
@@ -104,12 +106,12 @@ Python API
 
 .. toctree::
    :maxdepth: 2
+   :autosummary_generate: True
 
    TRAPI Response Validation <reasoner_validator>
    TRAPI Schema Validation <reasoner_validator.trapi>
    Biolink <reasoner_validator.biolink>
    TRAPI Result Mapping <reasoner_validator.trapi.mapping>
-   SRI <reasoner_validator.sri>
 
 Refer to the `reasoner_validator package unit tests <https://github
 .com/NCATSTranslator/reasoner-validator/blob/master/tests>`_ for additional guidance on how to use the Python API.
@@ -231,7 +233,7 @@ one should typically get a response body like the following JSON validation resu
     }
 
 Running the Web Service within Docker
--------------------------------------
+=====================================
 
 The Reasoner Validator web service may be run inside a docker container, using Docker Compose.
 
@@ -260,6 +262,20 @@ To stop the service:
 Of course, the above docker-compose commands may be customized by the user to suit their needs. Note that the docker implementation assumes the use of uvicorn
 
 
+Quick History of Releases
+=========================
+
+The Reasoner Validator package is evolving along with progress in TRAPI and Biolink standards within the NCATS Biomedical Knowledge Translator. This documentation pertains to the 3.* releases of the package. A synopsis of the evolution of the package is:
+
+* 1.# releases - very preliminary releases of the validation code, now obsolete
+* 2.# releases - had a base TRAPI schema 'validate' with errors throwing a Python exception; later minor iterations added in Biolink Model validation returning a flat dictionary of arcane string messages
+* 3.0.# releases
+  - wrapped the all validation with a ValidatorReporter class serving to collect and return validation messages in a disciplined, codified manner (as a [master YAML file with hierarchically-indexed Python string templates](reasoner_validator/codes.yaml)). Generally still reliably validates Biolink Model release <= 2.4.8
+* 3.1.# releases: mainly supports Biolink Model releases >= 3.0.* and will likely generate some spurious validation warnings or errors for Biolink Model release <= 2.4.8 (reflects non-backward compatible changes to the Biolink Model Toolkit)
+
+Community
+=========
+
 See `project README for full details <https://github.com/NCATSTranslator/reasoner-validator/blob/master/README.md>`_
 
 Contribute
@@ -277,4 +293,3 @@ License
 -------
 
 The project is licensed under the MIT license.
-

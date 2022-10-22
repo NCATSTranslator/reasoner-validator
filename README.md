@@ -172,7 +172,7 @@ docker-compose down
 
 Of course, the above docker-compose commands may be customized by the user to suit their needs. Note that the docker implementation assumes the use of uvicorn
 
-## Summary of Release
+## Summary of Releases
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink standards within the NCATS Biomedical Knowledge Translator.
 
@@ -180,7 +180,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 * 2.* releases - had a base TRAPI schema 'validate' with errors throwing a Python exception; later minor iterations added in Biolink Model validation returning a flat dictionary of arcane string messages
 * 3.* releases - wrapped the all validation with a ValidatorReporter class serving to collect and return validation messages in a disciplined, codified manner (as a [master YAML file with hierarchically-indexed Python string templates](reasoner_validator/codes.yaml))
 
-## Validation Web Service Limitations (implied Future Work?)
+## Code Limitations (implied Future Work?)
 
 - This release of the Reasoner Validator Web Service will detect TRAPI 1.0.* releases but doesn't strive to be completely backwards compatible with them (considering that they are less relevant now). 
 - The web service validation doesn't do deep validation of the Results part of a TRAPI Message
