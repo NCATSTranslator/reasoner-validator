@@ -1,5 +1,5 @@
-TRAPI Validation
-================
+TRAPI Response Validation
+=========================
 
 .. automodule:: reasoner_validator
    :members:
