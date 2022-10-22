@@ -174,7 +174,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'NDC:0002-8215-01',  # a form of insulin
                 'object': 'MONDO:0005148'  # type 2 diabetes?
             },
-            # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate element 'has_real_world_evidence_of_association_with' is deprecated?"
+            # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate element " +
+            # 'has_real_world_evidence_of_association_with' is deprecated?"
             "warning.biolink.element.deprecated"
         ),
         (   # Query 8 - Predicate is abstract
