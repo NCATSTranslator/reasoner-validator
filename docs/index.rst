@@ -45,7 +45,7 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
 
         # If omit or set the Biolink Model version parameter to None,
         # then the current Biolink Model Toolkit default release applies
-        biolink_version="2.4.8",
+        biolink_version="3.0.3",
 
         # 'sources' are set to trigger checking of expected edge knowledge source provenance
         sources={
@@ -130,7 +130,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 
     {
       "trapi_version": "1.3.0",
-      "biolink_version": "2.4.8",
+      "biolink_version": "3.0.3",
       "sources": {
         "ara_source": "infores:aragorn",
         "kp_source": "infores:panther",
@@ -175,7 +175,7 @@ As an example of the kind of output to expect, if one posts the following JSON m
 
     {
       "trapi_version": "1.3.0",
-      "biolink_version": "2.4.8",
+      "biolink_version": "3.0.3",
       "message": {
         "query_graph": {
             "nodes": {
@@ -215,7 +215,7 @@ one should typically get a response body like the following JSON validation resu
 
     {
       "trapi_version": "1.3.0",
-      "biolink_version": "2.4.8",
+      "biolink_version": "3.0.3",
       "report": [
         {
           "code": "warning.node.unmapped_prefix",
