@@ -24,8 +24,9 @@ logger.setLevel("DEBUG")
 
 pp = PrettyPrinter(indent=4)
 
-# October 19, 2022 - as of reasoner-validator 3.1.0, we don't pretend to support Biolink Models any earlier than 3.0.3
-# If earlier biolink model compliance testing is desired, then reasoner-validator version 3.0.5 or earlier can be used.
+# October 19, 2022 - as of reasoner-validator 3.1.0, we don't pretend to totally support Biolink Models
+# any earlier than 3.0.3.  If earlier biolink model compliance testing is desired,
+# then perhaps reasoner-validator version 3.0.5 or earlier can be used.
 LATEST_BIOLINK_MODEL = "3.0.3"
 
 
@@ -1169,7 +1170,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
                         "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
@@ -1216,7 +1217,7 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
+                        "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
                         "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
@@ -1230,17 +1231,22 @@ def test_validate_attributes(query: Tuple):
             # Query 10: deprecated category triggers a warning in Knowledge Graphs
             {
                 "nodes": {
-                    "NCBIGene:29974": {
+                    "CHEBI:27300": {  # Vitamin D
                        "categories": [
-                           "biolink:ChemicalSubstance"
+                           "biolink:Nutrient"
+                       ]
+                    },
+                    "Orphanet:120464": {  # Vitamin D Receptor
+                       "categories": [
+                           "biolink:Protein"
                        ]
                     }
                 },
                 "edges": {
                     "edge_1": {
-                        "subject": "NCBIGene:29974",
-                        "predicate": "biolink:interacts_with",
-                        "object": "NCBIGene:29974",
+                        "subject": "CHEBI:27300",
+                        "predicate": "biolink:physically_interacts_with",
+                        "object": "Orphanet:120464",
                         "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
                 }
@@ -1385,13 +1391,13 @@ def test_validate_attributes(query: Tuple):
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
-                        "predicate": "biolink:negatively_regulated_by",
+                        "predicate": "biolink:regulated_by",
                         "object": "PUBCHEM.COMPOUND:597",
                         "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Predicate element 'biolink:unknown_predicate' is a mixin!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Predicate element 'biolink:regulated_by' is a mixin!"
             "error.biolink.element.mixin"
         ),
         (
