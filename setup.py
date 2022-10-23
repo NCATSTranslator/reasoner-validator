@@ -7,8 +7,11 @@ with open("README.md", "r") as stream:
 NAME = 'reasoner-validator'
 
 # Significant API change from release 3.0.0 with respect to validation messaging
-# Release 3.1.* is now expecting Biolink Model 3.0.5 or later
-VERSION = '3.1.1'
+# Release 3.1.* targets Biolink Model 3.0.3 or later for optimal validation.
+# Validation of Biolink Model releases < 3.0.5 may report a few spurious validation errors.
+# This is due to non-backward compatible behaviour of the
+# Biolink Model Toolkit, not the validation software per say.
+VERSION = '3.1.2'
 
 DESCRIPTION = 'Validation tools for Reasoner API'
 URL = 'https://github.com/NCATSTranslator/reasoner-validator'
