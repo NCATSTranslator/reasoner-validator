@@ -47,19 +47,17 @@ def test_message_loader():
 def test_message_display():
     assert CodeDictionary.display(code="error.knowledge_graph.nodes.empty") == "ERROR - No nodes found!"
     assert CodeDictionary.display(
-        code="info.biolink.element.abstract",
-        context="ELEMENT",
+        code="info.input_edge.node.category.abstract",
         name="NAME"
-    ) == "INFO - ELEMENT element 'NAME' is abstract."
+    ) == "INFO - 'NAME' is abstract."
 
 
 def test_validator_reporter_message_display():
     reporter = ValidationReporter(prefix="Test Validation Report", trapi_version=TEST_TRAPI_VERSION)
     assert reporter.display(
-        code="info.biolink.element.abstract",
-        context="ELEMENT",
+        code="info.input_edge.node.category.abstract",
         name="NAME"
-    ) == "Test Validation Report: INFO - ELEMENT element 'NAME' is abstract."
+    ) == "Test Validation Report: INFO - 'NAME' is abstract."
 
 
 def test_unknown_message_code():
@@ -71,8 +69,7 @@ def test_message_report():
     reporter = ValidationReporter(prefix="First Validation Report", trapi_version=TEST_TRAPI_VERSION)
     reporter.report(code="info.compliant")
     reporter.report(
-        code="info.biolink.element.abstract",
-        context="ELEMENT",
+        code="info.input_edge.predicate.abstract",
         name="NAME"
     )
     report: Dict[str, List[Dict]] = reporter.get_messages()
@@ -80,7 +77,7 @@ def test_message_report():
     assert len(report['information']) > 0
     messages: List[str] = [CodeDictionary.display(**coded_message) for coded_message in report['information']]
     assert "INFO - Biolink Model-compliant TRAPI Message." in messages
-    assert "INFO - ELEMENT element 'NAME' is abstract." in messages
+    assert "INFO - 'NAME' is abstract." in messages
 
 
 def test_messages():

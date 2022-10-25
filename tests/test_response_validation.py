@@ -375,7 +375,7 @@ _TEST_RESULTS_2 = [
                 "kp_source_type": "primary"
             },
             True,
-            "warning.edge.provenance.kp.missing"
+            "warning.knowledge_graph.edge.provenance.kp.missing"
         ),
         (
             # Query 13 - Full Message, with strict validation and a non-null ara_source that doesn't match
@@ -392,7 +392,7 @@ _TEST_RESULTS_2 = [
                 "kp_source_type": "primary"
             },
             True,
-            "warning.edge.provenance.ara.missing"
+            "warning.knowledge_graph.edge.provenance.ara.missing"
         ),
         (
             # Query 14 - Full Message, with strict validation and a non-null sources data that matches
@@ -443,7 +443,7 @@ _TEST_RESULTS_2 = [
                 "kp_source_type": "aggregator"
             },
             True,
-            "warning.edge.provenance.missing_primary"
+            "warning.knowledge_graph.edge.provenance.missing_primary"
         ),
         (
             # Query 17 - Full Message, with non-strict validation
@@ -459,7 +459,7 @@ _TEST_RESULTS_2 = [
             ""
         ),
         (
-            # Query 18 - Full Message, WITH strict validation
+            # Query 18 - Full Message, WITH strict validation - abstract category?
             {
                 "query_graph": _TEST_QG_2,
                 "knowledge_graph": _TEST_KG_3,
@@ -469,7 +469,20 @@ _TEST_RESULTS_2 = [
             None,
             None,
             True,
-            "error.biolink.element.abstract"
+            "error.query_graph.node.category.abstract"
+        ),
+        (
+            # Query 19 - Full Message, WITH strict validation - abstract predicate?
+            {
+                "query_graph": _TEST_QG_2,
+                "knowledge_graph": _TEST_KG_3,
+                "results": _TEST_RESULTS_2
+            },
+            None,
+            None,
+            None,
+            True,
+            "error.query_graph.predicate.abstract"
         )
     ]
 )
