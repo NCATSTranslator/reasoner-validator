@@ -899,7 +899,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             },
             get_ara_test_case(),
             # "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
-            "error.knowledge_graph.edge.provenance.not_an_infores"
+            "error.knowledge_graph.edge.provenance.infores.missing"
         ),
         (
             # Query 10. KP provenance value is missing?

@@ -68,13 +68,15 @@ class CodeDictionary:
         value: Optional[Tuple[str, str]] = CodeDictionary._code_value(code)
         assert value, f"CodeDictionary.display(): unknown message code {code}"
         message_type, template = value
+        code_parts: List[str] = [part.capitalize() for part in code.replace("_", ".").split(".")[1:-1]]
+        context: str = ' '.join(code_parts) + ': ' if code_parts else ''
         if message:
             # Message template parameterized with additional named parameter
             # message context, assumed to be referenced by the template
-            return f"{message_type.upper()} - {template.format(**message)}"
+            return f"{message_type.upper()} - {context}{template.format(**message)}"
         else:
             # simple scalar message without parameterization?
-            return f"{message_type.upper()} - {template}"
+            return f"{message_type.upper()} - {context}{template}"
 
 
 class ReportJsonEncoder(JSONEncoder):

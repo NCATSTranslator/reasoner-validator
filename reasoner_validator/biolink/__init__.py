@@ -381,7 +381,10 @@ class BiolinkValidator(ValidationReporter):
                                     # ... now, check the infores values against various expectations
                                     for infores in value:
                                         if not infores.startswith("infores:"):
-                                            self.report(code="error.knowledge_graph.edge.provenance.not_an_infores", infores=infores)
+                                            self.report(
+                                                code="error.knowledge_graph.edge.provenance.infores.missing",
+                                                infores=infores
+                                            )
                                         else:
                                             if ara_source and \
                                                     attribute_type_id == "biolink:aggregator_knowledge_source" and \

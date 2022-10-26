@@ -173,4 +173,5 @@ error:
           missing: "Edge attribute is missing its 'value' property!"
           empty: "Edge attribute empty 'value' property!"
       provenance:
-        not_an_infores: "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
+        infores:
+          missing: "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"

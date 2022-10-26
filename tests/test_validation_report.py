@@ -45,11 +45,16 @@ def test_message_loader():
 
 
 def test_message_display():
-    assert CodeDictionary.display(code="error.knowledge_graph.nodes.empty") == "ERROR - No nodes found!"
+    assert CodeDictionary.display(
+        code="info.compliant"
+    ) == "INFO - Biolink Model-compliant TRAPI Message."
+    assert CodeDictionary.display(
+        code="error.knowledge_graph.nodes.empty"
+    ) == "ERROR - Knowledge Graph Nodes: No nodes found!"
     assert CodeDictionary.display(
         code="info.input_edge.node.category.abstract",
         name="NAME"
-    ) == "INFO - 'NAME' is abstract."
+    ) == "INFO - Input Edge Node Category: 'NAME' is abstract."
 
 
 def test_validator_reporter_message_display():
@@ -57,7 +62,7 @@ def test_validator_reporter_message_display():
     assert reporter.display(
         code="info.input_edge.node.category.abstract",
         name="NAME"
-    ) == "Test Validation Report: INFO - 'NAME' is abstract."
+    ) == "Test Validation Report: INFO - Input Edge Node Category: 'NAME' is abstract."
 
 
 def test_unknown_message_code():
@@ -77,7 +82,7 @@ def test_message_report():
     assert len(report['information']) > 0
     messages: List[str] = [CodeDictionary.display(**coded_message) for coded_message in report['information']]
     assert "INFO - Biolink Model-compliant TRAPI Message." in messages
-    assert "INFO - 'NAME' is abstract." in messages
+    assert "INFO - Input Edge Predicate: 'NAME' is abstract." in messages
 
 
 def test_messages():
@@ -100,7 +105,7 @@ def test_messages():
     reporter2 = ValidationReporter(prefix="Second Validation Report", biolink_version=TEST_BIOLINK_VERSION)
     assert reporter2.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
-    reporter2.report("info.biolink.element.mixin", context="some_context", name="biolink:this_is_a_mixin")
+    reporter2.report("info.query_graph.predicate.mixin", context="some_context", name="biolink:this_is_a_mixin")
     reporter2.report("warning.response.results.empty")
     reporter2.report("error.knowledge_graph.edges.empty")
     reporter1.merge(reporter2)
@@ -118,14 +123,14 @@ def test_messages():
     new_messages: Dict[str, List[Dict]] = {
             "information": [
                 {
-                    'code': "info.biolink.element.abstract",
+                    'code': "info.input_edge.predicate.abstract",
                     'context': "Well,... hello",
                     'name': "Dolly"
                 }
             ],
             "warnings": [
                 {
-                    'code': "warning.node.unmapped_prefix",
+                    'code': "warning.knowledge_graph.node.unmapped_prefix",
                     'node_id': "Will Robinson",
                     'categories': "Lost in Space"
                 }
@@ -146,17 +151,18 @@ def test_messages():
     assert "information" in messages
     assert len(messages['information']) > 0
     information: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['information']]
-    assert "INFO - Well,... hello element 'Dolly' is abstract." in information
+    assert "INFO - Input Edge Predicate: 'Dolly' is abstract." in information
 
     assert "warnings" in messages
     assert len(messages['warnings']) > 0
     warnings: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['warnings']]
-    assert "WARNING - Node 'Will Robinson' is unmapped to the target categories: Lost in Space?" in warnings
+    assert "WARNING - Knowledge Graph Node Unmapped: 'Will Robinson' is unmapped " + \
+           "to the target categories: Lost in Space?" in warnings
 
     assert "errors" in messages
     assert len(messages['errors']) > 0
     errors: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['errors']]
-    assert "ERROR - TRAPI 6.6.6 Query: 'Dave, this can only be due to human error!'" in errors
+    assert "ERROR - Trapi: TRAPI 6.6.6 Query: 'Dave, this can only be due to human error!'" in errors
     
     obj = reporter1.to_dict()
     assert obj["trapi_version"] == TEST_TRAPI_VERSION
@@ -189,7 +195,7 @@ def test_validator_method():
     def validator_method(validator: ValidationReporter, arg, **case):
         assert isinstance(arg, Dict)
         assert arg['some key'] == "some value"
-        validator.report("error.edge.provenance.not_an_infores", infores="foo:bar")
+        validator.report("error.knowledge_graph.edge.provenance.infores.missing", infores="foo:bar")
         assert len(case) == 2
         assert case['some parameter'] == "some parameter value"
         assert case['another parameter'] == "some other parameter value"
@@ -202,12 +208,13 @@ def test_validator_method():
     assert "warnings" in messages
     assert len(messages['warnings']) > 0
     warnings: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['warnings']]
-    assert "WARNING - Fake data is empty?" in warnings
+    assert "WARNING - Graph: Fake data is empty?" in warnings
 
     assert "errors" in messages
     assert len(messages['errors']) > 0
     errors: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['errors']]
-    assert "ERROR - Edge has provenance value 'foo:bar' which is not a well-formed InfoRes CURIE!" in errors
+    assert "ERROR - Knowledge Graph Edge Provenance Infores: " + \
+           "Edge has provenance value 'foo:bar' which is not a well-formed InfoRes CURIE!" in errors
 
 
 # has_validation_errors(root_key: str = 'validation', case: Optional[Dict] = None)
