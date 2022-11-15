@@ -182,6 +182,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 
 ## Code Limitations (implied Future Work?)
 
+- Biolink Model release <= 2.4.8 versus 3.0.0 validation: the reasoner-validator uses the Biolink Model Toolkit. As it happens, the toolkit is not backwards compatible with at least one Biolink Model structural change from release 2.#.# to 3.#.#: the tagging of 'canonical' predicates. That is, the 0.8.10++ toolkit reports canonical <= 2.4.8 model predicates as 'non-canonical'.
 - This release of the Reasoner Validator Web Service will detect TRAPI 1.0.* releases but doesn't strive to be completely backwards compatible with them (considering that they are less relevant now). 
 - The web service validation doesn't do deep validation of the Results part of a TRAPI Message
 - The validation is only run on the first 1000 nodes and 100 edges of graphs, to keep the validation time tractable (this risks not having complete coverage of the graph)
