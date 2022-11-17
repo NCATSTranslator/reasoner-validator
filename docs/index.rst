@@ -232,6 +232,11 @@ one should typically get a response body like the following JSON validation resu
       ]
     }
 
+Validation Code Definitions
+===========================
+
+The validation message codes issued by the validation software is formally indexed in a single file called codes.yaml.
+
 Running the Web Service within Docker
 =====================================
 
