@@ -103,15 +103,16 @@ named fields in the Python string templates found in the `reasoner_validator pac
 
 Python API
 ----------
-
 .. toctree::
    :maxdepth: 2
-   :autosummary_generate: True
 
    TRAPI Response Validation <reasoner_validator>
    TRAPI Schema Validation <reasoner_validator.trapi>
-   Biolink <reasoner_validator.biolink>
    TRAPI Result Mapping <reasoner_validator.trapi.mapping>
+   Biolink Validation <reasoner_validator.biolink>
+   Validator Reporter <reasoner_validator.report>
+   Validation Codes <validation_codes>
+   SemVer Version Utilities <reasoner_validator.versioning>
 
 Refer to the `reasoner_validator package unit tests <https://github
 .com/NCATSTranslator/reasoner-validator/blob/master/tests>`_ for additional guidance on how to use the Python API.

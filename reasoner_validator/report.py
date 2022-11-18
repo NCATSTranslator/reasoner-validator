@@ -334,13 +334,14 @@ class ValidationReporter:
 
     @staticmethod
     def has_validation_errors(tag: str, case: Dict) -> bool:
-        """
-        Check if test case has validation errors.
+        """Check if test case has validation errors.
+
         :param tag: str, top level string key in the 'case' whose value is the validation messages 'dictionary'
         :param case: Dict, containing error messages in a structurally similar
                      format to what is returned by the to_dict() method in this class.
         :return: True if the case contains validation messages
         """
+
         #
         # The 'case' dictionary object could have a format something like this:
         #
