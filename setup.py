@@ -11,10 +11,13 @@ NAME = 'reasoner-validator'
 # Validation of Biolink Model releases < 3.0.5 may report a few spurious validation errors.
 # This is due to non-backward compatible behaviour of the
 # Biolink Model Toolkit, not the validation software per say.
-VERSION = '3.1.5'
+VERSION = '3.1.6'
 
 DESCRIPTION = 'Validation tools for Reasoner API'
-URL = 'https://github.com/NCATSTranslator/reasoner-validator'
+
+GITHUB = 'https://github.com/NCATSTranslator/reasoner-validator'
+DOCUMENTATION = 'https://translator-reasoner-validator.readthedocs.io/en/latest/'
+CHANGELOG = f"{GITHUB}/CHANGELOG.md"
 
 # Patrick Wang, project creator and emeritus Translator scientist
 AUTHOR = 'Richard Bruskiewich, Patrick Wang'
@@ -32,7 +35,11 @@ setup(
     version=VERSION,
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
-    url=URL,
+    project_urls={
+        'Documentation': DOCUMENTATION,
+        'GitHub': GITHUB,
+        'Changelog': 'https://github.com/foobar/foobar/blob/master/CHANGELOG.md',
+    },
     description="Validation tools for Reasoner API",
     long_description=long_description,
     long_description_content_type="text/markdown",

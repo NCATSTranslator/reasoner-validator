@@ -111,7 +111,8 @@ Python API
    TRAPI Result Mapping <reasoner_validator.trapi.mapping>
    Biolink Validation <reasoner_validator.biolink>
    Validator Reporter <reasoner_validator.report>
-   Validation Codes <validation_codes>
+   Validation Codes Dictionary <reasoner_validator.validation_codes>
+   Validation Codes <validation_codes_dictionary>
    SemVer Version Utilities <reasoner_validator.versioning>
 
 Refer to the `reasoner_validator package unit tests <https://github

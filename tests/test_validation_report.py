@@ -2,7 +2,8 @@
 from typing import Dict, Tuple, List
 import pytest
 
-from reasoner_validator.report import CodeDictionary, ValidationReporter
+from reasoner_validator.report import ValidationReporter
+from reasoner_validator.validation_codes import CodeDictionary
 
 TEST_TRAPI_VERSION = "1.3.0"
 TEST_BIOLINK_VERSION = "2.4.8"

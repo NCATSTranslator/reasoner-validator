@@ -1,82 +1,10 @@
 """Error and Warning Reporting Module"""
-from os.path import join, abspath, dirname
 import copy
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, Dict, List
 from json import dumps, JSONEncoder
-from yaml import load, BaseLoader
 
+from reasoner_validator.validation_codes import CodeDictionary
 from reasoner_validator.versioning import latest
-
-
-class CodeDictionary:
-
-    CODE_DICTIONARY: str = join(abspath(dirname(__file__)), "codes.yaml")
-
-    code_dictionary: Optional[Dict] = None
-
-    @classmethod
-    def _get_code_dictionary(cls) -> Dict:
-        if not cls.code_dictionary:
-            # Open the file and load the file
-            with open(cls.CODE_DICTIONARY, mode='r') as f:
-                cls.code_dictionary = load(f, Loader=BaseLoader)
-        return cls.code_dictionary
-
-    @classmethod
-    def _get_nested_code_value(cls, data: Dict, path: List[str], pos: int) -> Optional[str]:
-        """
-        Navigate dot delimited tag 'path' into a multi-level dictionary, to return its associated value.
-
-        :param data: Dict, multi-level data dictionary
-        :param path: str, dotted JSON tag path
-        :param pos: int, zero-based current position in tag path
-        :return: string value of the multi-level tag, if available; 'None' otherwise if no tag value found in the path
-        """
-        tag = path[pos]
-        if tag not in data:
-            return None
-
-        pos += 1
-        if pos == len(path):
-            return data[tag]
-        else:
-            return cls._get_nested_code_value(data[tag], path, pos)
-
-    @classmethod
-    def _code_value(cls, code) -> Optional[Tuple[str, str]]:
-        """
-        Get value of specified dot delimited tag name
-        :param code:
-        :return: Optional[Tuple[str, str]], 2-tuple of the code type (i.e. info, warning, error) and the
-                 validation message template; None if empty code or code unknown in the code dictionary
-        """
-        if not code:
-            return None
-
-        codes: Dict = cls._get_code_dictionary()
-        code_path = code.split(".")
-        value = cls._get_nested_code_value(codes, code_path, 0)
-        if value is not None:
-            return code_path[0], value
-        else:
-            return None
-
-    @staticmethod
-    def display(**message):
-        assert message and 'code' in message  # should be non-empty, containing a code
-        code: str = message.pop('code')
-        value: Optional[Tuple[str, str]] = CodeDictionary._code_value(code)
-        assert value, f"CodeDictionary.display(): unknown message code {code}"
-        message_type, template = value
-        code_parts: List[str] = [part.capitalize() for part in code.replace("_", ".").split(".")[1:-1]]
-        context: str = ' '.join(code_parts) + ': ' if code_parts else ''
-        if message:
-            # Message template parameterized with additional named parameter
-            # message context, assumed to be referenced by the template
-            return f"{message_type.upper()} - {context}{template.format(**message)}"
-        else:
-            # simple scalar message without parameterization?
-            return f"{message_type.upper()} - {context}{template}"
 
 
 class ReportJsonEncoder(JSONEncoder):

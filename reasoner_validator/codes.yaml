@@ -1,24 +1,10 @@
 #############################
-# Reasoner Validator Codes  #
-# * category types          #
-# * predicate types         #
-# * validation status codes #
+# Reasoner Validator        #
+# Message Codes             #
 #   - info(rmation)         #
 #   - warning               #
 #   - error                 #
 #############################
-category:
-  abstract:
-  mixin:
-  deprecated:
-
-predicate:
-  abstract:
-  mixin:
-  canonical:
-  inverse:
-  symmetric:
-
 info:
   excluded: "User excluded S-P-O triple '{edge_id}' or all test case S-P-O triples from resource test location."
   compliant: "Biolink Model-compliant TRAPI Message."
