@@ -2,8 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink standards within the NCATS Biomedical Knowledge Translator. 
 
-### v3.1.6
+### v3.2.0
 
+- Project converted to use **poetry** dependency management
 - Some structural changes to project (Sphinx) documentation
 - Added markdown generator for reading codes.yaml as a Markdown document in the project documentation.
 - Created this formal CHANGLOG.md!
