@@ -20,7 +20,7 @@ The module may be installed directly from pypi.org.
 pip install reasoner-validator
 ```
 
-## Installing the Module Locally from Source
+## Installing and working with the module locally from source
 
 As of release 3.1.6, this project uses the [poetry dependency management](https://python-poetry.org) tool to orchestrate its installation and dependencies.
 
@@ -73,16 +73,18 @@ The request body consists of JSON data structure with two top level tag:
 
 ### Running the Web Service Directly
 
-The service may be run directly as a python module. It is suggested that a virtual environment first be created (using virtualenv, conda, within your IDE, or equivalent).  Then, certain Python dependencies need to be installed, as follows:
-
-```shell
-pip install -r requirements-service.txt
-```
-
-The module may afterwards be run, as follows:
+The service may be run directly as a Python module. The web services module may be directly run, as follows. 
 
 ```shell
 python -m api.main
+```
+
+Note that [poetry automatically uses any existing virtual environment](https://python-poetry.org/docs/basic-usage/#using-your-virtual-environment), but you can otherwise also enter the one that is created by poetry by default:
+
+```shell
+poetry shell
+# run your commands, e.g. the web service module
+exit  # exit the poetry shell
 ```
 
 Go to  http://localhost/docs to see the service documentation and to use the simple UI to input TRAPI messages for validation.
@@ -185,7 +187,7 @@ Summary of earlier releases and current Change Log is [here](CHANGELOG.md).
 ## Code Limitations (implied Future Work?)
 
 - Biolink Model release <= 2.4.8 versus 3.0.0 validation: the reasoner-validator uses the Biolink Model Toolkit. As it happens, the toolkit is not backwards compatible with at least one Biolink Model structural change from release 2.#.# to 3.#.#: the tagging of 'canonical' predicates. That is, the 0.8.10++ toolkit reports canonical <= 2.4.8 model predicates as 'non-canonical'.
-- This release of the Reasoner Validator Web Service will detect TRAPI 1.0.* releases but doesn't strive to be completely backwards compatible with them (considering that they are less relevant now). 
+- This release of the Reasoner Validator Web Service will detect TRAPI 1.0.* releases but doesn't strive to be completely backwards compatible with them (considering that that TRAPI 1.0.* is totally irrelevant now). 
 - The web service validation doesn't do deep validation of the Results part of a TRAPI Message
 - The validation is only run on the first 1000 nodes and 100 edges of graphs, to keep the validation time tractable (this risks not having complete coverage of the graph)
 - Biolink Model toolkit is not (yet) cached so changing the model version during use will result in some latency in results

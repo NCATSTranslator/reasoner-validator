@@ -2,10 +2,42 @@
 name = "reasoner-validator"
 version = "3.1.6"
 description = "Validation tools for Reasoner API"
-authors = ["Richard Bruskiewich, Patrick Wang"]
+authors = [
+    "Richard Bruskiewich <richard.bruskiewich@delphinai.com>",
+    "Patrick Wang <patrickelvin@gmail.com>"
+]
+maintainers = [
+    "Richard Bruskiewich <richard.bruskiewich@delphinai.com>",
+    "Kenneth Morton <kenneth kenny@covar.com>"
+]
 license = "MIT"
 readme = "README.md"
+
+homepage = "https://github.com/NCATSTranslator"
+repository = "https://github.com/NCATSTranslator/reasoner-validator"
+documentation = "https://translator-reasoner-validator.readthedocs.io/en/latest/"
+keywords = [
+    "NCATS",
+    "Biomedical Data Translator",
+    "Translator",
+    "ReasonerAPI",
+    "TRAPI",
+    "validation",
+    "Biolink Model"
+]
+classifiers = [
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics"
+]
+
 packages = [{include = "reasoner_validator"}]
+
+include = [
+    "CHANGELOG.md",
+    { path = "tests" },
+    { path = "docs" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -19,9 +51,15 @@ bmt = "^0.8.12"
 fastapi = "^0.68"
 pydantic = "^1.8.0"
 uvicorn = "^0.15"
+sphinx = "^5.3.0"
+myst-parser = "^0.18.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "6.2.4"
+
+[tool.poetry.urls]
+"Change Log" = "https://github.com/NCATSTranslator/reasoner-validator/blob/master/CHANGELOG.md"
+"Bug Tracker" = "https://github.com/NCATSTranslator/reasoner-validator/issues"
 
 [build-system]
 requires = ["poetry-core"]

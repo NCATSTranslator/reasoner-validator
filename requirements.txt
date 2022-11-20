@@ -1,7 +1,0 @@
-kgx>=1.6.0
-jsonschema
-pyyaml
-requests
-linkml-runtime
-linkml
-bmt>=0.8.12
