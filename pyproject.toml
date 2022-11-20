@@ -51,8 +51,9 @@ bmt = "^0.8.12"
 fastapi = "^0.68"
 pydantic = "^1.8.0"
 uvicorn = "^0.15"
-sphinx = "^5.3.0"
-myst-parser = "^0.18.1"
+numpydoc = { version = "^1.5.0", extras = ["docs"] }
+sphinx = { version = "^5.3.0", extras = ["docs"] }
+myst-parser = { version = "^0.18.1", extras = ["docs"] }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "6.2.4"
@@ -60,6 +61,9 @@ pytest = "6.2.4"
 [tool.poetry.urls]
 "Change Log" = "https://github.com/NCATSTranslator/reasoner-validator/blob/master/CHANGELOG.md"
 "Bug Tracker" = "https://github.com/NCATSTranslator/reasoner-validator/issues"
+
+[tool.poetry.extras]
+docs = ["numpydoc", "sphinx", "myst-parser"]
 
 [build-system]
 requires = ["poetry-core"]
