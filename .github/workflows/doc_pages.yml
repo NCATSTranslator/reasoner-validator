@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@main
+        uses: actions/checkout@master
         with:
           fetch-depth: 0
 
@@ -17,11 +17,17 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Install Poetry
+      - name: Install Poetry tool.
         run: pip install poetry
 
-      - name: install
+      - name: Poetry install the project.
         run: poetry install -E docs
+
+      - name: Regenerate validation message codes documentation.
+        run: |
+          cd reasoner_validator
+          python validation_codes.py
+          cd ..
 
       - name: Build documentation.
         run: |
@@ -30,6 +36,7 @@ jobs:
           cd docs/
           poetry run sphinx-build -b html . _build
           cp -r _build/* ../gh-pages/
+      
       - name: Deploy documentation.
         if: ${{ github.event_name == 'push' }}
         uses: JamesIves/github-pages-deploy-action@v4.3.0
