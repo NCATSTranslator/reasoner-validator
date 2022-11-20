@@ -14,16 +14,22 @@ See [the full documentation](https://translator-reasoner-validator.readthedocs.i
 
 ## Installing the Module
 
+The module may be installed directly from pypi.org.
+
 ```bash
 pip install reasoner-validator
 ```
 
 ## Installing the Module Locally from Source
 
+As of release 3.1.6, this project uses the [poetry dependency management](https://python-poetry.org) tool to orchestrate its installation and dependencies.
+
+After [installing poetry](https://python-poetry.org/docs/#installation) and cloning the project, the poetry installation may be run:
+
 ```bash
 git clone https://github.com/NCATSTranslator/reasoner-validator.git
 cd reasoner-validator
-pip install -e .
+poetry install
 ```
 
 ## Building the Documentation Locally

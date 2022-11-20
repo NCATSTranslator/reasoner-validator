@@ -11,7 +11,7 @@ NAME = 'reasoner-validator'
 # Validation of Biolink Model releases < 3.0.5 may report a few spurious validation errors.
 # This is due to non-backward compatible behaviour of the
 # Biolink Model Toolkit, not the validation software per say.
-VERSION = '3.1.5'
+VERSION = '3.1.6'
 
 DESCRIPTION = 'Validation tools for Reasoner API'
 

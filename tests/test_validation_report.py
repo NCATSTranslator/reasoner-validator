@@ -33,15 +33,10 @@ def check_messages(validator: ValidationReporter, code, no_errors: bool = False)
 
 def test_message_loader():
     assert CodeDictionary._code_value("") is None
-
-    assert CodeDictionary._code_value("category") is not None
-    assert CodeDictionary._code_value("category.abstract") is not None
-    assert CodeDictionary._code_value("predicate") is not None
     assert CodeDictionary._code_value("info.compliant")[1] == "Biolink Model-compliant TRAPI Message."
     assert CodeDictionary._code_value("info") is not None
     assert CodeDictionary._code_value("warning") is not None
     assert CodeDictionary._code_value("error") is not None
-
     assert CodeDictionary._code_value("foo.bar") is None
 
 
