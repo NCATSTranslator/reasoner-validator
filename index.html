@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reasoner Validator &mdash; Reasoner Validator  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="TRAPI Response Validation" href="reasoner_validator.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> Reasoner Validator
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.html">TRAPI Response Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.trapi.html">TRAPI Schema Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.trapi.mapping.html">TRAPI Result Mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.biolink.html">Biolink Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.report.html">Validator Reporter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.validation_codes.html">Validation Codes Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validation_codes_dictionary.html">Validation Codes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.versioning.html">SemVer Version Utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Reasoner Validator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Reasoner Validator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="reasoner-validator">
+<h1>Reasoner Validator<a class="headerlink" href="#reasoner-validator" title="Permalink to this heading"></a></h1>
+<p>This documentation describes the use and API for the  3.0.* releases of the Reasoner-Validator Library.</p>
+<p>In particular, this package provides various methods for validating any component <em>in any version</em> of the
+<a class="reference external" href="https://github.com/NCATSTranslator/ReasonerAPI/blob/master/README.md">Translator Reasoner API (TRAPI)</a> and <a class="reference external" href="https://github.com/biolink/biolink-model/blob/master/README.md">Biolink Model</a>.</p>
+<p>This project has two dimensions of validation: one for TRAPI OpenAPI schema validation and the other for Biolink Model semantic validation.</p>
+<p>Note that the functioning of this release is not backwards compatible with 2.2.* or earlier releases of the package.</p>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
+<div class="section" id="as-pypi-package">
+<h2>As Pypi Package<a class="headerlink" href="#as-pypi-package" title="Permalink to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install reasoner-validator
+</pre></div>
+</div>
+</div>
+<div class="section" id="from-github">
+<h2>From Github<a class="headerlink" href="#from-github" title="Permalink to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git checkout https://github.com/NCATSTranslator/reasoner-validator.git
+<span class="nb">cd</span> reasoner-validator
+pip install -e .
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="basic-programmatic-usage">
+<h1>Basic Programmatic Usage<a class="headerlink" href="#basic-programmatic-usage" title="Permalink to this heading"></a></h1>
+<p>Unlike earlier release of the reasoner-validator package, the current (major release 3.*.*) wraps validation in a general Python class object, ‘ValidatorReporter’ which is subclassed into various validator types (TRAPI Schema, Biolink, etc.).</p>
+<p>Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValidator class wrapper as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">reasoner_validator</span> <span class="kn">import</span> <span class="n">TRAPIResponseValidator</span>
+
+<span class="n">validator</span> <span class="o">=</span> <span class="n">TRAPIResponseValidator</span><span class="p">(</span>
+    <span class="n">trapi_version</span><span class="o">=</span><span class="s2">&quot;1.3.0&quot;</span><span class="p">,</span>
+
+    <span class="c1"># If omit or set the Biolink Model version parameter to None,</span>
+    <span class="c1"># then the current Biolink Model Toolkit default release applies</span>
+    <span class="n">biolink_version</span><span class="o">=</span><span class="s2">&quot;3.0.3&quot;</span><span class="p">,</span>
+
+    <span class="c1"># &#39;sources&#39; are set to trigger checking of expected edge knowledge source provenance</span>
+    <span class="n">sources</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;ara_source&quot;</span><span class="p">:</span> <span class="s2">&quot;infores:molepro&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;kp_source&quot;</span><span class="p">:</span> <span class="s2">&quot;infores:hmdb&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;kp_source_type&quot;</span><span class="p">:</span> <span class="s2">&quot;primary&quot;</span>
+    <span class="p">},</span>
+    <span class="c1"># Optional flag: if omitted or set to &#39;None&#39;, we let the system decide the</span>
+    <span class="c1"># default validation strictness by validation context unless we override it here</span>
+    <span class="n">strict_validation</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+
+<span class="c1"># Unlike earlier release of the package, validation methods do NOT throw an exception,</span>
+<span class="c1"># but rather, return validation outcomes as a dictionary of validation messsages</span>
+<span class="c1"># Here, the &#39;message&#39; parameter here is just the Python equivalent dictionary of the</span>
+<span class="c1"># TRAPI.Message JSON schema model component of the TRAPI Response (not the full TRAPI Response...yet)</span>
+<span class="n">validator</span><span class="o">.</span><span class="n">check_compliance_of_trapi_response</span><span class="p">(</span><span class="n">message</span><span class="o">=...</span><span class="p">)</span>
+
+<span class="c1"># Messages are retrieved from the validator object as follows:</span>
+<span class="n">messages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">get_messages</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The ‘messages’ returned are partitioned into ‘information’, ‘warning’ and ‘error’ messages
+in a dictionary looking something like the following (as an example):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;edge_id&quot;</span><span class="p">:</span> <span class="s2">&quot;(ZFIN:ZDB-GENE-060825-345$biolink:Gene)--[biolink:active_in]-&gt;(GO:0042645$biolink:CellularComponent)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;info.excluded&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;warnings&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="s2">&quot;Query Graph&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;edge_id&quot;</span><span class="p">:</span> <span class="s2">&quot;a--[&#39;biolink:participates_in&#39;]-&gt;b&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;predicate&quot;</span><span class="p">:</span> <span class="s2">&quot;biolink:participates_in&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;warning.edge.predicate.non_canonical&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="s2">&quot;raise_subject_entity() test predicate CHEBI:37565[biolink:SmallMolecule]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;has no &#39;is_a&#39; parent since it is either not an ontology term or does not map onto a parent ontology term.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;error.trapi.request.invalid&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Every message has a ‘code’ and optional context-specific parameters which correspond to
+named fields in the Python string templates found in the <a class="reference external" href="https://github.com/NCATSTranslator/reasoner-validator/blob/master/reasoner_validator/codes.yaml">reasoner_validator package ‘codes.yaml’ file</a> file.</p>
+<div class="section" id="python-api">
+<h2>Python API<a class="headerlink" href="#python-api" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.html">TRAPI Response Validation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.html#reasoner_validator.TRAPIResponseValidator"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.trapi.html">TRAPI Schema Validation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.TRAPISchemaValidator"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.check_trapi_validity"><code class="docutils literal notranslate"><span class="pre">check_trapi_validity()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.fix_nullable"><code class="docutils literal notranslate"><span class="pre">fix_nullable()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.load_schema"><code class="docutils literal notranslate"><span class="pre">load_schema()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.openapi_to_jsonschema"><code class="docutils literal notranslate"><span class="pre">openapi_to_jsonschema()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.trapi.mapping.html">TRAPI Result Mapping</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.mapping.html#reasoner_validator.trapi.mapping.MappingValidator"><code class="docutils literal notranslate"><span class="pre">MappingValidator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.mapping.html#reasoner_validator.trapi.mapping.check_node_edge_mappings"><code class="docutils literal notranslate"><span class="pre">check_node_edge_mappings()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.biolink.html">Biolink Validation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.BiolinkValidator"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.TRAPIGraphType"><code class="docutils literal notranslate"><span class="pre">TRAPIGraphType</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.check_biolink_model_compliance_of_input_edge"><code class="docutils literal notranslate"><span class="pre">check_biolink_model_compliance_of_input_edge()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.check_biolink_model_compliance_of_knowledge_graph"><code class="docutils literal notranslate"><span class="pre">check_biolink_model_compliance_of_knowledge_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.check_biolink_model_compliance_of_query_graph"><code class="docutils literal notranslate"><span class="pre">check_biolink_model_compliance_of_query_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.get_biolink_model_toolkit"><code class="docutils literal notranslate"><span class="pre">get_biolink_model_toolkit()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.report.html">Validator Reporter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.ReportJsonEncoder"><code class="docutils literal notranslate"><span class="pre">ReportJsonEncoder</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.ValidationReporter"><code class="docutils literal notranslate"><span class="pre">ValidationReporter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.validation_codes.html">Validation Codes Dictionary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.validation_codes.html#reasoner_validator.validation_codes.CodeDictionary"><code class="docutils literal notranslate"><span class="pre">CodeDictionary</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="validation_codes_dictionary.html">Validation Codes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="validation_codes_dictionary.html#information">Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validation_codes_dictionary.html#warning">Warning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validation_codes_dictionary.html#error">Error</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.versioning.html">SemVer Version Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.versioning.html#reasoner_validator.versioning.SemVer"><code class="docutils literal notranslate"><span class="pre">SemVer</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.versioning.html#reasoner_validator.versioning.SemVerError"><code class="docutils literal notranslate"><span class="pre">SemVerError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.versioning.html#reasoner_validator.versioning.SemVerUnderspecified"><code class="docutils literal notranslate"><span class="pre">SemVerUnderspecified</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Refer to the <a class="reference external" href="https://github.com/NCATSTranslator/reasoner-validator/blob/master/tests">reasoner_validator package unit tests</a> for additional guidance on how to use the Python API.</p>
+</div>
+</div>
+<div class="section" id="validation-run-as-a-web-service">
+<h1>Validation Run as a Web Service<a class="headerlink" href="#validation-run-as-a-web-service" title="Permalink to this heading"></a></h1>
+<p>The Reasoner Validator is available wrapped as a simple web service.  The service may be run directly or as a Docker container.</p>
+<div class="section" id="web-service-api">
+<h2>Web Service API<a class="headerlink" href="#web-service-api" title="Permalink to this heading"></a></h2>
+<p>The web service has a single POST endpoint <cite>/validate</cite> taking a simple JSON request body, as follows:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;trapi_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.3.0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;biolink_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.0.3&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;ara_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;infores:aragorn&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;kp_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;infores:panther&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;kp_source_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;primary&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;strict_validation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;some message&quot;</span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The request body consists of JSON data structure with two top level tag:</p>
+<ul class="simple">
+<li><p>An <strong>optional</strong> <cite>trapi_version</cite> tag can be given a value of the TRAPI version against which the message will be validated, expressed as a SemVer string (defaults to ‘latest’ if omitted; partial SemVer strings are resolved to their ‘latest’ minor and patch releases).</p></li>
+<li><p>An <strong>optional</strong> <cite>biolink_version</cite> tag can be given a value of the Biolink Model version against which the message knowledge graph semantic contents will be validated, expressed as a SemVer string (defaults to ‘latest’ Biolink Model Toolkit supported version, if omitted).</p></li>
+<li><p>An <strong>optional</strong> <cite>sources</cite> with an object dictionary (example shown) specifying the ARA and KP sources involved in the TRAPI call (specified by infores CURIE) and the expected KP provenance source type, i.e. ‘primary’ implies that the KP is tagged as a ‘biolink:primary_knowledge_source’. Optional in that the root “sources” or any of the subsidiary tags may be omitted (default to None)</p></li>
+<li><p>An <strong>optional</strong> <cite>strict_validation</cite> flag (default: None or ‘false’). If ‘true’ then follow strict validation rules, such as treating as ‘error’ states the use of <cite>category</cite>, <cite>predicate</cite> and <cite>attribute_type_id</cite> that are of type <cite>abstract</cite> or <cite>mixin</cite>  as errors.</p></li>
+<li><p>A <strong>mandatory</strong> <cite>message</cite> tag should have as its value the complete TRAPI <strong>Message</strong> JSON data structure to be validated (see example below).</p></li>
+</ul>
+</div>
+<div class="section" id="running-the-web-service-directly">
+<h2>Running the Web Service Directly<a class="headerlink" href="#running-the-web-service-directly" title="Permalink to this heading"></a></h2>
+<p>The service may be run directly as a python module. It is suggested that a virtual environment first be created (using virtualenv, conda, within your IDE, or equivalent).  Then, certain Python dependencies need to be installed, as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r requirements-service.txt
+</pre></div>
+</div>
+<p>The module may afterwards be run, as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m api.main
+</pre></div>
+</div>
+</div>
+<div class="section" id="typical-output">
+<h2>Typical Output<a class="headerlink" href="#typical-output" title="Permalink to this heading"></a></h2>
+<p>As an example of the kind of output to expect, if one posts the following JSON message data to the <strong>/validate</strong> endpoint:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;trapi_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.3.0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;biolink_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.0.3&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;query_graph&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;type-2 diabetes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">]},</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;drug&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;biolink:Drug&quot;</span><span class="p">]}</span><span class="w"></span>
+<span class="w">        </span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;treats&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;subject&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drug&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;predicates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;biolink:treats&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;object&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;type-2 diabetes&quot;</span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;knowledge_graph&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;MONDO:0005148&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;type-2 diabetes&quot;</span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;CHEBI:6801&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;metformin&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;biolink:Drug&quot;</span><span class="p">]}</span><span class="w"></span>
+<span class="w">        </span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;df87ff82&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;subject&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CHEBI:6801&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;predicate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biolink:treats&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;object&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;node_bindings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;type-2 diabetes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">}],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;drug&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CHEBI:6801&quot;</span><span class="p">}]</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;edge_bindings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;treats&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;df87ff82&quot;</span><span class="p">}]</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">]</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>one should typically get a response body like the following JSON validation result back:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;trapi_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.3.0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;biolink_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.0.3&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;report&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;warning.node.unmapped_prefix&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CHEBI:6801&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[&#39;biolink:Drug&#39;]&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error.node.missing_categories&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MONDO:0005148&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error.edge.attribute.missing&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="validation-code-definitions">
+<h1>Validation Code Definitions<a class="headerlink" href="#validation-code-definitions" title="Permalink to this heading"></a></h1>
+<p>The validation message codes issued by the validation software is formally indexed in a single file called codes.yaml.</p>
+</div>
+<div class="section" id="running-the-web-service-within-docker">
+<h1>Running the Web Service within Docker<a class="headerlink" href="#running-the-web-service-within-docker" title="Permalink to this heading"></a></h1>
+<p>The Reasoner Validator web service may be run inside a docker container, using Docker Compose.</p>
+<p>First, from the root project directory, build the local docker container</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose build
+</pre></div>
+</div>
+<p>Then, run the service:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose up -d
+</pre></div>
+</div>
+<p>Once again, go to <a class="reference external" href="http://localhost/docs">http://localhost/docs</a> to see the web service API documentation.</p>
+<p>To stop the service:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose down
+</pre></div>
+</div>
+<p>Of course, the above docker-compose commands may be customized by the user to suit their needs. Note that the docker implementation assumes the use of uvicorn</p>
+</div>
+<div class="section" id="quick-history-of-releases">
+<h1>Quick History of Releases<a class="headerlink" href="#quick-history-of-releases" title="Permalink to this heading"></a></h1>
+<p>The Reasoner Validator package is evolving along with progress in TRAPI and Biolink standards within the NCATS Biomedical Knowledge Translator. This documentation pertains to the 3.* releases of the package. A synopsis of the evolution of the package is:</p>
+<ul class="simple">
+<li><p>1.# releases - very preliminary releases of the validation code, now obsolete</p></li>
+<li><p>2.# releases - had a base TRAPI schema ‘validate’ with errors throwing a Python exception; later minor iterations added in Biolink Model validation returning a flat dictionary of arcane string messages</p></li>
+<li><p>3.0.# releases
+- wrapped the all validation with a ValidatorReporter class serving to collect and return validation messages in a disciplined, codified manner (as a [master YAML file with hierarchically-indexed Python string templates](reasoner_validator/codes.yaml)). Generally still reliably validates Biolink Model release &lt;= 2.4.8</p></li>
+<li><p>3.1.# releases: mainly supports Biolink Model releases &gt;= 3.0.* and will likely generate some spurious validation warnings or errors for Biolink Model release &lt;= 2.4.8 (reflects non-backward compatible changes to the Biolink Model Toolkit)</p></li>
+</ul>
+<p>The <a class="reference external" href="https://github.com/NCATSTranslator/reasoner-validator/blob/master/CHANGELOG.md">full change log is here</a>.</p>
+</div>
+<div class="section" id="community">
+<h1>Community<a class="headerlink" href="#community" title="Permalink to this heading"></a></h1>
+<p>See <a class="reference external" href="https://github.com/NCATSTranslator/reasoner-validator/blob/master/README.md">project README for full details</a></p>
+<div class="section" id="contribute">
+<h2>Contribute<a class="headerlink" href="#contribute" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/NCATSTranslator/reasoner-validator/issues/new?template=bug_report.md">Report a bug</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NCATSTranslator/reasoner-validator/issues/new?template=feature_request.md">Request a feature</a></p></li>
+</ul>
+</div>
+<div class="section" id="support">
+<h2>Support<a class="headerlink" href="#support" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/NCATSTranslator/reasoner-validator/issues/new?template=question.md">Ask a question</a></p></li>
+</ul>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this heading"></a></h2>
+<p>The project is licensed under the MIT license.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="reasoner_validator.html" class="btn btn-neutral float-right" title="TRAPI Response Validation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Richard Bruskiewich;  2020-21, Patrick Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

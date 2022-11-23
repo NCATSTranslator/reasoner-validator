@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validation Codes Dictionary &mdash; Reasoner Validator  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="SemVer Versioning Utilities" href="reasoner_validator.versioning.html" />
+    <link rel="prev" title="Validation Codes Dictionary" href="reasoner_validator.validation_codes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Reasoner Validator
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.html">TRAPI Response Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.trapi.html">TRAPI Schema Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.trapi.mapping.html">TRAPI Result Mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.biolink.html">Biolink Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.report.html">Validator Reporter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.validation_codes.html">Validation Codes Dictionary</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Validation Codes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#information">Information</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#info-excluded">info.excluded</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-compliant">info.compliant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-input-edge-node-category-abstract">info.input_edge.node.category.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-input-edge-node-category-mixin">info.input_edge.node.category.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-input-edge-predicate-abstract">info.input_edge.predicate.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-input-edge-predicate-mixin">info.input_edge.predicate.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-query-graph-node-category-abstract">info.query_graph.node.category.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-query-graph-node-category-mixin">info.query_graph.node.category.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-query-graph-predicate-abstract">info.query_graph.predicate.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-query-graph-predicate-mixin">info.query_graph.predicate.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-attribute-type-id-non-biolink-prefix">info.attribute_type_id.non_biolink_prefix</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#warning">Warning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#warning-graph-empty">warning.graph.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-response-knowledge-graph-empty">warning.response.knowledge_graph.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-response-results-empty">warning.response.results.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-node-category-deprecated">warning.input_edge.node.category.deprecated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-node-id-unmapped-to-category">warning.input_edge.node.id.unmapped_to_category</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-predicate-deprecated">warning.input_edge.predicate.deprecated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-node-ids-unmapped-to-categories">warning.query_graph.node.ids.unmapped_to_categories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-category-deprecated">warning.knowledge_graph.node.category.deprecated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-unmapped-prefix">warning.knowledge_graph.node.unmapped_prefix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-id-unmapped-to-category">warning.knowledge_graph.node.id.unmapped_to_category</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-predicate-non-canonical">warning.knowledge_graph.predicate.non_canonical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot">warning.knowledge_graph.edge.attribute.type_id.not_association_slot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-unknown-prefix">warning.knowledge_graph.edge.attribute.type_id.unknown_prefix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated">warning.knowledge_graph.edge.attribute.type_id.deprecated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-ara-missing">warning.knowledge_graph.edge.provenance.ara.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-kp-missing">warning.knowledge_graph.edge.provenance.kp.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-missing-primary">warning.knowledge_graph.edge.provenance.missing_primary</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#error">Error</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#error-non-compliant">error.non_compliant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-validation">error.trapi.validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-request-invalid">error.trapi.request.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-unexpected-http-code">error.trapi.response.unexpected_http_code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-empty">error.trapi.response.message.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-query-graph-missing">error.trapi.response.query_graph.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-query-graph-empty">error.trapi.response.query_graph.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-knowledge-graph-missing">error.trapi.response.knowledge_graph.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-results-missing">error.trapi.response.results.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-results-non-array">error.trapi.response.results.non_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-results-missing-bindings">error.trapi.response.results.missing_bindings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-node-category-unknown">error.input_edge.node.category.unknown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-node-category-abstract">error.input_edge.node.category.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-node-category-mixin">error.input_edge.node.category.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-node-id-missing">error.input_edge.node.id.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-predicate-missing">error.input_edge.predicate.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-category-unknown">error.query_graph.node.category.unknown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-category-abstract">error.query_graph.node.category.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-category-mixin">error.query_graph.node.category.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-ids-not-array">error.query_graph.node.ids.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-categories-not-array">error.query_graph.node.categories.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-is-set-not-boolean">error.query_graph.node.is_set.not_boolean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-predicate-missing">error.query_graph.predicate.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-predicate-not-array">error.query_graph.predicate.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-predicate-empty-array">error.query_graph.predicate.empty_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-empty">error.knowledge_graph.nodes.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edges-empty">error.knowledge_graph.edges.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-missing">error.knowledge_graph.node.category.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-unknown">error.knowledge_graph.node.category.unknown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-abstract">error.knowledge_graph.node.category.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-mixin">error.knowledge_graph.node.category.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-id-missing">error.knowledge_graph.node.id.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-missing-categories">error.knowledge_graph.node.missing_categories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-ids-not-array">error.knowledge_graph.node.ids.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-empty-ids">error.knowledge_graph.node.empty_ids</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-categories-not-array">error.knowledge_graph.node.categories.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-empty-categories">error.knowledge_graph.node.empty_categories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-is-set-not-boolean">error.knowledge_graph.node.is_set_not_boolean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-predicate-missing">error.knowledge_graph.predicate.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-predicate-not-array">error.knowledge_graph.predicate.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-predicate-empty-array">error.knowledge_graph.predicate.empty_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-predicate-unknown">error.knowledge_graph.predicate.unknown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-subject-missing">error.knowledge_graph.edge.subject.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-subject-missing-from-nodes">error.knowledge_graph.edge.subject.missing_from_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-object-missing">error.knowledge_graph.edge.object.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-object-missing-from-nodes">error.knowledge_graph.edge.object.missing_from_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-missing">error.knowledge_graph.edge.attribute.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-empty">error.knowledge_graph.edge.attribute.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-not-list">error.knowledge_graph.edge.attribute.not_list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-missing">error.knowledge_graph.edge.attribute.type_id.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-empty">error.knowledge_graph.edge.attribute.type_id.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-not-curie">error.knowledge_graph.edge.attribute.type_id.not_curie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-value-missing">error.knowledge_graph.edge.attribute.value.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-value-empty">error.knowledge_graph.edge.attribute.value.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-provenance-infores-missing">error.knowledge_graph.edge.provenance.infores.missing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.versioning.html">SemVer Version Utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Reasoner Validator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Validation Codes Dictionary</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/validation_codes_dictionary.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="validation-codes-dictionary">
+<h1>Validation Codes Dictionary<a class="headerlink" href="#validation-codes-dictionary" title="Permalink to this heading"></a></h1>
+<div class="section" id="information">
+<h2>Information<a class="headerlink" href="#information" title="Permalink to this heading"></a></h2>
+<div class="section" id="info-excluded">
+<h3>info.excluded<a class="headerlink" href="#info-excluded" title="Permalink to this heading"></a></h3>
+<p>User excluded S-P-O triple ‘{edge_id}’ or all test case S-P-O triples from resource test location.</p>
+</div>
+<div class="section" id="info-compliant">
+<h3>info.compliant<a class="headerlink" href="#info-compliant" title="Permalink to this heading"></a></h3>
+<p>Biolink Model-compliant TRAPI Message.</p>
+</div>
+<div class="section" id="info-input-edge-node-category-abstract">
+<h3>info.input_edge.node.category.abstract<a class="headerlink" href="#info-input-edge-node-category-abstract" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is abstract.</p>
+</div>
+<div class="section" id="info-input-edge-node-category-mixin">
+<h3>info.input_edge.node.category.mixin<a class="headerlink" href="#info-input-edge-node-category-mixin" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is a mixin.</p>
+</div>
+<div class="section" id="info-input-edge-predicate-abstract">
+<h3>info.input_edge.predicate.abstract<a class="headerlink" href="#info-input-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is abstract.</p>
+</div>
+<div class="section" id="info-input-edge-predicate-mixin">
+<h3>info.input_edge.predicate.mixin<a class="headerlink" href="#info-input-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is a mixin.</p>
+</div>
+<div class="section" id="info-query-graph-node-category-abstract">
+<h3>info.query_graph.node.category.abstract<a class="headerlink" href="#info-query-graph-node-category-abstract" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is abstract.</p>
+</div>
+<div class="section" id="info-query-graph-node-category-mixin">
+<h3>info.query_graph.node.category.mixin<a class="headerlink" href="#info-query-graph-node-category-mixin" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is a mixin.</p>
+</div>
+<div class="section" id="info-query-graph-predicate-abstract">
+<h3>info.query_graph.predicate.abstract<a class="headerlink" href="#info-query-graph-predicate-abstract" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is abstract.</p>
+</div>
+<div class="section" id="info-query-graph-predicate-mixin">
+<h3>info.query_graph.predicate.mixin<a class="headerlink" href="#info-query-graph-predicate-mixin" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is a mixin.</p>
+</div>
+<div class="section" id="info-attribute-type-id-non-biolink-prefix">
+<h3>info.attribute_type_id.non_biolink_prefix<a class="headerlink" href="#info-attribute-type-id-non-biolink-prefix" title="Permalink to this heading"></a></h3>
+<p>Edge attribute_type_id ‘{attribute_type_id}’ has a non-Biolink CURIE prefix mapped to Biolink.</p>
+</div>
+</div>
+<div class="section" id="warning">
+<h2>Warning<a class="headerlink" href="#warning" title="Permalink to this heading"></a></h2>
+<div class="section" id="warning-graph-empty">
+<h3>warning.graph.empty<a class="headerlink" href="#warning-graph-empty" title="Permalink to this heading"></a></h3>
+<p>{context} data is empty?</p>
+</div>
+<div class="section" id="warning-response-knowledge-graph-empty">
+<h3>warning.response.knowledge_graph.empty<a class="headerlink" href="#warning-response-knowledge-graph-empty" title="Permalink to this heading"></a></h3>
+<p>Response returned an empty Message Knowledge Graph?</p>
+</div>
+<div class="section" id="warning-response-results-empty">
+<h3>warning.response.results.empty<a class="headerlink" href="#warning-response-results-empty" title="Permalink to this heading"></a></h3>
+<p>Response returned empty Message.results?</p>
+</div>
+<div class="section" id="warning-input-edge-node-category-deprecated">
+<h3>warning.input_edge.node.category.deprecated<a class="headerlink" href="#warning-input-edge-node-category-deprecated" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is deprecated?</p>
+</div>
+<div class="section" id="warning-input-edge-node-id-unmapped-to-category">
+<h3>warning.input_edge.node.id.unmapped_to_category<a class="headerlink" href="#warning-input-edge-node-id-unmapped-to-category" title="Permalink to this heading"></a></h3>
+<p>‘{node_id}’ has identifiers {unmapped_ids} unmapped to the target categories: {categories}?</p>
+</div>
+<div class="section" id="warning-input-edge-predicate-deprecated">
+<h3>warning.input_edge.predicate.deprecated<a class="headerlink" href="#warning-input-edge-predicate-deprecated" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is deprecated?</p>
+</div>
+<div class="section" id="warning-query-graph-node-ids-unmapped-to-categories">
+<h3>warning.query_graph.node.ids.unmapped_to_categories<a class="headerlink" href="#warning-query-graph-node-ids-unmapped-to-categories" title="Permalink to this heading"></a></h3>
+<p>‘{node_id}’ has identifiers {unmapped_ids} unmapped to the target categories: {categories}?</p>
+</div>
+<div class="section" id="warning-knowledge-graph-node-category-deprecated">
+<h3>warning.knowledge_graph.node.category.deprecated<a class="headerlink" href="#warning-knowledge-graph-node-category-deprecated" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is deprecated?</p>
+</div>
+<div class="section" id="warning-knowledge-graph-node-unmapped-prefix">
+<h3>warning.knowledge_graph.node.unmapped_prefix<a class="headerlink" href="#warning-knowledge-graph-node-unmapped-prefix" title="Permalink to this heading"></a></h3>
+<p>‘{node_id}’ is unmapped to the target categories: {categories}?</p>
+</div>
+<div class="section" id="warning-knowledge-graph-node-id-unmapped-to-category">
+<h3>warning.knowledge_graph.node.id.unmapped_to_category<a class="headerlink" href="#warning-knowledge-graph-node-id-unmapped-to-category" title="Permalink to this heading"></a></h3>
+<p>{context} node identifier ‘{node_id}’ is unmapped to ‘{category}’?</p>
+</div>
+<div class="section" id="warning-knowledge-graph-predicate-non-canonical">
+<h3>warning.knowledge_graph.predicate.non_canonical<a class="headerlink" href="#warning-knowledge-graph-predicate-non-canonical" title="Permalink to this heading"></a></h3>
+<p>{context} edge {edge_id} predicate ‘{predicate}’ is non-canonical?</p>
+</div>
+<div class="section" id="warning-knowledge-graph-edge-attribute-type-id-not-association-slot">
+<h3>warning.knowledge_graph.edge.attribute.type_id.not_association_slot<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot" title="Permalink to this heading"></a></h3>
+<p>Edge attribute_type_id ‘{attribute_type_id}’ not a biolink:association_slot?</p>
+</div>
+<div class="section" id="warning-knowledge-graph-edge-attribute-type-id-unknown-prefix">
+<h3>warning.knowledge_graph.edge.attribute.type_id.unknown_prefix<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-unknown-prefix" title="Permalink to this heading"></a></h3>
+<p>Edge attribute_type_id ‘{attribute_type_id}’ has a CURIE prefix namespace unknown to Biolink!</p>
+</div>
+<div class="section" id="warning-knowledge-graph-edge-attribute-type-id-deprecated">
+<h3>warning.knowledge_graph.edge.attribute.type_id.deprecated<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is deprecated?</p>
+</div>
+<div class="section" id="warning-knowledge-graph-edge-provenance-ara-missing">
+<h3>warning.knowledge_graph.edge.provenance.ara.missing<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-ara-missing" title="Permalink to this heading"></a></h3>
+<p>Edge is missing ARA knowledge source provenance?</p>
+</div>
+<div class="section" id="warning-knowledge-graph-edge-provenance-kp-missing">
+<h3>warning.knowledge_graph.edge.provenance.kp.missing<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-kp-missing" title="Permalink to this heading"></a></h3>
+<p>Edge attribute values are missing expected Knowledge Provider ‘{kp_source}’ ‘{kp_source_type}’ provenance?</p>
+</div>
+<div class="section" id="warning-knowledge-graph-edge-provenance-missing-primary">
+<h3>warning.knowledge_graph.edge.provenance.missing_primary<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-missing-primary" title="Permalink to this heading"></a></h3>
+<p>Edge has neither a ‘primary’ nor ‘original’ knowledge source?</p>
+</div>
+</div>
+<div class="section" id="error">
+<h2>Error<a class="headerlink" href="#error" title="Permalink to this heading"></a></h2>
+<div class="section" id="error-non-compliant">
+<h3>error.non_compliant<a class="headerlink" href="#error-non-compliant" title="Permalink to this heading"></a></h3>
+<p>S-P-O statement ‘{edge_id}’ is not compliant to Biolink Model {biolink_release}</p>
+</div>
+<div class="section" id="error-trapi-validation">
+<h3>error.trapi.validation<a class="headerlink" href="#error-trapi-validation" title="Permalink to this heading"></a></h3>
+<p>TRAPI {trapi_version} Query: ‘{exception}’</p>
+</div>
+<div class="section" id="error-trapi-request-invalid">
+<h3>error.trapi.request.invalid<a class="headerlink" href="#error-trapi-request-invalid" title="Permalink to this heading"></a></h3>
+<p>{context} could not generate a valid TRAPI query request object because {reason}?</p>
+</div>
+<div class="section" id="error-trapi-response-unexpected-http-code">
+<h3>error.trapi.response.unexpected_http_code<a class="headerlink" href="#error-trapi-response-unexpected-http-code" title="Permalink to this heading"></a></h3>
+<p>TRAPI Response has an unexpected HTTP status code: ‘{status_code}’?</p>
+</div>
+<div class="section" id="error-trapi-response-message-empty">
+<h3>error.trapi.response.message.empty<a class="headerlink" href="#error-trapi-response-message-empty" title="Permalink to this heading"></a></h3>
+<p>Response returned an empty Message Query Graph!</p>
+</div>
+<div class="section" id="error-trapi-response-query-graph-missing">
+<h3>error.trapi.response.query_graph.missing<a class="headerlink" href="#error-trapi-response-query-graph-missing" title="Permalink to this heading"></a></h3>
+<p>TRAPI Message is missing its Query Graph!</p>
+</div>
+<div class="section" id="error-trapi-response-query-graph-empty">
+<h3>error.trapi.response.query_graph.empty<a class="headerlink" href="#error-trapi-response-query-graph-empty" title="Permalink to this heading"></a></h3>
+<p>Response returned an empty Message Query Graph?</p>
+</div>
+<div class="section" id="error-trapi-response-knowledge-graph-missing">
+<h3>error.trapi.response.knowledge_graph.missing<a class="headerlink" href="#error-trapi-response-knowledge-graph-missing" title="Permalink to this heading"></a></h3>
+<p>TRAPI Message is missing its Knowledge Graph component!</p>
+</div>
+<div class="section" id="error-trapi-response-results-missing">
+<h3>error.trapi.response.results.missing<a class="headerlink" href="#error-trapi-response-results-missing" title="Permalink to this heading"></a></h3>
+<p>TRAPI Message is missing its Results component!</p>
+</div>
+<div class="section" id="error-trapi-response-results-non-array">
+<h3>error.trapi.response.results.non_array<a class="headerlink" href="#error-trapi-response-results-non-array" title="Permalink to this heading"></a></h3>
+<p>Response returned a non-array Message.results!</p>
+</div>
+<div class="section" id="error-trapi-response-results-missing-bindings">
+<h3>error.trapi.response.results.missing_bindings<a class="headerlink" href="#error-trapi-response-results-missing-bindings" title="Permalink to this heading"></a></h3>
+<p>Neither the input id ‘{input_id}’ nor resolved aliases were returned in the Result object IDs for node ‘{output_node_binding}’ binding?</p>
+</div>
+<div class="section" id="error-input-edge-node-category-unknown">
+<h3>error.input_edge.node.category.unknown<a class="headerlink" href="#error-input-edge-node-category-unknown" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is unknown!</p>
+</div>
+<div class="section" id="error-input-edge-node-category-abstract">
+<h3>error.input_edge.node.category.abstract<a class="headerlink" href="#error-input-edge-node-category-abstract" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is abstract!</p>
+</div>
+<div class="section" id="error-input-edge-node-category-mixin">
+<h3>error.input_edge.node.category.mixin<a class="headerlink" href="#error-input-edge-node-category-mixin" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is a mixin!</p>
+</div>
+<div class="section" id="error-input-edge-node-id-missing">
+<h3>error.input_edge.node.id.missing<a class="headerlink" href="#error-input-edge-node-id-missing" title="Permalink to this heading"></a></h3>
+<p>{context} node identifier is missing!</p>
+</div>
+<div class="section" id="error-input-edge-predicate-missing">
+<h3>error.input_edge.predicate.missing<a class="headerlink" href="#error-input-edge-predicate-missing" title="Permalink to this heading"></a></h3>
+<p>{context} edge ‘{edge_id}’ predicate is missing or empty!</p>
+</div>
+<div class="section" id="error-query-graph-node-category-unknown">
+<h3>error.query_graph.node.category.unknown<a class="headerlink" href="#error-query-graph-node-category-unknown" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is unknown!</p>
+</div>
+<div class="section" id="error-query-graph-node-category-abstract">
+<h3>error.query_graph.node.category.abstract<a class="headerlink" href="#error-query-graph-node-category-abstract" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is abstract!</p>
+</div>
+<div class="section" id="error-query-graph-node-category-mixin">
+<h3>error.query_graph.node.category.mixin<a class="headerlink" href="#error-query-graph-node-category-mixin" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is a mixin!</p>
+</div>
+<div class="section" id="error-query-graph-node-ids-not-array">
+<h3>error.query_graph.node.ids.not_array<a class="headerlink" href="#error-query-graph-node-ids-not-array" title="Permalink to this heading"></a></h3>
+<p>Node ‘{node_id}.ids’ slot value is not an array!</p>
+</div>
+<div class="section" id="error-query-graph-node-categories-not-array">
+<h3>error.query_graph.node.categories.not_array<a class="headerlink" href="#error-query-graph-node-categories-not-array" title="Permalink to this heading"></a></h3>
+<p>Node ‘{node_id}.categories’ slot value is not an array!</p>
+</div>
+<div class="section" id="error-query-graph-node-is-set-not-boolean">
+<h3>error.query_graph.node.is_set.not_boolean<a class="headerlink" href="#error-query-graph-node-is-set-not-boolean" title="Permalink to this heading"></a></h3>
+<p>Node ‘{node_id}.is_set’ slot is not a boolean value!</p>
+</div>
+<div class="section" id="error-query-graph-predicate-missing">
+<h3>error.query_graph.predicate.missing<a class="headerlink" href="#error-query-graph-predicate-missing" title="Permalink to this heading"></a></h3>
+<p>Edge ‘{edge_id}’ predicate is missing or empty!</p>
+</div>
+<div class="section" id="error-query-graph-predicate-not-array">
+<h3>error.query_graph.predicate.not_array<a class="headerlink" href="#error-query-graph-predicate-not-array" title="Permalink to this heading"></a></h3>
+<p>Edge ‘{edge_id}’ predicate slot value is not an array!</p>
+</div>
+<div class="section" id="error-query-graph-predicate-empty-array">
+<h3>error.query_graph.predicate.empty_array<a class="headerlink" href="#error-query-graph-predicate-empty-array" title="Permalink to this heading"></a></h3>
+<p>Edge ‘{edge_id}’ predicate slot value is an empty array!</p>
+</div>
+<div class="section" id="error-knowledge-graph-nodes-empty">
+<h3>error.knowledge_graph.nodes.empty<a class="headerlink" href="#error-knowledge-graph-nodes-empty" title="Permalink to this heading"></a></h3>
+<p>No nodes found!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edges-empty">
+<h3>error.knowledge_graph.edges.empty<a class="headerlink" href="#error-knowledge-graph-edges-empty" title="Permalink to this heading"></a></h3>
+<p>No edges found!</p>
+</div>
+<div class="section" id="error-knowledge-graph-node-category-missing">
+<h3>error.knowledge_graph.node.category.missing<a class="headerlink" href="#error-knowledge-graph-node-category-missing" title="Permalink to this heading"></a></h3>
+<p>‘{node_id}’ has a missing Biolink category!</p>
+</div>
+<div class="section" id="error-knowledge-graph-node-category-unknown">
+<h3>error.knowledge_graph.node.category.unknown<a class="headerlink" href="#error-knowledge-graph-node-category-unknown" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is unknown!</p>
+</div>
+<div class="section" id="error-knowledge-graph-node-category-abstract">
+<h3>error.knowledge_graph.node.category.abstract<a class="headerlink" href="#error-knowledge-graph-node-category-abstract" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is abstract!</p>
+</div>
+<div class="section" id="error-knowledge-graph-node-category-mixin">
+<h3>error.knowledge_graph.node.category.mixin<a class="headerlink" href="#error-knowledge-graph-node-category-mixin" title="Permalink to this heading"></a></h3>
+<p>‘{name}’ is a mixin!</p>
+</div>
+<div class="section" id="error-knowledge-graph-node-id-missing">
+<h3>error.knowledge_graph.node.id.missing<a class="headerlink" href="#error-knowledge-graph-node-id-missing" title="Permalink to this heading"></a></h3>
+<p>{context} node identifier is missing!</p>
+</div>
+<div class="section" id="error-knowledge-graph-node-missing-categories">
+<h3>error.knowledge_graph.node.missing_categories<a class="headerlink" href="#error-knowledge-graph-node-missing-categories" title="Permalink to this heading"></a></h3>
+<p>Node ‘{node_id}’ is missing its categories!</p>
+</div>
+<div class="section" id="error-knowledge-graph-node-ids-not-array">
+<h3>error.knowledge_graph.node.ids.not_array<a class="headerlink" href="#error-knowledge-graph-node-ids-not-array" title="Permalink to this heading"></a></h3>
+<p>Node ‘{node_id}.ids’ slot value is not an array!</p>
+</div>
+<div class="section" id="error-knowledge-graph-node-empty-ids">
+<h3>error.knowledge_graph.node.empty_ids<a class="headerlink" href="#error-knowledge-graph-node-empty-ids" title="Permalink to this heading"></a></h3>
+<p>Node ‘{node_id}.ids’ slot array is empty!</p>
+</div>
+<div class="section" id="error-knowledge-graph-node-categories-not-array">
+<h3>error.knowledge_graph.node.categories.not_array<a class="headerlink" href="#error-knowledge-graph-node-categories-not-array" title="Permalink to this heading"></a></h3>
+<p>Node ‘{node_id}.categories’ slot value is not an array!</p>
+</div>
+<div class="section" id="error-knowledge-graph-node-empty-categories">
+<h3>error.knowledge_graph.node.empty_categories<a class="headerlink" href="#error-knowledge-graph-node-empty-categories" title="Permalink to this heading"></a></h3>
+<p>Node ‘{node_id}.categories’ slot array is empty!</p>
+</div>
+<div class="section" id="error-knowledge-graph-node-is-set-not-boolean">
+<h3>error.knowledge_graph.node.is_set_not_boolean<a class="headerlink" href="#error-knowledge-graph-node-is-set-not-boolean" title="Permalink to this heading"></a></h3>
+<p>Node ‘{node_id}.is_set’ slot is not a boolean value!</p>
+</div>
+<div class="section" id="error-knowledge-graph-predicate-missing">
+<h3>error.knowledge_graph.predicate.missing<a class="headerlink" href="#error-knowledge-graph-predicate-missing" title="Permalink to this heading"></a></h3>
+<p>Edge ‘{edge_id}’ predicate is missing or empty!</p>
+</div>
+<div class="section" id="error-knowledge-graph-predicate-not-array">
+<h3>error.knowledge_graph.predicate.not_array<a class="headerlink" href="#error-knowledge-graph-predicate-not-array" title="Permalink to this heading"></a></h3>
+<p>Edge ‘{edge_id}’ predicate slot value is not an array!</p>
+</div>
+<div class="section" id="error-knowledge-graph-predicate-empty-array">
+<h3>error.knowledge_graph.predicate.empty_array<a class="headerlink" href="#error-knowledge-graph-predicate-empty-array" title="Permalink to this heading"></a></h3>
+<p>Edge ‘{edge_id}’ predicate slot value is an empty array!</p>
+</div>
+<div class="section" id="error-knowledge-graph-predicate-unknown">
+<h3>error.knowledge_graph.predicate.unknown<a class="headerlink" href="#error-knowledge-graph-predicate-unknown" title="Permalink to this heading"></a></h3>
+<p>Edge ‘{edge_id}’ predicate ‘{predicate}’ is unknown!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-subject-missing">
+<h3>error.knowledge_graph.edge.subject.missing<a class="headerlink" href="#error-knowledge-graph-edge-subject-missing" title="Permalink to this heading"></a></h3>
+<p>Edge ‘{edge_id}’ has a missing or empty ‘subject’ slot value!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-subject-missing-from-nodes">
+<h3>error.knowledge_graph.edge.subject.missing_from_nodes<a class="headerlink" href="#error-knowledge-graph-edge-subject-missing-from-nodes" title="Permalink to this heading"></a></h3>
+<p>Edge ‘subject’ id ‘{object_id}’ is missing from the nodes catalog!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-object-missing">
+<h3>error.knowledge_graph.edge.object.missing<a class="headerlink" href="#error-knowledge-graph-edge-object-missing" title="Permalink to this heading"></a></h3>
+<p>Edge ‘{edge_id}’ has a missing or empty ‘object’ slot value!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-object-missing-from-nodes">
+<h3>error.knowledge_graph.edge.object.missing_from_nodes<a class="headerlink" href="#error-knowledge-graph-edge-object-missing-from-nodes" title="Permalink to this heading"></a></h3>
+<p>Edge ‘object’ id ‘{object_id}’ is missing from the nodes catalog!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-attribute-missing">
+<h3>error.knowledge_graph.edge.attribute.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-missing" title="Permalink to this heading"></a></h3>
+<p>Edge has no ‘attributes’ key!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-attribute-empty">
+<h3>error.knowledge_graph.edge.attribute.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-empty" title="Permalink to this heading"></a></h3>
+<p>Edge has empty attributes!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-attribute-not-list">
+<h3>error.knowledge_graph.edge.attribute.not_list<a class="headerlink" href="#error-knowledge-graph-edge-attribute-not-list" title="Permalink to this heading"></a></h3>
+<p>Edge attributes are not a list!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-attribute-type-id-missing">
+<h3>error.knowledge_graph.edge.attribute.type_id.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-missing" title="Permalink to this heading"></a></h3>
+<p>Edge attribute is missing its ‘attribute_type_id’ property!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-attribute-type-id-empty">
+<h3>error.knowledge_graph.edge.attribute.type_id.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-empty" title="Permalink to this heading"></a></h3>
+<p>Edge attribute empty ‘attribute_type_id’ property!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-attribute-type-id-not-curie">
+<h3>error.knowledge_graph.edge.attribute.type_id.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-not-curie" title="Permalink to this heading"></a></h3>
+<p>Edge attribute_type_id ‘{attribute_type_id}’ is not a CURIE!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-attribute-value-missing">
+<h3>error.knowledge_graph.edge.attribute.value.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-value-missing" title="Permalink to this heading"></a></h3>
+<p>Edge attribute is missing its ‘value’ property!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-attribute-value-empty">
+<h3>error.knowledge_graph.edge.attribute.value.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-value-empty" title="Permalink to this heading"></a></h3>
+<p>Edge attribute empty ‘value’ property!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-provenance-infores-missing">
+<h3>error.knowledge_graph.edge.provenance.infores.missing<a class="headerlink" href="#error-knowledge-graph-edge-provenance-infores-missing" title="Permalink to this heading"></a></h3>
+<p>Edge has provenance value ‘{infores}’ which is not a well-formed InfoRes CURIE!</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="reasoner_validator.validation_codes.html" class="btn btn-neutral float-left" title="Validation Codes Dictionary" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="reasoner_validator.versioning.html" class="btn btn-neutral float-right" title="SemVer Versioning Utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Richard Bruskiewich;  2020-21, Patrick Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
