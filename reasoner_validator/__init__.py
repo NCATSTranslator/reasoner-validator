@@ -1,5 +1,5 @@
 from typing import Optional, List, Dict
-
+from os.path import join, abspath, dirname
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.biolink import (
     check_biolink_model_compliance_of_query_graph,

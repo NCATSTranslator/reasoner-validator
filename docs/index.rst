@@ -103,15 +103,17 @@ named fields in the Python string templates found in the `reasoner_validator pac
 
 Python API
 ----------
-
 .. toctree::
    :maxdepth: 2
-   :autosummary_generate: True
 
    TRAPI Response Validation <reasoner_validator>
    TRAPI Schema Validation <reasoner_validator.trapi>
-   Biolink <reasoner_validator.biolink>
    TRAPI Result Mapping <reasoner_validator.trapi.mapping>
+   Biolink Validation <reasoner_validator.biolink>
+   Validator Reporter <reasoner_validator.report>
+   Validation Codes Dictionary <reasoner_validator.validation_codes>
+   Validation Codes <validation_codes_dictionary>
+   SemVer Version Utilities <reasoner_validator.versioning>
 
 Refer to the `reasoner_validator package unit tests <https://github
 .com/NCATSTranslator/reasoner-validator/blob/master/tests>`_ for additional guidance on how to use the Python API.
@@ -277,6 +279,8 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 * 3.0.# releases
   - wrapped the all validation with a ValidatorReporter class serving to collect and return validation messages in a disciplined, codified manner (as a [master YAML file with hierarchically-indexed Python string templates](reasoner_validator/codes.yaml)). Generally still reliably validates Biolink Model release <= 2.4.8
 * 3.1.# releases: mainly supports Biolink Model releases >= 3.0.* and will likely generate some spurious validation warnings or errors for Biolink Model release <= 2.4.8 (reflects non-backward compatible changes to the Biolink Model Toolkit)
+
+The `full change log is here <https://github.com/NCATSTranslator/reasoner-validator/blob/master/CHANGELOG.md>`_.
 
 Community
 =========
