@@ -12,3 +12,8 @@ gh-pages/
 
 # PyCharms IDE metadata
 .idea/
+
+# venv
+venv/
+ubuntu/
+py*/

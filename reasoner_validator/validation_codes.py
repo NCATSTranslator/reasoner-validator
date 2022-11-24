@@ -1,5 +1,6 @@
+import copy
 from os.path import join, abspath, dirname
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, Any, Dict, List, Tuple
 
 from yaml import load, BaseLoader
 
@@ -9,6 +10,9 @@ DEFAULT_CODES_DOCUMENTATION_FILE = abspath(join(dirname(__file__), "..", "docs",
 class CodeDictionary:
 
     CODE_DICTIONARY: str = abspath(join(dirname(__file__), "codes.yaml"))
+
+    MESSAGE = "$message"
+    DESCRIPTION = "$description"
 
     code_dictionary: Optional[Dict] = None
 
@@ -21,14 +25,14 @@ class CodeDictionary:
         return cls.code_dictionary
 
     @classmethod
-    def _get_nested_code_value(cls, data: Dict, path: List[str], pos: int) -> Optional[str]:
+    def _get_nested_code_entry(cls, data: Dict[str, Dict], path: List[str], pos: int) -> Optional[Dict[str, Any]]:
         """
         Navigate dot delimited tag 'path' into a multi-level dictionary, to return its associated value.
 
         :param data: Dict, multi-level data dictionary
         :param path: str, dotted JSON tag path
         :param pos: int, zero-based current position in tag path
-        :return: string value of the multi-level tag, if available; 'None' otherwise if no tag value found in the path
+        :return: Dict, value of the multi-level tag, if available; 'None' otherwise if no tag value found in the path
         """
         tag = path[pos]
         if tag not in data:
@@ -36,39 +40,63 @@ class CodeDictionary:
 
         pos += 1
         if pos == len(path):
-            return data[tag]
+            return copy.deepcopy(data[tag])
         else:
-            return cls._get_nested_code_value(data[tag], path, pos)
+            return cls._get_nested_code_entry(data[tag], path, pos)
 
     @classmethod
-    def _code_value(cls, code) -> Optional[Tuple[str, str]]:
+    def _code_value(cls, code: Optional[str]) -> Optional[Tuple[str, Dict]]:
         """
         Get value of specified dot delimited tag name.
 
-        :param code:
-        :return: Optional[Tuple[str, str]], 2-tuple of the code type (i.e. info, warning, error) and the
-                 validation message template; None if empty code or code unknown in the code dictionary
+        :param code: Optional[str], code whose value is to be resolved (recursive search)
+        :return: Optional[Tuple[str, Dict[str,str]]], 2-tuple of the code type (i.e. info, warning, error) and the
+                 validation message entry (dictionary); None if empty code or code unknown in the code dictionary
         """
         if not code:
             return None
 
         codes: Dict = cls._get_code_dictionary()
         code_path = code.split(".")
-        value = cls._get_nested_code_value(codes, code_path, 0)
+        value: Optional[Dict[str, str]] = cls._get_nested_code_entry(codes, code_path, 0)
         if value is not None:
             return code_path[0], value
         else:
             return None
 
-    @staticmethod
-    def display(**message):
+    @classmethod
+    def _get_entry(cls, code: Optional[str]) -> Optional[Dict[str, str]]:
+        value: Optional[Tuple[str, Dict[str, str]]] = cls._code_value(code)
+        if not value:
+            return None
+        entry: Optional[Dict[str, str]]
+        message_type, entry = value
+        return entry
+
+    @classmethod
+    def get_message_template(cls, code: Optional[str]) -> Optional[str]:
+        entry: Optional[Dict[str, str]] = cls._get_entry(code)
+        if not entry:
+            return None
+        return entry.setdefault(cls.MESSAGE, "")
+
+    @classmethod
+    def get_description(cls, code: Optional[str]) -> Optional[str]:
+        entry: Optional[Dict[str, str]] = cls._get_entry(code)
+        if not entry:
+            return None
+        return entry.setdefault(cls.DESCRIPTION, "")
+
+    @classmethod
+    def display(cls, **message):
         assert message and 'code' in message  # should be non-empty, containing a code
         code: str = message.pop('code')
-        value: Optional[Tuple[str, str]] = CodeDictionary._code_value(code)
+        value: Optional[Tuple[str, Dict[str, str]]] = cls._code_value(code)
         assert value, f"CodeDictionary.display(): unknown message code {code}"
-        message_type, template = value
+        message_type, entry = value
         code_parts: List[str] = [part.capitalize() for part in code.replace("_", ".").split(".")[1:-1]]
         context: str = ' '.join(code_parts) + ': ' if code_parts else ''
+        template: str = entry[cls.MESSAGE]
         if message:
             # Message template parameterized with additional named parameter
             # message context, assumed to be referenced by the template

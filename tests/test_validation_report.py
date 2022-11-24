@@ -31,13 +31,25 @@ def check_messages(validator: ValidationReporter, code, no_errors: bool = False)
             assert not validator.has_messages(), f"Unexpected messages seen {messages}"
 
 
-def test_message_loader():
+def test__code_value():
     assert CodeDictionary._code_value("") is None
-    assert CodeDictionary._code_value("info.compliant")[1] == "Biolink Model-compliant TRAPI Message."
+    assert CodeDictionary._code_value("info.compliant") is not None
     assert CodeDictionary._code_value("info") is not None
     assert CodeDictionary._code_value("warning") is not None
     assert CodeDictionary._code_value("error") is not None
     assert CodeDictionary._code_value("foo.bar") is None
+
+
+def test_get_message_template():
+    assert CodeDictionary.get_message_template("") is None
+    assert CodeDictionary.get_message_template("info.compliant") == "Biolink Model-compliant TRAPI Message."
+    assert CodeDictionary.get_message_template("foo.bar") is None
+
+
+def test_get_description():
+    assert CodeDictionary.get_description("") is None
+    assert CodeDictionary.get_description("info.compliant") == "Biolink Model-compliant TRAPI Message."
+    assert CodeDictionary.get_description("foo.bar") is None
 
 
 def test_message_display():
