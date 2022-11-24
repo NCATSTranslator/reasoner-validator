@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "reasoner-validator"
-version = "3.2.0"
+version = "3.2.1"
 description = "Validation tools for Reasoner API"
 authors = [
     "Richard Bruskiewich <richard.bruskiewich@delphinai.com>",
@@ -34,9 +34,8 @@ classifiers = [
 packages = [{include = "reasoner_validator"}]
 
 include = [
-    "CHANGELOG.md",
     { path = "tests" },
-    { path = "docs" },
+    { path = "docs" }
 ]
 
 [tool.poetry.dependencies]
