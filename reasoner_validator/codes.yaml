@@ -10,7 +10,7 @@ info:
     $message: "User excluded S-P-O triple '{edge_id}' or all test case S-P-O triples from resource test location."
   compliant:
     $message: "Biolink Model-compliant TRAPI Message."
-    $description: ""
+    $description: "The specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for the specified releases of these standards"
   input_edge:
     node:
       category:

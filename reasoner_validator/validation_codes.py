@@ -25,13 +25,23 @@ class CodeDictionary:
         return cls.code_dictionary
 
     @classmethod
-    def _get_nested_code_entry(cls, data: Dict[str, Dict], path: List[str], pos: int) -> Optional[Dict[str, Any]]:
+    def _get_nested_code_entry(
+            cls,
+            data: Dict[str, Dict],
+            path: List[str],
+            pos: int,
+            facet: Optional[str],
+            is_leaf: bool
+    ) -> Optional[Dict[str, Any]]:
         """
         Navigate dot delimited tag 'path' into a multi-level dictionary, to return its associated value.
 
-        :param data: Dict, multi-level data dictionary
+        :param data: Dict, multi-level data dictionary being traversed
         :param path: str, dotted JSON tag path
         :param pos: int, zero-based current position in tag path
+        :param facet: Optional[str], constraint on code entry facet to be returned; if specified, should be either
+                                     "message" or "description" (default: return all facets of the code entry)
+        :param is_leaf: bool, only return entry if it is a 'leaf' of the code tree
         :return: Dict, value of the multi-level tag, if available; 'None' otherwise if no tag value found in the path
         """
         tag = path[pos]
@@ -40,33 +50,68 @@ class CodeDictionary:
 
         pos += 1
         if pos == len(path):
-            return copy.deepcopy(data[tag])
+            entry: Dict = data[tag]
+
+            if not entry:
+                # sanity check...
+                return None
+
+            # If the is_leaf flag is True, then the expected code value *must* be a
+            # code subtree leaf which, at a minimum, must contain a MESSAGE template.
+            # Conversely, a MESSAGE template should not be there if a code subtree is expected?
+            if is_leaf and cls.MESSAGE not in entry or not is_leaf and cls.MESSAGE in entry:
+                return None
+
+            if facet:
+                # need to filter on 'facet' here
+                # TODO: this particular code is only good for leaves of the code tree?!??
+                return {key: value for key, value in entry.items() if key == f"${facet.lower()}"}
+            else:
+                return copy.deepcopy(entry)
         else:
-            return cls._get_nested_code_entry(data[tag], path, pos)
+            return cls._get_nested_code_entry(data[tag], path, pos, facet, is_leaf)
 
     @classmethod
-    def _code_value(cls, code: Optional[str]) -> Optional[Tuple[str, Dict]]:
+    def get_code_subtree(
+            cls,
+            code: str,
+            facet: Optional[str] = None,
+            is_leaf: Optional[bool] = False
+    ) -> Optional[Tuple[str, Dict]]:
         """
-        Get value of specified dot delimited tag name.
+        Get subtree of specified dot-delimited tag name, returned with message type (i.e. info, warning, error).
+        If optional 'is_leaf' flag is set to True, then only return the code if it is a terminal leaf in the code tree.
 
-        :param code: Optional[str], code whose value is to be resolved (recursive search)
+        :param code: Optional[str], dot delimited validation message code identifier (None is ok, but returns None)
+        :param facet: Optional[str], constraint on code entry facet to be returned; if specified, should be either
+                                     "message" or "description" (default: return all facets of the code entry)
+        :param is_leaf: Optional[bool], only return entry if it is a 'leaf' of the code tree (default: False)
         :return: Optional[Tuple[str, Dict[str,str]]], 2-tuple of the code type (i.e. info, warning, error) and the
-                 validation message entry (dictionary); None if empty code or code unknown in the code dictionary
+                 validation message entry (dictionary); None if empty code or code unknown in the code dictionary,
+                 or (if the is_leaf option is 'True') if the code doesn't resolve to a single leaf.
         """
         if not code:
             return None
 
         codes: Dict = cls._get_code_dictionary()
         code_path = code.split(".")
-        value: Optional[Dict[str, str]] = cls._get_nested_code_entry(codes, code_path, 0)
+        value: Optional[Dict[str, str]] = cls._get_nested_code_entry(codes, code_path, 0, facet, is_leaf)
         if value is not None:
             return code_path[0], value
         else:
             return None
 
     @classmethod
-    def _get_entry(cls, code: Optional[str]) -> Optional[Dict[str, str]]:
-        value: Optional[Tuple[str, Dict[str, str]]] = cls._code_value(code)
+    def get_code_entry(cls, code: Optional[str], facet: Optional[str] = None) -> Optional[Dict[str, str]]:
+        """
+        Get the single code entry corresponding to the given code, if available.
+
+        :param code: Optional[str], dot delimited validation message code identifier (None is ok, but returns None)
+        :param facet: Optional[str], constraint on code entry facet to be returned; if specified, should be either
+                                     "message" or "description" (default: return all facets of the code entry)
+        :return: Dict, single terminal leaf code entry (complete with indicated or all facets)
+        """
+        value: Optional[Tuple[str, Dict[str, str]]] = cls.get_code_subtree(code, facet=facet, is_leaf=True)
         if not value:
             return None
         entry: Optional[Dict[str, str]]
@@ -75,23 +120,19 @@ class CodeDictionary:
 
     @classmethod
     def get_message_template(cls, code: Optional[str]) -> Optional[str]:
-        entry: Optional[Dict[str, str]] = cls._get_entry(code)
-        if not entry:
-            return None
-        return entry.setdefault(cls.MESSAGE, "")
+        entry: Optional[Dict[str, str]] = cls.get_code_entry(code)
+        return entry[cls.MESSAGE] if entry else None
 
     @classmethod
     def get_description(cls, code: Optional[str]) -> Optional[str]:
-        entry: Optional[Dict[str, str]] = cls._get_entry(code)
-        if not entry:
-            return None
-        return entry.setdefault(cls.DESCRIPTION, "")
+        entry: Optional[Dict[str, str]] = cls.get_code_entry(code)
+        return entry[cls.DESCRIPTION] if entry else None
 
     @classmethod
     def display(cls, **message):
         assert message and 'code' in message  # should be non-empty, containing a code
         code: str = message.pop('code')
-        value: Optional[Tuple[str, Dict[str, str]]] = cls._code_value(code)
+        value: Optional[Tuple[str, Dict[str, str]]] = cls.get_code_subtree(code, is_leaf=True)
         assert value, f"CodeDictionary.display(): unknown message code {code}"
         message_type, entry = value
         code_parts: List[str] = [part.capitalize() for part in code.replace("_", ".").split(".")[1:-1]]
