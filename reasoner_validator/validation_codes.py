@@ -3,6 +3,9 @@ from os.path import join, abspath, dirname
 from typing import Optional, Any, Dict, List, Tuple
 
 from yaml import load, BaseLoader
+import logging
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_CODES_DOCUMENTATION_FILE = abspath(join(dirname(__file__), "..", "docs", "validation_codes_dictionary.md"))
 
@@ -149,21 +152,16 @@ class CodeDictionary:
     @classmethod
     def _dump_code_markdown_entries(cls, root: str, code_subtree: Dict, markdown_file):
         for tag, value in code_subtree.items():
-            if isinstance(value, Dict):
+            if cls.MESSAGE not in value:
                 # Recurse down to leaf of tree
                 cls._dump_code_markdown_entries(f"{root}.{tag}", value, markdown_file)
-            elif isinstance(value, str):
-                print(f"### {root}.{tag}\n\n{value}\n", file=markdown_file)
-            #
-            # Future design of the codes dictionary *might* provide
-            # for additional descriptive contents in a list of strings
-            #
-            # elif isinstance(value, List):
-            #     print(f"### {root}.{tag}\n\n{value}\n", file=markdown_file)
-            #     for item in value:
-            #         print(f"- {item}", file=markdown_file)
             else:
-                raise RuntimeError("Unknown code data type?")
+                print(f"### {root}.{tag}\n", file=markdown_file)
+                message: str = value[cls.MESSAGE]
+                description: str = value[cls.DESCRIPTION] if cls.DESCRIPTION in value else None
+                print(f"**Message:** {message}\n", file=markdown_file)
+                if description:
+                    print(f"**Description:** {description}\n", file=markdown_file)
 
     @classmethod
     def markdown(cls, filename: str = DEFAULT_CODES_DOCUMENTATION_FILE) -> bool:
