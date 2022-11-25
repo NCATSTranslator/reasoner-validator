@@ -16,37 +16,37 @@ info:
       category:
         abstract:
           $message: "'{name}' is abstract."
-          $description: ""
+          $description: "Input Edge data can have 'abstract' category classes..."
         mixin:
           $message: "'{name}' is a mixin."
-          $description: ""
+          $description: "Input Edge data can have 'mixin' category classes..."
     predicate:
       abstract:
           $message: "'{name}' is abstract."
-          $description: ""
+          $description: "Input Edge data can have 'abstract' predicates..."
       mixin:
         $message: "'{name}' is a mixin."
-        $description: ""
+        $description: "Input Edge data can have 'mixin' predicates..."
   query_graph:
     node:
       category:
         abstract:
           $message: "'{name}' is abstract."
-          $description: ""
+          $description: "TRAPI Message Query Graphs can have 'abstract' category classes..."
         mixin:
           $message: "'{name}' is a mixin."
-          $description: ""
+          $description: "TRAPI Message Query Graphs can have 'mixin' category classes..."
     predicate:
       abstract:
         $message: "'{name}' is abstract."
-        $description: ""
+        $description: "TRAPI Message Query Graphs can have 'mixin' predicates..."
       mixin:
         $message: "'{name}' is a mixin."
-        $description: ""
+        $description: "TRAPI Message Query Graphs can have 'mixin' predicates..."
   attribute_type_id:
     non_biolink_prefix:
       $message: "Edge attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink."
-      $description: ""
+      $description: "Non-Biolink CURIEs are tolerated as term value for the attribute_type_id properties of edge attributes..."
 
 warning:
   graph:
