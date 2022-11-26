@@ -47,8 +47,15 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Validation Codes Dictionary</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary"><code class="docutils literal notranslate"><span class="pre">CodeDictionary</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.CODE_DICTIONARY"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.CODE_DICTIONARY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.DESCRIPTION"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.DESCRIPTION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.MESSAGE"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.MESSAGE</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.code_dictionary"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.code_dictionary</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.display"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.filter_copy_by_facet"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.filter_copy_by_facet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.get_code_entry"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.get_code_entry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.get_code_subtree"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.get_code_subtree()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.get_description"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.get_description()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.get_message_template"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.get_message_template()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.markdown"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.markdown()</span></code></a></li>
 </ul>
 </li>
@@ -102,18 +109,33 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.markdown" title="reasoner_validator.validation_codes.CodeDictionary.markdown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">markdown</span></code></a>([filename])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.filter_copy_by_facet" title="reasoner_validator.validation_codes.CodeDictionary.filter_copy_by_facet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_copy_by_facet</span></code></a>(tree, facet)</p></td>
+<td><p>Copy subtree, filtering out leaf data by specified facet.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.get_code_entry" title="reasoner_validator.validation_codes.CodeDictionary.get_code_entry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_code_entry</span></code></a>(code[, facet])</p></td>
+<td><p>Get the single code entry corresponding to the given code, if available.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.get_code_subtree" title="reasoner_validator.validation_codes.CodeDictionary.get_code_subtree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_code_subtree</span></code></a>(code[, facet, is_leaf])</p></td>
+<td><p>Get subtree of specified dot-delimited tag name, returned with message type (i.e.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.markdown" title="reasoner_validator.validation_codes.CodeDictionary.markdown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">markdown</span></code></a>([filename])</p></td>
 <td><p>Dump the Code Dictionary into a validation_codes_dictionary.md Markdown file, for documentation purposes.</p></td>
 </tr>
 </tbody>
 </table>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 52%" />
-<col style="width: 48%" />
+<col style="width: 71%" />
+<col style="width: 29%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>display</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>get_description</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>get_message_template</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -124,13 +146,91 @@
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary.DESCRIPTION">
+<span class="sig-name descname"><span class="pre">DESCRIPTION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'$description'</span></em><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.DESCRIPTION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary.MESSAGE">
+<span class="sig-name descname"><span class="pre">MESSAGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'$message'</span></em><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.MESSAGE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary.code_dictionary">
 <span class="sig-name descname"><span class="pre">code_dictionary</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.code_dictionary" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary.display">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.display" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.display" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary.filter_copy_by_facet">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filter_copy_by_facet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.filter_copy_by_facet" title="Permalink to this definition"></a></dt>
+<dd><p>Copy subtree, filtering out leaf data by specified facet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tree</strong> – Dict, message code dictionary tree to be copied, possibly filtered by facet</p></li>
+<li><p><strong>facet</strong> – str, constraint on code entry facet to be returned; if specified, should be either
+“message” or “description” (default: return all facets of the code entry)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dict, tree filtered by facet</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary.get_code_entry">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_code_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.get_code_entry" title="Permalink to this definition"></a></dt>
+<dd><p>Get the single code entry corresponding to the given code, if available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code</strong> – Optional[str], dot delimited validation message code identifier (None is ok, but returns None)</p></li>
+<li><p><strong>facet</strong> – Optional[str], constraint on code entry facet to be returned; if specified, should be either
+“message” or “description” (default: return all facets of the code entry)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dict, single terminal leaf code entry (complete with indicated or all facets)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary.get_code_subtree">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_code_subtree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_leaf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.get_code_subtree" title="Permalink to this definition"></a></dt>
+<dd><p>Get subtree of specified dot-delimited tag name, returned with message type (i.e. info, warning, error).
+If optional ‘is_leaf’ flag is set to True, then only return the code if it is a terminal leaf in the code tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code</strong> – Optional[str], dot delimited validation message code identifier (None is ok, but returns None)</p></li>
+<li><p><strong>facet</strong> – Optional[str], constraint on code entry facet to be returned; if specified, should be either
+“message” or “description” (default: return all facets of the code entry)</p></li>
+<li><p><strong>is_leaf</strong> – Optional[bool], only return entry if it is a ‘leaf’ of the code tree (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Optional[Tuple[str, Dict[str,str]]], 2-tuple of the code type (i.e. info, warning, error) and the
+validation message entry (dictionary); None if empty code or code unknown in the code dictionary,
+or (if the is_leaf option is ‘True’) if the code doesn’t resolve to a single leaf.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary.get_description">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_description</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.get_description" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary.get_message_template">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_message_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.get_message_template" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
