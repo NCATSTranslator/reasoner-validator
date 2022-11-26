@@ -8,46 +8,47 @@
 info:
   excluded:
     $message: "User excluded S-P-O triple '{edge_id}' or all test case S-P-O triples from resource test location."
+    $description: "Check the JSON KP test edge data file for specific 'exclude_tests' directives, either global to the file, or on specific edges."
   compliant:
     $message: "Biolink Model-compliant TRAPI Message."
-    $description: "Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards"
+    $description: "Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards."
   input_edge:
     node:
       category:
         abstract:
           $message: "'{name}' is abstract."
-          $description: "Input Edge data can have 'abstract' category classes..."
+          $description: "Input Edge data can have 'abstract' category classes."
         mixin:
           $message: "'{name}' is a mixin."
-          $description: "Input Edge data can have 'mixin' category classes..."
+          $description: "Input Edge data can have 'mixin' category classes."
     predicate:
       abstract:
           $message: "'{name}' is abstract."
-          $description: "Input Edge data can have 'abstract' predicates..."
+          $description: "Input Edge data can have 'abstract' predicates."
       mixin:
         $message: "'{name}' is a mixin."
-        $description: "Input Edge data can have 'mixin' predicates..."
+        $description: "Input Edge data can have 'mixin' predicates."
   query_graph:
     node:
       category:
         abstract:
           $message: "'{name}' is abstract."
-          $description: "TRAPI Message Query Graphs can have 'abstract' category classes..."
+          $description: "TRAPI Message Query Graphs can have 'abstract' category classes."
         mixin:
           $message: "'{name}' is a mixin."
-          $description: "TRAPI Message Query Graphs can have 'mixin' category classes..."
+          $description: "TRAPI Message Query Graphs can have 'mixin' category classes."
     edge:
       predicate:
         abstract:
           $message: "'{name}' is abstract."
-          $description: "TRAPI Message Query Graphs can have 'mixin' predicates..."
+          $description: "TRAPI Message Query Graphs can have 'mixin' predicates."
         mixin:
           $message: "'{name}' is a mixin."
-          $description: "TRAPI Message Query Graphs can have 'mixin' predicates..."
+          $description: "TRAPI Message Query Graphs can have 'mixin' predicates."
   attribute_type_id:
     non_biolink_prefix:
       $message: "Edge attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink."
-      $description: "Non-Biolink CURIEs are tolerated as term value for the attribute_type_id properties of edge attributes..."
+      $description: "Non-Biolink CURIEs are tolerated as term value for the attribute_type_id properties of edge attributes."
 
 warning:
   graph:

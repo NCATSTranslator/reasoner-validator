@@ -28,6 +28,35 @@ class CodeDictionary:
         return cls.code_dictionary
 
     @classmethod
+    def filter_copy_by_facet(cls, tree: Dict, facet: str) -> Dict:
+        """
+        Copy subtree, filtering out leaf data by specified facet.
+
+        :param tree: Dict, message code dictionary tree to be copied, possibly filtered by facet
+        :param facet: str, constraint on code entry facet to be returned; if specified, should be either
+                        "message" or "description" (default: return all facets of the code entry)
+        :return: Dict, tree filtered by facet
+        """
+        if facet:
+            if cls.MESSAGE in tree:
+                # Terminate recursion; Copy this leaf in the subtree, filtering on the specified 'facet'
+                return {key: value for key, value in tree.items() if key == f"${facet.lower()}"}
+            else:
+                # Recurse filter/copy the tree's children?
+                tree_copy: Dict = dict()
+                for key, subtree in tree.items():
+                    if isinstance(subtree, Dict):
+                        tree_copy[key] = cls.filter_copy_by_facet(subtree, facet)
+                    else:
+                        # Note: this error may occur if the codes.yaml leaf entry is missing its MESSAGE?
+                        logger.warning(f"filter_copy_by_facet(): subtree '{str(subtree)}' is not a dictionary?")
+
+                return tree_copy
+        else:
+            # Shortcut: simply deepcopy the subtree, if if facet is not being filtered
+            return copy.deepcopy(tree)
+
+    @classmethod
     def _get_nested_code_entry(
             cls,
             data: Dict[str, Dict],
@@ -51,28 +80,25 @@ class CodeDictionary:
         if tag not in data:
             return None
 
+        subtree: Dict = data[tag]
+
         pos += 1
         if pos == len(path):
-            entry: Dict = data[tag]
 
-            if not entry:
+            if not subtree:
                 # sanity check...
                 return None
 
             # If the is_leaf flag is True, then the expected code value *must* be a
             # code subtree leaf which, at a minimum, must contain a MESSAGE template.
             # Conversely, a MESSAGE template should not be there if a code subtree is expected?
-            if is_leaf and cls.MESSAGE not in entry or not is_leaf and cls.MESSAGE in entry:
+            if cls.MESSAGE in subtree and not is_leaf or cls.MESSAGE not in subtree and is_leaf:
                 return None
 
-            if facet:
-                # need to filter on 'facet' here
-                # TODO: this particular code is only good for leaves of the code tree?!??
-                return {key: value for key, value in entry.items() if key == f"${facet.lower()}"}
-            else:
-                return copy.deepcopy(entry)
+            return cls.filter_copy_by_facet(subtree, facet)
+
         else:
-            return cls._get_nested_code_entry(data[tag], path, pos, facet, is_leaf)
+            return cls._get_nested_code_entry(subtree, path, pos, facet, is_leaf)
 
     @classmethod
     def get_code_subtree(

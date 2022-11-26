@@ -41,7 +41,9 @@ def test_check_basic_get_code_subtree():
 
 def test_get_code_subtree_is_leaf():
 
-    message_type, leaf = CodeDictionary.get_code_subtree("info.compliant", is_leaf=True)
+    result = CodeDictionary.get_code_subtree("info.compliant", is_leaf=True)
+    assert result is not None
+    message_type, leaf = result
     assert leaf is not None
     assert isinstance(leaf, Dict)
     assert all([key in [CodeDictionary.MESSAGE, CodeDictionary.DESCRIPTION] for key in leaf])
@@ -53,29 +55,56 @@ def test_get_code_subtree_is_leaf():
 
 def test_get_code_subtree_facet_message():
 
-    message_type, leaf = CodeDictionary.get_code_subtree("info.compliant", facet="message", is_leaf=True)
+    result = CodeDictionary.get_code_subtree("info.compliant", facet="message", is_leaf=True)
+    assert result is not None
+    message_type, leaf = result
     assert leaf is not None
     assert isinstance(leaf, Dict)
     assert CodeDictionary.MESSAGE in leaf
     assert leaf[CodeDictionary.MESSAGE] == "Biolink Model-compliant TRAPI Message."
     assert CodeDictionary.DESCRIPTION not in leaf
 
+    result = CodeDictionary.get_code_subtree("info.query_graph.node.category", facet="message")
+    assert result is not None
+    message_type, subtree = result
+    assert subtree is not None
+    assert isinstance(subtree, Dict)
+    assert all([key in ["abstract", "mixin"] for key in subtree])
+    assert CodeDictionary.MESSAGE in subtree["abstract"]
+    assert subtree["abstract"][CodeDictionary.MESSAGE] == "'{name}' is abstract."
+    assert CodeDictionary.DESCRIPTION not in subtree["abstract"]
+
 
 def test_get_code_subtree_facet_description():
 
-    message_type, leaf = CodeDictionary.get_code_subtree("info.compliant", facet="description", is_leaf=True)
+    result = CodeDictionary.get_code_subtree("info.compliant", facet="description", is_leaf=True)
+    assert result is not None
+    message_type, leaf = result
     assert leaf is not None
     assert isinstance(leaf, Dict)
     assert CodeDictionary.DESCRIPTION in leaf
     assert leaf[CodeDictionary.DESCRIPTION].startswith("Specified TRAPI message completely satisfies")
     assert CodeDictionary.MESSAGE not in leaf
 
-    assert CodeDictionary.get_code_subtree("warning") is not None
+    result = CodeDictionary.get_code_subtree("info.query_graph.node.category", facet="description")
+    assert result is not None
+    message_type, subtree = result
+    assert subtree is not None
+    assert isinstance(subtree, Dict)
+    assert all([key in ["abstract", "mixin"] for key in subtree])
+    assert CodeDictionary.DESCRIPTION in subtree["mixin"]
+    assert subtree["mixin"][CodeDictionary.DESCRIPTION] == \
+           "TRAPI Message Query Graphs can have 'mixin' category classes."
+    assert CodeDictionary.MESSAGE not in subtree["mixin"]
 
 
 def test_get_code_subtree_internal_subtree():
+    assert CodeDictionary.get_code_subtree("warning") is not None
 
-    message_type, subtree = CodeDictionary.get_code_subtree("warning.knowledge_graph")
+    result = CodeDictionary.get_code_subtree("warning.knowledge_graph")
+    assert result is not None
+    message_type, subtree = result
+    assert isinstance(subtree, Dict)
     assert message_type == "warning"
     assert subtree is not None
     assert all([key in ["node", "predicate", "edge"] for key in subtree])
