@@ -596,7 +596,7 @@ class BiolinkValidator(ValidationReporter):
         )
         if not predicate:
             self.report(
-                code="error.input_edge.edge.predicate.missing",
+                code="error.input_edge.predicate.missing",
                 edge_id=edge_id
             )
         else:

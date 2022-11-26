@@ -488,7 +488,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             },
             # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'drug--biolink:treats->type-2 diabetes' " +
             # f"predicate slot value is not an array!"
-            "error.query_graph.predicate.not_array"
+            "error.query_graph.edge.predicate.not_array"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -509,7 +509,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                 }
             },
             # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'drug--[]->type-2 diabetes' predicate slot value is an empty array!"
-            "error.query_graph.predicate.empty_array"
+            "error.query_graph.edge.predicate.empty_array"
         ),
         (
             LATEST_BIOLINK_MODEL,
@@ -808,8 +808,8 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                 "attributes": {"not_a_list"}
             },
             get_ara_test_case(),
-            # "Edge attributes are not a list!"
-            "error.knowledge_graph.edge.attribute.not_list"
+            # "Edge attributes are not an array!"
+            "error.knowledge_graph.edge.attribute.not_array"
         ),
         (
             # Query 4. attribute missing its 'attribute_type_id' field

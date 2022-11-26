@@ -20,14 +20,13 @@ info:
         mixin:
           $message: "'{name}' is a mixin."
           $description: "Input Edge data can have 'mixin' category classes..."
-    edge:
-      predicate:
-        abstract:
-            $message: "'{name}' is abstract."
-            $description: "Input Edge data can have 'abstract' predicates..."
-        mixin:
-          $message: "'{name}' is a mixin."
-          $description: "Input Edge data can have 'mixin' predicates..."
+    predicate:
+      abstract:
+          $message: "'{name}' is abstract."
+          $description: "Input Edge data can have 'abstract' predicates..."
+      mixin:
+        $message: "'{name}' is a mixin."
+        $description: "Input Edge data can have 'mixin' predicates..."
   query_graph:
     node:
       category:
@@ -74,11 +73,10 @@ warning:
         unmapped_to_category:
           $message: "'{node_id}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
           $description: "The namespaces of Biolink model node of specified category may be incomplete with respect to identifiers being used in input edge data?"
-    edge:
-      predicate:
-        deprecated:
-          $message: "'{name}' is deprecated?"
-          $description: "Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?"
+    predicate:
+      deprecated:
+        $message: "'{name}' is deprecated?"
+        $description: "Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?"
   query_graph:
     node:
       ids:
@@ -184,11 +182,10 @@ error:
         missing:
           $message: "{context} node identifier is missing!"
           $description: "Input test data edge data needs to have a specific node identifier for testing!"
-    edge:
-      predicate:
-        missing:
-          $message: "{context} edge '{edge_id}' predicate is missing or empty!"
-          $description: "Input test edge data needs to have a specific edge predicate for testing!"
+    predicate:
+      missing:
+        $message: "{context} edge '{edge_id}' predicate is missing or empty!"
+        $description: "Input test edge data needs to have a specific edge predicate for testing!"
   query_graph:
     node:
       category:

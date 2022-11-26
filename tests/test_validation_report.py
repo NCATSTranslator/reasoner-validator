@@ -46,7 +46,7 @@ def test_get_code_subtree_is_leaf():
     assert isinstance(leaf, Dict)
     assert all([key in [CodeDictionary.MESSAGE, CodeDictionary.DESCRIPTION] for key in leaf])
     assert leaf[CodeDictionary.MESSAGE] == "Biolink Model-compliant TRAPI Message."
-    assert leaf[CodeDictionary.DESCRIPTION].startswith("The specified TRAPI message completely satisfies")
+    assert leaf[CodeDictionary.DESCRIPTION].startswith("Specified TRAPI message completely satisfies")
 
     assert CodeDictionary.get_code_subtree("info.compliant", is_leaf=False) is None
 
@@ -67,7 +67,7 @@ def test_get_code_subtree_facet_description():
     assert leaf is not None
     assert isinstance(leaf, Dict)
     assert CodeDictionary.DESCRIPTION in leaf
-    assert leaf[CodeDictionary.DESCRIPTION].startswith("The specified TRAPI message completely satisfies")
+    assert leaf[CodeDictionary.DESCRIPTION].startswith("Specified TRAPI message completely satisfies")
     assert CodeDictionary.MESSAGE not in leaf
 
     assert CodeDictionary.get_code_subtree("warning") is not None
@@ -181,7 +181,7 @@ def test_messages():
     reporter2 = ValidationReporter(prefix="Second Validation Report", biolink_version=TEST_BIOLINK_VERSION)
     assert reporter2.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
-    reporter2.report("info.query_graph.predicate.mixin", context="some_context", name="biolink:this_is_a_mixin")
+    reporter2.report("info.query_graph.edge.predicate.mixin", context="some_context", name="biolink:this_is_a_mixin")
     reporter2.report("warning.response.results.empty")
     reporter2.report("error.knowledge_graph.edges.empty")
     reporter1.merge(reporter2)
