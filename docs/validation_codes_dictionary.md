@@ -6,65 +6,67 @@
 
 **Message:** User excluded S-P-O triple '{edge_id}' or all test case S-P-O triples from resource test location.
 
+**Description:** Check the JSON KP test edge data file for specific 'exclude_tests' directives, either global to the file, or on specific edges.
+
 ### info.compliant
 
 **Message:** Biolink Model-compliant TRAPI Message.
 
-**Description:** Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards
+**Description:** Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards.
 
 ### info.input_edge.node.category.abstract
 
 **Message:** '{name}' is abstract.
 
-**Description:** Input Edge data can have 'abstract' category classes...
+**Description:** Input Edge data can have 'abstract' category classes.
 
 ### info.input_edge.node.category.mixin
 
 **Message:** '{name}' is a mixin.
 
-**Description:** Input Edge data can have 'mixin' category classes...
+**Description:** Input Edge data can have 'mixin' category classes.
 
-### info.input_edge.edge.predicate.abstract
+### info.input_edge.predicate.abstract
 
 **Message:** '{name}' is abstract.
 
-**Description:** Input Edge data can have 'abstract' predicates...
+**Description:** Input Edge data can have 'abstract' predicates.
 
-### info.input_edge.edge.predicate.mixin
+### info.input_edge.predicate.mixin
 
 **Message:** '{name}' is a mixin.
 
-**Description:** Input Edge data can have 'mixin' predicates...
+**Description:** Input Edge data can have 'mixin' predicates.
 
 ### info.query_graph.node.category.abstract
 
 **Message:** '{name}' is abstract.
 
-**Description:** TRAPI Message Query Graphs can have 'abstract' category classes...
+**Description:** TRAPI Message Query Graphs can have 'abstract' category classes.
 
 ### info.query_graph.node.category.mixin
 
 **Message:** '{name}' is a mixin.
 
-**Description:** TRAPI Message Query Graphs can have 'mixin' category classes...
+**Description:** TRAPI Message Query Graphs can have 'mixin' category classes.
 
 ### info.query_graph.edge.predicate.abstract
 
 **Message:** '{name}' is abstract.
 
-**Description:** TRAPI Message Query Graphs can have 'mixin' predicates...
+**Description:** TRAPI Message Query Graphs can have 'mixin' predicates.
 
 ### info.query_graph.edge.predicate.mixin
 
 **Message:** '{name}' is a mixin.
 
-**Description:** TRAPI Message Query Graphs can have 'mixin' predicates...
+**Description:** TRAPI Message Query Graphs can have 'mixin' predicates.
 
 ### info.attribute_type_id.non_biolink_prefix
 
 **Message:** Edge attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink.
 
-**Description:** Non-Biolink CURIEs are tolerated as term value for the attribute_type_id properties of edge attributes...
+**Description:** Non-Biolink CURIEs are tolerated as term value for the attribute_type_id properties of edge attributes.
 
 ## Warning
 
@@ -98,7 +100,7 @@
 
 **Description:** The namespaces of Biolink model node of specified category may be incomplete with respect to identifiers being used in input edge data?
 
-### warning.input_edge.edge.predicate.deprecated
+### warning.input_edge.predicate.deprecated
 
 **Message:** '{name}' is deprecated?
 
@@ -262,7 +264,7 @@
 
 **Description:** Input test data edge data needs to have a specific node identifier for testing!
 
-### error.input_edge.edge.predicate.missing
+### error.input_edge.predicate.missing
 
 **Message:** {context} edge '{edge_id}' predicate is missing or empty!
 
