@@ -1,5 +1,5 @@
 """Testing Validation Report methods"""
-from typing import Dict, Tuple, List
+from typing import Optional, Dict, Tuple, List
 import pytest
 
 from reasoner_validator.report import ValidationReporter
@@ -13,7 +13,7 @@ def check_messages(validator: ValidationReporter, code, no_errors: bool = False)
     messages: Dict[str, List[Dict]] = validator.get_messages()
     if code:
         # TODO: 'code' should be found in code.yaml
-        # value: Optional[Tuple[str, str]] = CodeDictionary._code_value(code)
+        # value: Optional[Tuple[str, str]] = CodeDictionary.get_code_subtree(code)
         # assert value is not None
         message_type = validator.get_message_type(code)
         if message_type == "error":
@@ -31,13 +31,122 @@ def check_messages(validator: ValidationReporter, code, no_errors: bool = False)
             assert not validator.has_messages(), f"Unexpected messages seen {messages}"
 
 
-def test_message_loader():
-    assert CodeDictionary._code_value("") is None
-    assert CodeDictionary._code_value("info.compliant")[1] == "Biolink Model-compliant TRAPI Message."
-    assert CodeDictionary._code_value("info") is not None
-    assert CodeDictionary._code_value("warning") is not None
-    assert CodeDictionary._code_value("error") is not None
-    assert CodeDictionary._code_value("foo.bar") is None
+def test_check_basic_get_code_subtree():
+    assert CodeDictionary.get_code_subtree("") is None
+    assert CodeDictionary.get_code_subtree("info") is not None
+    assert CodeDictionary.get_code_subtree("warning") is not None
+    assert CodeDictionary.get_code_subtree("error") is not None
+    assert CodeDictionary.get_code_subtree("foo.bar") is None
+
+
+def test_get_code_subtree_is_leaf():
+
+    result = CodeDictionary.get_code_subtree("info.compliant", is_leaf=True)
+    assert result is not None
+    message_type, leaf = result
+    assert leaf is not None
+    assert isinstance(leaf, Dict)
+    assert all([key in [CodeDictionary.MESSAGE, CodeDictionary.DESCRIPTION] for key in leaf])
+    assert leaf[CodeDictionary.MESSAGE] == "Biolink Model-compliant TRAPI Message."
+    assert leaf[CodeDictionary.DESCRIPTION].startswith("Specified TRAPI message completely satisfies")
+
+    assert CodeDictionary.get_code_subtree("info.compliant", is_leaf=False) is None
+
+
+def test_get_code_subtree_facet_message():
+
+    result = CodeDictionary.get_code_subtree("info.compliant", facet="message", is_leaf=True)
+    assert result is not None
+    message_type, leaf = result
+    assert leaf is not None
+    assert isinstance(leaf, Dict)
+    assert CodeDictionary.MESSAGE in leaf
+    assert leaf[CodeDictionary.MESSAGE] == "Biolink Model-compliant TRAPI Message."
+    assert CodeDictionary.DESCRIPTION not in leaf
+
+    result = CodeDictionary.get_code_subtree("info.query_graph.node.category", facet="message")
+    assert result is not None
+    message_type, subtree = result
+    assert subtree is not None
+    assert isinstance(subtree, Dict)
+    assert all([key in ["abstract", "mixin"] for key in subtree])
+    assert CodeDictionary.MESSAGE in subtree["abstract"]
+    assert subtree["abstract"][CodeDictionary.MESSAGE] == "'{name}' is abstract."
+    assert CodeDictionary.DESCRIPTION not in subtree["abstract"]
+
+
+def test_get_code_subtree_facet_description():
+
+    result = CodeDictionary.get_code_subtree("info.compliant", facet="description", is_leaf=True)
+    assert result is not None
+    message_type, leaf = result
+    assert leaf is not None
+    assert isinstance(leaf, Dict)
+    assert CodeDictionary.DESCRIPTION in leaf
+    assert leaf[CodeDictionary.DESCRIPTION].startswith("Specified TRAPI message completely satisfies")
+    assert CodeDictionary.MESSAGE not in leaf
+
+    result = CodeDictionary.get_code_subtree("info.query_graph.node.category", facet="description")
+    assert result is not None
+    message_type, subtree = result
+    assert subtree is not None
+    assert isinstance(subtree, Dict)
+    assert all([key in ["abstract", "mixin"] for key in subtree])
+    assert CodeDictionary.DESCRIPTION in subtree["mixin"]
+    assert subtree["mixin"][CodeDictionary.DESCRIPTION] == \
+           "TRAPI Message Query Graphs can have 'mixin' category classes."
+    assert CodeDictionary.MESSAGE not in subtree["mixin"]
+
+
+def test_get_code_subtree_internal_subtree():
+    assert CodeDictionary.get_code_subtree("warning") is not None
+
+    result = CodeDictionary.get_code_subtree("warning.knowledge_graph")
+    assert result is not None
+    message_type, subtree = result
+    assert isinstance(subtree, Dict)
+    assert message_type == "warning"
+    assert subtree is not None
+    assert all([key in ["node", "predicate", "edge"] for key in subtree])
+
+    assert CodeDictionary.get_code_subtree("error") is not None
+    assert CodeDictionary.get_code_subtree("foo.bar") is None
+
+
+def test_get_entry():
+    assert CodeDictionary.get_code_entry("") is None
+
+    code_entry: Optional[Dict] = CodeDictionary.get_code_entry("info.compliant")
+    assert code_entry is not None
+    assert CodeDictionary.MESSAGE in code_entry
+    assert code_entry[CodeDictionary.MESSAGE] == "Biolink Model-compliant TRAPI Message."
+
+    # Higher level subtrees, not terminal leaf entries?
+    assert CodeDictionary.get_code_entry("info") is None
+    assert CodeDictionary.get_code_entry("info.query_graph") is None
+    assert CodeDictionary.get_code_entry("info.query_graph.node") is None
+    assert CodeDictionary.get_code_entry("warning") is None
+    assert CodeDictionary.get_code_entry("error") is None
+
+    # Unknown code?
+    assert CodeDictionary.get_code_entry("foo.bar") is None
+
+
+def test_get_message_template():
+    assert CodeDictionary.get_message_template("") is None
+    assert CodeDictionary.get_message_template("info.compliant") == "Biolink Model-compliant TRAPI Message."
+    assert CodeDictionary.get_message_template("error.trapi.request.invalid") == \
+           "{context} could not generate a valid TRAPI query request object because {reason}!"
+    assert CodeDictionary.get_message_template("foo.bar") is None
+
+
+def test_get_description():
+    assert CodeDictionary.get_description("") is None
+    assert CodeDictionary.get_description("info.compliant").\
+        startswith("Specified TRAPI message completely satisfies")
+    assert CodeDictionary.get_description("info.attribute_type_id.non_biolink_prefix").\
+        startswith("Non-Biolink CURIEs are tolerated as term value")
+    assert CodeDictionary.get_description("foo.bar") is None
 
 
 def test_message_display():
@@ -101,7 +210,7 @@ def test_messages():
     reporter2 = ValidationReporter(prefix="Second Validation Report", biolink_version=TEST_BIOLINK_VERSION)
     assert reporter2.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
-    reporter2.report("info.query_graph.predicate.mixin", context="some_context", name="biolink:this_is_a_mixin")
+    reporter2.report("info.query_graph.edge.predicate.mixin", context="some_context", name="biolink:this_is_a_mixin")
     reporter2.report("warning.response.results.empty")
     reporter2.report("error.knowledge_graph.edges.empty")
     reporter1.merge(reporter2)
