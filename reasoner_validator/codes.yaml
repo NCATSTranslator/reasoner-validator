@@ -20,13 +20,14 @@ info:
         mixin:
           $message: "'{name}' is a mixin."
           $description: "Input Edge data can have 'mixin' category classes..."
-    predicate:
-      abstract:
-          $message: "'{name}' is abstract."
-          $description: "Input Edge data can have 'abstract' predicates..."
-      mixin:
-        $message: "'{name}' is a mixin."
-        $description: "Input Edge data can have 'mixin' predicates..."
+    edge:
+      predicate:
+        abstract:
+            $message: "'{name}' is abstract."
+            $description: "Input Edge data can have 'abstract' predicates..."
+        mixin:
+          $message: "'{name}' is a mixin."
+          $description: "Input Edge data can have 'mixin' predicates..."
   query_graph:
     node:
       category:
@@ -36,13 +37,14 @@ info:
         mixin:
           $message: "'{name}' is a mixin."
           $description: "TRAPI Message Query Graphs can have 'mixin' category classes..."
-    predicate:
-      abstract:
-        $message: "'{name}' is abstract."
-        $description: "TRAPI Message Query Graphs can have 'mixin' predicates..."
-      mixin:
-        $message: "'{name}' is a mixin."
-        $description: "TRAPI Message Query Graphs can have 'mixin' predicates..."
+    edge:
+      predicate:
+        abstract:
+          $message: "'{name}' is abstract."
+          $description: "TRAPI Message Query Graphs can have 'mixin' predicates..."
+        mixin:
+          $message: "'{name}' is a mixin."
+          $description: "TRAPI Message Query Graphs can have 'mixin' predicates..."
   attribute_type_id:
     non_biolink_prefix:
       $message: "Edge attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink."
@@ -52,276 +54,281 @@ warning:
   graph:
     empty:
       $message: "{context} data is empty?"
-      $description: ""
+      $description: "An empty graph in this particular context is allowed but merits a boundary response warning?"
   response:
     knowledge_graph:
       empty:
         $message: "Response returned an empty Message Knowledge Graph?"
-        $description: ""
+        $description: "An empty Knowledge Graph is allowed but merits a boundary response warning?"
     results:
       empty:
         $message: "Response returned empty Message.results?"
-        $description: ""
+        $description: "Empty Results is allowed but merits a boundary response warning?"
   input_edge:
     node:
       category:
         deprecated:
           $message: "'{name}' is deprecated?"
-          $description: ""
+          $description: "Input data node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?"
       id:
         unmapped_to_category:
           $message: "'{node_id}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
-          $description: ""
-    predicate:
-      deprecated:
-        $message: "'{name}' is deprecated?"
-        $description: ""
+          $description: "The namespaces of Biolink model node of specified category may be incomplete with respect to identifiers being used in input edge data?"
+    edge:
+      predicate:
+        deprecated:
+          $message: "'{name}' is deprecated?"
+          $description: "Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?"
   query_graph:
     node:
       ids:
         unmapped_to_categories:
           $message: "'{node_id}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
-          $description: ""
+          $description: "The namespaces of Biolink model node of specified categories may be incomplete with respect to identifiers being used in the query graph?"
   knowledge_graph:
     node:
       category:
         deprecated:
           $message: "'{name}' is deprecated?"
-          $description: ""
+          $description: "Knowledge graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?"
       unmapped_prefix:
         $message: "'{node_id}' is unmapped to the target categories: {categories}?"
-        $description: ""
+        $description: "ID Namespaces of nodes of specified categories may be incomplete with respect to Biolink Model version being used in the knowledge graph?"
       id:
         unmapped_to_category:
           $message: "{context} node identifier '{node_id}' is unmapped to '{category}'?"
-          $description: ""
-    predicate:
-      non_canonical:
-        $message: "{context} edge {edge_id} predicate '{predicate}' is non-canonical?"
-        $description: ""
+          $description: "ID Namespaces of nodes of specified categories may be incomplete with respect to Biolink Model version being used in the knowledge graph?"
     edge:
+      predicate:
+        non_canonical:
+          $message: "{context} edge {edge_id} predicate '{predicate}' is non-canonical?"
+          $description: "A predicate selected for use in a knowledge graph should preferably be tagged as 'canonical' in the specified Biolink Model release?"
       attribute:
         type_id:
           not_association_slot:
             $message: "Edge attribute_type_id '{attribute_type_id}' not a biolink:association_slot?"
-            $description: ""
+            $description: "Knowledge graph edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy."
           unknown_prefix:
             $message: "Edge attribute_type_id '{attribute_type_id}' has a CURIE prefix namespace unknown to Biolink!"
-            $description: ""
+            $description: "The namespaces of 'attribute_type_id' terms may be incomplete with respect to Biolink Model version being used in the knowledge graph."
           deprecated:
             $message: "'{name}' is deprecated?"
-            $description: ""
+            $description: "Knowledge graph edge 'attribute_type_id' is deprecated in current model, to be removed in the future. Review Biolink Model for replacement."
       provenance:
         ara:
           missing:
             $message: "Edge is missing ARA knowledge source provenance?"
-            $description: ""
+            $description: "Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to ARA."
         kp:
           missing:
             $message: "Edge attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?"
-            $description: ""
+            $description: "Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to KP."
         missing_primary:
-          $message: "Edge has neither a 'primary' nor 'original' knowledge source?"
-          $description: ""
+          $message: "Edge does not record its 'primary' knowledge source?"
+          $description: "Knowledge graph edge attributes should record the infores identifier of their primary knowledge source provenance with respect to KP."
 
 error:
   non_compliant:
     $message: "S-P-O statement '{edge_id}' is not compliant to Biolink Model {biolink_release}"
-    $description: ""
+    $description: "This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause!"
   trapi:
     validation:
       $message: "TRAPI {trapi_version} Query: '{exception}'"
-      $description: ""
+      $description: "TRAPI query attempt triggered an abnormal server exception as noted."
     request:
       invalid:
-        $message: "{context} could not generate a valid TRAPI query request object because {reason}?"
-        $description: ""
+        $message: "{context} could not generate a valid TRAPI query request object because {reason}!"
+        $description: "TRAPI query message could not be prepared for the indicated reason, thus query was not attempted."
     response:
       unexpected_http_code:
-        $message: "TRAPI Response has an unexpected HTTP status code: '{status_code}'?"
-        $description: ""
+        $message: "TRAPI Response has an unexpected HTTP status code: '{status_code}'!"
+        $description: "TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted."
       message:
         empty:
-          $message: "Response returned an empty Message Query Graph!"
-          $description: ""
+          $message: "TRAPI Response missing its Message!"
+          $description: "TRAPI response should at least have non-empty original TRAPI request Message in its reply."
       query_graph:
         missing:
           $message: "TRAPI Message is missing its Query Graph!"
-          $description: ""
+          $description: "TRAPI response should generally have a TRAPI request message Query Graph key value in its reply."
         empty:
-          $message: "Response returned an empty Message Query Graph?"
+          $message: "Response returned an empty Message Query Graph!"
+          $description: "TRAPI response should at least have non-empty original TRAPI request message Query Graph in its reply."
       knowledge_graph:
         missing:
           $message: "TRAPI Message is missing its Knowledge Graph component!"
-          $description: ""
+          $description: "TRAPI response should generally have a TRAPI request message Knowledge Graph key value in its reply."
       results:
         missing:
           $message: "TRAPI Message is missing its Results component!"
-          $description: ""
+          $description: "TRAPI response should generally have a TRAPI request message Request key value in its reply."
         non_array:
-          $message: "Response returned a non-array Message.results!"
-          $description: ""
+          $message: "Response returned a non-array Message.Results!"
+          $description: "TRAPI Message.Results must be an array data type (even if empty)"
         missing_bindings:
-          $message: "Neither the input id '{input_id}' nor resolved aliases were returned in the Result object IDs for node '{output_node_binding}' binding?"
-          $description: ""
+          $message: "Neither the input id '{input_id}' nor resolved aliases were returned in the Result object IDs for node '{output_node_binding}' binding!"
+          $description: "TRAPI Message.Results cannot resolve its reported identifier mappings to the original query."
   input_edge:
     node:
       category:
         unknown:
           $message: "'{name}' is unknown!"
-          $description: ""
+          $description: "Category specified in input test data edge node is not recorded in specified version of Biolink. Replace with a concrete category!"
         abstract:
           $message: "'{name}' is abstract!"
-          $description: ""
+          $description: "Category specified in input test data edge node is 'abstract' in specified version of Biolink. Replace with a concrete category!"
         mixin:
           $message: "'{name}' is a mixin!"
-          $description: ""
+          $description: "Category specified in input test data edge node is a 'mixin' in specified version of Biolink. Replace with a concrete category!"
       id:
         missing:
           $message: "{context} node identifier is missing!"
-          $description: ""
-    predicate:
-      missing:
-        $message: "{context} edge '{edge_id}' predicate is missing or empty!"
-        $description: ""
+          $description: "Input test data edge data needs to have a specific node identifier for testing!"
+    edge:
+      predicate:
+        missing:
+          $message: "{context} edge '{edge_id}' predicate is missing or empty!"
+          $description: "Input test edge data needs to have a specific edge predicate for testing!"
   query_graph:
     node:
       category:
         unknown:
           $message: "'{name}' is unknown!"
-          $description: ""
+          $description: "Category specified in Query Graph node is not recorded in specified version of Biolink. Replace with a defined category!"
         abstract:
           $message: "'{name}' is abstract!"
-          $description: ""
+          $description: "'Abstract' category from specified version of Biolink is specified in Query Graph node. Replace with a concrete category!"
         mixin:
           $message: "'{name}' is a mixin!"
-          $description: ""
+          $description: "'Mixin' category from specified version of Biolink is specified in Query Graph node. Replace with a concrete category!"
       ids:
         not_array:
           $message: "Node '{node_id}.ids' slot value is not an array!"
-          $description: ""
+          $description: "Value of 'ids' slot in Query Graph node must be an array data type (even if empty)!"
       categories:
         not_array:
           $message: "Node '{node_id}.categories' slot value is not an array!"
-          $description: ""
+          $description: "Value of 'categories' slot in Query Graph node must be an array data type (even if empty)!"
       is_set:
         not_boolean:
           $message: "Node '{node_id}.is_set' slot is not a boolean value!"
-          $description: ""
-    predicate:
-      missing:
-        $message: "Edge '{edge_id}' predicate is missing or empty!"
-        $description: ""
-      not_array:
-        $message: "Edge '{edge_id}' predicate slot value is not an array!"
-        $description: ""
-      empty_array:
-        $message: "Edge '{edge_id}' predicate slot value is an empty array!"
-        $description: ""
+          $description: "The 'is_set' field in node of Query Graph, if present, must be a boolean value!"
+    edge:
+      predicate:
+        missing:
+          $message: "Edge '{edge_id}' predicate is missing or empty!"
+          $description: "The predicate of Query Graph edge needs to specified using a 'predicate' key with an array list of one or more predicates!"
+        not_array:
+          $message: "Edge '{edge_id}' predicate slot value is not an array!"
+          $description: "Value of 'predicate' slot value in Query Graph must be an array data type!"
+        empty_array:
+          $message: "Edge '{edge_id}' predicate slot value is an empty array!"
+          $description: "Value of 'predicate' array slot value in Query Graph must contain one or more predicates!"
   knowledge_graph:
     nodes:
       empty:
         $message: "No nodes found!"
-        $description: ""
+        $description: "Knowledge graph in TRAPI messages must have a 'nodes' key and non-empty associated value!"
     edges:
       empty:
         $message: "No edges found!"
-        $description: ""
+        $description: "Knowledge graph in TRAPI messages must have a 'edges' key and non-empty associated value!"
     node:
       category:
         missing:
           $message: "'{node_id}' has a missing Biolink category!"
-          $description: ""
+          $description: "Knowledge graph node must have a 'node' key with a non-empty associated value!"
         unknown:
           $message: "'{name}' is unknown!"
-          $description: ""
+          $description: "Category specified in Knowledge Graph node is not recorded in specified version of Biolink. Replace with a defined category!"
         abstract:
           $message: "'{name}' is abstract!"
-          $description: ""
+          $description: "'Abstract' category from specified version of Biolink is specified in Knowledge Graph node. Replace with a concrete category!"
         mixin:
           $message: "'{name}' is a mixin!"
-          $description: ""
+          $description: "'Mixin' category from specified version of Biolink is specified in Knowledge Graph node. Replace with a concrete category!"
       id:
         missing:
           $message: "{context} node identifier is missing!"
-          $description: ""
+          $description: "Knowledge graph node must have a 'id' key with a non-empty associated value!"
       missing_categories:
         $message: "Node '{node_id}' is missing its categories!"
-        $description: ""
+        $description: "Knowledge graph node must have a 'categories' key with a non-empty associated value!"
       ids:
         not_array:
           $message: "Node '{node_id}.ids' slot value is not an array!"
-          $description: ""
+          $description: "Value of 'ids' slot in Query Graph node must be an array data type!"
       empty_ids:
         $message: "Node '{node_id}.ids' slot array is empty!"
-        $description: ""
+        $description: "Value of 'ids' array slot in Knowledge Graph node must contain one or more node identifiers!"
       categories:
         not_array:
           $message: "Node '{node_id}.categories' slot value is not an array!"
-          $description: ""
+          $description: "Value of 'categories' slot in Knowledge Graph node must be an array data type!"
       empty_categories:
         $message: "Node '{node_id}.categories' slot array is empty!"
-        $description: ""
-      is_set_not_boolean:
-        $message: "Node '{node_id}.is_set' slot is not a boolean value!"
-        $description: ""
-    predicate:
-      missing:
-        $message: "Edge '{edge_id}' predicate is missing or empty!"
-        $description: ""
-      not_array:
-        $message: "Edge '{edge_id}' predicate slot value is not an array!"
-        $description: ""
-      empty_array:
-        $message: "Edge '{edge_id}' predicate slot value is an empty array!"
-        $description: ""
-      unknown:
-        $message: "Edge '{edge_id}' predicate '{predicate}' is unknown!"
-        $description: ""
+        $description: "Value of 'categories' array slot in Knowledge Graph node must contain one or more node category terms!"
+      is_set:
+        not_boolean:
+          $message: "Node '{node_id}.is_set' slot is not a boolean value!"
+          $description: "The 'is_set' field in node of Knowledge Graph, if present, must be a boolean value!"
     edge:
       subject:
         missing:
           $message: "Edge '{edge_id}' has a missing or empty 'subject' slot value!"
-          $description: ""
+          $description: "Knowledge graph edge must have a 'subject' key with a non-empty associated value!"
         missing_from_nodes:
           $message: "Edge 'subject' id '{object_id}' is missing from the nodes catalog!"
-          $description: ""
+          $description: "Every 'subject' identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph!"
       object:
         missing:
           $message: "Edge '{edge_id}' has a missing or empty 'object' slot value!"
-          $description: ""
+          $description: "Knowledge graph edge must have a 'object' key with a non-empty associated value!"
         missing_from_nodes:
           $message: "Edge 'object' id '{object_id}' is missing from the nodes catalog!"
-          $description: ""
+          $description: "Every 'object' identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph!"
+      predicate:
+        missing:
+          $message: "Edge '{edge_id}' predicate is missing or empty!"
+          $description: "Knowledge graph edge must have a 'predicate' key with a non-empty associated value!"
+        unknown:
+          $message: "Edge '{edge_id}' predicate '{predicate}' is unknown!"
+          $description: "Predicate specified in Knowledge Graph edge is not recorded in specified version of Biolink. Replace with a defined predicate!"
+        not_array:
+          $message: "Edge '{edge_id}' predicate slot value is not an array!"
+          $description: "Value of the 'predicate' slot in Knowledge Graph edge must be an array data type!"
+        empty_array:
+          $message: "Value of the 'predicate' array slot in Knowledge Graph edge must contain one or more predicates!"
+          $description: "Value of the 'predicate' array slot in Knowledge Graph edge must contain one or more predicates!"
       attribute:
         missing:
           $message: "Edge has no 'attributes' key!"
-          $description: ""
+          $description: "Knowledge graph edge must have a 'attributes' key with a non-empty associated value!"
         empty:
           $message: "Edge has empty attributes!"
-          $description: ""
-        not_list:
-          $message: "Edge attributes are not a list!"
-          $description: ""
+          $description: "Value of 'attributes' slot in Knowledge Graph edge must contain a list of one or more attributes!"
+        not_array:
+          $message: "Edge attributes are not an array!"
+          $description: "Value of the 'attributes' slot in Knowledge Graph edge must be an array of attributes!"
         type_id:
           missing:
             $message: "Edge attribute is missing its 'attribute_type_id' property!"
-            $description: ""
+            $description: "The attribute of a Knowledge graph edge must have a 'attribute_type_id' key with a non-empty associated value!"
           empty:
             $message: "Edge attribute empty 'attribute_type_id' property!"
-            $description: ""
+            $description: "The value of the 'attribute_type_id' of an attribute of a Knowledge graph edge must not be empty!"
           not_curie:
             $message: "Edge attribute_type_id '{attribute_type_id}' is not a CURIE!"
-            $description: ""
+            $description: "The 'attribute_type_id' of a Knowledge graph edge attribute must be a controlled vocabulary term specified by a CURIE!"
         value:
           missing:
             $message: "Edge attribute is missing its 'value' property!"
-            $description: ""
+            $description: "An attribute of a Knowledge graph edge must have a 'value' key with a non-empty associated value!"
           empty:
             $message: "Edge attribute empty 'value' property!"
-            $description: ""
+            $description: "The value of an attribute of a Knowledge graph edge must not be empty!"
       provenance:
         infores:
           missing:
             $message: "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
-            $description: ""
+            $description: "The value of an attribute specifying the provenance of a Knowledge graph edge must be the well-formed InfoRes CURIE of a knowledge source!"

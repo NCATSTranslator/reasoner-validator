@@ -106,13 +106,17 @@ def test_get_entry():
 def test_get_message_template():
     assert CodeDictionary.get_message_template("") is None
     assert CodeDictionary.get_message_template("info.compliant") == "Biolink Model-compliant TRAPI Message."
+    assert CodeDictionary.get_message_template("error.trapi.request.invalid") == \
+           "{context} could not generate a valid TRAPI query request object because {reason}!"
     assert CodeDictionary.get_message_template("foo.bar") is None
 
 
 def test_get_description():
     assert CodeDictionary.get_description("") is None
     assert CodeDictionary.get_description("info.compliant").\
-        startswith("The specified TRAPI message completely satisfies")
+        startswith("Specified TRAPI message completely satisfies")
+    assert CodeDictionary.get_description("info.attribute_type_id.non_biolink_prefix").\
+        startswith("Non-Biolink CURIEs are tolerated as term value")
     assert CodeDictionary.get_description("foo.bar") is None
 
 

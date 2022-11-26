@@ -286,7 +286,7 @@ class BiolinkValidator(ValidationReporter):
         elif not edge['attributes']:
             self.report(code="error.knowledge_graph.edge.attribute.empty")
         elif not isinstance(edge['attributes'], List):
-            self.report(code="error.knowledge_graph.edge.attribute.not_list")
+            self.report(code="error.knowledge_graph.edge.attribute.not_array")
         else:
             attributes = edge['attributes']
 
@@ -485,7 +485,7 @@ class BiolinkValidator(ValidationReporter):
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             if not predicate:
                 self.report(
-                    code="error.knowledge_graph.predicate.missing",
+                    code="error.knowledge_graph.edge.predicate.missing",
                     context=self.graph_type.value, edge_id=edge_id
                 )
             else:
@@ -495,9 +495,9 @@ class BiolinkValidator(ValidationReporter):
                 # Query Graphs can have a missing or null predicates slot
                 pass
             elif not isinstance(predicates, List):
-                self.report(code="error.query_graph.predicate.not_array", edge_id=edge_id)
+                self.report(code="error.query_graph.edge.predicate.not_array", edge_id=edge_id)
             elif len(predicates) == 0:
-                self.report(code="error.query_graph.predicate.empty_array", edge_id=edge_id)
+                self.report(code="error.query_graph.edge.predicate.empty_array", edge_id=edge_id)
             else:
                 # Should now be a non-empty list of CURIES which are valid Biolink Predicates
                 for predicate in predicates:
@@ -596,7 +596,7 @@ class BiolinkValidator(ValidationReporter):
         )
         if not predicate:
             self.report(
-                code="error.input_edge.predicate.missing",
+                code="error.input_edge.edge.predicate.missing",
                 edge_id=edge_id
             )
         else:
