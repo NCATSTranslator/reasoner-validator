@@ -1,21 +1,19 @@
-[tool.poetry]
+[project]
 name = "reasoner-validator"
 version = "3.2.2"
+requires-python = ">=3.8"
 description = "Validation tools for Reasoner API"
 authors = [
-    "Richard Bruskiewich <richard.bruskiewich@delphinai.com>",
-    "Patrick Wang <patrickelvin@gmail.com>"
+    { name = "Richard Bruskiewich", email = "richard.bruskiewich@delphinai.com" },
+    { name = "Patrick Wang", email = "patrickelvin@gmail.com" },
 ]
 maintainers = [
-    "Richard Bruskiewich <richard.bruskiewich@delphinai.com>",
-    "Kenneth Morton <kenneth kenny@covar.com>"
+    { name = "Richard Bruskiewich", email = "richard.bruskiewich@delphinai.com" },
+    { name = "Kenneth Morton", email = "kenny@covar.com" },
 ]
-license = "MIT"
+license = { file = "LICENSE" }
 readme = "README.md"
 
-homepage = "https://github.com/NCATSTranslator"
-repository = "https://github.com/NCATSTranslator/reasoner-validator"
-documentation = "https://translator-reasoner-validator.readthedocs.io/en/latest/"
 keywords = [
     "NCATS",
     "Biomedical Data Translator",
@@ -31,39 +29,68 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics"
 ]
 
-packages = [{include = "reasoner_validator"}]
-
-include = [
-    { path = "tests" },
-    { path = "docs" }
+dependencies = [
+  "kgx >=1.6.0",
+  "jsonschema >=4.17.0",
+  "PyYAML >=6.0",
+  "requests >=2.28.1",
+  "linkml-runtime >=1.3.7",
+  "linkml >=1.3.14",
+  "bmt >=0.8.12",
+  "fastapi >=0.68",
+  "pydantic >=1.8.0",
+  "uvicorn >=0.15",
+  "numpydoc >=1.5.0",
+  "sphinx[docs] >=5.3.0",
+  "myst-parser >=0.18.1",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-kgx = "^1.6.0"
-jsonschema = "^4.17.0"
-PyYAML = "^6.0"
-requests = "^2.28.1"
-linkml-runtime = "^1.3.7"
-linkml = "^1.3.14"
-bmt = "^0.8.12"
-fastapi = "^0.68"
-pydantic = "^1.8.0"
-uvicorn = "^0.15"
-numpydoc = { version = "^1.5.0", extras = ["docs"] }
-sphinx = { version = "^5.3.0", extras = ["docs"] }
-myst-parser = { version = "^0.18.1", extras = ["docs"] }
 
-[tool.poetry.group.dev.dependencies]
-pytest = "6.2.4"
+[project.optional-dependencies]
+test = [
+  "pytest >=6.2.4",
+  "isort >=5.0.6,<6.0.0",
+  "pytest-cov >=2.12.0,<4.0.0",
+]
+doc = [
+  "sphinx",
+]
+dev = [
+  "autoflake >=1.4.0,<2.0.0",
+  "types-requests",
+]
 
-[tool.poetry.urls]
-"Change Log" = "https://github.com/NCATSTranslator/reasoner-validator/blob/master/CHANGELOG.md"
-"Bug Tracker" = "https://github.com/NCATSTranslator/reasoner-validator/issues"
+[project.urls]
+Homepage = "https://github.com/NCATSTranslator"
+Documentation = "https://translator-reasoner-validator.readthedocs.io/en/latest/"
+History = "https://github.com/NCATSTranslator/reasoner-validator/blob/master/CHANGELOG.md"
+Tracker = "https://github.com/NCATSTranslator/reasoner-validator/issues"
+Source = "https://github.com/NCATSTranslator/reasoner-validator"
 
-[tool.poetry.extras]
-docs = ["numpydoc", "sphinx", "myst-parser"]
+
+
+# ENVIRONMENT AND SCRIPTS
+[tool.hatch.envs.default]
+features = [
+  "test",
+  "doc",
+  "dev",
+]
+
+[tool.hatch.envs.default.scripts]
+test = "pytest {args}"
+docs = "cd docs && make html"
+api = "uvicorn api.main:app --proxy-headers --host 0.0.0.0 {args}"
+format = "isort reasoner_validator tests"
+
+
+# TOOLS
+[tool.isort]
+line_length = 120
+skip = ["reasoner_validator/__init__.py"]
+profile = "black"
+
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -4,8 +4,7 @@
 [![pypi](https://github.com/NCATSTranslator/reasoner-validator/workflows/pypi/badge.svg)](https://pypi.org/project/reasoner-validator/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-This package provides software methods to Translator components (e.g. Knowledge Providers and Autonomous Relay Agents) using *any version* of the
-[Translator Reasoner API (TRAPI)](https://github.com/NCATSTranslator/ReasonerAPI/blob/master/README.md) and the [Biolink Model](https://github.com/biolink/biolink-model/blob/master/README.md).
+This package provides software methods to Translator components (e.g. Knowledge Providers and Autonomous Relay Agents) using *any version* of the [Translator Reasoner API (TRAPI)](https://github.com/NCATSTranslator/ReasonerAPI/blob/master/README.md) and the [Biolink Model](https://github.com/biolink/biolink-model/blob/master/README.md).
 
 See [the full documentation](https://ncatstranslator.github.io/reasoner-validator/) and [the contributor guidelines](https://github.com/NCATSTranslator/reasoner-validator/blob/master/.github/CONTRIBUTING.md).
 
@@ -21,23 +20,45 @@ pip install reasoner-validator
 
 ## Installing and working with the module locally from source
 
-As of release 3.1.6, this project uses the [poetry dependency management](https://python-poetry.org) tool to orchestrate its installation and dependencies.
+As of release 3.1.6, this project uses the [hatch project management](https://hatch.pypa.io/latest/) tool to orchestrate its installation and dependencies.
 
-After [installing poetry](https://python-poetry.org/docs/#installation) and cloning the project, the poetry installation may be run:
+After [installing hatch](https://hatch.pypa.io/latest/install) and cloning the project, the packages installation and syncing will be handled automatically by hatch:
 
 ```bash
 git clone https://github.com/NCATSTranslator/reasoner-validator.git
 cd reasoner-validator
-poetry install
 ```
 
-## Building the Documentation Locally
+### Build the Documentation Locally
 
 To build the documentation locally:
 
 ```bash
-cd docs
-make html
+hatch run docs
+```
+
+### Running the tests
+
+To run the tests locally:
+
+```bash
+hatch run test
+```
+
+### Entering an environment
+
+You can enter an environment automatically created by `hatch` with all dependencies installed.
+
+```bash
+hatch shell
+```
+
+### Resetting the environment
+
+In case you are having issues with packages not getting updated properly:
+
+```bash
+hatch env prune
 ```
 
 ## Validation Run as a Web Service
@@ -78,12 +99,10 @@ The service may be run directly as a Python module. The web services module may 
 python -m api.main
 ```
 
-Note that [poetry automatically uses any existing virtual environment](https://python-poetry.org/docs/basic-usage/#using-your-virtual-environment), but you can otherwise also enter the one that is created by poetry by default:
+Note that you can deploy it with `hatch`:
 
 ```shell
-poetry shell
-# run your commands, e.g. the web service module
-exit  # exit the poetry shell
+hatch run api --port 80
 ```
 
 Go to  http://localhost/docs to see the service documentation and to use the simple UI to input TRAPI messages for validation.

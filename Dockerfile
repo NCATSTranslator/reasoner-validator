@@ -1,14 +1,11 @@
 FROM python:3.8
+
 WORKDIR /code
-RUN pip install poetry
-COPY ./pyproject.toml /code/pyproject.toml
-COPY ./poetry.lock /code/poetry.lock
-COPY ./reasoner_validator /code/reasoner_validator
-COPY ./tests /code/tests
-COPY ./docs /code/docs
-COPY ./README.md /code/README.md
-COPY ./CHANGELOG.md /code/CHANGELOG.md
-COPY api /code/api
-RUN python -m poetry install
+
+# See the .dockerignore file to change which files are not included
+COPY . .
+
+RUN pip install .
+
 EXPOSE 80
-CMD ["poetry", "run", "uvicorn", "api.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "api.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]
