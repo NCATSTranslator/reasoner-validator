@@ -1,8 +1,9 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import Tuple,  Dict, Union
 import logging
+from typing import Dict, Tuple, Union
+
 import pytest
 
 from reasoner_validator import TRAPIResponseValidator

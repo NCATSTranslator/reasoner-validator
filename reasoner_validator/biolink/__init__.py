@@ -1,18 +1,18 @@
 """
 Version-specific Biolink Model semantic validation of knowledge graph components.
 """
-from typing import Optional, Any, Dict, List, Tuple, Set
+import logging
 from enum import Enum
 from functools import lru_cache
-from urllib.error import HTTPError
 from pprint import PrettyPrinter
-import logging
+from typing import Any, Dict, List, Optional, Set, Tuple
+from urllib.error import HTTPError
 
 from bmt import Toolkit
 from linkml_runtime.linkml_model import ClassDefinition, Element
 
-from reasoner_validator.sri.util import is_curie
 from reasoner_validator.report import ValidationReporter
+from reasoner_validator.sri.util import is_curie
 from reasoner_validator.versioning import SemVer, SemVerError
 
 logger = logging.getLogger(__name__)

@@ -1,9 +1,9 @@
 import copy
-from os.path import join, abspath, dirname
-from typing import Optional, Any, Dict, List, Tuple
-
-from yaml import load, BaseLoader
 import logging
+from os.path import abspath, dirname, join
+from typing import Any, Dict, List, Optional, Tuple
+
+from yaml import BaseLoader, load
 
 logger = logging.getLogger(__name__)
 

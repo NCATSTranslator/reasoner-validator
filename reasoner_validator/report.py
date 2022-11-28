@@ -1,7 +1,7 @@
 """Error and Warning Reporting Module"""
 import copy
-from typing import Optional, Dict, List
-from json import dumps, JSONEncoder
+from json import JSONEncoder, dumps
+from typing import Dict, List, Optional
 
 from reasoner_validator.validation_codes import CodeDictionary
 from reasoner_validator.versioning import latest

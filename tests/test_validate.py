@@ -1,7 +1,7 @@
 """Test validation."""
 from sys import stderr
-import pytest
 
+import pytest
 from jsonschema.exceptions import ValidationError
 
 from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema

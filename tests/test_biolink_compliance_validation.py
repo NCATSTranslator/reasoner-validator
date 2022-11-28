@@ -1,22 +1,18 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import Tuple, Optional, Dict
-from pprint import PrettyPrinter
 import logging
-import pytest
+from pprint import PrettyPrinter
 from sys import stderr
+from typing import Dict, Optional, Tuple
+
+import pytest
 from bmt import Toolkit
 from linkml_runtime.linkml_model import SlotDefinition
 
-from reasoner_validator.biolink import (
-    TRAPIGraphType,
-    BiolinkValidator,
-    get_biolink_model_toolkit,
-    check_biolink_model_compliance_of_input_edge,
-    check_biolink_model_compliance_of_query_graph,
-    check_biolink_model_compliance_of_knowledge_graph
-)
+from reasoner_validator.biolink import (BiolinkValidator, TRAPIGraphType, check_biolink_model_compliance_of_input_edge,
+                                        check_biolink_model_compliance_of_knowledge_graph,
+                                        check_biolink_model_compliance_of_query_graph, get_biolink_model_toolkit)
 from tests.test_validation_report import check_messages
 
 logger = logging.getLogger(__name__)

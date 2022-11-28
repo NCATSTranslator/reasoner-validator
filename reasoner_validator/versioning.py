@@ -1,8 +1,10 @@
 """Utilities."""
 import re
-from typing import NamedTuple, Optional
 from os import environ
+from typing import NamedTuple, Optional
+
 import requests
+
 try:
     from yaml import CLoader as Loader
 except ImportError:

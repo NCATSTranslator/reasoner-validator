@@ -13,7 +13,6 @@ maintainers = [
 ]
 license = { file = "LICENSE" }
 readme = "README.md"
-
 keywords = [
     "NCATS",
     "Biomedical Data Translator",
@@ -45,7 +44,6 @@ dependencies = [
   "myst-parser >=0.18.1",
 ]
 
-
 [project.optional-dependencies]
 test = [
   "pytest >=6.2.4",
@@ -67,6 +65,9 @@ History = "https://github.com/NCATSTranslator/reasoner-validator/blob/master/CHA
 Tracker = "https://github.com/NCATSTranslator/reasoner-validator/issues"
 Source = "https://github.com/NCATSTranslator/reasoner-validator"
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 
 # ENVIRONMENT AND SCRIPTS
@@ -84,13 +85,7 @@ api = "uvicorn api.main:app --proxy-headers --host 0.0.0.0 {args}"
 format = "isort reasoner_validator tests"
 
 
-# TOOLS
+# TOOLS CONFIG
 [tool.isort]
 line_length = 120
 skip = ["reasoner_validator/__init__.py"]
-profile = "black"
-
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"

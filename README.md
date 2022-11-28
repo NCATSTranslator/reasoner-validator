@@ -47,15 +47,15 @@ hatch run test
 
 ### Entering an environment
 
-You can enter an environment automatically created by `hatch` with all dependencies installed.
+You can enter an environment automatically created by `hatch` with all dependencies installed by using:
 
 ```bash
 hatch shell
 ```
 
-### Resetting the environment
+### Resetting the environments
 
-In case you are having issues with packages not getting updated properly:
+In case you are having issues with packages not getting updated properly, you can reset the environments with:
 
 ```bash
 hatch env prune

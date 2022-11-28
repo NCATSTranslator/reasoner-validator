@@ -1,16 +1,16 @@
 """TRAPI Validation Functions."""
-from typing import Optional
 import copy
 from functools import lru_cache
+from typing import Optional
 
 import jsonschema
 import requests
-
-from yaml import load, CLoader as Loader
+from yaml import CLoader as Loader
+from yaml import load
 
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.trapi.mapping import check_node_edge_mappings
-from reasoner_validator.versioning import latest, versions, GIT_ORG, GIT_REPO
+from reasoner_validator.versioning import GIT_ORG, GIT_REPO, latest, versions
 
 
 @lru_cache()
