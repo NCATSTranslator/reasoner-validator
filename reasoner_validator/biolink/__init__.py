@@ -426,10 +426,11 @@ class BiolinkValidator(ValidationReporter):
 
     def validate_predicate(self, edge_id: str, predicate: str):
         """
+        :param edge_id: identifier of the edge whose predicate is being validated
         :param predicate: putative Biolink Model predicate to be validated
         :return:
         """
-        context: str = f"{self.graph_type.name.lower()}.predicate"
+        context: str = f"{self.graph_type.name.lower()}.edge.predicate"
         # Validate the putative predicate as *not* being abstract, deprecated or a mixin
         biolink_class = self.validate_element_status(
             context=context,

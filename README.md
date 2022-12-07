@@ -33,6 +33,15 @@ poetry install
 
 ## Building the Documentation Locally
 
+All paths here are relative to the root project directory.
+
+The validation codes MarkDown file should first be regenerated if needed (i.e. if it was revised):
+
+```bash
+cd reasoner_validator
+python ./validation_codes.py
+```
+
 To build the documentation locally:
 
 ```bash

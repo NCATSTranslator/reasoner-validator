@@ -26,13 +26,13 @@
 
 **Description:** Input Edge data can have 'mixin' category classes.
 
-### info.input_edge.predicate.abstract
+### info.input_edge.edge.predicate.abstract
 
 **Message:** '{name}' is abstract.
 
 **Description:** Input Edge data can have 'abstract' predicates.
 
-### info.input_edge.predicate.mixin
+### info.input_edge.edge.predicate.mixin
 
 **Message:** '{name}' is a mixin.
 
@@ -100,17 +100,35 @@
 
 **Description:** The namespaces of Biolink model node of specified category may be incomplete with respect to identifiers being used in input edge data?
 
-### warning.input_edge.predicate.deprecated
+### warning.input_edge.edge.predicate.deprecated
 
 **Message:** '{name}' is deprecated?
 
 **Description:** Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
+
+### warning.input_edge.edge.predicate.non_canonical
+
+**Message:** {context} edge {edge_id} predicate '{predicate}' is non-canonical?
+
+**Description:** A predicate selected for use as input data should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
 ### warning.query_graph.node.ids.unmapped_to_categories
 
 **Message:** '{node_id}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?
 
 **Description:** The namespaces of Biolink model node of specified categories may be incomplete with respect to identifiers being used in the query graph?
+
+### warning.query_graph.edge.predicate.deprecated
+
+**Message:** '{name}' is deprecated?
+
+**Description:** Query graph edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
+
+### warning.query_graph.edge.predicate.non_canonical
+
+**Message:** {context} edge {edge_id} predicate '{predicate}' is non-canonical?
+
+**Description:** A predicate selected for use in a query graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
 ### warning.knowledge_graph.node.category.deprecated
 
@@ -129,6 +147,12 @@
 **Message:** {context} node identifier '{node_id}' is unmapped to '{category}'?
 
 **Description:** ID Namespaces of nodes of specified categories may be incomplete with respect to Biolink Model version being used in the knowledge graph?
+
+### warning.knowledge_graph.edge.predicate.deprecated
+
+**Message:** '{name}' is deprecated?
+
+**Description:** Knowledge graph edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
 
 ### warning.knowledge_graph.edge.predicate.non_canonical
 
@@ -264,11 +288,23 @@
 
 **Description:** Input test data edge data needs to have a specific node identifier for testing!
 
-### error.input_edge.predicate.missing
+### error.input_edge.edge.predicate.missing
 
 **Message:** {context} edge '{edge_id}' predicate is missing or empty!
 
 **Description:** Input test edge data needs to have a specific edge predicate for testing!
+
+### error.input_edge.edge.predicate.abstract
+
+**Message:** '{name}' is abstract!
+
+**Description:** Input Edge data validation is currently strict: cannot have 'abstract' predicates!
+
+### error.input_edge.edge.predicate.mixin
+
+**Message:** '{name}' is a mixin1
+
+**Description:** Input Edge data validation is currently strict: cannot have 'mixin' predicates!
 
 ### error.query_graph.node.category.unknown
 
@@ -323,6 +359,18 @@
 **Message:** Edge '{edge_id}' predicate slot value is an empty array!
 
 **Description:** Value of 'predicate' array slot value in Query Graph must contain one or more predicates!
+
+### error.query_graph.edge.predicate.abstract
+
+**Message:** '{name}' is abstract!
+
+**Description:** Query Graph data validation is currently strict: cannot have 'abstract' predicates!
+
+### error.query_graph.edge.predicate.mixin
+
+**Message:** '{name}' is a mixin1
+
+**Description:** Query Graph data validation is currently strict: cannot have 'mixin' predicates!
 
 ### error.knowledge_graph.nodes.empty
 
@@ -436,7 +484,13 @@
 
 **Message:** Edge '{edge_id}' predicate '{predicate}' is unknown!
 
-**Description:** Predicate specified in Knowledge Graph edge is not recorded in specified version of Biolink. Replace with a defined predicate!
+**Description:** Predicate specified in Knowledge Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!
+
+### error.knowledge_graph.edge.predicate.invalid
+
+**Message:** Edge '{edge_id}' predicate '{predicate}' is invalid!
+
+**Description:** Predicate specified in Knowledge Graph edge is not defined as a predicate in specified version of Biolink. Replace with a defined predicate!
 
 ### error.knowledge_graph.edge.predicate.not_array
 
@@ -449,6 +503,18 @@
 **Message:** Value of the 'predicate' array slot in Knowledge Graph edge must contain one or more predicates!
 
 **Description:** Value of the 'predicate' array slot in Knowledge Graph edge must contain one or more predicates!
+
+### error.knowledge_graph.edge.predicate.abstract
+
+**Message:** '{name}' is abstract!
+
+**Description:** Knowledge Graph data validation is currently strict: cannot have 'abstract' predicates!
+
+### error.knowledge_graph.edge.predicate.mixin
+
+**Message:** '{name}' is a mixin1
+
+**Description:** Knowledge Graph data validation is currently strict: cannot have 'mixin' predicates!
 
 ### error.knowledge_graph.edge.attribute.missing
 

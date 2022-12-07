@@ -21,13 +21,14 @@ info:
         mixin:
           $message: "'{name}' is a mixin."
           $description: "Input Edge data can have 'mixin' category classes."
-    predicate:
-      abstract:
-          $message: "'{name}' is abstract."
-          $description: "Input Edge data can have 'abstract' predicates."
-      mixin:
-        $message: "'{name}' is a mixin."
-        $description: "Input Edge data can have 'mixin' predicates."
+    edge:
+      predicate:
+        abstract:
+            $message: "'{name}' is abstract."
+            $description: "Input Edge data can have 'abstract' predicates."
+        mixin:
+          $message: "'{name}' is a mixin."
+          $description: "Input Edge data can have 'mixin' predicates."
   query_graph:
     node:
       category:
@@ -74,16 +75,28 @@ warning:
         unmapped_to_category:
           $message: "'{node_id}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
           $description: "The namespaces of Biolink model node of specified category may be incomplete with respect to identifiers being used in input edge data?"
-    predicate:
-      deprecated:
-        $message: "'{name}' is deprecated?"
-        $description: "Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?"
+    edge:
+      predicate:
+        deprecated:
+          $message: "'{name}' is deprecated?"
+          $description: "Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?"
+        non_canonical:
+          $message: "{context} edge {edge_id} predicate '{predicate}' is non-canonical?"
+          $description: "A predicate selected for use as input data should preferably be tagged as 'canonical' in the specified Biolink Model release?"
   query_graph:
     node:
       ids:
         unmapped_to_categories:
           $message: "'{node_id}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
           $description: "The namespaces of Biolink model node of specified categories may be incomplete with respect to identifiers being used in the query graph?"
+    edge:
+      predicate:
+        deprecated:
+          $message: "'{name}' is deprecated?"
+          $description: "Query graph edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?"
+        non_canonical:
+          $message: "{context} edge {edge_id} predicate '{predicate}' is non-canonical?"
+          $description: "A predicate selected for use in a query graph should preferably be tagged as 'canonical' in the specified Biolink Model release?"
   knowledge_graph:
     node:
       category:
@@ -99,6 +112,9 @@ warning:
           $description: "ID Namespaces of nodes of specified categories may be incomplete with respect to Biolink Model version being used in the knowledge graph?"
     edge:
       predicate:
+        deprecated:
+          $message: "'{name}' is deprecated?"
+          $description: "Knowledge graph edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?"
         non_canonical:
           $message: "{context} edge {edge_id} predicate '{predicate}' is non-canonical?"
           $description: "A predicate selected for use in a knowledge graph should preferably be tagged as 'canonical' in the specified Biolink Model release?"
@@ -183,10 +199,17 @@ error:
         missing:
           $message: "{context} node identifier is missing!"
           $description: "Input test data edge data needs to have a specific node identifier for testing!"
-    predicate:
-      missing:
-        $message: "{context} edge '{edge_id}' predicate is missing or empty!"
-        $description: "Input test edge data needs to have a specific edge predicate for testing!"
+    edge:
+      predicate:
+        missing:
+          $message: "{context} edge '{edge_id}' predicate is missing or empty!"
+          $description: "Input test edge data needs to have a specific edge predicate for testing!"
+        abstract:
+            $message: "'{name}' is abstract!"
+            $description: "Input Edge data validation is currently strict: cannot have 'abstract' predicates!"
+        mixin:
+          $message: "'{name}' is a mixin1"
+          $description: "Input Edge data validation is currently strict: cannot have 'mixin' predicates!"
   query_graph:
     node:
       category:
@@ -222,6 +245,12 @@ error:
         empty_array:
           $message: "Edge '{edge_id}' predicate slot value is an empty array!"
           $description: "Value of 'predicate' array slot value in Query Graph must contain one or more predicates!"
+        abstract:
+            $message: "'{name}' is abstract!"
+            $description: "Query Graph data validation is currently strict: cannot have 'abstract' predicates!"
+        mixin:
+          $message: "'{name}' is a mixin1"
+          $description: "Query Graph data validation is currently strict: cannot have 'mixin' predicates!"
   knowledge_graph:
     nodes:
       empty:
@@ -291,13 +320,22 @@ error:
           $description: "Knowledge graph edge must have a 'predicate' key with a non-empty associated value!"
         unknown:
           $message: "Edge '{edge_id}' predicate '{predicate}' is unknown!"
-          $description: "Predicate specified in Knowledge Graph edge is not recorded in specified version of Biolink. Replace with a defined predicate!"
+          $description: "Predicate specified in Knowledge Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!"
+        invalid:
+          $message: "Edge '{edge_id}' predicate '{predicate}' is invalid!"
+          $description: "Predicate specified in Knowledge Graph edge is not defined as a predicate in specified version of Biolink. Replace with a defined predicate!"
         not_array:
           $message: "Edge '{edge_id}' predicate slot value is not an array!"
           $description: "Value of the 'predicate' slot in Knowledge Graph edge must be an array data type!"
         empty_array:
           $message: "Value of the 'predicate' array slot in Knowledge Graph edge must contain one or more predicates!"
           $description: "Value of the 'predicate' array slot in Knowledge Graph edge must contain one or more predicates!"
+        abstract:
+            $message: "'{name}' is abstract!"
+            $description: "Knowledge Graph data validation is currently strict: cannot have 'abstract' predicates!"
+        mixin:
+          $message: "'{name}' is a mixin1"
+          $description: "Knowledge Graph data validation is currently strict: cannot have 'mixin' predicates!"
       attribute:
         missing:
           $message: "Edge has no 'attributes' key!"
