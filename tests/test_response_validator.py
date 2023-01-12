@@ -317,7 +317,7 @@ _TEST_RESULTS_2 = [
             None,
             None,
             None,
-            # "Validate TRAPI Response: ERROR - the 'results' field
+            # "Validate TRAPI Response: ERROR - the 'Response.Message.Results' field
             # is not TRAPI schema validated since it has the wrong format!"
             "error.trapi.validation"
         ),
@@ -526,6 +526,149 @@ _TEST_RESULTS_2 = [
             None,
             True,
             "error.query_graph.edge.predicate.abstract"
+        ),
+        (
+            # Query 20 - Valid full Message, under strict validation.
+            #            Message is valid, but the 'workflow' field is not an array?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                },
+                "workflow": "workflows-not-an-array"
+            },
+            None,
+            None,
+            None,
+            True,
+            # "Validate TRAPI Response: ERROR - TRAPI schena error: the 'workflow' field must be an array"
+            "error.trapi.validation"
+        ),
+        (
+            # Query 21 - Valid full Message, under strict validation.
+            #            Message is valid, the 'workflow' field is an array,
+            #            but the single list entry is an invalid workflow spec?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                },
+                "workflow": ["not-a-valid-workflow-spec"]
+            },
+            None,
+            None,
+            None,
+            True,
+            # "Validate TRAPI Response: ERROR - TRAPI schena error: the 'workflow' field must be an array of
+            # a 'workflow' JSON objects, with contents as defined by the workflow schema.
+            "error.trapi.validation"
+        ),
+        (
+            # Query 22 - Valid full Message, under strict validation.
+            #            Message is valid, the 'workflow' field is an array,
+            #            but the single list entry is in the workflow schema
+            #            and has at least the one required field 'id'
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                },
+                "workflow": [{"id": "annotate"}]
+            },
+            None,
+            None,
+            None,
+            True,
+            ""   # this simple workflow spec should pass?
+        ),
+        (
+            # Query 23 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
+            #            but the single list entry is an elaborated 'real world' workflow spec,
+            #            but one entry overlay_compute_ngd is incomplete - doesn't fully validate!
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                },
+                "workflow": [
+                    {  # 'real' world workflow spec from E. Deutsch
+                      "id": "fill",
+                      "parameters": {
+                        "allowlist": [
+                          "infores-rtx-kg2"
+                        ]
+                      }
+                    },
+                    {
+                      "id": "bind"
+                    },
+                    {
+                      "id": "overlay_compute_ngd",
+                      "parameters": {
+                        "virtual_relation_label": "ngd1"
+                      }
+                    },
+                    {
+                      "id": "score"
+                    },
+                    {
+                      "id": "complete_results"
+                    }
+                ]
+            },
+            None,
+            None,
+            None,
+            True,
+            # "Validate TRAPI Response: ERROR - TRAPI schema validation error: the 'workflow'
+            # field entry overlay_compute_ngd is missing a required parameter 'qnodes_keys'
+            "error.trapi.validation"
+        ),
+        (
+            # Query 24 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
+            #            but the single list entry is an elaborated 'real world' workflow spec
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                },
+                "workflow": [
+                    {  # 'real' world workflow spec from E. Deutsch
+                      "id": "fill",
+                      "parameters": {
+                        "allowlist": [
+                          "infores-rtx-kg2"
+                        ]
+                      }
+                    },
+                    {
+                      "id": "bind"
+                    },
+                    {
+                      "id": "overlay_compute_ngd",
+                      "parameters": {
+                        "virtual_relation_label": "ngd1",
+                        "qnode_keys": ["type-2 diabetes", "drug"]
+                      }
+                    },
+                    {
+                      "id": "score"
+                    },
+                    {
+                      "id": "complete_results"
+                    }
+                ]
+            },
+            None,
+            None,
+            None,
+            True,
+            ""   # this simple workflow spec should pass?
         )
     ]
 )
@@ -536,8 +679,5 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple[Union[Dic
         sources=query[3],
         strict_validation=query[4]
     )
-    # TODO: query[0] now needs to be formatted as a Query.Response, as described in:
-    #       https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response-.
-    #       thus, not just the Query.Response.Message subschema.
     validator.check_compliance_of_trapi_response(response=query[0])
     check_messages(validator, query[5], no_errors=True)
