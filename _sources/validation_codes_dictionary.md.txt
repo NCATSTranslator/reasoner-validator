@@ -206,7 +206,7 @@
 
 ### error.trapi.validation
 
-**Message:** TRAPI {trapi_version} Query: '{exception}'
+**Message:** TRAPI {trapi_version} schema exception: '{exception}'!
 
 **Description:** TRAPI query attempt triggered an abnormal server exception as noted.
 
@@ -215,6 +215,12 @@
 **Message:** {context} could not generate a valid TRAPI query request object because {reason}!
 
 **Description:** TRAPI query message could not be prepared for the indicated reason, thus query was not attempted.
+
+### error.trapi.response.empty
+
+**Message:** TRAPI Response is missing!
+
+**Description:** TRAPI Response to be validated should not be totally empty but should have a Message body.
 
 ### error.trapi.response.unexpected_http_code
 

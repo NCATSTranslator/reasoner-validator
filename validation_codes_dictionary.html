@@ -88,6 +88,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-non-compliant">error.non_compliant</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-validation">error.trapi.validation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-request-invalid">error.trapi.request.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-empty">error.trapi.response.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-unexpected-http-code">error.trapi.response.unexpected_http_code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-empty">error.trapi.response.message.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-query-graph-missing">error.trapi.response.query_graph.missing</a></li>
@@ -355,13 +356,18 @@
 </div>
 <div class="section" id="error-trapi-validation">
 <h3>error.trapi.validation<a class="headerlink" href="#error-trapi-validation" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> TRAPI {trapi_version} Query: ‘{exception}’</p>
+<p><strong>Message:</strong> TRAPI {trapi_version} schema exception: ‘{exception}’!</p>
 <p><strong>Description:</strong> TRAPI query attempt triggered an abnormal server exception as noted.</p>
 </div>
 <div class="section" id="error-trapi-request-invalid">
 <h3>error.trapi.request.invalid<a class="headerlink" href="#error-trapi-request-invalid" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> {context} could not generate a valid TRAPI query request object because {reason}!</p>
 <p><strong>Description:</strong> TRAPI query message could not be prepared for the indicated reason, thus query was not attempted.</p>
+</div>
+<div class="section" id="error-trapi-response-empty">
+<h3>error.trapi.response.empty<a class="headerlink" href="#error-trapi-response-empty" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> TRAPI Response is missing!</p>
+<p><strong>Description:</strong> TRAPI Response to be validated should not be totally empty but should have a Message body.</p>
 </div>
 <div class="section" id="error-trapi-response-unexpected-http-code">
 <h3>error.trapi.response.unexpected_http_code<a class="headerlink" href="#error-trapi-response-unexpected-http-code" title="Permalink to this heading"></a></h3>

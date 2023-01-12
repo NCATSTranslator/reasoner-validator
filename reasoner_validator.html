@@ -105,8 +105,8 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_validation</span></code>(validation_method, *args, ...)</p></td>
 <td><p>Wrapper to allow validation_methods direct access to the ValidationReporter.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_compliance_of_trapi_response</span></code></a>(message)</p></td>
-<td><p>One stop validation of all components of a TRAPI-schema compliant Query Response.Message against a designated Biolink Model release.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_compliance_of_trapi_response</span></code></a>(response)</p></td>
+<td><p>One stop validation of all components of a TRAPI-schema compliant Query.Response, including its Message against a designated Biolink Model release.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code>(**message)</p></td>
 <td><p>Augmented message display wrapper prepends the ValidationReporter prefix to a resolved coded validation message.</p></td>
@@ -215,10 +215,12 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response">
-<span class="sig-name descname"><span class="pre">check_compliance_of_trapi_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_compliance_of_trapi_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="Permalink to this definition"></a></dt>
 <dd><p>One stop validation of all components of a TRAPI-schema compliant
-Query Response.Message against a designated Biolink Model release.
-Here, a TRAPI Response message is a Python Dictionary with three entries:</p>
+Query.Response, including its Message against a designated Biolink Model release.
+The high level structure of a Query.Response is described in
+<a class="reference external" href="https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response">https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response</a>-.</p>
+<p>The TRAPI Query.Response.Message is a Python Dictionary with three entries:</p>
 <ul class="simple">
 <li><p>Query Graph (“QGraph”): knowledge graph query input parameters</p></li>
 <li><dl class="simple">
@@ -234,7 +236,7 @@ Here, a TRAPI Response message is a Python Dictionary with three entries:</p>
 </ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>message</strong> (<em>Dict</em>) – Response.Message to be validated.</p>
+<dd class="field-odd"><p><strong>response</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>]</em>) – Query.Response to be validated.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Validator cataloging “information”, “warning” and “error” messages (may be empty)</p>
