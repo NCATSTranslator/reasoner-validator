@@ -194,7 +194,11 @@ _TEST_RESULTS_2 = [
     "query",
     [
         (   # Query 0 - Completely empty Response.Message
-            {},
+            {
+                "message": {
+
+                }
+            },
             None,
             None,
             None,
@@ -204,8 +208,10 @@ _TEST_RESULTS_2 = [
         ),
         (   # Query 1 - Response.Message also devoid of content, missing QGraph trapped first....
             {
-                "knowledge_graph": None,
-                "results": None
+                "message": {
+                    "knowledge_graph": None,
+                    "results": None
+                }
             },
             None,
             None,
@@ -216,9 +222,11 @@ _TEST_RESULTS_2 = [
         ),
         (   # Query 2 - Response.Message also devoid of content, null QGraph trapped first....
             {
-                "query_graph": None,
-                "knowledge_graph": None,
-                "results": None
+                "message": {
+                    "query_graph": None,
+                    "knowledge_graph": None,
+                    "results": None
+                }
             },
             None,
             None,
@@ -231,9 +239,11 @@ _TEST_RESULTS_2 = [
             # Query 3 - Partly empty Response.Message with a modest but
             #           workable query graph? Missing KG trapped next?
             {
-                "query_graph": _TEST_QG_1,
-                # "knowledge_graph": None,
-                "results": None
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    # "knowledge_graph": None,
+                    "results": None
+                }
             },
             None,
             None,
@@ -246,9 +256,11 @@ _TEST_RESULTS_2 = [
             # Query 4 - Partly empty Response.Message with a modest
             #           but workable query graph? Empty KG trapped next?
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": None,
-                "results": None
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": None,
+                    "results": None
+                }
             },
             None,
             None,
@@ -261,9 +273,11 @@ _TEST_RESULTS_2 = [
             # Query 5 - Partly empty Response.Message with a modest but workable
             #           query and knowledge graphs? Missing Results detected next?
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_1,
-                # "results": None
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    # "results": None
+                }
             },
             None,
             None,
@@ -276,9 +290,11 @@ _TEST_RESULTS_2 = [
             # Query 6 - Partly empty Response.Message with a modest but workable query and
             #           knowledge graphs? Null valued Results detected next - just issue a warning?
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_1,
-                "results": None
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": None
+                }
             },
             None,
             None,
@@ -291,24 +307,29 @@ _TEST_RESULTS_2 = [
             # Query 7 - Partly empty Response.Message with a modest but workable
             #           query and knowledge graphs? Non-array Results detected next?
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_1,
-                "results": {"invalid results"}
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": {"invalid results"}
+                }
             },
             None,
             None,
             None,
             None,
-            # "Validate TRAPI Response: ERROR - Response returned a non-array Message.results!"
-            "error.trapi.response.results.non_array"
+            # "Validate TRAPI Response: ERROR - the 'results' field
+            # is not TRAPI schema validated since it has the wrong format!"
+            "error.trapi.validation"
         ),
         (
             # Query 8 - Partly empty Response.Message with a modest but workable query and
             #           knowledge graphs? Empty Results detected next - just issue a warning?
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_1,
-                "results": []
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": []
+                }
             },
             None,
             None,
@@ -320,9 +341,11 @@ _TEST_RESULTS_2 = [
         (
             # Query 9 - Full Message, without 'sources' and 'strict_validation': False - should pass?
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_1,
-                "results": _TEST_RESULTS_1
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
             },
             None,
             None,
@@ -333,9 +356,11 @@ _TEST_RESULTS_2 = [
         (
             # Query 10 - Full Message, with strict validation - still passes
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_1,
-                "results": _TEST_RESULTS_1
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
             },
             None,
             None,
@@ -346,9 +371,11 @@ _TEST_RESULTS_2 = [
         (
             # Query 11 - Full Message, with strict validation and non-null sources that match
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_1,
-                "results": _TEST_RESULTS_1
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
             },
             None,
             None,
@@ -363,9 +390,11 @@ _TEST_RESULTS_2 = [
         (
             # Query 12 - Full Message, with strict validation and a non-null kp_source_type that doesn't match
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_1,
-                "results": _TEST_RESULTS_1
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
             },
             None,
             None,
@@ -380,9 +409,11 @@ _TEST_RESULTS_2 = [
         (
             # Query 13 - Full Message, with strict validation and a non-null ara_source that doesn't match
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_1,
-                "results": _TEST_RESULTS_1
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
             },
             None,
             None,
@@ -397,9 +428,11 @@ _TEST_RESULTS_2 = [
         (
             # Query 14 - Full Message, with strict validation and a non-null sources data that matches
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_1,
-                "results": _TEST_RESULTS_1
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
             },
             None,
             None,
@@ -414,9 +447,11 @@ _TEST_RESULTS_2 = [
         (
             # Query 15 - Full Message, with strict validation and a non-null sources KP that matches
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_1,
-                "results": _TEST_RESULTS_1
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
             },
             None,
             None,
@@ -431,9 +466,11 @@ _TEST_RESULTS_2 = [
         (
             # Query 16 - Full Message, with strict validation and a non-null kp_source_type results in missing primary
             {
-                "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_2,
-                "results": _TEST_RESULTS_1
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_2,
+                    "results": _TEST_RESULTS_1
+                }
             },
             None,
             None,
@@ -448,9 +485,11 @@ _TEST_RESULTS_2 = [
         (
             # Query 17 - Full Message, with non-strict validation
             {
-                "query_graph": _TEST_QG_2,
-                "knowledge_graph": _TEST_KG_3,
-                "results": _TEST_RESULTS_2
+                "message": {
+                    "query_graph": _TEST_QG_2,
+                    "knowledge_graph": _TEST_KG_3,
+                    "results": _TEST_RESULTS_2
+                }
             },
             None,
             None,
@@ -461,9 +500,11 @@ _TEST_RESULTS_2 = [
         (
             # Query 18 - Full Message, WITH strict validation - abstract category?
             {
-                "query_graph": _TEST_QG_2,
-                "knowledge_graph": _TEST_KG_3,
-                "results": _TEST_RESULTS_2
+                "message": {
+                    "query_graph": _TEST_QG_2,
+                    "knowledge_graph": _TEST_KG_3,
+                    "results": _TEST_RESULTS_2
+                }
             },
             None,
             None,
@@ -474,15 +515,17 @@ _TEST_RESULTS_2 = [
         (
             # Query 19 - Full Message, WITH strict validation - abstract predicate?
             {
-                "query_graph": _TEST_QG_2,
-                "knowledge_graph": _TEST_KG_3,
-                "results": _TEST_RESULTS_2
+                "message": {
+                    "query_graph": _TEST_QG_2,
+                    "knowledge_graph": _TEST_KG_3,
+                    "results": _TEST_RESULTS_2
+                }
             },
             None,
             None,
             None,
             True,
-            "error.query_graph.predicate.abstract"
+            "error.query_graph.edge.predicate.abstract"
         )
     ]
 )
@@ -493,5 +536,8 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple[Union[Dic
         sources=query[3],
         strict_validation=query[4]
     )
-    validator.check_compliance_of_trapi_response(message=query[0])
+    # TODO: query[0] now needs to be formatted as a Query.Response, as described in:
+    #       https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response-.
+    #       thus, not just the Query.Response.Message subschema.
+    validator.check_compliance_of_trapi_response(response=query[0])
     check_messages(validator, query[5], no_errors=True)

@@ -48,11 +48,14 @@ class TRAPIResponseValidator(ValidationReporter):
             strict_validation=strict_validation
         )
 
-    def check_compliance_of_trapi_response(self, message: Dict):
+    def check_compliance_of_trapi_response(self, response: Optional[Dict]):
         """
         One stop validation of all components of a TRAPI-schema compliant
-        Query Response.Message against a designated Biolink Model release.
-        Here, a TRAPI Response message is a Python Dictionary with three entries:
+        Query.Response, including its Message against a designated Biolink Model release.
+        The high level structure of a Query.Response is described in
+        https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response-.
+
+        The TRAPI Query.Response.Message is a Python Dictionary with three entries:
 
         * Query Graph ("QGraph"): knowledge graph query input parameters
         * Knowledge Graph: output knowledge (sub-)graph containing knowledge (Biolink Model compliant nodes, edges)
@@ -60,14 +63,31 @@ class TRAPIResponseValidator(ValidationReporter):
         * Results: a list of (annotated) node and edge bindings pointing into the Knowledge Graph, to represent the
                    specific answers (subgraphs) satisfying the query graph constraints.
 
-        :param message: Response.Message to be validated.
-        :type message: Dict
+        :param response: Query.Response to be validated.
+        :type response: Optional[Dict]
 
         :returns: Validator cataloging "information", "warning" and "error" messages (may be empty)
         :rtype: ValidationReporter
         """
+        if not (response and 'message' in response):
+            self.report("error.trapi.response.empty")
+
+        trapi_validator: TRAPISchemaValidator = check_trapi_validity(
+            instance=response,
+            component="Response",
+            trapi_version=self.trapi_version
+        )
+        if trapi_validator.has_messages():
+            self.merge(trapi_validator)
+
+        status: Optional[str] = response['status'] if 'status' in response else None
+        if status and status not in [""]:
+            pass
+
+        message: Optional[Dict] = response['message']
         if not message:
             self.report("error.trapi.response.message.empty")
+
         # Sequentially validate the Query Graph, Knowledge Graph then validate
         # the Results (which rely on the validity of the other two components)
         elif self.has_valid_query_graph(message) and \

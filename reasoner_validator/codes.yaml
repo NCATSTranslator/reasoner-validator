@@ -148,13 +148,16 @@ error:
     $description: "This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause!"
   trapi:
     validation:
-      $message: "TRAPI {trapi_version} Query: '{exception}'"
+      $message: "TRAPI {trapi_version} schema exception: '{exception}'!"
       $description: "TRAPI query attempt triggered an abnormal server exception as noted."
     request:
       invalid:
         $message: "{context} could not generate a valid TRAPI query request object because {reason}!"
         $description: "TRAPI query message could not be prepared for the indicated reason, thus query was not attempted."
     response:
+      empty:
+        $message: "TRAPI Response is missing!"
+        $description: "TRAPI Response to be validated should not be totally empty but should have a Message body."
       unexpected_http_code:
         $message: "TRAPI Response has an unexpected HTTP status code: '{status_code}'!"
         $description: "TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted."

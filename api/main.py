@@ -43,13 +43,15 @@ class Query(BaseModel):
     # and detection of absent Knowledge Graph Edge predicate and attributes (despite 'nullable: true' model permission)
     strict_validation: Optional[bool] = None
 
-    message: Dict
+    # A full Query.Response is (now) expected here, as described in:
+    # https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response-.
+    response: Dict
 
 
 @app.post("/validate")
 async def validate(query: Query):
 
-    if not query.message:
+    if not query.response:
         raise HTTPException(status_code=400, detail="Empty input message?")
 
     trapi_version: str = latest.get(query.trapi_version)
@@ -70,7 +72,7 @@ async def validate(query: Query):
         sources=sources.dict(),
         strict_validation=strict_validation
     )
-    validator.check_compliance_of_trapi_response(message=query.message)
+    validator.check_compliance_of_trapi_response(response=query.response)
 
     if not validator.has_messages():
         validator.report(code="info.compliant")
