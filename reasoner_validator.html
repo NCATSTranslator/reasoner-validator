@@ -47,6 +47,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.has_valid_results"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.has_valid_results()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sample_graph"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sample_graph()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sample_results"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sample_results()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sanitize_trapi_query()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -208,7 +209,15 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query" title="reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sanitize_trapi_query</span></code></a>(response)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param response</dt>
+<dd class="field-odd"><p>Dict full TRAPI Response JSON object</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
 <td><p>Export ValidationReporter contents as a Python dictionary (including TRAPI version, Biolink Model version and messages) :return: Dict</p></td>
 </tr>
 </tbody>
@@ -293,6 +302,20 @@ The high level structure of a Query.Response is described in
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>List, TEST_DATA_SAMPLE_SIZE sized subset of Results</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sanitize_trapi_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>response</strong> – Dict full TRAPI Response JSON object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dict, response with discretionary removal of content which
+triggers (temporarily) unwarranted TRAPI validation failures</p>
 </dd>
 </dl>
 </dd></dl>
