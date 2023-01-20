@@ -99,11 +99,12 @@ class TRAPIResponseValidator(ValidationReporter):
         #     }
         # }
         if 'workflow' in response:
-            workflow: Dict = response['workflow']
-            if 'runner_parameters' in workflow and not workflow['runner_parameters']:
-                workflow.pop('runner_parameters')
-            if 'parameters' in workflow and not workflow['parameters']:
-                workflow['parameters'] = dict()
+            workflow_steps: Dict = response['workflow']  # is a list of steps
+            for step in workflow_steps:
+                if 'runner_parameters' in step and not step['runner_parameters']:
+                    step.pop('runner_parameters')
+                if 'parameters' in step and not step['parameters']:
+                    step['parameters'] = dict()
         return response
 
     def check_compliance_of_trapi_response(self, response: Optional[Dict]):

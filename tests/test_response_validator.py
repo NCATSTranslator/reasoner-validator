@@ -669,6 +669,30 @@ _TEST_RESULTS_2 = [
             None,
             True,
             ""   # this simple workflow spec should pass?
+        ),
+        (
+            # Query 25 - Valid full Message, under strict validation. Message is valid,
+            #            the 'workflow' field is an array, but runner_parameters is None.
+            #            This is technically invalid but we have a code patch which should filter it out (for now)
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                },
+                "workflow": [
+                    {
+                        "id": "lookup",
+                        "runner_parameters": None,
+                        "parameters": None
+                    }
+                ]
+            },
+            None,
+            None,
+            None,
+            True,
+            ""   # this filtered workflow spec should pass
         )
     ]
 )
