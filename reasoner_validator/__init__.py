@@ -47,6 +47,65 @@ class TRAPIResponseValidator(ValidationReporter):
             strict_validation=strict_validation
         )
 
+
+    @staticmethod
+    def sanitize_trapi_query(response: Dict):
+        """
+
+        :param response: Dict full TRAPI Response JSON object
+        :return: Dict, response with discretionary removal of content which
+                       triggers (temporarily) unwarranted TRAPI validation failures
+        """
+        # Typical TRAPI Response
+        # {
+        #     'status_code': 200,
+        #     'response_json': {
+        #         'message': {
+        #             'query_graph': {
+        #                 'nodes': {
+        #                     'a': {
+        #                         'ids': ['NCBITaxon:2860379'],
+        #                         'categories': ['biolink:OrganismTaxon'],
+        #                         'is_set': False,
+        #                         'constraints': []
+        #                     }, 'b': {
+        #                         'ids': None,
+        #                         'categories': ['biolink:OrganismTaxon'],
+        #                         'is_set': False,
+        #                         'constraints': []
+        #                     }
+        #                 },
+        #                 'edges': {
+        #                     'ab': {
+        #                         'subject': 'a',
+        #                         'object': 'b',
+        #                         'knowledge_type': None,
+        #                         'predicates': ['biolink:subclass_of'],
+        #                         'attribute_constraints': [],
+        #                         'qualifier_constraints': []
+        #                     }
+        #                 }
+        #             },
+        #             'knowledge_graph': {
+        #                 'nodes': {},
+        #                 'edges': {}
+        #             },
+        #             'results': []
+        #         },
+        #         'log_level': None,
+        #         'workflow': [
+        #             {'runner_parameters': None, 'id': 'lookup', 'parameters': None}
+        #         ]
+        #     }
+        # }
+        if 'workflow' in response:
+            workflow: Dict = response['workflow']
+            if 'runner_parameters' in workflow and not workflow['runner_parameters']:
+                workflow.pop('runner_parameters')
+            if 'parameters' in workflow and not workflow['parameters']:
+                workflow['parameters'] = dict()
+        return response
+
     def check_compliance_of_trapi_response(self, response: Optional[Dict]):
         """
         One stop validation of all components of a TRAPI-schema compliant
@@ -70,6 +129,8 @@ class TRAPIResponseValidator(ValidationReporter):
         """
         if not (response and 'message' in response):
             self.report("error.trapi.response.empty")
+
+        response: Dict = self.sanitize_trapi_query(response)
 
         trapi_validator: TRAPISchemaValidator = check_trapi_validity(
             instance=response,
