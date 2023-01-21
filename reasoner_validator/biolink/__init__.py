@@ -220,7 +220,7 @@ class BiolinkValidator(ValidationReporter):
                                     if category.name in possible_subject_categories:
                                         id_prefix_mapped[identifier] = True
                         unmapped_ids = [
-                            identifier for identifier in id_prefix_mapped.keys() if not id_prefix_mapped[identifier]
+                            identifier for identifier in id_prefix_mapped if not id_prefix_mapped[identifier]
                         ]
                         if unmapped_ids:
                             self.report(
@@ -276,17 +276,18 @@ class BiolinkValidator(ValidationReporter):
         else:
             return element
 
-    def validate_attributes(self, edge: Dict):
+    def validate_attributes(self, edge_id: str, edge: Dict):
         """
+        :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param edge: Dict, the edge object associated with some attributes are expected to be found
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
-        if 'attributes' not in edge.keys():
-            self.report(code="error.knowledge_graph.edge.attribute.missing")
+        if 'attributes' not in edge:
+            self.report(code="error.knowledge_graph.edge.attribute.missing", edge_id=edge_id)
         elif not edge['attributes']:
-            self.report(code="error.knowledge_graph.edge.attribute.empty")
+            self.report(code="error.knowledge_graph.edge.attribute.empty", edge_id=edge_id)
         elif not isinstance(edge['attributes'], List):
-            self.report(code="error.knowledge_graph.edge.attribute.not_array")
+            self.report(code="error.knowledge_graph.edge.attribute.not_array", edge_id=edge_id)
         else:
             attributes = edge['attributes']
 
@@ -410,7 +411,8 @@ class BiolinkValidator(ValidationReporter):
                                 attribute_type_id=str(attribute_type_id)
                             )
 
-            # TODO: After all the attributes have been scanned, check for provenance. Treat as warnings for now
+            # TODO: After all the attributes have been scanned,
+            #       check for provenance. Treat as warnings for now.
             if ara_source and not found_ara_knowledge_source:
                 self.report(code="warning.knowledge_graph.edge.provenance.ara.missing")
 
@@ -423,6 +425,69 @@ class BiolinkValidator(ValidationReporter):
 
             if not found_primary_or_original_knowledge_source:
                 self.report(code="warning.knowledge_graph.edge.provenance.missing_primary")
+
+
+    def validate_attribute_constraints(self, edge_id: str, edge: Dict):
+        if 'attribute_constraints' not in edge or edge['attribute_constraints'] is None:
+            return  # nullable: true... missing key or None value is ok?
+        elif not isinstance(edge['attribute_constraints'], List):
+            self.report(code="error.query_graph.edge.attribute_constraints.not_array", edge_id=edge_id)
+        elif not edge['attribute_constraints']:
+            return  # nullable: true... an empty 'attribute_constraints' array is ok?
+        else:
+            # TODO: not yet sure what else to do here (if anything...yet)
+            attribute_constraints: List = edge['attribute_constraints']
+
+
+    def validate_qualifiers(self, edge_id: str, edge: Dict):
+        if 'qualifiers' not in edge or edge['qualifiers'] is None:
+            return  # nullable: true... missing key or None value is ok?
+        elif not isinstance(edge['qualifiers'], List):
+            self.report(code="error.knowledge_graph.edge.qualifiers.not_array", edge_id=edge_id)
+        elif not edge['qualifiers']:
+            return  # nullable: true... an empty 'qualifiers' array is ok?
+        else:
+            qualifiers: List = edge['qualifiers']
+            for qualifier in qualifiers:
+                # TODO: how do I validate qualifiers here?
+                #     Qualifier:
+                #       additionalProperties: false
+                #       description: >-
+                #         An additional nuance attached to an assertion
+                #       type: object
+                #       properties:
+                #         qualifier_type_id:
+                #           type: string
+                #           description: >-
+                #             The category of the qualifier, drawn from a hierarchy of qualifier
+                #             slots in the Biolink model (e.g. subject_aspect, subject_direction,
+                #             object_aspect, object_direction, etc).
+                #           example: subject_aspect
+                #           nullable: false
+                #         qualifier_value:
+                #           type: string
+                #           description: >-
+                #             The value associated with the type of the qualifier, drawn from
+                #             a set of controlled values by the type as specified in
+                #             the Biolink model (e.g. 'expression' or 'abundance' for the
+                #             qualifier type 'subject_aspect', etc).
+                #           example: expression
+                #           nullable: false
+                #       required:
+                #         - qualifier_type_id
+                #         - qualifier_value
+                pass
+
+    def validate_qualifier_constraints(self, edge_id: str, edge: Dict):
+        if 'qualifier_constraints' not in edge or edge['qualifier_constraints'] is None:
+            return  # nullable: true... missing key or None value is ok?
+        elif not isinstance(edge['qualifier_constraints'], List):
+            self.report(code="error.query_graph.edge.qualifier_constraints.not_array", edge_id=edge_id)
+        elif not edge['qualifier_constraints']:
+            return  # nullable: true... an empty 'qualifier_constraints' array is ok?
+        else:
+            qualifier_constraints: List = edge['qualifier_constraints']
+
 
     def validate_predicate(self, edge_id: str, predicate: str):
         """
@@ -479,10 +544,13 @@ class BiolinkValidator(ValidationReporter):
 
         context: str = self.graph_type.name.lower()
 
+        # Validate Subject node
         if not subject_id:
             self.report(code=f"error.{context}.edge.subject.missing", edge_id=edge_id)
         elif subject_id not in self.nodes:
             self.report(code=f"error.{context}.edge.subject.missing_from_nodes", object_id=subject_id)
+
+        # Validate Predicates
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             if not predicate:
                 self.report(
@@ -505,15 +573,21 @@ class BiolinkValidator(ValidationReporter):
                     if not predicate:
                         continue  # sanity check
                     self.validate_predicate(edge_id=edge_id, predicate=predicate)
+
+        # Validate Object Node
         if not object_id:
             self.report(code=f"error.{context}.edge.object.missing", edge_id=edge_id)
         elif object_id not in self.nodes:
             self.report(code=f"error.{context}.edge.object.missing_from_nodes", object_id=object_id)
+
+        # Validate edge attributes (or attribute_constraints)
+        # and edge qualifiers (or qualifier_constraints)
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
-            self.validate_attributes(edge=edge)
+            self.validate_attributes(edge_id=edge_id, edge=edge)
+            self.validate_qualifiers(edge_id=edge_id, edge=edge)
         else:
-            # TODO: do we need to validate Query Graph 'constraints' slot contents here?
-            pass
+            self.validate_attribute_constraints(edge_id=edge_id, edge=edge)
+            self.validate_qualifier_constraints(edge_id=edge_id, edge=edge)
 
     def validate_category(
             self,

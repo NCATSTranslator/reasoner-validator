@@ -1032,8 +1032,20 @@ def test_validate_attributes(query: Tuple):
         biolink_version=LATEST_BIOLINK_MODEL,
         sources=query[1]
     )
-    validator.validate_attributes(edge=query[0])
+    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
     check_messages(validator, query[2])
+
+
+def test_validate_attribute_constraints():
+    assert False, "Implement Me!"
+
+
+def test_validate_qualifiers():
+    assert False, "Implement Me!"
+
+
+def test_validate_qualifier_constraints():
+    assert False, "Implement Me!"
 
 
 ##################################
