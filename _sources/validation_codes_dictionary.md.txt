@@ -70,6 +70,12 @@
 
 ## Warning
 
+### warning.trapi.response.status.unknown
+
+**Message:** TRAPI Response status code '{status}' is unrecognized?
+
+**Description:** The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable
+
 ### warning.graph.empty
 
 **Message:** {context} data is empty?
@@ -159,6 +165,12 @@
 **Message:** {context} edge {edge_id} predicate '{predicate}' is non-canonical?
 
 **Description:** A predicate selected for use in a knowledge graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
+
+### warning.knowledge_graph.edge.qualifiers.empty
+
+**Message:** Edge qualifiers 
+
+**Description:** Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to ARA.
 
 ### warning.knowledge_graph.edge.attribute.type_id.not_association_slot
 
@@ -378,6 +390,18 @@
 
 **Description:** Query Graph data validation is currently strict: cannot have 'mixin' predicates!
 
+### error.query_graph.edge.attribute_constraints.not_array
+
+**Message:** Edge '{edge_id}' attribute_constraints slot value is not an array!
+
+**Description:** Value of 'attribute_constraints' slot value in Query Graph must be an array data type!
+
+### error.query_graph.edge.qualifier_constraints.not_array
+
+**Message:** Edge '{edge_id}' qualifier_constraints slot value is not an array!
+
+**Description:** Value of 'qualifier_constraints' slot value in Query Graph must be an array data type!
+
 ### error.knowledge_graph.nodes.empty
 
 **Message:** No nodes found!
@@ -524,19 +548,19 @@
 
 ### error.knowledge_graph.edge.attribute.missing
 
-**Message:** Edge has no 'attributes' key!
+**Message:** Edge '{edge_id}' has no 'attributes' key!
 
 **Description:** Knowledge graph edge must have a 'attributes' key with a non-empty associated value!
 
 ### error.knowledge_graph.edge.attribute.empty
 
-**Message:** Edge has empty attributes!
+**Message:** Edge '{edge_id}' has empty attributes!
 
 **Description:** Value of 'attributes' slot in Knowledge Graph edge must contain a list of one or more attributes!
 
 ### error.knowledge_graph.edge.attribute.not_array
 
-**Message:** Edge attributes are not an array!
+**Message:** Edge '{edge_id}' attributes are not an array!
 
 **Description:** Value of the 'attributes' slot in Knowledge Graph edge must be an array of attributes!
 
@@ -575,4 +599,10 @@
 **Message:** Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!
 
 **Description:** The value of an attribute specifying the provenance of a Knowledge graph edge must be the well-formed InfoRes CURIE of a knowledge source!
+
+### error.knowledge_graph.edge.qualifiers.not_array
+
+**Message:** Edge '{edge_id}' 'qualifiers' are not an array!
+
+**Description:** Value of the 'qualifiers' slot in Knowledge Graph edge must be an array of attributes!
 

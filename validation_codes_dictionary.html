@@ -61,6 +61,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#warning">Warning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-status-unknown">warning.trapi.response.status.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-graph-empty">warning.graph.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-response-knowledge-graph-empty">warning.response.knowledge_graph.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-response-results-empty">warning.response.results.empty</a></li>
@@ -76,6 +77,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-id-unmapped-to-category">warning.knowledge_graph.node.id.unmapped_to_category</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-predicate-deprecated">warning.knowledge_graph.edge.predicate.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-predicate-non-canonical">warning.knowledge_graph.edge.predicate.non_canonical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-qualifiers-empty">warning.knowledge_graph.edge.qualifiers.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot">warning.knowledge_graph.edge.attribute.type_id.not_association_slot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-unknown-prefix">warning.knowledge_graph.edge.attribute.type_id.unknown_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated">warning.knowledge_graph.edge.attribute.type_id.deprecated</a></li>
@@ -115,6 +117,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-predicate-empty-array">error.query_graph.edge.predicate.empty_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-predicate-abstract">error.query_graph.edge.predicate.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-predicate-mixin">error.query_graph.edge.predicate.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-attribute-constraints-not-array">error.query_graph.edge.attribute_constraints.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-not-array">error.query_graph.edge.qualifier_constraints.not_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-empty">error.knowledge_graph.nodes.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edges-empty">error.knowledge_graph.edges.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-missing">error.knowledge_graph.node.category.missing</a></li>
@@ -148,6 +152,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-value-missing">error.knowledge_graph.edge.attribute.value.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-value-empty">error.knowledge_graph.edge.attribute.value.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-provenance-infores-missing">error.knowledge_graph.edge.provenance.infores.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-not-array">error.knowledge_graph.edge.qualifiers.not_array</a></li>
 </ul>
 </li>
 </ul>
@@ -241,6 +246,11 @@
 </div>
 <div class="section" id="warning">
 <h2>Warning<a class="headerlink" href="#warning" title="Permalink to this heading"></a></h2>
+<div class="section" id="warning-trapi-response-status-unknown">
+<h3>warning.trapi.response.status.unknown<a class="headerlink" href="#warning-trapi-response-status-unknown" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> TRAPI Response status code ‘{status}’ is unrecognized?</p>
+<p><strong>Description:</strong> The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable</p>
+</div>
 <div class="section" id="warning-graph-empty">
 <h3>warning.graph.empty<a class="headerlink" href="#warning-graph-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> {context} data is empty?</p>
@@ -315,6 +325,11 @@
 <h3>warning.knowledge_graph.edge.predicate.non_canonical<a class="headerlink" href="#warning-knowledge-graph-edge-predicate-non-canonical" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> {context} edge {edge_id} predicate ‘{predicate}’ is non-canonical?</p>
 <p><strong>Description:</strong> A predicate selected for use in a knowledge graph should preferably be tagged as ‘canonical’ in the specified Biolink Model release?</p>
+</div>
+<div class="section" id="warning-knowledge-graph-edge-qualifiers-empty">
+<h3>warning.knowledge_graph.edge.qualifiers.empty<a class="headerlink" href="#warning-knowledge-graph-edge-qualifiers-empty" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge qualifiers</p>
+<p><strong>Description:</strong> Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to ARA.</p>
 </div>
 <div class="section" id="warning-knowledge-graph-edge-attribute-type-id-not-association-slot">
 <h3>warning.knowledge_graph.edge.attribute.type_id.not_association_slot<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot" title="Permalink to this heading"></a></h3>
@@ -499,6 +514,16 @@
 <p><strong>Message:</strong> ‘{name}’ is a mixin1</p>
 <p><strong>Description:</strong> Query Graph data validation is currently strict: cannot have ‘mixin’ predicates!</p>
 </div>
+<div class="section" id="error-query-graph-edge-attribute-constraints-not-array">
+<h3>error.query_graph.edge.attribute_constraints.not_array<a class="headerlink" href="#error-query-graph-edge-attribute-constraints-not-array" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ attribute_constraints slot value is not an array!</p>
+<p><strong>Description:</strong> Value of ‘attribute_constraints’ slot value in Query Graph must be an array data type!</p>
+</div>
+<div class="section" id="error-query-graph-edge-qualifier-constraints-not-array">
+<h3>error.query_graph.edge.qualifier_constraints.not_array<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-not-array" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier_constraints slot value is not an array!</p>
+<p><strong>Description:</strong> Value of ‘qualifier_constraints’ slot value in Query Graph must be an array data type!</p>
+</div>
 <div class="section" id="error-knowledge-graph-nodes-empty">
 <h3>error.knowledge_graph.nodes.empty<a class="headerlink" href="#error-knowledge-graph-nodes-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> No nodes found!</p>
@@ -621,17 +646,17 @@
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-missing">
 <h3>error.knowledge_graph.edge.attribute.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge has no ‘attributes’ key!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ has no ‘attributes’ key!</p>
 <p><strong>Description:</strong> Knowledge graph edge must have a ‘attributes’ key with a non-empty associated value!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-empty">
 <h3>error.knowledge_graph.edge.attribute.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge has empty attributes!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ has empty attributes!</p>
 <p><strong>Description:</strong> Value of ‘attributes’ slot in Knowledge Graph edge must contain a list of one or more attributes!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-not-array">
 <h3>error.knowledge_graph.edge.attribute.not_array<a class="headerlink" href="#error-knowledge-graph-edge-attribute-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge attributes are not an array!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ attributes are not an array!</p>
 <p><strong>Description:</strong> Value of the ‘attributes’ slot in Knowledge Graph edge must be an array of attributes!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-type-id-missing">
@@ -663,6 +688,11 @@
 <h3>error.knowledge_graph.edge.provenance.infores.missing<a class="headerlink" href="#error-knowledge-graph-edge-provenance-infores-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has provenance value ‘{infores}’ which is not a well-formed InfoRes CURIE!</p>
 <p><strong>Description:</strong> The value of an attribute specifying the provenance of a Knowledge graph edge must be the well-formed InfoRes CURIE of a knowledge source!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-qualifiers-not-array">
+<h3>error.knowledge_graph.edge.qualifiers.not_array<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-not-array" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ ‘qualifiers’ are not an array!</p>
+<p><strong>Description:</strong> Value of the ‘qualifiers’ slot in Knowledge Graph edge must be an array of attributes!</p>
 </div>
 </div>
 </div>

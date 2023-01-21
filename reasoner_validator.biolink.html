@@ -49,6 +49,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_result"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_result()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.minimum_required_biolink_version"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.minimum_required_biolink_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.set_nodes"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.set_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_attribute_constraints"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_attribute_constraints()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_attributes"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_attributes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_category"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_category()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_element_status"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_element_status()</span></code></a></li>
@@ -56,6 +57,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_graph_node"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_graph_node()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_input_edge_node"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_input_edge_node()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_predicate"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_predicate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_qualifier_constraints()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifiers"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_qualifiers()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.TRAPIGraphType"><code class="docutils literal notranslate"><span class="pre">TRAPIGraphType</span></code></a><ul>
@@ -216,10 +219,10 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
 <td><p>Export ValidationReporter contents as a Python dictionary (including TRAPI version, Biolink Model version and messages) :return: Dict</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_attributes" title="reasoner_validator.biolink.BiolinkValidator.validate_attributes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attributes</span></code></a>(edge)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_attributes" title="reasoner_validator.biolink.BiolinkValidator.validate_attributes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attributes</span></code></a>(edge_id, edge)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param edge</dt>
-<dd class="field-odd"><p>Dict, the edge object associated with some attributes are expected to be found</p>
+<dt class="field-odd">param edge_id</dt>
+<dd class="field-odd"><p>str, string identifier for the edge (for reporting purposes)</p>
 </dd>
 </dl>
 </p></td>
@@ -248,14 +251,23 @@
 </table>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 74%" />
-<col style="width: 26%" />
+<col style="width: 77%" />
+<col style="width: 23%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>set_nodes</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>validate_input_edge_node</strong></p></td>
+<tr class="row-even"><td><p><strong>validate_attribute_constraints</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>validate_input_edge_node</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>validate_qualifier_constraints</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>validate_qualifiers</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -324,11 +336,19 @@ against the currently active Biolink Model Toolkit model version.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_attribute_constraints">
+<span class="sig-name descname"><span class="pre">validate_attribute_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_attribute_constraints" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_attributes">
-<span class="sig-name descname"><span class="pre">validate_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_attributes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_attributes" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>edge</strong> – Dict, the edge object associated with some attributes are expected to be found</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>edge_id</strong> – str, string identifier for the edge (for reporting purposes)</p></li>
+<li><p><strong>edge</strong> – Dict, the edge object associated with some attributes are expected to be found</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>None (validation messages captured in the ‘self’ BiolinkValidator context)</p>
@@ -416,6 +436,16 @@ against the currently active Biolink Model Toolkit model version.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints">
+<span class="sig-name descname"><span class="pre">validate_qualifier_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_qualifiers">
+<span class="sig-name descname"><span class="pre">validate_qualifiers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifiers" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
