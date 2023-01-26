@@ -24,10 +24,10 @@ logger.setLevel("DEBUG")
 
 pp = PrettyPrinter(indent=4)
 
-# October 19, 2022 - as of reasoner-validator 3.1.0, we don't pretend to totally support Biolink Models
-# any earlier than 3.0.3.  If earlier biolink model compliance testing is desired,
+# January 25, 2023 - as of reasoner-validator 3.1.0, we don't pretend to totally support Biolink Models
+# any earlier than 3.1.1.  If earlier biolink model compliance testing is desired,
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
-LATEST_BIOLINK_MODEL = "3.0.3"
+LATEST_BIOLINK_MODEL = "3.1.1"
 
 
 def test_set_default_biolink_versioned_global_environment():
@@ -794,12 +794,25 @@ TEST_ARA_CASE_TEMPLATE = {
     "kp_source_type": "primary"
 }
 
-
 def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
     test_case = TEST_ARA_CASE_TEMPLATE.copy()
     if changes:
         test_case.update(changes)
     return test_case
+@pytest.mark.parametrize(
+    "query",
+    [
+        ( "", "" )
+    ]
+)
+def test_validate_attribute_constraints(query: Tuple):
+    validator = BiolinkValidator(
+        graph_type=TRAPIGraphType.Query_Graph,
+        biolink_version=LATEST_BIOLINK_MODEL,
+        sources=query[1]
+    )
+    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
+    check_messages(validator, query[2])
 
 
 @pytest.mark.parametrize(
@@ -1036,16 +1049,37 @@ def test_validate_attributes(query: Tuple):
     check_messages(validator, query[2])
 
 
-def test_validate_attribute_constraints():
-    assert False, "Implement Me!"
+@pytest.mark.parametrize(
+    "query",
+    [
+        ( "", "" )
+    ]
+)
+def test_validate_qualifier_constraints(query: Tuple):
+    validator = BiolinkValidator(
+        graph_type=TRAPIGraphType.Query_Graph,
+        biolink_version=LATEST_BIOLINK_MODEL,
+        sources=query[1]
+    )
+    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
+    check_messages(validator, query[2])
 
 
-def test_validate_qualifiers():
-    assert False, "Implement Me!"
+@pytest.mark.parametrize(
+    "query",
+    [
+        ( "", "" )
+    ]
+)
+def test_validate_qualifiers(query: Tuple):
+    validator = BiolinkValidator(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        biolink_version=LATEST_BIOLINK_MODEL,
+        sources=query[1]
+    )
+    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
+    check_messages(validator, query[2])
 
-
-def test_validate_qualifier_constraints():
-    assert False, "Implement Me!"
 
 
 ##################################
