@@ -257,22 +257,23 @@ class BiolinkValidator(ValidationReporter):
         element: Optional[Element] = self.bmt.get_element(name)
         if not element:
             self.report(code=f"error.{context}.unknown", name=name)
+            return None
         elif element.deprecated:
             self.report(code=f"warning.{context}.deprecated", name=name)
-            return None
+            # return None - a deprecated term is not treated as a failure but just as a warning
         elif element.abstract:
             if self.strict_validation:
                 self.report(code=f"error.{context}.abstract",  name=name)
+                return None
             else:
                 self.report(code=f"info.{context}.abstract", name=name)
-            return None
         elif self.bmt.is_mixin(name):
-            # A mixin cannot be instantiated thus it should not be given as an input concept category
+            # A mixin cannot be instantiated ...
             if self.strict_validation:
                 self.report(code=f"error.{context}.mixin", name=name)
+                return None
             else:
                 self.report(code=f"info.{context}.mixin", name=name)
-            return None
         else:
             return element
 
