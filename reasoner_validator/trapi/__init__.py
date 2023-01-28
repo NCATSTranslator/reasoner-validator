@@ -10,14 +10,14 @@ from yaml import load, CLoader as Loader
 
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.trapi.mapping import check_node_edge_mappings
-from reasoner_validator.versioning import latest, versions, GIT_ORG, GIT_REPO
+from reasoner_validator.versioning import latest, versions, GIT_ORG, GIT_REPO, branches
 
 
 @lru_cache()
-def _load_schema(trapi_version: str):
+def _load_schema(schema_version: str):
     """Load schema from GitHub."""
     result = requests.get(
-        f"https://raw.githubusercontent.com/{GIT_ORG}/{GIT_REPO}/v{trapi_version}/TranslatorReasonerAPI.yaml"
+        f"https://raw.githubusercontent.com/{GIT_ORG}/{GIT_REPO}/{schema_version}/TranslatorReasonerAPI.yaml"
     )
     spec = load(result.text, Loader=Loader)
     components = spec["components"]["schemas"]
@@ -33,12 +33,20 @@ def _load_schema(trapi_version: str):
     return schemas
 
 
-def load_schema(trapi_version: str):
-    """Load schema from GitHub."""
-    full_version = latest.get(trapi_version)
-    if full_version not in versions:
-        raise ValueError(f"No TRAPI version {trapi_version}")
-    return _load_schema(full_version)
+def load_schema(target: str):
+    """
+    Load schema from GitHub.
+    :param target: release semver or git branch name containing the target TRAPI schema.
+    :return: loaded TRAPI schema
+    """
+    mapped_release = latest.get(target)
+    if mapped_release:
+        schema_version = f"v{mapped_release}"  # version tag has 'v' prefix on the release identifier
+    elif target in branches:
+        schema_version = target
+    else:
+        raise ValueError(f"No TRAPI version {target}")
+    return _load_schema(schema_version)
 
 
 def fix_nullable(schema) -> None:
@@ -90,11 +98,10 @@ class TRAPISchemaValidator(ValidationReporter):
         trapi_version : str
             version of component to validate against
         """
-        resolved_biolink_version = latest.get(trapi_version)
         ValidationReporter.__init__(
             self,
             prefix="TRAPI Validation",
-            trapi_version=resolved_biolink_version
+            trapi_version=trapi_version
         )
 
     def validate(self, instance, component):

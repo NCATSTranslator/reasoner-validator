@@ -6,7 +6,7 @@ from jsonschema.exceptions import ValidationError
 
 from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema
 
-TEST_VERSIONS = "1", "1.2", "1.2.0", "1.3", "1.3.0"
+TEST_VERSIONS = "1", "1.2", "1.2.0", "1.3", "1.3.0", "master"  # last 'version' is a branch name, i.e. master?
 
 
 @pytest.mark.parametrize(
