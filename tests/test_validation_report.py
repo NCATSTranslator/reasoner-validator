@@ -182,7 +182,7 @@ def test_message_report():
         code="info.input_edge.predicate.abstract",
         name="NAME"
     )
-    report: Dict[str, List[Dict]] = reporter.get_messages()
+    report: Dict[str, Dict[str, List[Dict[str,str]]]] = reporter.get_messages()
     assert 'information' in report
     assert len(report['information']) > 0
     messages: List[str] = [CodeDictionary.display(**coded_message) for coded_message in report['information']]
@@ -207,10 +207,17 @@ def test_messages():
     assert reporter1.has_errors()
 
     # Testing merging of messages from a second reporter
-    reporter2 = ValidationReporter(prefix="Second Validation Report", biolink_version=TEST_BIOLINK_VERSION)
+    reporter2 = ValidationReporter(
+        prefix="Second Validation Report",
+        biolink_version=TEST_BIOLINK_VERSION
+    )
     assert reporter2.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
-    reporter2.report("info.query_graph.edge.predicate.mixin", context="some_context", name="biolink:this_is_a_mixin")
+    reporter2.report(
+        "info.query_graph.edge.predicate.mixin",
+        context="some_context",
+        name="biolink:this_is_a_mixin"
+    )
     reporter2.report("warning.response.results.empty")
     reporter2.report("error.knowledge_graph.edges.empty")
     reporter1.merge(reporter2)
@@ -225,33 +232,36 @@ def test_messages():
     assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION
 
     # testing addition a few raw batch messages
-    new_messages: Dict[str, List[Dict]] = {
-            "information": [
+    new_messages: Dict[str, Dict[str, List[Dict[str,str]]]] = {
+        "information": {
+            "info.input_edge.predicate.abstract": [
                 {
-                    'code': "info.input_edge.predicate.abstract",
                     'context': "Well,... hello",
                     'name': "Dolly"
                 }
-            ],
-            "warnings": [
+            ]
+        },
+        "warnings": {
+            "warning.knowledge_graph.node.unmapped_prefix": [
                 {
-                    'code': "warning.knowledge_graph.node.unmapped_prefix",
                     'node_id': "Will Robinson",
                     'categories': "Lost in Space"
                 }
-            ],
-            "errors": [
+            ]
+        },
+        "errors": {
+            "error.trapi.validation": [
                 {
-                    'code': "error.trapi.validation",
                     'trapi_version': "6.6.6",
                     'exception': "Dave, this can only be due to human error!"
                 }
             ]
+        }
     }
     reporter1.add_messages(new_messages)
 
     # Verify what we have
-    messages: Dict[str, List[Dict]] = reporter1.get_messages()
+    messages: Dict[str, Dict[str, List[Dict[str,str]]]] = reporter1.get_messages()
 
     assert "information" in messages
     assert len(messages['information']) > 0
@@ -308,7 +318,7 @@ def test_validator_method():
 
     reporter.apply_validation(validator_method, test_data, **test_parameters)
 
-    messages: Dict[str, List[Dict]] = reporter.get_messages()
+    messages: Dict[str, Dict[str, List[Dict[str,str]]]] = reporter.get_messages()
 
     assert "warnings" in messages
     assert len(messages['warnings']) > 0
@@ -327,46 +337,46 @@ def test_validator_method():
     "query",
     [
         (
-                'validation',
-                {
-                    "validation": {
-                        "trapi_version": "1.3",
-                        "biolink_version": "2.4.7",
-                        "messages": {
-                            "information": [],
-                            "warnings": [],
-                            "errors": [
-                                ""
-                            ]
-                        }
+            'validation',
+            {
+                "validation": {
+                    "trapi_version": "1.3",
+                    "biolink_version": "2.4.7",
+                    "messages": {
+                        "information": [],
+                        "warnings": [],
+                        "errors": [""]
                     }
-                },
-                True
+                }
+            },
+            True
         ),
         (
-                "validation",
-                {
-                    "validation": {
-                        "trapi_version": "1.3",
-                        "biolink_version": "2.4.7",
-                        "messages": {
-                            "information": [],
-                            "warnings": [
+            "validation",
+            {
+                "validation": {
+                    "trapi_version": "1.3",
+                    "biolink_version": "2.4.7",
+                    "messages": {
+                        "information": [],
+                        "warnings": {
+                            "warning.deprecated": [
                                 {
-                                    'code': "warning.deprecated",
                                     'context': "Input",
                                     "name": "biolink:ChemicalSubstance"
-                                },
-                                {
-                                    'code': "warning.predicate.non_canonical",
-                                    'predicate': "biolink:participates_in"
                                 }
                             ],
-                            "errors": []
-                        }
+                            "warning.predicate.non_canonical": [
+                                {
+                                    'predicate': "biolink:participates_in"
+                                }
+                            ]
+                        },
+                        "errors": []
                     }
-                },
-                False
+                }
+            },
+            False
         ),
     ]
 )
