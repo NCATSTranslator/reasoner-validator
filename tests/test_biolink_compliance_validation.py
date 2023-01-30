@@ -802,7 +802,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
 @pytest.mark.parametrize(
     "query",
     [
-        ( "", "" )
+        ( "", "", "" )
     ]
 )
 def test_validate_attribute_constraints(query: Tuple):
@@ -1052,7 +1052,7 @@ def test_validate_attributes(query: Tuple):
 @pytest.mark.parametrize(
     "query",
     [
-        ( "", "" )
+        ( "", "", "" )
     ]
 )
 def test_validate_qualifier_constraints(query: Tuple):
@@ -1068,7 +1068,7 @@ def test_validate_qualifier_constraints(query: Tuple):
 @pytest.mark.parametrize(
     "query",
     [
-        ( "", "" )
+        ( "", "", "" )
     ]
 )
 def test_validate_qualifiers(query: Tuple):

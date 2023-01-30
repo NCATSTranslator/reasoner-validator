@@ -1,6 +1,6 @@
 """Error and Warning Reporting Module"""
 import copy
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Union
 from json import dumps, JSONEncoder
 
 from reasoner_validator.validation_codes import CodeDictionary
@@ -95,7 +95,7 @@ class ValidationReporter:
             str,  # message type (info/warning/error)
             Dict[
                 str,  # message 'code' as indexing key
-                List[Dict[str,str]]  # List of parameters (May be empty if not needed?)
+                List[Dict[str,str]]  # List of parameters (Maybe empty, if code doesn't have any associated parameters)
             ]
         ] = {
             "information": dict(),
@@ -202,7 +202,8 @@ class ValidationReporter:
             self.messages[message_set][code] = list()
 
         # TODO: how can **message content duplication be avoided here(?)
-        self.messages[message_set][code].append(message)
+        if message:
+            self.messages[message_set][code].append(message)
 
     def add_messages(self, new_messages: Dict[str, Dict[str, List[Dict[str,str]]]]):
         """
@@ -341,11 +342,23 @@ class ValidationReporter:
         else:
             return False
 
-    def display(self, **message) -> str:
+    def display(self, messages: Dict[str, List[Dict[str,str]]]) -> List[str]:
         """
-        Augmented message display wrapper prepends
-        the ValidationReporter prefix to a
-        resolved single coded validation message.
-        :return: str, fully rendered validation message
+        This augmented message display wrapper prepends
+        the Validation Reporter contextual prefix to one or more
+        resolved coded validation messages.
+
+        :param messages: Dict[str,List[Dict[str,str]]], dictionary of messages where the keys are message codes,
+                         and the values are (possibly empty) lists of dictionary objects of message parameters.
+        :return: List[str], one or more resolved and contextualized Validation Reporter messages
         """
-        return self.prefix + CodeDictionary.display(**message)
+        # TODO: are missing messages an absolute error?
+        assert len(messages) > 0
+        decoded_messages: List[str] = list()
+        code: str
+        parameters: List[Dict[str,str]]
+        for code, parameters in messages.items():
+            decoded_messages.extend(
+                [self.prefix + message for message in CodeDictionary.display(code, parameters)]
+            )
+        return decoded_messages
