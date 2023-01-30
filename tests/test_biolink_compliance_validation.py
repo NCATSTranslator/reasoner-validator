@@ -169,11 +169,11 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         (   # Query 7 - Predicate is deprecated
             LATEST_BIOLINK_MODEL,
             {
-                'subject_category': 'biolink:Drug',
-                'object_category': 'biolink:Protein',
-                'predicate': 'biolink:has_real_world_evidence_of_association_with',
-                'subject': 'NDC:0002-8215-01',  # a form of insulin
-                'object': 'MONDO:0005148'  # type 2 diabetes?
+                'subject_category': 'biolink:Disease',
+                'object_category': 'biolink:Drug',
+                'predicate': 'biolink:amount_or_activity_increased_by',
+                'subject': 'MONDO:0005148',   # type 2 diabetes?
+                'object': 'NDC:0002-8215-01'  # a form of insulin
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate element " +
             # "'has_real_world_evidence_of_association_with' is deprecated?"
@@ -194,13 +194,13 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         (   # Query 9 - Predicate is a mixin
             LATEST_BIOLINK_MODEL,
             {
-                'subject_category': 'biolink:AnatomicalEntity',
-                'object_category': 'biolink:AnatomicalEntity',
-                'predicate': 'biolink:regulates',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_category': 'biolink:Drug',
+                'object_category': 'biolink:BiologicalProcess',
+                'predicate': 'biolink:decreases_amount_or_activity_of',
+                'subject': 'NDC:50090‑0766',  # Metformin
+                'object': 'GO:0006094' # Gluconeogenesis
             },
-            # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:regulates' is a mixin."
+            # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:decreases_amount_or_activity_of' is a mixin."
             "info.input_edge.edge.predicate.mixin"
         ),
         (   # Query 10 - Unknown predicate element

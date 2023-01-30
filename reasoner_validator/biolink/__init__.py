@@ -252,29 +252,28 @@ class BiolinkValidator(ValidationReporter):
         :param context: parsing context (e.g. 'Node')
         :param name: name of putative Biolink element ('class')
 
-        :return: Optional[Element], Biolink Element resolved to 'name' if element passed all validation; None otherwise.
+        :return: Optional[Element], Biolink Element resolved to 'name' if element no validation error; None otherwise.
         """
         element: Optional[Element] = self.bmt.get_element(name)
         if not element:
             self.report(code=f"error.{context}.unknown", name=name)
-        elif element.deprecated:
-            self.report(code=f"warning.{context}.deprecated", name=name)
             return None
-        elif element.abstract:
+        if element.deprecated:
+            self.report(code=f"warning.{context}.deprecated", name=name)
+        if element.abstract:
             if self.strict_validation:
                 self.report(code=f"error.{context}.abstract",  name=name)
+                return None
             else:
                 self.report(code=f"info.{context}.abstract", name=name)
-            return None
         elif self.bmt.is_mixin(name):
             # A mixin cannot be instantiated thus it should not be given as an input concept category
             if self.strict_validation:
                 self.report(code=f"error.{context}.mixin", name=name)
+                return None
             else:
                 self.report(code=f"info.{context}.mixin", name=name)
-            return None
-        else:
-            return element
+        return element
 
     def validate_attributes(self, edge_id: str, edge: Dict):
         """
