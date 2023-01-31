@@ -439,6 +439,8 @@ class BiolinkValidator(ValidationReporter):
 
 
     def validate_qualifiers(self, edge_id: str, edge: Dict):
+        # Edge qualifiers will only be seen in Biolink 3 data,
+        # but with missing 'qualifiers', no validation is attempted
         if 'qualifiers' not in edge or edge['qualifiers'] is None:
             return  # nullable: true... missing key or None value is ok?
         elif not isinstance(edge['qualifiers'], List):
@@ -478,6 +480,8 @@ class BiolinkValidator(ValidationReporter):
                 pass
 
     def validate_qualifier_constraints(self, edge_id: str, edge: Dict):
+        # Edge qualifiers will only be seen in Biolink 3 data,
+        # but with missing 'qualifier_constraints', no validation is attempted
         if 'qualifier_constraints' not in edge or edge['qualifier_constraints'] is None:
             return  # nullable: true... missing key or None value is ok?
         elif not isinstance(edge['qualifier_constraints'], List):
@@ -580,7 +584,7 @@ class BiolinkValidator(ValidationReporter):
             self.report(code=f"error.{context}.edge.object.missing_from_nodes", object_id=object_id)
 
         # Validate edge attributes (or attribute_constraints)
-        # and edge qualifiers (or qualifier_constraints)
+        # and (Biolink 3) edge qualifiers (or qualifier_constraints)
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             self.validate_attributes(edge_id=edge_id, edge=edge)
             self.validate_qualifiers(edge_id=edge_id, edge=edge)

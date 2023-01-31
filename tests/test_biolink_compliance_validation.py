@@ -799,20 +799,23 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
     if changes:
         test_case.update(changes)
     return test_case
-@pytest.mark.parametrize(
-    "query",
-    [
-        ( "", "", "" )
-    ]
-)
-def test_validate_attribute_constraints(query: Tuple):
-    validator = BiolinkValidator(
-        graph_type=TRAPIGraphType.Query_Graph,
-        biolink_version=LATEST_BIOLINK_MODEL,
-        sources=query[1]
-    )
-    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
-    check_messages(validator, query[2])
+
+#
+# Attribute constraints are not yet implemented
+#
+# @pytest.mark.parametrize(
+#     "query",
+#     [
+#         ("", "")
+#     ]
+# )
+# def test_validate_attribute_constraints(query: Tuple):
+#     validator = BiolinkValidator(
+#         graph_type=TRAPIGraphType.Query_Graph,
+#         biolink_version=LATEST_BIOLINK_MODEL
+#     )
+#     validator.validate_attribute_constraints(edge_id="test_validate_attributes unit test", edge=query[0])
+#     check_messages(validator, query[1])
 
 
 @pytest.mark.parametrize(
@@ -1052,33 +1055,30 @@ def test_validate_attributes(query: Tuple):
 @pytest.mark.parametrize(
     "query",
     [
-        ( "", "", "" )
+        ("", "")
     ]
 )
 def test_validate_qualifier_constraints(query: Tuple):
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Query_Graph,
-        biolink_version=LATEST_BIOLINK_MODEL,
-        sources=query[1]
-    )
-    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
-    check_messages(validator, query[2])
+        biolink_version=LATEST_BIOLINK_MODEL)
+    validator.validate_qualifier_constraints(edge_id="test_validate_attributes unit test", edge=query[0])
+    check_messages(validator, query[1])
 
 
 @pytest.mark.parametrize(
     "query",
     [
-        ( "", "", "" )
+        ("", "")
     ]
 )
 def test_validate_qualifiers(query: Tuple):
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
-        biolink_version=LATEST_BIOLINK_MODEL,
-        sources=query[1]
+        biolink_version=LATEST_BIOLINK_MODEL
     )
-    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
-    check_messages(validator, query[2])
+    validator.validate_qualifiers(edge_id="test_validate_attributes unit test", edge=query[0])
+    check_messages(validator, query[1])
 
 
 
