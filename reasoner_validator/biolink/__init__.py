@@ -481,12 +481,59 @@ class BiolinkValidator(ValidationReporter):
     def validate_qualifier_constraints(self, edge_id: str, edge: Dict):
         if 'qualifier_constraints' not in edge or edge['qualifier_constraints'] is None:
             return  # nullable: true... missing key or None value is ok?
+        # TODO: This test may not be necessary since TRAPI schema validation should pick it up?
         elif not isinstance(edge['qualifier_constraints'], List):
             self.report(code="error.query_graph.edge.qualifier_constraints.not_array", edge_id=edge_id)
         elif not edge['qualifier_constraints']:
             return  # nullable: true... an empty 'qualifier_constraints' array is ok?
         else:
+            # we have putative 'qualifier_constraints'
             qualifier_constraints: List = edge['qualifier_constraints']
+            for qualifier_set_entry in qualifier_constraints:
+                # An entry in the 'qualifier_constraints' array is mandatory to be non-empty
+                # and a dictionary, if qualifier_constraints is not empty
+                # TODO: This test may not be necessary since TRAPI schema validation should pick it up?
+                if not (qualifier_set_entry and isinstance(qualifier_set_entry, Dict)):
+                    self.report(code="error.query_graph.edge.qualifier_constraints.qualifier_set.not_dict", edge_id=edge_id)
+                else:
+                    # Mandatory tag in every 'qualifier_constraint' entry
+                    # TODO: This test may not be necessary since TRAPI schema validation should pick it up?
+                    if 'qualifier_set' not in qualifier_set_entry:
+                        self.report(
+                            code="error.query_graph.edge.qualifier_constraints.qualifier_set.missing",
+                            edge_id=edge_id
+                        )
+                    else:
+                        # We have a putative 'qualifier_set'
+                        qualifier_set: List = qualifier_set_entry['qualifier_set']
+                        # TODO: This test may not be necessary since TRAPI schema validation should pick it up?
+                        if not (qualifier_set and isinstance(qualifier_set, List)):
+                            self.report(
+                                code="error.query_graph.edge.qualifier_constraints.qualifier_set.not_dict",
+                                edge_id=edge_id
+                            )
+                        else:
+                            # we have a putative list of qualifiers?
+                            for qualifier in qualifier_set:
+                                # TODO: This test may not be necessary since TRAPI schema validation should pick it up?
+                                if not (qualifier and isinstance(qualifier, Dict)):
+                                    # TODO: These tests may not be necessary since TRAPI schema validation should pick it up?
+                                    if 'qualifier_type_id' not in qualifier:
+                                        self.report(
+                                            code="error.query_graph.edge.qualifier_constraints.qualifier_set.missing",
+                                            edge_id=edge_id
+                                        )
+                                    else:
+                                        qualifier_type_id: str = qualifier['qualifier_type_id']
+                                        # TODO: Validate in Biolink 3, the 'qualifier_type_id' here
+                                    if 'qualifier_type_id' not in qualifier:
+                                        self.report(
+                                            code="error.query_graph.edge.qualifier_constraints.qualifier_set.missing",
+                                            edge_id=edge_id
+                                        )
+                                    else:
+                                        qualifier_value: str = qualifier['qualifier_value']
+                                        # TODO: Validate in Biolink 3, the 'qualifier_type_id' here
 
 
     def validate_predicate(self, edge_id: str, predicate: str):
