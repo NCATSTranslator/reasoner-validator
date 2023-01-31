@@ -169,14 +169,14 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         (   # Query 7 - Predicate is deprecated
             LATEST_BIOLINK_MODEL,
             {
-                'subject_category': 'biolink:Disease',
-                'object_category': 'biolink:Drug',
-                'predicate': 'biolink:amount_or_activity_increased_by',
-                'subject': 'MONDO:0005148',   # type 2 diabetes?
-                'object': 'NDC:0002-8215-01'  # a form of insulin
+                'subject_category': 'biolink:Drug',
+                'object_category': 'biolink:Protein',
+                'predicate': 'biolink:increases_amount_or_activity_of',
+                'subject': 'NDC:0002-8215-01',  # a form of insulin
+                'object': 'MONDO:0005148'  # type 2 diabetes?
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate element " +
-            # "'has_real_world_evidence_of_association_with' is deprecated?"
+            # "'binds' is deprecated?"  # in Biolink 3.1.1
             "warning.input_edge.edge.predicate.deprecated"
         ),
         (   # Query 8 - Predicate is abstract
@@ -800,6 +800,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
         test_case.update(changes)
     return test_case
 
+
 #
 # Attribute constraints are not yet implemented
 #
@@ -1051,35 +1052,36 @@ def test_validate_attributes(query: Tuple):
     validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
     check_messages(validator, query[2])
 
-
-@pytest.mark.parametrize(
-    "query",
-    [
-        ("", "")
-    ]
-)
-def test_validate_qualifier_constraints(query: Tuple):
-    validator = BiolinkValidator(
-        graph_type=TRAPIGraphType.Query_Graph,
-        biolink_version=LATEST_BIOLINK_MODEL)
-    validator.validate_qualifier_constraints(edge_id="test_validate_attributes unit test", edge=query[0])
-    check_messages(validator, query[1])
-
-
-@pytest.mark.parametrize(
-    "query",
-    [
-        ("", "")
-    ]
-)
-def test_validate_qualifiers(query: Tuple):
-    validator = BiolinkValidator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
-        biolink_version=LATEST_BIOLINK_MODEL
-    )
-    validator.validate_qualifiers(edge_id="test_validate_attributes unit test", edge=query[0])
-    check_messages(validator, query[1])
-
+#
+# Qualifier code not yet implemented for testing
+#
+# @pytest.mark.parametrize(
+#     "query",
+#     [
+#         ("", "")
+#     ]
+# )
+# def test_validate_qualifier_constraints(query: Tuple):
+#     validator = BiolinkValidator(
+#         graph_type=TRAPIGraphType.Query_Graph,
+#         biolink_version=LATEST_BIOLINK_MODEL)
+#     validator.validate_qualifier_constraints(edge_id="test_validate_attributes unit test", edge=query[0])
+#     check_messages(validator, query[1])
+#
+#
+# @pytest.mark.parametrize(
+#     "query",
+#     [
+#         ("", "")
+#     ]
+# )
+# def test_validate_qualifiers(query: Tuple):
+#     validator = BiolinkValidator(
+#         graph_type=TRAPIGraphType.Knowledge_Graph,
+#         biolink_version=LATEST_BIOLINK_MODEL
+#     )
+#     validator.validate_qualifiers(edge_id="test_validate_attributes unit test", edge=query[0])
+#     check_messages(validator, query[1])
 
 
 ##################################

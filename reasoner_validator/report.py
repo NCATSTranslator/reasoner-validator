@@ -51,8 +51,8 @@ class ValidationReporter:
         """
         :param prefix: named context of the Validator, used as a prefix in validation messages.
         :type prefix: str
-        :param trapi_version: version of component against which to validate the message (mandatory, no default assumed).
-        :type trapi_version: str
+        :param trapi_version: version of component against which to validate the message. May be a TRAPI release SemVer or a Git branch identifier.
+        :type trapi_version: Optional[str], target version of TRAPI upon which the validation is attempted
         :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                                 validated (Default: if None, use the Biolink Model Toolkit default version.
         :type biolink_version: Optional[str] = None
