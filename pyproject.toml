@@ -40,7 +40,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-kgx = "^1.6.0"
+kgx = "^1.7.0"
 jsonschema = "^4.17.0"
 PyYAML = "^6.0"
 requests = "^2.28.1"

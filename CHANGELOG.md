@@ -7,7 +7,9 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 - ValidationReporter internal message format recoded to avoid message duplication; repeated reporting of a given code is now indexed into a single list of error message parameters; Conversely, 'display()' methods now return lists of decoded messages.
 - Added 'branch' version access to TRAPI schemata
 - Make Biolink element deprecate/abstract/mixin non-strict validation less severe
-- Fixed Biolink model compliance unit tests to pass Biolink release 3.1.1
+- Fixed Biolink model compliance unit tests to pass Biolink release 3.1.1, but 'qualifiers' not yet implemented.
+- KGX, BMT and LinkML updated to latest.
+- Note: poetry installation under MS Windows seems broken at the moment (thorny pywin32 dependency conflict). The project runs successfully under WSL2/Ubuntu (if you are Windoze challenged).
 
 ### v3.2.4
 - fixed scoping of TRAPI Response validator method to include more than just the message (i.e. workflows, etc.)

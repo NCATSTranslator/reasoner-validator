@@ -2083,7 +2083,7 @@ docs = ["numpydoc", "sphinx", "myst-parser"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "e0f06eed49e230d0b10282ceb1e08a03c76017709a0ccf39f9abe11f38715b70"
+content-hash = "abd7bf0b28c80611fda86f4eaea899c7dda7d07c43742866fcbfc28aa878eb80"
 
 [metadata.files]
 alabaster = [
