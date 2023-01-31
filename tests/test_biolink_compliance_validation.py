@@ -171,12 +171,12 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             {
                 'subject_category': 'biolink:Drug',
                 'object_category': 'biolink:Protein',
-                'predicate': 'biolink:has_real_world_evidence_of_association_with',
+                'predicate': 'biolink:increases_amount_or_activity_of',
                 'subject': 'NDC:0002-8215-01',  # a form of insulin
                 'object': 'MONDO:0005148'  # type 2 diabetes?
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate element " +
-            # "'has_real_world_evidence_of_association_with' is deprecated?"
+            # "'binds' is deprecated?"  # in Biolink 3.1.1
             "warning.input_edge.edge.predicate.deprecated"
         ),
         (   # Query 8 - Predicate is abstract
@@ -194,10 +194,10 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         (   # Query 9 - Predicate is a mixin
             LATEST_BIOLINK_MODEL,
             {
-                'subject_category': 'biolink:AnatomicalEntity',
+                'subject_category': 'biolink:SmallMolecule',
                 'object_category': 'biolink:AnatomicalEntity',
-                'predicate': 'biolink:regulates',
-                'subject': 'UBERON:0005453',
+                'predicate': 'biolink:biological_role_mixin',
+                'subject': 'CHEBI:15355',
                 'object': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:regulates' is a mixin."
@@ -298,18 +298,18 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             },
             ""
         ),
-        (   # Query 18 - Deprecated
-            LATEST_BIOLINK_MODEL,
-            {
-                'subject_category': 'biolink:Nutrient',
-                'object_category': 'biolink:Protein',
-                'predicate': 'biolink:physically_interacts_with',
-                'subject': 'CHEBI:27300',
-                'object': 'Orphanet:120464'
-            },
-            # f"{INPUT_EDGE_PREFIX}: WARNING - Subject 'biolink:Nutrient' is deprecated?"
-            "warning.input_edge.node.category.deprecated"
-        ),
+        # (   # Query 18 - Deprecated - don't have any more deprecated categories in Biolink 3.1.1
+        #     LATEST_BIOLINK_MODEL,
+        #     {
+        #         'subject_category': 'biolink:Nutrient',
+        #         'object_category': 'biolink:Protein',
+        #         'predicate': 'biolink:physically_interacts_with',
+        #         'subject': 'CHEBI:27300',
+        #         'object': 'Orphanet:120464'
+        #     },
+        #     # f"{INPUT_EDGE_PREFIX}: WARNING - Subject 'biolink:Nutrient' is deprecated?"
+        #     "warning.input_edge.node.category.deprecated"
+        # ),
         (   # Query 19 - inform that the input category is a mixin?
             LATEST_BIOLINK_MODEL,
             {
@@ -802,7 +802,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
 @pytest.mark.parametrize(
     "query",
     [
-        ( "", "" )
+        ( "", "", "" )
     ]
 )
 def test_validate_attribute_constraints(query: Tuple):
@@ -1052,7 +1052,7 @@ def test_validate_attributes(query: Tuple):
 @pytest.mark.parametrize(
     "query",
     [
-        ( "", "" )
+        ( "", "", "")
     ]
 )
 def test_validate_qualifier_constraints(query: Tuple):
@@ -1068,7 +1068,7 @@ def test_validate_qualifier_constraints(query: Tuple):
 @pytest.mark.parametrize(
     "query",
     [
-        ( "", "" )
+        ( "", "", "" )
     ]
 )
 def test_validate_qualifiers(query: Tuple):

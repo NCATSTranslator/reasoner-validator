@@ -54,11 +54,11 @@ async def validate(query: Query):
     if not query.response:
         raise HTTPException(status_code=400, detail="Empty input message?")
 
-    trapi_version: str = latest.get(query.trapi_version)
-    print(f"trapi_version == {trapi_version}", file=stderr)
+    trapi_version: Optional[str] = query.trapi_version
+    print(f"Specified trapi_version == {trapi_version}", file=stderr)
 
-    biolink_version: str = query.biolink_version
-    print(f"biolink_version == {biolink_version}", file=stderr)
+    biolink_version: Optional[str] = query.biolink_version
+    print(f"Specified biolink_version == {biolink_version}", file=stderr)
 
     sources: Optional[Sources] = query.sources
     print(f"Validation Context == {sources}", file=stderr)
