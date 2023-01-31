@@ -60,7 +60,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 ```json
 {
   "trapi_version": "1.3.0",
-  "biolink_version": "3.0.3",
+  "biolink_version": "3.1.1",
   "sources": {
     "ara_source": "infores:aragorn",
     "kp_source": "infores:panther",
@@ -104,7 +104,7 @@ As an example of the kind of output to expect, if one posts the following JSON m
 ```json
 {
   "trapi_version": "1.3.0",
-  "biolink_version": "3.0.3",
+  "biolink_version": "3.1.1",
   "message": {
     "query_graph": {
         "nodes": {
@@ -144,7 +144,7 @@ one should typically get a response body like the following JSON validation resu
 ```json
 {
   "trapi_version": "1.3.0",
-  "biolink_version": "3.0.3",
+  "biolink_version": "3.1.1",
   "report": [
     {
       "code": "warning.node.unmapped_prefix",
@@ -195,7 +195,7 @@ Summary of earlier releases and current Change Log is [here](CHANGELOG.md).
 ## Code Limitations (implied Future Work?)
 
 - Biolink Model release <= 2.4.8 versus 3.0.0 validation: the reasoner-validator uses the Biolink Model Toolkit. As it happens, the toolkit is not backwards compatible with at least one Biolink Model structural change from release 2.#.# to 3.#.#: the tagging of 'canonical' predicates. That is, the 0.8.10++ toolkit reports canonical <= 2.4.8 model predicates as 'non-canonical'.
-- This release of the Reasoner Validator Web Service will detect TRAPI 1.0.* releases but doesn't strive to be completely backwards compatible with them (considering that that TRAPI 1.0.* is totally irrelevant now). 
+- This release of the Reasoner Validator Web Service will detect TRAPI 1.0.* releases but doesn't strive to be completely backwards compatible with them (considering that TRAPI 1.0.* is totally irrelevant now). 
 - The web service validation doesn't do deep validation of the Results part of a TRAPI Message
 - The validation is only run on the first 1000 nodes and 100 edges of graphs, to keep the validation time tractable (this risks not having complete coverage of the graph)
 - Biolink Model toolkit is not (yet) cached so changing the model version during use will result in some latency in results
