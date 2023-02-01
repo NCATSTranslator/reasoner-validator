@@ -169,13 +169,13 @@ this abstract level although their application is within specific pertinent subc
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.add_messages" title="reasoner_validator.report.ValidationReporter.add_messages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_messages</span></code></a>(new_messages)</p></td>
-<td><p>Batch addition of a dictionary of messages to a ValidationReporter instance.</p></td>
+<td><p>Batch addition of a dictionary of messages to a ValidationReporter instance. :param new_messages: Dict[str, Dict], with key one of &quot;information&quot;, &quot;warnings&quot; or &quot;errors&quot;,                       with 'code' keyed dictionaries of (structured) message parameters.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.apply_validation" title="reasoner_validator.report.ValidationReporter.apply_validation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_validation</span></code></a>(validation_method, *args, ...)</p></td>
 <td><p>Wrapper to allow validation_methods direct access to the ValidationReporter.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.display" title="reasoner_validator.report.ValidationReporter.display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code></a>(**message)</p></td>
-<td><p>Augmented message display wrapper prepends the ValidationReporter prefix to a resolved coded validation message.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.display" title="reasoner_validator.report.ValidationReporter.display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code></a>(messages)</p></td>
+<td><p>This augmented message display wrapper prepends the Validation Reporter contextual prefix to one or more resolved coded validation messages.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_errors" title="reasoner_validator.report.ValidationReporter.dump_errors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_errors</span></code></a>([flat])</p></td>
 <td><p>Dump error messages as JSON.</p></td>
@@ -261,18 +261,12 @@ this abstract level although their application is within specific pertinent subc
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.add_messages">
-<span class="sig-name descname"><span class="pre">add_messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_messages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.add_messages" title="Permalink to this definition"></a></dt>
-<dd><p>Batch addition of a dictionary of messages to a ValidationReporter instance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_messages</strong> – <p>Dict[str, List], with key one of
-“information”, “warnings” or “errors”,</p>
+<span class="sig-name descname"><span class="pre">add_messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_messages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.add_messages" title="Permalink to this definition"></a></dt>
+<dd><p>Batch addition of a dictionary of messages to a ValidationReporter instance.
+:param new_messages: Dict[str, Dict], with key one of “information”, “warnings” or “errors”,</p>
 <blockquote>
-<div><p>with Lists of (structured) messages.</p>
+<div><p>with ‘code’ keyed dictionaries of (structured) message parameters.</p>
 </div></blockquote>
-</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -296,11 +290,19 @@ ValidationReporter as its first argument, for use in reporting validation errors
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.display">
-<span class="sig-name descname"><span class="pre">display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.display" title="Permalink to this definition"></a></dt>
-<dd><p>Augmented message display wrapper prepends
-the ValidationReporter prefix to a
-resolved coded validation message.
-:return: str, fully rendered validation message</p>
+<span class="sig-name descname"><span class="pre">display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.display" title="Permalink to this definition"></a></dt>
+<dd><p>This augmented message display wrapper prepends
+the Validation Reporter contextual prefix to one or more
+resolved coded validation messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>messages</strong> – Dict[str,List[Dict[str,str]]], dictionary of messages where the keys are message codes,
+and the values are (possibly empty) lists of dictionary objects of message parameters.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List[str], one or more resolved and contextualized Validation Reporter messages</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -350,14 +352,14 @@ resolved coded validation message.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_errors">
-<span class="sig-name descname"><span class="pre">get_errors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_errors" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_errors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_errors" title="Permalink to this definition"></a></dt>
 <dd><p>Get copy of all recorded error messages.
 :return: List, copy of all error messages.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_info">
-<span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_info" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_info" title="Permalink to this definition"></a></dt>
 <dd><p>Get copy of all recorded information messages.
 :return: List, copy of all information messages.</p>
 </dd></dl>
@@ -372,7 +374,7 @@ resolved coded validation message.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_messages">
-<span class="sig-name descname"><span class="pre">get_messages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_messages" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_messages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_messages" title="Permalink to this definition"></a></dt>
 <dd><p>Get copy of all messages as a Python data structure.
 :return: Dict (copy) of all validation messages in the ValidationReporter.</p>
 </dd></dl>
@@ -389,7 +391,7 @@ resolved coded validation message.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_warnings">
-<span class="sig-name descname"><span class="pre">get_warnings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_warnings" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_warnings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_warnings" title="Permalink to this definition"></a></dt>
 <dd><p>Get copy of all recorded warning messages.
 :return: List, copy of all warning messages.</p>
 </dd></dl>

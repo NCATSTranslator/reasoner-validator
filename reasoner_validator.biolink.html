@@ -119,7 +119,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_messages</span></code>(new_messages)</p></td>
-<td><p>Batch addition of a dictionary of messages to a ValidationReporter instance.</p></td>
+<td><p>Batch addition of a dictionary of messages to a ValidationReporter instance. :param new_messages: Dict[str, Dict], with key one of &quot;information&quot;, &quot;warnings&quot; or &quot;errors&quot;,                       with 'code' keyed dictionaries of (structured) message parameters.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_validation</span></code>(validation_method, *args, ...)</p></td>
 <td><p>Wrapper to allow validation_methods direct access to the ValidationReporter.</p></td>
@@ -130,8 +130,8 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge" title="reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_biolink_model_compliance_of_input_edge</span></code></a>(edge)</p></td>
 <td><p>Validate a templated test input edge contents against the current BMT Biolink Model release.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code>(**message)</p></td>
-<td><p>Augmented message display wrapper prepends the ValidationReporter prefix to a resolved coded validation message.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code>(messages)</p></td>
+<td><p>This augmented message display wrapper prepends the Validation Reporter contextual prefix to one or more resolved coded validation messages.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_errors</span></code>([flat])</p></td>
 <td><p>Dump error messages as JSON.</p></td>
@@ -386,7 +386,7 @@ against the currently active Biolink Model Toolkit model version.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Optional[Element], Biolink Element resolved to ‘name’ if element passed all validation; None otherwise.</p>
+<dd class="field-even"><p>Optional[Element], Biolink Element resolved to ‘name’ if element no validation error; None otherwise.</p>
 </dd>
 </dl>
 </dd></dl>
