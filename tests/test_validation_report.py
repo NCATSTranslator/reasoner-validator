@@ -10,18 +10,18 @@ TEST_BIOLINK_VERSION = "2.4.8"
 
 
 def check_messages(validator: ValidationReporter, code, no_errors: bool = False):
-    messages: Dict[str, List[Dict]] = validator.get_messages()
+    messages: Dict[str, Dict[str, List[Dict[str,str]]]] = validator.get_messages()
     if code:
         # TODO: 'code' should be found in code.yaml
         # value: Optional[Tuple[str, str]] = CodeDictionary.get_code_subtree(code)
         # assert value is not None
         message_type = validator.get_message_type(code)
         if message_type == "error":
-            assert any([error['code'] == code for error in messages['errors']])
+            assert any([error_code == code for error_code in messages['errors']])
         elif message_type == "warning":
-            assert any([warning['code'] == code for warning in messages['warnings']])
+            assert any([warning_code == code for warning_code in messages['warnings']])
         elif message_type == "info":
-            assert any([info['code'] == code for info in messages['information']])
+            assert any([info_code == code for info_code in messages['information']])
     else:
         if no_errors:
             # just don't want any hard errors; info and warnings are ok?
@@ -150,25 +150,25 @@ def test_get_description():
 
 
 def test_message_display():
-    assert CodeDictionary.display(
-        code="info.compliant"
-    ) == "INFO - Biolink Model-compliant TRAPI Message."
-    assert CodeDictionary.display(
-        code="error.knowledge_graph.nodes.empty"
-    ) == "ERROR - Knowledge Graph Nodes: No nodes found!"
-    assert CodeDictionary.display(
-        code="info.input_edge.node.category.abstract",
-        name="NAME"
-    ) == "INFO - Input Edge Node Category: 'NAME' is abstract."
+    assert "INFO - Biolink Model-compliant TRAPI Message." in CodeDictionary.display(code="info.compliant")
+    assert "ERROR - Knowledge Graph Nodes: No nodes found!" \
+           in CodeDictionary.display("error.knowledge_graph.nodes.empty")
+    assert "INFO - Input Edge Node Category: 'biolink:AdministrativeEntity' is abstract." \
+           in CodeDictionary.display(
+                code="info.input_edge.node.category.abstract",
+                parameters=[{"name": "biolink:AdministrativeEntity"}]
+            )
 
 
 def test_validator_reporter_message_display():
     reporter = ValidationReporter(prefix="Test Validation Report", trapi_version=TEST_TRAPI_VERSION)
-    assert reporter.display(
-        code="info.input_edge.node.category.abstract",
-        name="NAME"
-    ) == "Test Validation Report: INFO - Input Edge Node Category: 'NAME' is abstract."
-
+    messages: List[str] = reporter.display({
+            "info.input_edge.node.category.abstract": [
+                {"name": "biolink:AdministrativeEntity"}
+            ]
+    })
+    assert "Test Validation Report: INFO - Input Edge Node Category: 'biolink:AdministrativeEntity' is abstract." \
+        in messages
 
 def test_unknown_message_code():
     with pytest.raises(AssertionError):
@@ -179,15 +179,17 @@ def test_message_report():
     reporter = ValidationReporter(prefix="First Validation Report", trapi_version=TEST_TRAPI_VERSION)
     reporter.report(code="info.compliant")
     reporter.report(
-        code="info.input_edge.predicate.abstract",
-        name="NAME"
+        code="info.input_edge.edge.predicate.abstract",
+        name="biolink:contributor"
     )
-    report: Dict[str, List[Dict]] = reporter.get_messages()
+    report: Dict[str, Dict[str, List[Dict[str,str]]]] = reporter.get_messages()
     assert 'information' in report
     assert len(report['information']) > 0
-    messages: List[str] = [CodeDictionary.display(**coded_message) for coded_message in report['information']]
+    messages: List[str] = list()
+    for code, parameters in report['information'].items():
+         messages.extend(CodeDictionary.display(code, parameters))
     assert "INFO - Biolink Model-compliant TRAPI Message." in messages
-    assert "INFO - Input Edge Predicate: 'NAME' is abstract." in messages
+    assert "INFO - Input Edge Edge Predicate: 'biolink:contributor' is abstract." in messages
 
 
 def test_messages():
@@ -207,10 +209,17 @@ def test_messages():
     assert reporter1.has_errors()
 
     # Testing merging of messages from a second reporter
-    reporter2 = ValidationReporter(prefix="Second Validation Report", biolink_version=TEST_BIOLINK_VERSION)
+    reporter2 = ValidationReporter(
+        prefix="Second Validation Report",
+        biolink_version=TEST_BIOLINK_VERSION
+    )
     assert reporter2.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
-    reporter2.report("info.query_graph.edge.predicate.mixin", context="some_context", name="biolink:this_is_a_mixin")
+    reporter2.report(
+        code="info.query_graph.edge.predicate.mixin",
+        context="some_context",
+        name="biolink:this_is_a_mixin"
+    )
     reporter2.report("warning.response.results.empty")
     reporter2.report("error.knowledge_graph.edges.empty")
     reporter1.merge(reporter2)
@@ -225,61 +234,68 @@ def test_messages():
     assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION
 
     # testing addition a few raw batch messages
-    new_messages: Dict[str, List[Dict]] = {
-            "information": [
+    new_messages: Dict[str, Dict[str, List[Dict[str,str]]]] = {
+        "information": {
+            "info.input_edge.edge.predicate.abstract": [
                 {
-                    'code': "info.input_edge.predicate.abstract",
                     'context': "Well,... hello",
                     'name': "Dolly"
                 }
-            ],
-            "warnings": [
+            ]
+        },
+        "warnings": {
+            "warning.knowledge_graph.node.unmapped_prefix": [
                 {
-                    'code': "warning.knowledge_graph.node.unmapped_prefix",
                     'node_id': "Will Robinson",
                     'categories': "Lost in Space"
                 }
-            ],
-            "errors": [
+            ]
+        },
+        "errors": {
+            "error.trapi.validation": [
                 {
-                    'code': "error.trapi.validation",
                     'trapi_version': "6.6.6",
-                    'exception': "Dave, this can only be due to human error!"
+                    'exception': "Dave, this can only be due to human error..."
                 }
             ]
+        }
     }
     reporter1.add_messages(new_messages)
 
     # Verify what we have
-    messages: Dict[str, List[Dict]] = reporter1.get_messages()
+    messages: Dict[str, Dict[str, List[Dict[str,str]]]] = reporter1.get_messages()
 
     assert "information" in messages
     assert len(messages['information']) > 0
-    information: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['information']]
-    assert "INFO - Input Edge Predicate: 'Dolly' is abstract." in information
+    information: List[str] = list()
+    for code, parameters in messages['information'].items():
+         information.extend(CodeDictionary.display(code, parameters))
+    assert "INFO - Input Edge Edge Predicate: 'Dolly' is abstract." in information
 
     assert "warnings" in messages
     assert len(messages['warnings']) > 0
-    warnings: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['warnings']]
+    warnings: List[str] = list()
+    for code, parameters in messages['warnings'].items():
+         warnings.extend(CodeDictionary.display(code, parameters))
     assert "WARNING - Knowledge Graph Node Unmapped: 'Will Robinson' is unmapped " + \
            "to the target categories: Lost in Space?" in warnings
 
     assert "errors" in messages
     assert len(messages['errors']) > 0
-    errors: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['errors']]
-    assert "ERROR - Trapi: TRAPI 6.6.6 Query: 'Dave, this can only be due to human error!'" in errors
+    errors: List[str] = list()
+    for code, parameters in messages['errors'].items():
+         errors.extend(CodeDictionary.display(code, parameters))
+    assert "ERROR - Trapi: TRAPI 6.6.6 schema exception: 'Dave, this can only be due to human error...'!" in errors
     
     obj = reporter1.to_dict()
     assert obj["trapi_version"] == TEST_TRAPI_VERSION
     assert obj["biolink_version"] == TEST_BIOLINK_VERSION
     assert "messages" in obj
     assert "errors" in obj["messages"]
-    assert "error.trapi.validation" in [entry['code'] for entry in obj["messages"]["errors"]]
-    assert "Dave, this can only be due to human error!"\
-           in [
-               entry['exception'] for entry in obj["messages"]["errors"] if 'exception' in entry
-           ]
-
+    assert "error.trapi.validation" in obj["messages"]["errors"]
+    messages: List[Dict[str,str]] = obj["messages"]["errors"]["error.trapi.validation"]
+    assert "Dave, this can only be due to human error..."\
+           in [message['exception'] for message in messages if 'exception' in message]
 
 def test_validator_method():
 
@@ -308,16 +324,20 @@ def test_validator_method():
 
     reporter.apply_validation(validator_method, test_data, **test_parameters)
 
-    messages: Dict[str, List[Dict]] = reporter.get_messages()
+    messages: Dict[str, Dict[str, List[Dict[str,str]]]] = reporter.get_messages()
 
     assert "warnings" in messages
     assert len(messages['warnings']) > 0
-    warnings: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['warnings']]
+    warnings: List[str] = list()
+    for code, parameters in messages['warnings'].items():
+         warnings.extend(CodeDictionary.display(code, parameters))
     assert "WARNING - Graph: Fake data is empty?" in warnings
 
     assert "errors" in messages
     assert len(messages['errors']) > 0
-    errors: List[str] = [CodeDictionary.display(**coded_message) for coded_message in messages['errors']]
+    errors: List[str] = list()
+    for code, parameters in messages['errors'].items():
+         errors.extend(CodeDictionary.display(code, parameters))
     assert "ERROR - Knowledge Graph Edge Provenance Infores: " + \
            "Edge has provenance value 'foo:bar' which is not a well-formed InfoRes CURIE!" in errors
 
@@ -327,46 +347,46 @@ def test_validator_method():
     "query",
     [
         (
-                'validation',
-                {
-                    "validation": {
-                        "trapi_version": "1.3",
-                        "biolink_version": "2.4.7",
-                        "messages": {
-                            "information": [],
-                            "warnings": [],
-                            "errors": [
-                                ""
-                            ]
-                        }
+            'validation',
+            {
+                "validation": {
+                    "trapi_version": "1.3",
+                    "biolink_version": "2.4.7",
+                    "messages": {
+                        "information": [],
+                        "warnings": [],
+                        "errors": [""]
                     }
-                },
-                True
+                }
+            },
+            True
         ),
         (
-                "validation",
-                {
-                    "validation": {
-                        "trapi_version": "1.3",
-                        "biolink_version": "2.4.7",
-                        "messages": {
-                            "information": [],
-                            "warnings": [
+            "validation",
+            {
+                "validation": {
+                    "trapi_version": "1.3",
+                    "biolink_version": "2.4.7",
+                    "messages": {
+                        "information": [],
+                        "warnings": {
+                            "warning.deprecated": [
                                 {
-                                    'code': "warning.deprecated",
                                     'context': "Input",
                                     "name": "biolink:ChemicalSubstance"
-                                },
-                                {
-                                    'code': "warning.predicate.non_canonical",
-                                    'predicate': "biolink:participates_in"
                                 }
                             ],
-                            "errors": []
-                        }
+                            "warning.predicate.non_canonical": [
+                                {
+                                    'predicate': "biolink:participates_in"
+                                }
+                            ]
+                        },
+                        "errors": []
                     }
-                },
-                False
+                }
+            },
+            False
         ),
     ]
 )
