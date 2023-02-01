@@ -15,13 +15,18 @@ GIT_ORG = environ.setdefault('GIT_ORGANIZATION', "NCATSTranslator")
 GIT_REPO = environ.setdefault('GIT_REPOSITORY', "ReasonerAPI")
 
 response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/releases")
-releases = response.json()
+release_data = response.json()
 versions = [
     release["tag_name"][1:]
-    for release in releases
+    for release in release_data
     if release["tag_name"].startswith("v")
 ]
 
+response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/branches")
+branch_data = response.json()
+branches = [
+    branch["name"] for branch in branch_data
+]
 
 semver_pattern = re.compile(
     r"^(?P<major>0|[1-9]\d*)(\.(?P<minor>0|[1-9]\d*)(\.(?P<patch>0|[1-9]\d*))?)?" +

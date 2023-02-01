@@ -2,6 +2,30 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink standards within the NCATS Biomedical Knowledge Translator. 
 
+### v3.3.0
+
+- ValidationReporter internal message format recoded to avoid message duplication; repeated reporting of a given code is now indexed into a single list of error message parameters; Conversely, 'display()' methods now return lists of decoded messages.
+- Added 'branch' version access to TRAPI schemata
+- Make Biolink element deprecate/abstract/mixin non-strict validation less severe
+- Fixed Biolink model compliance unit tests to pass Biolink release 3.1.1, but 'qualifiers' not yet implemented.
+- KGX, BMT and LinkML updated to latest.
+- Note: poetry installation under MS Windows seems broken at the moment (thorny pywin32 dependency conflict). The project runs successfully under WSL2/Ubuntu (if you are Windoze challenged).
+
+### v3.2.4
+- fixed scoping of TRAPI Response validator method to include more than just the message (i.e. workflows, etc.)
+
+### v3.2.3
+- cleaned up validation codes, especially with respect to predicates
+
+### v3.2.2
+- added validation message descriptions to the codes.yaml file
+- added additional validation codes
+- renamed yaml path for some codes for semantic clarity
+- update project 'ReadTheDocs' documentation including generation of page of code descriptions
+
+### v3.2.1
+- pyproject.toml patch to fix configuration bug
+
 ### v3.2.0
 
 - Project converted to use **poetry** dependency management

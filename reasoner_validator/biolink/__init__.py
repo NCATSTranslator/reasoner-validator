@@ -252,29 +252,29 @@ class BiolinkValidator(ValidationReporter):
         :param context: parsing context (e.g. 'Node')
         :param name: name of putative Biolink element ('class')
 
-        :return: Optional[Element], Biolink Element resolved to 'name' if element passed all validation; None otherwise.
+        :return: Optional[Element], Biolink Element resolved to 'name' if element no validation error; None otherwise.
         """
         element: Optional[Element] = self.bmt.get_element(name)
         if not element:
             self.report(code=f"error.{context}.unknown", name=name)
-        elif element.deprecated:
-            self.report(code=f"warning.{context}.deprecated", name=name)
             return None
-        elif element.abstract:
+        if element.deprecated:
+            self.report(code=f"warning.{context}.deprecated", name=name)
+            # return None - a deprecated term is not treated as a failure but just as a warning
+        if element.abstract:
             if self.strict_validation:
                 self.report(code=f"error.{context}.abstract",  name=name)
+                return None
             else:
                 self.report(code=f"info.{context}.abstract", name=name)
-            return None
         elif self.bmt.is_mixin(name):
-            # A mixin cannot be instantiated thus it should not be given as an input concept category
+            # A mixin cannot be instantiated ...
             if self.strict_validation:
                 self.report(code=f"error.{context}.mixin", name=name)
+                return None
             else:
                 self.report(code=f"info.{context}.mixin", name=name)
-            return None
-        else:
-            return element
+        return element
 
     def validate_attributes(self, edge_id: str, edge: Dict):
         """
@@ -440,6 +440,8 @@ class BiolinkValidator(ValidationReporter):
 
 
     def validate_qualifiers(self, edge_id: str, edge: Dict):
+        # Edge qualifiers will only be seen in Biolink 3 data,
+        # but with missing 'qualifiers', no validation is attempted
         if 'qualifiers' not in edge or edge['qualifiers'] is None:
             return  # nullable: true... missing key or None value is ok?
         elif not isinstance(edge['qualifiers'], List):
@@ -479,6 +481,8 @@ class BiolinkValidator(ValidationReporter):
                 pass
 
     def validate_qualifier_constraints(self, edge_id: str, edge: Dict):
+        # Edge qualifiers will only be seen in Biolink 3 data,
+        # but with missing 'qualifier_constraints', no validation is attempted
         if 'qualifier_constraints' not in edge or edge['qualifier_constraints'] is None:
             return  # nullable: true... missing key or None value is ok?
         # TODO: This test may not be necessary since TRAPI schema validation should pick it up?
@@ -628,7 +632,7 @@ class BiolinkValidator(ValidationReporter):
             self.report(code=f"error.{context}.edge.object.missing_from_nodes", object_id=object_id)
 
         # Validate edge attributes (or attribute_constraints)
-        # and edge qualifiers (or qualifier_constraints)
+        # and (Biolink 3) edge qualifiers (or qualifier_constraints)
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             self.validate_attributes(edge_id=edge_id, edge=edge)
             self.validate_qualifiers(edge_id=edge_id, edge=edge)

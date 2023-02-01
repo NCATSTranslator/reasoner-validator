@@ -53,7 +53,7 @@ class CodeDictionary:
 
                 return tree_copy
         else:
-            # Shortcut: simply deepcopy the subtree, if if facet is not being filtered
+            # Shortcut: simply deepcopy the subtree, if facet is not being filtered
             return copy.deepcopy(tree)
 
     @classmethod
@@ -158,22 +158,30 @@ class CodeDictionary:
         return entry[cls.DESCRIPTION] if entry else None
 
     @classmethod
-    def display(cls, **message):
-        assert message and 'code' in message  # should be non-empty, containing a code
-        code: str = message.pop('code')
+    def display(cls, code: str, parameters: Optional[List[Dict[str, str]]] = None) -> List[str]:
+        """
+        Generate one or more full messages from provided Validation Reporter code and associated parameters (if applicable).
+
+        :param code: str, valid (dot delimited YAML key path) identified code, which should be registered in the project codes.yaml file.
+        :param parameters: List[Dict[str,str]], list of entries of (named) parameters of a given (codes.yaml) encoded validation message
+        :return: List[str], list of decoded messages
+        """
         value: Optional[Tuple[str, Dict[str, str]]] = cls.get_code_subtree(code, is_leaf=True)
         assert value, f"CodeDictionary.display(): unknown message code {code}"
         message_type, entry = value
         code_parts: List[str] = [part.capitalize() for part in code.replace("_", ".").split(".")[1:-1]]
         context: str = ' '.join(code_parts) + ': ' if code_parts else ''
         template: str = entry[cls.MESSAGE]
-        if message:
-            # Message template parameterized with additional named parameter
-            # message context, assumed to be referenced by the template
-            return f"{message_type.upper()} - {context}{template.format(**message)}"
+        if parameters:
+            # Message template parameterized with one or more sets of additional
+            # named message parameters, assumed to be referenced by the template
+            return [
+                f"{message_type.upper()} - {context}{template.format(**message)}"
+                for message in parameters
+            ]
         else:
             # simple scalar message without parameterization?
-            return f"{message_type.upper()} - {context}{template}"
+            return [f"{message_type.upper()} - {context}{template}"]
 
     @classmethod
     def _dump_code_markdown_entries(cls, root: str, code_subtree: Dict, markdown_file):
