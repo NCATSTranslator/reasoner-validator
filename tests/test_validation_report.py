@@ -297,6 +297,7 @@ def test_messages():
     assert "Dave, this can only be due to human error..."\
            in [message['exception'] for message in messages if 'exception' in message]
 
+
 def test_validator_method():
 
     reporter = ValidationReporter(

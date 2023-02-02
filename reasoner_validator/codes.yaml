@@ -262,16 +262,45 @@ error:
             $message: "'{name}' is abstract!"
             $description: "Query Graph data validation is currently strict: cannot have 'abstract' predicates!"
         mixin:
-          $message: "'{name}' is a mixin1"
+          $message: "'{name}' is a mixin!"
           $description: "Query Graph data validation is currently strict: cannot have 'mixin' predicates!"
       attribute_constraints:
         not_array:
-          $message: "Edge '{edge_id}' attribute_constraints slot value is not an array!"
-          $description: "Value of 'attribute_constraints' slot value in Query Graph must be an array data type!"
+          $message: "Edge '{edge_id}' attribute_constraints property value is not an array!"
+          $description: "Value of 'attribute_constraints' slot value in a Query Graph must be an array data type!"
       qualifier_constraints:
-        not_array:
-          $message: "Edge '{edge_id}' qualifier_constraints slot value is not an array!"
-          $description: "Value of 'qualifier_constraints' slot value in Query Graph must be an array data type!"
+        invalid:
+          $message: "Edge '{edge_id}' qualifier_set property value is not an array!"
+          $description: "Value of a 'qualifier_constraints' property in a Query Graph must be an array data type!"
+        qualifier_set:
+          invalid:
+            $message: "Edge '{edge_id}' qualifier_set property value is empty or not a JSON object!"
+            $description: "Value of a 'qualifier_set' property in a Query Graph must be non-empty JSON object!"
+          missing:
+            $message: "Edge '{edge_id}' qualifier_set property object is missing the 'qualifier_set' key!"
+            $description: "The object value of qualifier_set object in a Query Graph must have a 'qualifier_set' key!"
+          empty:
+            $message: "Edge '{edge_id}' qualifier_set object value is empty!"
+            $description: "The value of 'qualifier_set' key in the qualifier_set property object must not be null!"
+          value:
+            invalid:
+              $message: "Edge '{edge_id}' qualifier_set property value is empty or not a JSON object!"
+              $description: "Value of a 'qualifier_set' property in a Query Graph must be non-empty array!"
+            qualifier:
+              invalid:
+                $message: "Edge '{edge_id}' qualifier specification is empty or not a JSON object!"
+                $description: "Value of a 'qualifier' specification in a Query Graph must be non-empty JSON object!"
+              qualifier_type_id:
+                missing:
+                  $message: "Edge '{edge_id}' qualifier specification object is missing the 'qualifier_type_id' key!"
+                  $description: "A qualifier object specification in a Query Graph must have a 'qualifier_type_id' key!"
+                not_biolink_curie:
+                  $message: "Edge '{edge_id}' qualifier_type_id {identifier} is not a Biolink CURIE!"
+                  $description: "A qualifier qualifier_type_id property value in a Query Graph must be a Biolink CURIE!"
+              qualifier_value:
+                missing:
+                  $message: "Edge '{edge_id}' qualifier specification object is missing the 'qualifier_value' key!"
+                  $description: "A qualifier object specification in a Query Graph must have a 'qualifier_value' key!"
   knowledge_graph:
     nodes:
       empty:

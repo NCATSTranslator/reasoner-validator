@@ -512,14 +512,19 @@ class BiolinkValidator(ValidationReporter):
                             code="error.query_graph.edge.qualifier_constraints.qualifier_set.missing",
                             edge_id=edge_id
                         )
+                    elif not qualifier_set_entry['qualifier_set']:
+                        self.report(
+                            code="error.query_graph.edge.qualifier_constraints.qualifier_set.empty",
+                            edge_id=edge_id
+                        )
                     else:
-                        # We have a putative 'qualifier_set'
+                        # We have a putative non-empty 'qualifier_set'
                         qualifier_set: List = qualifier_set_entry['qualifier_set']
                         # TODO: This test may not be necessary since
                         #       TRAPI schema validation should pick it up?
                         if not (qualifier_set and isinstance(qualifier_set, List)):
                             self.report(
-                                code="error.query_graph.edge.qualifier_constraints.qualifier_set.invalid",
+                                code="error.query_graph.edge.qualifier_constraints.qualifier_set.value.invalid",
                                 edge_id=edge_id
                             )
                         else:
@@ -530,7 +535,7 @@ class BiolinkValidator(ValidationReporter):
                                 if not (qualifier and isinstance(qualifier, Dict)):
                                     self.report(
                                         code="error.query_graph.edge.qualifier_constraints." +
-                                             "qualifier_set.qualifier.not_dict",
+                                             "qualifier_set.qualifier.invalid",
                                         edge_id=edge_id
                                     )
                                 else:
@@ -539,11 +544,29 @@ class BiolinkValidator(ValidationReporter):
                                     if 'qualifier_type_id' not in qualifier:
                                         self.report(
                                             code="error.query_graph.edge.qualifier_constraints." +
-                                                 "qualifier_set.qualifier.qualifier_type_id.missing"
+                                                 "qualifier_set.qualifier.qualifier_type_id.missing",
+                                            edge_id=edge_id
                                         )
                                     else:
+                                        context: str = f"{self.graph_type.name.lower()}." + \
+                                                       f"edge.qualifier_constraint.qualifier"
                                         qualifier_type_id: str = qualifier['qualifier_type_id']
                                         # TODO: Fully validate in Biolink 3, the 'qualifier_type_id' here
+                                        if not qualifier_type_id.startswith("biolink:"):
+                                            self.report(
+                                                code="error.query_graph.edge.qualifier_constraints." +\
+                                                     "qualifier_set.qualifier.qualifier_type_id.not_biolink_curie",
+                                                edge_id=edge_id,
+                                                identifier=qualifier_type_id
+                                            )
+                                        # Validate the putative predicate as *not* being abstract, deprecated or a mixin
+                                        biolink_class = self.validate_element_status(
+                                            context=context,
+                                            name=qualifier_type_id
+                                        )
+                                        if biolink_class:
+                                            # TODO: check qualifier_type_id for a valid Biolink 'qualifier' definition
+                                            pass
 
                                     if 'qualifier_value' not in qualifier:
                                         self.report(
