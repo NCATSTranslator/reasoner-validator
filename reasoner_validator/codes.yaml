@@ -285,6 +285,10 @@ error:
                 invalid:
                   $message: "Edge '{edge_id}' qualifier_type_id {identifier} is not a valid Biolink qualifier type id!"
                   $description: "This 'qualifier_type_id' in the Query Graph not properly defined in the Biolink Model!"
+                range:
+                  missing:
+                    $message: "The value range of edge '{edge_id}' qualifier_type_id {identifier} is undefined!"
+                    $description: "The 'qualifier_type_id' in the Query Graph needs to have a defined enum or category value range!"
   knowledge_graph:
     nodes:
       empty:
