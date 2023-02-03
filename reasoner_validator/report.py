@@ -1,6 +1,6 @@
 """Error and Warning Reporting Module"""
 import copy
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List
 from json import dumps, JSONEncoder
 
 from reasoner_validator.validation_codes import CodeDictionary
@@ -51,14 +51,16 @@ class ValidationReporter:
         """
         :param prefix: named context of the Validator, used as a prefix in validation messages.
         :type prefix: str
-        :param trapi_version: version of component against which to validate the message. May be a TRAPI release SemVer or a Git branch identifier.
+        :param trapi_version: version of component against which to validate the message.
+                              Could be a TRAPI release SemVer or a Git branch identifier.
         :type trapi_version: Optional[str], target version of TRAPI upon which the validation is attempted
         :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
-                                validated (Default: if None, use the Biolink Model Toolkit default version.
+                                validated (Default: if None, use the Biolink Model Toolkit default version).
         :type biolink_version: Optional[str] = None
         :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
         :type sources: Dict
-        :param strict_validation: if True, abstract and mixin elements validate as 'error'; None or False, issue a 'warning'
+        :param strict_validation: if True, abstract and mixin elements validate as 'error';
+                                  if None or False, just issue a 'warning'
         :type strict_validation: Optional[bool] = None
         """
         self.prefix: str = prefix + ": " if prefix else ""
@@ -95,7 +97,7 @@ class ValidationReporter:
             str,  # message type (info/warning/error)
             Dict[
                 str,  # message 'code' as indexing key
-                List[Dict[str,str]]  # List of parameters (Maybe empty, if code doesn't have any associated parameters)
+                List[Dict[str, str]]  # List of parameters (Maybe empty, if code doesn't have any associated parameters)
             ]
         ] = {
             "information": dict(),
@@ -205,7 +207,7 @@ class ValidationReporter:
         if message:
             self.messages[message_set][code].append(message)
 
-    def add_messages(self, new_messages: Dict[str, Dict[str, List[Dict[str,str]]]]):
+    def add_messages(self, new_messages: Dict[str, Dict[str, List[Dict[str, str]]]]):
         """
         Batch addition of a dictionary of messages to a ValidationReporter instance.
         :param new_messages: Dict[str, Dict], with key one of "information", "warnings" or "errors",
@@ -221,28 +223,28 @@ class ValidationReporter:
                     # TODO: how can **message content duplication be avoided here(?)
                     self.messages[message_type][code].extend(message_type_contents[code])
 
-    def get_messages(self) -> Dict[str, Dict[str, Optional[List[Dict[str,str]]]]]:
+    def get_messages(self) -> Dict[str, Dict[str, Optional[List[Dict[str, str]]]]]:
         """
         Get copy of all messages as a Python data structure.
         :return: Dict (copy) of all validation messages in the ValidationReporter.
         """
         return copy.deepcopy(self.messages)
 
-    def get_info(self) -> Dict[str, Optional[List[Dict[str,str]]]]:
+    def get_info(self) -> Dict[str, Optional[List[Dict[str, str]]]]:
         """
         Get copy of all recorded information messages.
         :return: List, copy of all information messages.
         """
         return copy.deepcopy(self.messages["information"])
 
-    def get_warnings(self) -> Dict[str, Optional[List[Dict[str,str]]]]:
+    def get_warnings(self) -> Dict[str, Optional[List[Dict[str, str]]]]:
         """
         Get copy of all recorded warning messages.
         :return: List, copy of all warning messages.
         """
         return copy.deepcopy(self.messages["warnings"])
 
-    def get_errors(self) -> Dict[str, Optional[List[Dict[str,str]]]]:
+    def get_errors(self) -> Dict[str, Optional[List[Dict[str, str]]]]:
         """
         Get copy of all recorded error messages.
         :return: List, copy of all error messages.
@@ -342,7 +344,7 @@ class ValidationReporter:
         else:
             return False
 
-    def display(self, messages: Dict[str, List[Dict[str,str]]]) -> List[str]:
+    def display(self, messages: Dict[str, List[Dict[str, str]]]) -> List[str]:
         """
         This augmented message display wrapper prepends
         the Validation Reporter contextual prefix to one or more
@@ -356,7 +358,7 @@ class ValidationReporter:
         assert len(messages) > 0
         decoded_messages: List[str] = list()
         code: str
-        parameters: List[Dict[str,str]]
+        parameters: List[Dict[str, str]]
         for code, parameters in messages.items():
             decoded_messages.extend(
                 [self.prefix + message for message in CodeDictionary.display(code, parameters)]

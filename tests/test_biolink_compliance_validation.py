@@ -2,13 +2,15 @@
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
 from typing import Tuple, Optional, Dict
+from sys import stderr
+import copy
 from pprint import PrettyPrinter
 import logging
 import pytest
-from sys import stderr
 from bmt import Toolkit
 from linkml_runtime.linkml_model import SlotDefinition
 
+from reasoner_validator import TRAPISchemaValidator
 from reasoner_validator.biolink import (
     TRAPIGraphType,
     BiolinkValidator,
@@ -27,7 +29,8 @@ pp = PrettyPrinter(indent=4)
 # January 25, 2023 - as of reasoner-validator 3.1.0, we don't pretend to totally support Biolink Models
 # any earlier than 3.1.1.  If earlier biolink model compliance testing is desired,
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
-LATEST_BIOLINK_MODEL = "3.1.1"
+LATEST_TRAPI_VERSION = "1.4"
+LATEST_BIOLINK_MODEL_VERSION = "3.1.1"
 
 
 def test_set_default_biolink_versioned_global_environment():
@@ -87,7 +90,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
     "query",
     [
         (   # Query 0 - Valid edge object
-            LATEST_BIOLINK_MODEL,  # Biolink Model Version
+            LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -98,7 +101,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             ""
         ),
         (   # Query 1 - Missing subject category
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
@@ -109,7 +112,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "error.input_edge.node.category.missing"
         ),
         (   # Query 2 - Invalid subject category
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:NotACategory',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -121,7 +124,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "error.input_edge.node.category.unknown"
         ),
         (   # Query 3 - Missing object category
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
@@ -132,7 +135,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "error.input_edge.node.category.missing"
         ),
         (   # Query 4 - Invalid object category
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:NotACategory',
@@ -144,7 +147,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "error.input_edge.node.category.unknown"
         ),
         (   # Query 5 - Missing predicate
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -155,7 +158,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "error.input_edge.predicate.missing"
         ),
         (   # Query 6 - Empty predicate
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -167,7 +170,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "error.input_edge.predicate.missing"
         ),
         (   # Query 7 - Predicate is deprecated
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:Drug',
                 'object_category': 'biolink:Protein',
@@ -180,7 +183,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "warning.input_edge.edge.predicate.deprecated"
         ),
         (   # Query 8 - Predicate is abstract
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:InformationContentEntity',
                 'object_category': 'biolink:Agent',
@@ -192,19 +195,19 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "info.input_edge.edge.predicate.abstract"
         ),
         (   # Query 9 - Predicate is a mixin
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:Drug',
                 'object_category': 'biolink:BiologicalProcess',
                 'predicate': 'biolink:decreases_amount_or_activity_of',
                 'subject': 'NDC:50090‑0766',  # Metformin
-                'object': 'GO:0006094' # Gluconeogenesis
+                'object': 'GO:0006094'  # Gluconeogenesis
             },
             # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:decreases_amount_or_activity_of' is a mixin."
             "info.input_edge.edge.predicate.mixin"
         ),
         (   # Query 10 - Unknown predicate element
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -216,7 +219,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "error.input_edge.edge.predicate.unknown"
         ),
         (   # Query 11 - Invalid or unknown predicate
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -228,7 +231,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "error.input_edge.edge.predicate.invalid"
         ),
         (   # Query 12 - Non-canonical directed predicate
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:SmallMolecule',
                 'object_category': 'biolink:Disease',
@@ -240,7 +243,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "warning.input_edge.edge.predicate.non_canonical"
         ),
         (   # Query 13 - Missing subject
-            LATEST_BIOLINK_MODEL,  # Biolink Model Version
+            LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -251,7 +254,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "error.input_edge.node.id.missing"
         ),
         (   # Query 14 - Unmappable subject namespace
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -264,7 +267,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "warning.input_edge.node.id.unmapped_to_category"
         ),
         (   # Query 15 - missing object
-            LATEST_BIOLINK_MODEL,  # Biolink Model Version
+            LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -275,7 +278,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "error.input_edge.node.id.missing"
         ),
         (   # Query 16 - Unmappable object namespace
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -311,7 +314,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         #     "warning.input_edge.node.category.deprecated"
         # ),
         (   # Query 18 - inform that the input category is a mixin?
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:GeneOrGeneProduct',
                 'object_category': 'biolink:Protein',
@@ -323,7 +326,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "info.input_edge.node.category.mixin"
         ),
         (   # Query 19 - inform that the input category is abstract?
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AdministrativeEntity',
                 'object_category': 'biolink:Agent',
@@ -345,7 +348,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
     "query",
     [
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 0: Sample small valid TRAPI Query Graph
             {
                 "nodes": {
@@ -365,7 +368,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             ""  # This should pass without errors
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 1: Empty query graph
             {},
             # Query Graphs can have empty 'nodes', so we should just issue a warning
@@ -373,7 +376,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "warning.graph.empty"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 2: Empty nodes dictionary
             {
                 "nodes": {}
@@ -381,7 +384,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             ""  # Query Graphs can have empty 'nodes'
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 3: Empty edges
             {
                 "nodes": {
@@ -395,7 +398,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             ""  # Query Graphs can have empty 'edges'
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 4: Empty edges dictionary
             {
                 "nodes": {
@@ -410,7 +413,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             ""  # Query Graphs can have empty 'edges'
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 5: Node "ids" not a List
             {
                 "nodes": {
@@ -422,7 +425,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "error.query_graph.node.ids.not_array"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 6: Node "ids" is an empty array
             {
                 "nodes": {
@@ -433,7 +436,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             ""
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 7: Node "categories" not a array
             {
                 "nodes": {
@@ -447,7 +450,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "error.query_graph.node.categories.not_array"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 8: Node "categories" is an empty array?
             {
                 "nodes": {
@@ -461,7 +464,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "error.query_graph.node.category.unknown"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 9: Sample small valid TRAPI Query Graph with null predicates (allowed)
             {
                 "nodes": {
@@ -481,7 +484,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             ""  # Predicates slot can be null... This should pass without errors?
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 10: ... but if present, predicates must be an array!
             {
                 "nodes": {
@@ -503,7 +506,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "error.query_graph.edge.predicate.not_array"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 11: ... but if present, predicates must have at least one predicate in the array
             {
                 "nodes": {
@@ -524,7 +527,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "error.query_graph.edge.predicate.empty_array"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 12: ... but if present, predicates must be valid for the specified Biolink Model version...
             {
                 "nodes": {
@@ -545,7 +548,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "error.query_graph.edge.predicate.unknown"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 13: ... but if present, predicates must be valid for the specified Biolink Model version...
             {
                 "nodes": {
@@ -566,7 +569,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "error.query_graph.edge.predicate.invalid"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 14: ... and must also be canonical predicates?
             {
                 "nodes": {
@@ -587,7 +590,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "warning.query_graph.edge.predicate.non_canonical"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 15: 'Subject' id used in edge is mandatory
             {
                 "nodes": {
@@ -608,7 +611,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "error.query_graph.edge.subject.missing"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 16: 'Subject' id used in edge is missing from the nodes catalog?
             {
                 "nodes": {
@@ -626,7 +629,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "error.query_graph.edge.subject.missing_from_nodes"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 17: 'Object' id used in edge is mandatory
             {
                 "nodes": {
@@ -647,7 +650,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "error.query_graph.edge.object.missing"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 18: 'Object' id used in edge is missing from the nodes catalog?
             {
                 "nodes": {
@@ -667,7 +670,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "error.query_graph.edge.object.missing_from_nodes"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 19: Node 'is_set' value is not a boolean
             {
                 "nodes": {
@@ -689,7 +692,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "error.query_graph.node.is_set.not_boolean"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 20: Unmapped node ids against any of the specified Biolink Model categories
             {
                 "nodes": {
@@ -714,7 +717,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "warning.query_graph.node.ids.unmapped_to_categories"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 21: Abstract category in query graph
             {
                 "nodes": {
@@ -735,7 +738,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "info.query_graph.node.category.abstract"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 22: Mixin category in query graph
             {
                 "nodes": {
@@ -756,7 +759,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             "info.query_graph.node.category.mixin"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 23: Query edge predicate is a mixin
             {
                 "nodes": {
@@ -793,6 +796,7 @@ TEST_ARA_CASE_TEMPLATE = {
     "kp_source": "panther",
     "kp_source_type": "primary"
 }
+
 
 def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
     test_case = TEST_ARA_CASE_TEMPLATE.copy()
@@ -1046,28 +1050,206 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
 def test_validate_attributes(query: Tuple):
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
-        biolink_version=LATEST_BIOLINK_MODEL,
+        biolink_version=LATEST_BIOLINK_MODEL_VERSION,
         sources=query[1]
     )
     validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
     check_messages(validator, query[2])
 
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (  # Query 0 - no 'qualifier_constraints' key - since nullable: true, this should pass
+            {},
+            ""
+        ),
+        (  # Query 1 - 'qualifier_constraints' value is None - invalidated by TRAPI schema
+            {
+                'qualifier_constraints': None
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 2 - 'qualifier_constraints' value is not an array - invalidated by TRAPI schema
+            {
+                'qualifier_constraints': {}
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 3 - empty 'qualifier_constraints' array value - since nullable: true, this should pass
+            {
+                'qualifier_constraints': []
+            },
+            ""
+        ),
+        (  # Query 4 - empty 'qualifier_set' entry - invalidated by TRAPI schema
+            {
+                'qualifier_constraints': [
+                    {}
+                ]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 5 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
+            {
+                'qualifier_constraints': [
+                    []
+                ]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 6 - 'qualifier_set' entry is missing the 'qualifier_set' key - invalidated by TRAPI schema
+            {
+                'qualifier_constraints': [
+                    {"not_qualifier_set": []}
+                ]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 7 - 'qualifier_set' entry is empty
+            {
+                'qualifier_constraints': [
+                    {"qualifier_set": []}
+                ]
+            },
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.empty"
+        ),
+        (  # Query 8 - 'qualifier_set' object value is not an array - invalidated by TRAPI schema
+            {
+                'qualifier_constraints': [
+                    {"qualifier_set": {}}
+                ]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 9 - 'qualifier' entry is not a JSON object (dictionary) - invalidated by TRAPI schema
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            []
+                        ]
+                    }
+                ]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 10 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                # 'qualifier_type_id': "",
+                                'qualifier_value': ""
+                            }
+                        ]
+                    }
+                ]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 11 - 'qualifier_type_id' property value is not a Biolink CURIE
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "not-a-curie",
+                                'qualifier_value': "fake-qualifier-value"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.qualifier_type_id.not_biolink_curie"
+        ),
+        (  # Query 12 - 'qualifier_type_id' property value is unknown
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:unknown_qualifier",
+                                'qualifier_value': "fake-qualifier-value"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "error.query_graph.edge.qualifier.unknown"
+        ),
+        (  # Query 13 - 'qualifier_type_id' property value is abstract
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:aspect_qualifier",
+                                'qualifier_value': "fake-qualifier-value"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "info.query_graph.edge.qualifier.abstract"
+        ),
+        (  # Query 14 - 'qualifier_type_id' property value is not a Biolink qualifier term
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:related_to",
+                                'qualifier_value': "fake-qualifier-value"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.qualifier_type_id.invalid"
+        ),
+        (  # Query 15 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:subject_aspect_qualifier"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "error.trapi.validation"
+        )
+    ]
+)
+def test_validate_qualifier_constraints(query: Tuple):
+    # Sanity check: does TRAPI validation catch this first?
+    trapi_validator = TRAPISchemaValidator(trapi_version=LATEST_TRAPI_VERSION)
+    # Wrap Qualifiers inside a small mock QEdge
+    mock_qedge: Dict = copy.deepcopy(query[0])
+    mock_qedge["subject"] = "mock_subject"
+    mock_qedge["object"] = "mock_object"
+    trapi_validator.is_valid_trapi_query(mock_qedge, "QEdge")
+    if trapi_validator.has_errors():
+        validator = trapi_validator
+    else:
+        # if you get this far,then attempt additional Biolink Validation
+        validator = BiolinkValidator(
+            graph_type=TRAPIGraphType.Query_Graph,
+            biolink_version=LATEST_BIOLINK_MODEL_VERSION
+        )
+        validator.validate_qualifier_constraints(
+            edge_id="validate_qualifier_constraints unit test",
+            edge=query[0]
+        )
+    check_messages(validator, query[1])
+
+
 #
 # Qualifier code not yet implemented for testing
-#
-# @pytest.mark.parametrize(
-#     "query",
-#     [
-#         ("", "")
-#     ]
-# )
-# def test_validate_qualifier_constraints(query: Tuple):
-#     validator = BiolinkValidator(
-#         graph_type=TRAPIGraphType.Query_Graph,
-#         biolink_version=LATEST_BIOLINK_MODEL)
-#     validator.validate_qualifier_constraints(edge_id="test_validate_attributes unit test", edge=query[0])
-#     check_messages(validator, query[1])
-#
 #
 # @pytest.mark.parametrize(
 #     "query",
@@ -1091,7 +1273,7 @@ def test_validate_attributes(query: Tuple):
     "query",
     [
         (
-            LATEST_BIOLINK_MODEL,  # Biolink Model Version
+            LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
 
             # Query 0: Sample full valid TRAPI Knowledge Graph
             {
@@ -1151,14 +1333,14 @@ def test_validate_attributes(query: Tuple):
             ""
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 1: Empty graph - caught by missing 'nodes' key
             {},
             # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Response returned an empty Message Knowledge Graph?"
             "warning.graph.empty"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 2: Empty nodes dictionary
             {
                 "nodes": {}
@@ -1167,7 +1349,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.nodes.empty"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 3: Empty edges - caught by missing 'edges' dictionary
             {
                 "nodes": {
@@ -1182,7 +1364,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.edges.empty"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 4 Empty edges dictionary
             {
                 "nodes": {
@@ -1198,7 +1380,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.edges.empty"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 5: missing node 'categories' slot
             {
                 "nodes": {
@@ -1217,7 +1399,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.node.category.missing"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 6: 'categories' tag value is ill-formed: should be a list
             {
                 "nodes": {
@@ -1238,7 +1420,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.node.categories.not_array"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 7: unknown category specified
             {
                 "nodes": {
@@ -1261,7 +1443,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.node.category.unknown"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 8: abstract category not allowed in Knowledge Graphs
             {
                 "nodes": {
@@ -1285,7 +1467,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.node.category.abstract"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 9: mixin category not allowed in Knowledge Graphs
             {
                 "nodes": {
@@ -1333,11 +1515,11 @@ def test_validate_attributes(query: Tuple):
         #             }
         #         }
         #     },
-        #     # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Knowledge Graph Node element 'biolink:OntologyClass' is deprecated!"
+        #  f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Knowledge Graph Node element 'biolink:OntologyClass' is deprecated!"
         #     "warning.knowledge_graph.node.category.deprecated"
         # ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 10: invalid node CURIE prefix namespace, for specified category
             {
                 "nodes": {
@@ -1371,7 +1553,7 @@ def test_validate_attributes(query: Tuple):
             "warning.knowledge_graph.node.unmapped_prefix"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 11: missing or empty subject, predicate, object values
             {
                 "nodes": {
@@ -1396,7 +1578,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.edge.subject.missing"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 12: 'subject' id is missing from the nodes catalog
             {
                 "nodes": {
@@ -1425,7 +1607,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.edge.subject.missing_from_nodes"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 13: predicate is unknown
             {
                 "nodes": {
@@ -1454,7 +1636,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.edge.predicate.unknown"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 14: predicate is invalid - may be a valid Biolink element but is not a predicate
             {
                 "nodes": {
@@ -1483,7 +1665,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.edge.predicate.invalid"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 15: predicate is a mixin - not allowed in Knowledge Graphs
             {
                 "nodes": {
@@ -1508,11 +1690,11 @@ def test_validate_attributes(query: Tuple):
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Predicate element 'biolink:increases_amount_or_activity of' is a mixin!"
+            # "{KNOWLEDGE_GRAPH_PREFIX}: ERROR -Predicate element 'biolink:increases_amount_or_activity of' is a mixin!"
             "error.knowledge_graph.edge.predicate.mixin"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 16: predicate is abstract - not allowed in Knowledge Graphs
             {
                 "nodes": {
@@ -1541,7 +1723,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.edge.predicate.abstract"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 17: predicate is non-canonical
             {
                 "nodes": {
@@ -1570,7 +1752,7 @@ def test_validate_attributes(query: Tuple):
             "warning.knowledge_graph.edge.predicate.non_canonical"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 18: 'object' id is missing from the nodes catalog
             {
                 "nodes": {
@@ -1600,7 +1782,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.edge.object.missing_from_nodes"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 19: attribute 'attribute_type_id' is missing
             {
                 "nodes": {
@@ -1629,7 +1811,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.edge.attribute.type_id.missing"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 20: attribute 'value' is missing?
             {
                 "nodes": {
@@ -1658,7 +1840,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.edge.attribute.value.missing"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 21: 'attribute_type_id' is not a CURIE
             {
                 "nodes": {
@@ -1687,7 +1869,7 @@ def test_validate_attributes(query: Tuple):
             "error.knowledge_graph.edge.attribute.type_id.not_curie"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 22: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
             {
                 "nodes": {
@@ -1717,8 +1899,8 @@ def test_validate_attributes(query: Tuple):
             "warning.knowledge_graph.edge.attribute.type_id.not_association_slot"
         ),
         (
-            LATEST_BIOLINK_MODEL,
-            # Query 23: 'attribute_type_id' has a 'biolink' CURIE prefix and is an association_slot so it should pass
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 23: 'attribute_type_id' has a 'biolink' CURIE prefix and is an association_slot, so it should pass
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -1748,7 +1930,7 @@ def test_validate_attributes(query: Tuple):
             ""  # this should recognize the 'attribute_type_id' as a Biolink CURIE
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 24: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
             {
                 "nodes": {
@@ -1778,7 +1960,7 @@ def test_validate_attributes(query: Tuple):
             "warning.knowledge_graph.edge.attribute.type_id.unknown_prefix"
         ),
         (
-            LATEST_BIOLINK_MODEL,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 25: has missing or empty attributes?
             {
                 "nodes": {
