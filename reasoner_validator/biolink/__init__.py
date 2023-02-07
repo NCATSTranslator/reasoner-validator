@@ -426,7 +426,6 @@ class BiolinkValidator(ValidationReporter):
             if not found_primary_or_original_knowledge_source:
                 self.report(code="warning.knowledge_graph.edge.provenance.missing_primary")
 
-
     def validate_attribute_constraints(self, edge_id: str, edge: Dict):
         if 'attribute_constraints' not in edge or edge['attribute_constraints'] is None:
             return  # nullable: true... missing key or None value is ok?
@@ -437,7 +436,6 @@ class BiolinkValidator(ValidationReporter):
         else:
             # TODO: not yet sure what else to do here (if anything...yet)
             attribute_constraints: List = edge['attribute_constraints']
-
 
     def validate_qualifiers(self, edge_id: str, edge: Dict):
         # Edge qualifiers will only be seen in Biolink 3 data,
@@ -480,17 +478,41 @@ class BiolinkValidator(ValidationReporter):
                 #         - qualifier_value
                 pass
 
-
-    def is_enum(self, element: Element) -> bool:
+    def is_qualifier(self, name: str) -> bool:
         """
-        Predicate to test if a Biolink element is an enum.
-        :param element: LinkML Element
+        Predicate to test if a Biolink element is Qualifier class element.
+
+        :param name: str LinkML Element identifier
+        :return: True if Qualifier; False otherwise
+        """
+        element: Element = self.bmt.get_element(name)
+        if not element:
+            return False  # TODO: should probably raise an exception here instead?
+        else:
+            # TODO: naive test of existence of qualifier... can we do better?
+            return element.name.endswith("qualifier")
+
+    def is_enum(self, name: str) -> bool:
+        """
+        Predicate to test (by name) if a Biolink element is an enum.
+
+        :param name: str LinkML Element identifier
         :return: True if enum; False otherwise
         """
-        # TODO: fix this simpleminded version that says that
-        #       if I'm a category, then I cannot be an enum
-        return not self.bmt.is_category(element.name)
+        element: Element = self.bmt.get_element(name)
+        if not element:
+            return False  # TODO: should probably raise an exception here instead?
+        else:
+            # TODO: naive name-driven test of existence of qualifier...
+            #       Not very robust....can we do better?
+            return element.name.lower().endswith("enum")
 
+    def is_enum_value(self, enum_name: str, value) -> bool:
+        element: Element = self.bmt.get_element(enum_name)
+        if not element:
+            return False  # TODO: should probably raise an exception here instead?
+        else:
+            return False  # ... until implemented?
 
     def validate_qualifier_constraints(self, edge_id: str, edge: Dict):
         # Edge qualifiers will only be seen in Biolink 3 data,
@@ -526,97 +548,79 @@ class BiolinkValidator(ValidationReporter):
                             )
                         else:
                             qualifier_type_id: str = qualifier['qualifier_type_id']
-                            # TODO: Fully validate in Biolink 3, the 'qualifier_type_id' here
-                            if not qualifier_type_id.startswith("biolink:"):
-                                self.report(
-                                    code="error.query_graph.edge.qualifier_constraints." +\
-                                         "qualifier_set.qualifier.qualifier_type_id.not_biolink_curie",
-                                    edge_id=edge_id,
-                                    identifier=qualifier_type_id
-                                )
-                            # Validate the putative predicate as *not* being abstract, deprecated or a mixin
-                            biolink_class = self.validate_element_status(
-                                context="query_graph.edge.qualifier",
-                                name=qualifier_type_id
-                            )
-                            if biolink_class:
-                                # First pass here is to check here if the name of the
-                                # 'qualifier_type_id' has string suffix 'qualifier'
-                                if not qualifier_type_id.endswith("qualifier"):
-                                    self.report(
-                                        code="error.query_graph.edge.qualifier_constraints." +
-                                             "qualifier_set.qualifier.qualifier_type_id.invalid",
-                                        edge_id=edge_id,
-                                        identifier=qualifier_type_id
-                                    )
-                                else:
-                                    qualifier_value_range: List[str] = \
-                                        self.bmt.get_slot_range(slot_name=qualifier_type_id)
-                                    if not qualifier_value_range:
-                                        self.report(
-                                            code="error.query_graph.edge.qualifier_constraints." +
-                                                 "qualifier_set.qualifier.qualifier_type_id.range.missing",
-                                            edge_id=edge_id,
-                                            identifier=qualifier_type_id
-                                        )
-                                    else:
-                                        # Seems like a legitimate 'qualifier_type_id' with a
-                                        # Biolink defined range so now we attempt to validate
-                                        # the associated qualifier value against that range
-                                        for data_type_name in qualifier_value_range:
-                                            data_type: Optional[Element] = self.bmt.get_element(data_type_name)
-                                            assert data_type, f"Undefined Biolink qualifier range {data_type_name}?"
-                                            qualifier_value: str = qualifier['qualifier_value']
-                                            if self.is_enum(data_type):
-                                                # TODO: check here if 'qualifier_value' is
-                                                #       a 'permissible_value' in a local enumeration or
-                                                #       'reachable_from' a given ontology. e.g.
-                                                #  in Enums like...
-                                                #   AnatomicalContextQualifierEnum:
-                                                #     reachable_from:
-                                                #       source_ontology: bioregistry:uberon
-                                                #       source_nodes:
-                                                #         - UBERON:0001062
-                                                #       is_direct: false
-                                                #       relationship_types:
-                                                #         - rdfs:subClassOf
-                                                #  or in Enums like...
-                                                #     DirectionQualifierEnum:
-                                                #     permissible_values:
-                                                #       increased:
-                                                #       upregulated:
-                                                #         is_a: increased
-                                                #         close_mappings:
-                                                #           - RO:0002336
-                                                #         exact_mappings:
-                                                #           - RO:0002213
-                                                #         narrow_mappings:
-                                                #           - RO:0004032
-                                                #           - RO:0004034
-                                                #           - RO:0002629
-                                                #       decreased:
-                                                #       downregulated:
-                                                #         is_a: decreased
-                                                #         exact_mappings:
-                                                #           - RO:0004035
-                                                #           - RO:0002212
-                                                #         close_mappings:
-                                                #           # This RTX contributed term is tagged as an inverse of this Biolink predicate
-                                                #           - RO:0002335
-                                                #         broad_mappings:
-                                                #           # This term is slightly broader in that it includes that A acts within B as well
-                                                #           - RO:0004033
-                                                #
-                                                # qualifier_value_ancestors = \
-                                                #     self.bmt.get_permissible_value_ancestors(
-                                                #         permissible_value=qualifier_value,
-                                                #         enum_name=data_type_name
-                                                #     )
-                                                pass
-                                            else:
-                                                # TODO: data_type is a Biolink Category thus we need to validate
-                                                #       the 'qualifier_value' against the available mappings, e.g.
-                                                pass
+                            # TODO: (7 Feb 2023) need to Complete implementation of Biolink 3.1.2++
+                            #       qualifier validation (need Biolink Model Toolkit implementation support)
+                            # if not qualifier_type_id.startswith("biolink:"):
+                            #     self.report(
+                            #         code="error.query_graph.edge.qualifier_constraints." +\
+                            #              "qualifier_set.qualifier.qualifier_type_id.not_biolink_curie",
+                            #         edge_id=edge_id,
+                            #         identifier=qualifier_type_id
+                            #     )
+                            # # Validate the putative qualifier as *not* being abstract, deprecated or a mixin
+                            # biolink_class = self.validate_element_status(
+                            #     context="query_graph.edge.qualifier",
+                            #     name=qualifier_type_id
+                            # )
+                            # if biolink_class:
+                            #     # First pass here is to check here if the name of the
+                            #     # 'qualifier_type_id' has string suffix 'qualifier'
+                            #     if not self.is_qualifier(qualifier_type_id):
+                            #         self.report(
+                            #             code="error.query_graph.edge.qualifier_constraints." +
+                            #                  "qualifier_set.qualifier.qualifier_type_id.invalid",
+                            #             edge_id=edge_id,
+                            #             identifier=qualifier_type_id
+                            #         )
+                            #     else:
+                            #         qualifier_value_range: List[str] = \
+                            #             self.bmt.get_slot_range(slot_name=qualifier_type_id)
+                            #         if not qualifier_value_range:
+                            #             self.report(
+                            #                 code="error.query_graph.edge.qualifier_constraints." +
+                            #                      "qualifier_set.qualifier.qualifier_type_id.range.missing",
+                            #                 edge_id=edge_id,
+                            #                 identifier=qualifier_type_id
+                            #             )
+                            #         else:
+                            #             # Seems like a legitimate 'qualifier_type_id' with a
+                            #             # Biolink defined range so now we attempt to validate
+                            #             # the associated qualifier value against that range
+                            #             for data_type_name in qualifier_value_range:
+                            #                 data_type: Optional[Element] = self.bmt.get_element(data_type_name)
+                            #                 assert data_type, f"Undefined Biolink qualifier range {data_type_name}?"
+                            #                 qualifier_value: str = qualifier['qualifier_value']
+                            #                 if self.is_enum(data_type.name):
+                            #                     # TODO: check here if 'qualifier_value' is known to data_type
+                            #
+                            #                     if not self.is_enum_value(
+                            #                             enum_name=data_type_name,
+                            #                             value=qualifier_value
+                            #                     ):
+                            #                         self.report(
+                            #                             code="error.query_graph.edge.qualifier_constraints." +
+                            #                                  "qualifier_set.qualifier.qualifier_value.unknown",
+                            #                             edge_id=edge_id,
+                            #                             enum_name=qualifier_type_id,
+                            #                             value=qualifier_value
+                            #                         )
+                            #                 else:
+                            #                     # Assume that we have a Biolink categorical data type here
+                            #                     # and that the qualifier_value is a uriorcurie
+                            #                     # which maps against the category
+                            #                     # TODO: data_type is a Biolink Category thus we need to validate
+                            #                     #       the 'qualifier_value' against the available category mappings, e.g.
+                            #                     if not self.is_enum_value(
+                            #                             enum_name=data_type_name,
+                            #                             value=qualifier_value
+                            #                     ):
+                            #                         self.report(
+                            #                             code="error.query_graph.edge.qualifier_constraints." +
+                            #                                  "qualifier_set.qualifier.qualifier_value.unknown",
+                            #                             edge_id=edge_id,
+                            #                             enum_name=qualifier_type_id,
+                            #                             value=qualifier_value
+                            #                         )
 
     def validate_predicate(self, edge_id: str, predicate: str):
         """
