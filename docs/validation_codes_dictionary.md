@@ -70,6 +70,12 @@
 
 ## Warning
 
+### warning.trapi.response.status.unknown
+
+**Message:** TRAPI Response status code '{status}' is unrecognized?
+
+**Description:** The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable
+
 ### warning.graph.empty
 
 **Message:** {context} data is empty?
@@ -160,6 +166,12 @@
 
 **Description:** A predicate selected for use in a knowledge graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
+### warning.knowledge_graph.edge.qualifiers.empty
+
+**Message:** Edge qualifiers 
+
+**Description:** Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to ARA.
+
 ### warning.knowledge_graph.edge.attribute.type_id.not_association_slot
 
 **Message:** Edge attribute_type_id '{attribute_type_id}' not a biolink:association_slot?
@@ -206,7 +218,7 @@
 
 ### error.trapi.validation
 
-**Message:** TRAPI {trapi_version} Query: '{exception}'
+**Message:** TRAPI {trapi_version} schema exception: '{exception}'!
 
 **Description:** TRAPI query attempt triggered an abnormal server exception as noted.
 
@@ -215,6 +227,12 @@
 **Message:** {context} could not generate a valid TRAPI query request object because {reason}!
 
 **Description:** TRAPI query message could not be prepared for the indicated reason, thus query was not attempted.
+
+### error.trapi.response.empty
+
+**Message:** TRAPI Response is missing!
+
+**Description:** TRAPI Response to be validated should not be totally empty but should have a Message body.
 
 ### error.trapi.response.unexpected_http_code
 
@@ -368,9 +386,45 @@
 
 ### error.query_graph.edge.predicate.mixin
 
-**Message:** '{name}' is a mixin1
+**Message:** '{name}' is a mixin!
 
 **Description:** Query Graph data validation is currently strict: cannot have 'mixin' predicates!
+
+### error.query_graph.edge.attribute_constraints.not_array
+
+**Message:** Edge '{edge_id}' attribute_constraints property value is not an array!
+
+**Description:** Value of 'attribute_constraints' slot value in a Query Graph must be an array data type!
+
+### error.query_graph.edge.qualifier_constraints.qualifier_set.value.invalid
+
+**Message:** Edge '{edge_id}' qualifier_set property value is empty or not a JSON object!
+
+**Description:** Value of a 'qualifier_set' property in a Query Graph must be non-empty array!
+
+### error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.not_biolink_curie
+
+**Message:** Edge '{edge_id}' qualifier_type_id {identifier} is not a Biolink CURIE!
+
+**Description:** A qualifier qualifier_type_id property value in a Query Graph must be a Biolink CURIE!
+
+### error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.unknown
+
+**Message:** Edge '{edge_id}' qualifier_type_id {identifier} is unknown!
+
+**Description:** This 'qualifier_type_id' in the Query Graph is undefined in the Biolink Model!
+
+### error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.invalid
+
+**Message:** Edge '{edge_id}' qualifier_type_id {identifier} is not a valid Biolink qualifier type id!
+
+**Description:** This 'qualifier_type_id' in the Query Graph not properly defined in the Biolink Model!
+
+### error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.range.missing
+
+**Message:** The value range of edge '{edge_id}' qualifier_type_id {identifier} is undefined!
+
+**Description:** The 'qualifier_type_id' in the Query Graph needs to have a defined enum or category value range!
 
 ### error.knowledge_graph.nodes.empty
 
@@ -518,19 +572,19 @@
 
 ### error.knowledge_graph.edge.attribute.missing
 
-**Message:** Edge has no 'attributes' key!
+**Message:** Edge '{edge_id}' has no 'attributes' key!
 
 **Description:** Knowledge graph edge must have a 'attributes' key with a non-empty associated value!
 
 ### error.knowledge_graph.edge.attribute.empty
 
-**Message:** Edge has empty attributes!
+**Message:** Edge '{edge_id}' has empty attributes!
 
 **Description:** Value of 'attributes' slot in Knowledge Graph edge must contain a list of one or more attributes!
 
 ### error.knowledge_graph.edge.attribute.not_array
 
-**Message:** Edge attributes are not an array!
+**Message:** Edge '{edge_id}' attributes are not an array!
 
 **Description:** Value of the 'attributes' slot in Knowledge Graph edge must be an array of attributes!
 
@@ -569,4 +623,10 @@
 **Message:** Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!
 
 **Description:** The value of an attribute specifying the provenance of a Knowledge graph edge must be the well-formed InfoRes CURIE of a knowledge source!
+
+### error.knowledge_graph.edge.qualifiers.not_array
+
+**Message:** Edge '{edge_id}' 'qualifiers' are not an array!
+
+**Description:** Value of the 'qualifiers' slot in Knowledge Graph edge must be an array of attributes!
 
