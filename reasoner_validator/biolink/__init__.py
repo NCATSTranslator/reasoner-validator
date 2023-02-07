@@ -548,30 +548,30 @@ class BiolinkValidator(ValidationReporter):
                             )
                         else:
                             qualifier_type_id: str = qualifier['qualifier_type_id']
-                            # TODO: (7 Feb 2023) need to Complete implementation of Biolink 3.1.2++
+                            # TODO: (7 Feb 2023) need to refine & complete implementation of Biolink 3.1.2++
                             #       qualifier validation (need Biolink Model Toolkit implementation support)
-                            # if not qualifier_type_id.startswith("biolink:"):
-                            #     self.report(
-                            #         code="error.query_graph.edge.qualifier_constraints." +\
-                            #              "qualifier_set.qualifier.qualifier_type_id.not_biolink_curie",
-                            #         edge_id=edge_id,
-                            #         identifier=qualifier_type_id
-                            #     )
-                            # # Validate the putative qualifier as *not* being abstract, deprecated or a mixin
-                            # biolink_class = self.validate_element_status(
-                            #     context="query_graph.edge.qualifier",
-                            #     name=qualifier_type_id
-                            # )
-                            # if biolink_class:
-                            #     # First pass here is to check here if the name of the
-                            #     # 'qualifier_type_id' has string suffix 'qualifier'
-                            #     if not self.is_qualifier(qualifier_type_id):
-                            #         self.report(
-                            #             code="error.query_graph.edge.qualifier_constraints." +
-                            #                  "qualifier_set.qualifier.qualifier_type_id.invalid",
-                            #             edge_id=edge_id,
-                            #             identifier=qualifier_type_id
-                            #         )
+                            if not qualifier_type_id.startswith("biolink:"):
+                                self.report(
+                                    code="error.query_graph.edge.qualifier_constraints." +\
+                                         "qualifier_set.qualifier.qualifier_type_id.not_biolink_curie",
+                                    edge_id=edge_id,
+                                    identifier=qualifier_type_id
+                                )
+                            # Validate the putative qualifier as *not* being abstract, deprecated or a mixin
+                            biolink_class = self.validate_element_status(
+                                context="query_graph.edge.qualifier",
+                                name=qualifier_type_id
+                            )
+                            if biolink_class:
+                                # First pass here is to check here if the name of the
+                                # 'qualifier_type_id' has string suffix 'qualifier'
+                                if not self.is_qualifier(qualifier_type_id):
+                                    self.report(
+                                        code="error.query_graph.edge.qualifier_constraints." +
+                                             "qualifier_set.qualifier.qualifier_type_id.invalid",
+                                        edge_id=edge_id,
+                                        identifier=qualifier_type_id
+                                    )
                             #     else:
                             #         qualifier_value_range: List[str] = \
                             #             self.bmt.get_slot_range(slot_name=qualifier_type_id)
