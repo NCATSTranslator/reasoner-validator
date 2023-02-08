@@ -35,6 +35,12 @@ poetry install
 
 All paths here are relative to the root project directory.
 
+First install the documentation-specific dependencies.
+
+```bash
+poetry install --extras docs
+```
+
 The validation codes MarkDown file should first be regenerated if needed (i.e. if it was revised):
 
 ```bash
@@ -42,12 +48,14 @@ cd reasoner_validator
 python ./validation_codes.py
 ```
 
-To build the documentation locally:
+Then build the documentation locally:
 
 ```bash
-cd docs
+cd ../docs
 make html
 ```
+
+The resulting **index.html** and related pages are now available for viewing within the docs subfolder __build/html_.
 
 ## Validation Run as a Web Service
 
@@ -105,60 +113,73 @@ As an example of the kind of output to expect, if one posts the following JSON m
 {
   "trapi_version": "1.3.0",
   "biolink_version": "3.1.1",
-  "message": {
-    "query_graph": {
-        "nodes": {
-            "type-2 diabetes": {"ids": ["MONDO:0005148"]},
-            "drug": {"categories": ["biolink:Drug"]}
-        },
-        "edges": {
-            "treats": {"subject": "drug", "predicates": ["biolink:treats"], "object": "type-2 diabetes"}
-        }
-    },
-    "knowledge_graph": {
-        "nodes": {
-            "MONDO:0005148": {"name": "type-2 diabetes"},
-            "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
-        },
-        "edges": {
-            "df87ff82": {"subject": "CHEBI:6801", "predicate": "biolink:treats", "object": "MONDO:0005148"}
-        }
-    },
-    "results": [
-        {
-            "node_bindings": {
-                "type-2 diabetes": [{"id": "MONDO:0005148"}],
-                "drug": [{"id": "CHEBI:6801"}]
+  "response": {
+      "message": {
+        "query_graph": {
+            "nodes": {
+                "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                "drug": {"categories": ["biolink:Drug"]}
             },
-            "edge_bindings": {
-                "treats": [{"id": "df87ff82"}]
+            "edges": {
+                "treats": {"subject": "drug", "predicates": ["biolink:treats"], "object": "type-2 diabetes"}
             }
-        }
-    ]
+        },
+        "knowledge_graph": {
+            "nodes": {
+                "MONDO:0005148": {"name": "type-2 diabetes"},
+                "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
+            },
+            "edges": {
+                "df87ff82": {"subject": "CHEBI:6801", "predicate": "biolink:treats", "object": "MONDO:0005148"}
+            }
+        },
+        "results": [
+            {
+                "node_bindings": {
+                    "type-2 diabetes": [{"id": "MONDO:0005148"}],
+                    "drug": [{"id": "CHEBI:6801"}]
+                },
+                "edge_bindings": {
+                    "treats": [{"id": "df87ff82"}]
+                }
+            }
+        ]
+      },
+      "workflow": [{"id": "annotate"}]
   }
 }
 ```
 
-one should typically get a response body like the following JSON validation result back:
+one should typically get a response body something like the following JSON validation result back:
 
 ```json
 {
   "trapi_version": "1.3.0",
   "biolink_version": "3.1.1",
-  "report": [
-    {
-      "code": "warning.node.unmapped_prefix",
-      "node_id": "CHEBI:6801",
-      "categories": "['biolink:Drug']"
+  "messages": {
+    "information": {},
+    "warnings": {
+      "warning.knowledge_graph.node.unmapped_prefix": [
+        {
+          "node_id": "CHEBI:6801",
+          "categories": "['biolink:Drug']"
+        }
+      ]
     },
-    {
-      "code": "error.node.missing_categories",
-      "node_id": "MONDO:0005148"
-    },
-    {
-      "code": "error.edge.attribute.missing"
+    "errors": {
+      "error.knowledge_graph.node.category.missing": [
+        {
+          "context": "Knowledge Graph",
+          "node_id": "MONDO:0005148"
+        }
+      ],
+      "error.knowledge_graph.edge.attribute.missing": [
+        {
+          "edge_id": "CHEBI:6801--biolink:treats->MONDO:0005148"
+        }
+      ]
     }
-  ]
+  }
 }
 ```
 
