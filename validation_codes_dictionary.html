@@ -118,7 +118,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-predicate-abstract">error.query_graph.edge.predicate.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-predicate-mixin">error.query_graph.edge.predicate.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-attribute-constraints-not-array">error.query_graph.edge.attribute_constraints.not_array</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-not-array">error.query_graph.edge.qualifier_constraints.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-invalid">error.query_graph.edge.qualifier_constraints.qualifier_set.value.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-not-biolink-curie">error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.not_biolink_curie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-unknown">error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.unknown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-invalid">error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-range-missing">error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.range.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-empty">error.knowledge_graph.nodes.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edges-empty">error.knowledge_graph.edges.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-missing">error.knowledge_graph.node.category.missing</a></li>
@@ -511,18 +515,38 @@
 </div>
 <div class="section" id="error-query-graph-edge-predicate-mixin">
 <h3>error.query_graph.edge.predicate.mixin<a class="headerlink" href="#error-query-graph-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> ‘{name}’ is a mixin1</p>
+<p><strong>Message:</strong> ‘{name}’ is a mixin!</p>
 <p><strong>Description:</strong> Query Graph data validation is currently strict: cannot have ‘mixin’ predicates!</p>
 </div>
 <div class="section" id="error-query-graph-edge-attribute-constraints-not-array">
 <h3>error.query_graph.edge.attribute_constraints.not_array<a class="headerlink" href="#error-query-graph-edge-attribute-constraints-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge ‘{edge_id}’ attribute_constraints slot value is not an array!</p>
-<p><strong>Description:</strong> Value of ‘attribute_constraints’ slot value in Query Graph must be an array data type!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ attribute_constraints property value is not an array!</p>
+<p><strong>Description:</strong> Value of ‘attribute_constraints’ slot value in a Query Graph must be an array data type!</p>
 </div>
-<div class="section" id="error-query-graph-edge-qualifier-constraints-not-array">
-<h3>error.query_graph.edge.qualifier_constraints.not_array<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier_constraints slot value is not an array!</p>
-<p><strong>Description:</strong> Value of ‘qualifier_constraints’ slot value in Query Graph must be an array data type!</p>
+<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-value-invalid">
+<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.value.invalid<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier_set property value is empty or not a JSON object!</p>
+<p><strong>Description:</strong> Value of a ‘qualifier_set’ property in a Query Graph must be non-empty array!</p>
+</div>
+<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-not-biolink-curie">
+<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.not_biolink_curie<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-not-biolink-curie" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier_type_id {identifier} is not a Biolink CURIE!</p>
+<p><strong>Description:</strong> A qualifier qualifier_type_id property value in a Query Graph must be a Biolink CURIE!</p>
+</div>
+<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-unknown">
+<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.unknown<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-unknown" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier_type_id {identifier} is unknown!</p>
+<p><strong>Description:</strong> This ‘qualifier_type_id’ in the Query Graph is undefined in the Biolink Model!</p>
+</div>
+<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-invalid">
+<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.invalid<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier_type_id {identifier} is not a valid Biolink qualifier type id!</p>
+<p><strong>Description:</strong> This ‘qualifier_type_id’ in the Query Graph not properly defined in the Biolink Model!</p>
+</div>
+<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-range-missing">
+<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.range.missing<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-range-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> The value range of edge ‘{edge_id}’ qualifier_type_id {identifier} is undefined!</p>
+<p><strong>Description:</strong> The ‘qualifier_type_id’ in the Query Graph needs to have a defined enum or category value range!</p>
 </div>
 <div class="section" id="error-knowledge-graph-nodes-empty">
 <h3>error.knowledge_graph.nodes.empty<a class="headerlink" href="#error-knowledge-graph-nodes-empty" title="Permalink to this heading"></a></h3>

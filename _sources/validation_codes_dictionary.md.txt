@@ -386,21 +386,45 @@
 
 ### error.query_graph.edge.predicate.mixin
 
-**Message:** '{name}' is a mixin1
+**Message:** '{name}' is a mixin!
 
 **Description:** Query Graph data validation is currently strict: cannot have 'mixin' predicates!
 
 ### error.query_graph.edge.attribute_constraints.not_array
 
-**Message:** Edge '{edge_id}' attribute_constraints slot value is not an array!
+**Message:** Edge '{edge_id}' attribute_constraints property value is not an array!
 
-**Description:** Value of 'attribute_constraints' slot value in Query Graph must be an array data type!
+**Description:** Value of 'attribute_constraints' slot value in a Query Graph must be an array data type!
 
-### error.query_graph.edge.qualifier_constraints.not_array
+### error.query_graph.edge.qualifier_constraints.qualifier_set.value.invalid
 
-**Message:** Edge '{edge_id}' qualifier_constraints slot value is not an array!
+**Message:** Edge '{edge_id}' qualifier_set property value is empty or not a JSON object!
 
-**Description:** Value of 'qualifier_constraints' slot value in Query Graph must be an array data type!
+**Description:** Value of a 'qualifier_set' property in a Query Graph must be non-empty array!
+
+### error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.not_biolink_curie
+
+**Message:** Edge '{edge_id}' qualifier_type_id {identifier} is not a Biolink CURIE!
+
+**Description:** A qualifier qualifier_type_id property value in a Query Graph must be a Biolink CURIE!
+
+### error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.unknown
+
+**Message:** Edge '{edge_id}' qualifier_type_id {identifier} is unknown!
+
+**Description:** This 'qualifier_type_id' in the Query Graph is undefined in the Biolink Model!
+
+### error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.invalid
+
+**Message:** Edge '{edge_id}' qualifier_type_id {identifier} is not a valid Biolink qualifier type id!
+
+**Description:** This 'qualifier_type_id' in the Query Graph not properly defined in the Biolink Model!
+
+### error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.range.missing
+
+**Message:** The value range of edge '{edge_id}' qualifier_type_id {identifier} is undefined!
+
+**Description:** The 'qualifier_type_id' in the Query Graph needs to have a defined enum or category value range!
 
 ### error.knowledge_graph.nodes.empty
 
