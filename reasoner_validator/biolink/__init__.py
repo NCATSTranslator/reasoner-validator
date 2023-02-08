@@ -572,55 +572,55 @@ class BiolinkValidator(ValidationReporter):
                                         edge_id=edge_id,
                                         identifier=qualifier_type_id
                                     )
-                            #     else:
-                            #         qualifier_value_range: List[str] = \
-                            #             self.bmt.get_slot_range(slot_name=qualifier_type_id)
-                            #         if not qualifier_value_range:
-                            #             self.report(
-                            #                 code="error.query_graph.edge.qualifier_constraints." +
-                            #                      "qualifier_set.qualifier.qualifier_type_id.range.missing",
-                            #                 edge_id=edge_id,
-                            #                 identifier=qualifier_type_id
-                            #             )
-                            #         else:
-                            #             # Seems like a legitimate 'qualifier_type_id' with a
-                            #             # Biolink defined range so now we attempt to validate
-                            #             # the associated qualifier value against that range
-                            #             for data_type_name in qualifier_value_range:
-                            #                 data_type: Optional[Element] = self.bmt.get_element(data_type_name)
-                            #                 assert data_type, f"Undefined Biolink qualifier range {data_type_name}?"
-                            #                 qualifier_value: str = qualifier['qualifier_value']
-                            #                 if self.is_enum(data_type.name):
-                            #                     # TODO: check here if 'qualifier_value' is known to data_type
-                            #
-                            #                     if not self.is_enum_value(
-                            #                             enum_name=data_type_name,
-                            #                             value=qualifier_value
-                            #                     ):
-                            #                         self.report(
-                            #                             code="error.query_graph.edge.qualifier_constraints." +
-                            #                                  "qualifier_set.qualifier.qualifier_value.unknown",
-                            #                             edge_id=edge_id,
-                            #                             enum_name=qualifier_type_id,
-                            #                             value=qualifier_value
-                            #                         )
-                            #                 else:
-                            #                     # Assume that we have a Biolink categorical data type here
-                            #                     # and that the qualifier_value is a uriorcurie
-                            #                     # which maps against the category
-                            #                     # TODO: data_type is a Biolink Category thus we need to validate
-                            #                     #       the 'qualifier_value' against the available category mappings, e.g.
-                            #                     if not self.is_enum_value(
-                            #                             enum_name=data_type_name,
-                            #                             value=qualifier_value
-                            #                     ):
-                            #                         self.report(
-                            #                             code="error.query_graph.edge.qualifier_constraints." +
-                            #                                  "qualifier_set.qualifier.qualifier_value.unknown",
-                            #                             edge_id=edge_id,
-                            #                             enum_name=qualifier_type_id,
-                            #                             value=qualifier_value
-                            #                         )
+                                else:
+                                    qualifier_value_range: List[str] = \
+                                        self.bmt.get_slot_range(slot_name=qualifier_type_id)
+                                    if not qualifier_value_range:
+                                        self.report(
+                                            code="error.query_graph.edge.qualifier_constraints." +
+                                                 "qualifier_set.qualifier.qualifier_type_id.range.missing",
+                                            edge_id=edge_id,
+                                            identifier=qualifier_type_id
+                                        )
+                                    else:
+                                        # Seems like a legitimate 'qualifier_type_id' with a
+                                        # Biolink defined range so now we attempt to validate
+                                        # the associated qualifier value against that range
+                                        for data_type_name in qualifier_value_range:
+                                            data_type: Optional[Element] = self.bmt.get_element(data_type_name)
+                                            assert data_type, f"Undefined Biolink qualifier range {data_type_name}?"
+                                            qualifier_value: str = qualifier['qualifier_value']
+                                            if self.is_enum(data_type.name):
+                                                # TODO: check here if 'qualifier_value' is known to data_type
+
+                                                if not self.is_enum_value(
+                                                        enum_name=data_type_name,
+                                                        value=qualifier_value
+                                                ):
+                                                    self.report(
+                                                        code="error.query_graph.edge.qualifier_constraints." +
+                                                             "qualifier_set.qualifier.qualifier_value.unknown",
+                                                        edge_id=edge_id,
+                                                        enum_name=qualifier_type_id,
+                                                        value=qualifier_value
+                                                    )
+                                            else:
+                                                # Assume that we have a Biolink categorical data type here
+                                                # and that the qualifier_value is a uriorcurie
+                                                # which maps against the category
+                                                # TODO: data_type is a Biolink Category thus we need to validate
+                                                #       the 'qualifier_value' against the available category mappings, e.g.
+                                                if not self.is_enum_value(
+                                                        enum_name=data_type_name,
+                                                        value=qualifier_value
+                                                ):
+                                                    self.report(
+                                                        code="error.query_graph.edge.qualifier_constraints." +
+                                                             "qualifier_set.qualifier.qualifier_value.unknown",
+                                                        edge_id=edge_id,
+                                                        enum_name=qualifier_type_id,
+                                                        value=qualifier_value
+                                                    )
 
     def validate_predicate(self, edge_id: str, predicate: str):
         """

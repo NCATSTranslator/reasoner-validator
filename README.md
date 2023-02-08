@@ -11,6 +11,10 @@ See [the full documentation](https://ncatstranslator.github.io/reasoner-validato
 
 # Using the Package
 
+## Python Dependency
+
+The Reasoner Validator now requires Python 3.9 or later (some library dependencies now force this).
+
 ## Installing the Module
 
 The module may be installed directly from pypi.org.
