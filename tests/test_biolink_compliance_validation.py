@@ -30,7 +30,7 @@ pp = PrettyPrinter(indent=4)
 # any earlier than 3.1.1.  If earlier biolink model compliance testing is desired,
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
 LATEST_TRAPI_VERSION = "1.4"
-LATEST_BIOLINK_MODEL_VERSION = "3.1.1"
+LATEST_BIOLINK_MODEL_VERSION = "3.2.0"
 
 
 def test_set_default_biolink_versioned_global_environment():
@@ -1162,7 +1162,7 @@ def test_validate_attributes(query: Tuple):
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.qualifier_type_id.not_biolink_curie"
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
         ),
         (  # Query 12 - 'qualifier_type_id' property value is unknown
             {
@@ -1177,16 +1177,16 @@ def test_validate_attributes(query: Tuple):
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier.unknown"
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
         ),
-        (  # Query 13 - 'qualifier_type_id' property value is abstract
+        (  # Query 13 - 'qualifier_type_id' property value is valid but abstract
             {
                 'qualifier_constraints': [
                     {
                         "qualifier_set": [
                             {
                                 'qualifier_type_id': "biolink:aspect_qualifier",
-                                'qualifier_value': "fake-qualifier-value"
+                                'qualifier_value': "stability"
                             }
                         ]
                     }
@@ -1207,7 +1207,7 @@ def test_validate_attributes(query: Tuple):
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.qualifier_type_id.invalid"
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
         ),
         (  # Query 15 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
             {
@@ -1223,57 +1223,54 @@ def test_validate_attributes(query: Tuple):
             },
             "error.trapi.validation"
         ),
-        #
-        # TODO: reactivate these test data once Biolink Model Toolkit support for qualifiers is available
-        #
-        # (   # Query 16 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
-        #     #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
-        #     {
-        #         'qualifier_constraints': [
-        #             {
-        #                 "qualifier_set": [
-        #                     {
-        #                         'qualifier_type_id': "biolink:object_direction_qualifier",
-        #                         'qualifier_value': "upregulated"
-        #                     }
-        #                 ]
-        #             }
-        #         ]
-        #     },
-        #     ""    # this particular use case should pass
-        # ),
-        # (   # Query 17 - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
-        #     #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'
-        #     {
-        #         'qualifier_constraints': [
-        #             {
-        #                 "qualifier_set": [
-        #                     {
-        #                         'qualifier_type_id': "biolink:object_direction_qualifier",
-        #                         'qualifier_value': "RO:0002213"   # RO 'exact match' term for 'upregulated'
-        #                     }
-        #                 ]
-        #             }
-        #         ]
-        #     },
-        #     ""    # this other use case should also pass
-        # ),
-        # (   # Query 18 - 'qualifier_type_id' is a valid Biolink qualifier type and
-        #     #             'UBERON:0001981' a valid corresponding 'reachable from' enum 'qualifier_value'
-        #     {
-        #         'qualifier_constraints': [
-        #             {
-        #                 "qualifier_set": [
-        #                     {
-        #                         'qualifier_type_id': "biolink:anatomical_context_qualifier",
-        #                         'qualifier_value': "UBERON:0001981"  # Blood Vessel
-        #                     }
-        #                 ]
-        #             }
-        #         ]
-        #     },
-        #     ""    # this particular use case should also pass
-        # )
+        (   # Query 16 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
+            #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:object_direction_qualifier",
+                                'qualifier_value': "upregulated"
+                            }
+                        ]
+                    }
+                ]
+            },
+            ""    # this particular use case should pass
+        ),
+        (   # Query 17 - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
+            #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:object_direction_qualifier",
+                                'qualifier_value': "RO:0002213"   # RO 'exact match' term for 'upregulated'
+                            }
+                        ]
+                    }
+                ]
+            },
+            ""    # this other use case should also pass
+        ),
+        (   # Query 18 - 'qualifier_type_id' is a valid Biolink qualifier type and
+            #             'UBERON:0001981' a valid corresponding 'reachable from' enum 'qualifier_value'
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:anatomical_context_qualifier",
+                                'qualifier_value': "UBERON:0001981"  # Blood Vessel
+                            }
+                        ]
+                    }
+                ]
+            },
+            ""    # this particular use case should also pass
+        )
     ]
 )
 def test_validate_qualifier_constraints(query: Tuple):
