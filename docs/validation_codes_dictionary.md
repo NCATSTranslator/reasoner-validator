@@ -68,6 +68,12 @@
 
 **Description:** Non-Biolink CURIEs are tolerated as term value for the attribute_type_id properties of edge attributes.
 
+### info.knowledge_graph.node.category.abstract
+
+**Message:** '{name}' is abstract.
+
+**Description:** TRAPI Message Knowledge Graphs can have 'abstract' category classes when mode of validation is 'non-strict'.
+
 ## Warning
 
 ### warning.trapi.response.status.unknown
@@ -665,4 +671,16 @@
 **Message:** Edge '{edge_id}' 'qualifiers' are not an array!
 
 **Description:** Value of the 'qualifiers' slot in Knowledge Graph edge must be an array of attributes!
+
+### error.knowledge_graph.edge.qualifiers.empty
+
+**Message:** Edge '{edge_id}' qualifiers property value is empty!
+
+**Description:** Value of a 'qualifiers' property in a Knowledge Graph must not be non-empty array!
+
+### error.knowledge_graph.edge.qualifiers.qualifier.invalid
+
+**Message:** Edge '{edge_id}' qualifier entry is invalid!
+
+**Description:** A 'qualifier' entry must be a valid JSON object with valid 'qualifier_type_id' and corresponding 'qualifier_value'!
 

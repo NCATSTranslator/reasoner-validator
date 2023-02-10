@@ -41,15 +41,25 @@ info:
       predicate:
         abstract:
           $message: "'{name}' is abstract."
-          $description: "TRAPI Message Query Graphs can have 'mixin' predicates."
+          $description: "TRAPI Messages in Query Graphs can have 'mixin' predicates."
         mixin:
           $message: "'{name}' is a mixin."
-          $description: "TRAPI Message Query Graphs can have 'mixin' predicates."
+          $description: "TRAPI Messages in Query Graphs can have 'mixin' predicates."
   attribute_type_id:
     non_biolink_prefix:
       $message: "Edge attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink."
       $description: "Non-Biolink CURIEs are tolerated as term value for the attribute_type_id properties of edge attributes."
-
+  knowledge_graph:
+    node:
+      category:
+        abstract:
+          $message: "'{name}' is abstract."
+          $description: "TRAPI Messages in Knowledge Graphs can have 'abstract' category classes when the mode of validation is 'non-strict'.."
+    edge:
+      predicate:
+        abstract:
+          $message: "'{name}' is abstract."
+          $description: "TRAPI Messages in Knowledge Graphs can have 'abstract' predicates when the mode of validation is 'non-strict'."
 warning:
   trapi:
     response:
