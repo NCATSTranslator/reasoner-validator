@@ -1057,6 +1057,30 @@ def test_validate_attributes(query: Tuple):
     check_messages(validator, query[2])
 
 
+def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str]):
+    # Sanity check: does TRAPI validation catch this first?
+    trapi_validator = TRAPISchemaValidator(trapi_version=LATEST_TRAPI_VERSION)
+    # Wrap Qualifiers inside a small mock QEdge
+    mock_edge: Dict = copy.deepcopy(query[0])
+    mock_edge["subject"] = "mock_subject"
+    mock_edge["object"] = "mock_object"
+    trapi_validator.is_valid_trapi_query(mock_edge, edge_model)
+    if trapi_validator.has_errors():
+        validator = trapi_validator
+    else:
+        # if you get this far,then attempt additional Biolink Validation
+        validator = BiolinkValidator(
+            graph_type=TRAPIGraphType.Query_Graph,
+            biolink_version=LATEST_BIOLINK_MODEL_VERSION
+        )
+        tested_method(
+            validator,
+            edge_id=f"{tested_method.__name__} unit test",
+            edge=query[0]
+        )
+    check_messages(validator, query[1])
+
+
 @pytest.mark.parametrize(
     "query",
     [
@@ -1290,44 +1314,161 @@ def test_validate_attributes(query: Tuple):
     ]
 )
 def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
-    # Sanity check: does TRAPI validation catch this first?
-    trapi_validator = TRAPISchemaValidator(trapi_version=LATEST_TRAPI_VERSION)
-    # Wrap Qualifiers inside a small mock QEdge
-    mock_qedge: Dict = copy.deepcopy(query[0])
-    mock_qedge["subject"] = "mock_subject"
-    mock_qedge["object"] = "mock_object"
-    trapi_validator.is_valid_trapi_query(mock_qedge, "QEdge")
-    if trapi_validator.has_errors():
-        validator = trapi_validator
-    else:
-        # if you get this far,then attempt additional Biolink Validation
-        validator = BiolinkValidator(
-            graph_type=TRAPIGraphType.Query_Graph,
-            biolink_version=LATEST_BIOLINK_MODEL_VERSION
-        )
-        validator.validate_qualifier_constraints(
-            edge_id="validate_qualifier_constraints unit test",
-            edge=query[0]
-        )
-    check_messages(validator, query[1])
+    qualifier_validator(
+        tested_method=BiolinkValidator.validate_qualifier_constraints,
+        edge_model="QEdge",
+        query=query
+    )
 
 
-#
-# Qualifier code not yet implemented for testing
-#
-# @pytest.mark.parametrize(
-#     "query",
-#     [
-#         ("", "")
-#     ]
-# )
-# def test_validate_qualifiers(query: Tuple):
-#     validator = BiolinkValidator(
-#         graph_type=TRAPIGraphType.Knowledge_Graph,
-#         biolink_version=LATEST_BIOLINK_MODEL
-#     )
-#     validator.validate_qualifiers(edge_id="test_validate_attributes unit test", edge=query[0])
-#     check_messages(validator, query[1])
+@pytest.mark.parametrize(
+    "query",
+    [
+        (  # Query 0 - no 'qualifiers' key - since nullable: true, this should pass
+            {},
+            ""
+        ),
+        (  # Query 1 - 'qualifiers' value is None - invalidated by TRAPI schema
+            {
+                'qualifiers': None
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 2 - 'qualifiers' value is not an array - invalidated by TRAPI schema
+            {
+                'qualifiers': {}
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 3 - empty 'qualifiers' array value - since nullable: true, this should pass
+            {
+                'qualifiers': []
+            },
+            ""
+        ),
+        (  # Query 4 - empty 'qualifier_set' entry - invalidated by TRAPI schema
+            {
+                'qualifiers': [{}]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 5 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
+            {
+                'qualifiers': [[]]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 6 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
+            {
+                'qualifiers': [
+                    {
+                        # 'qualifier_type_id': "",
+                        'qualifier_value': ""
+                    }
+                ]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 7 - 'qualifier_type_id' property value is not a Biolink CURIE
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "not-a-curie",
+                        'qualifier_value': "fake-qualifier-value"
+                    }
+                ]
+            },
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
+        ),
+        (  # Query 8 - 'qualifier_type_id' property value is unknown
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:unknown_qualifier",
+                        'qualifier_value': "fake-qualifier-value"
+                    }
+                ]
+            },
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
+        ),
+        (  # Query 9 - 'qualifier_type_id' property value is valid but abstract
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:aspect_qualifier",
+                        'qualifier_value': "stability"
+                    }
+                ]
+            },
+            # "info.query_graph.edge.qualifier.abstract"
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
+        ),
+        (  # Query 10 - 'qualifier_type_id' property value is not a Biolink qualifier term
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:related_to",
+                        'qualifier_value': "fake-qualifier-value"
+                    }
+                ]
+            },
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
+        ),
+        (  # Query 11 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:object_direction_qualifier"
+                    }
+                ]
+            },
+            "error.trapi.validation"
+        ),
+        (   # Query 12 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
+            #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:object_direction_qualifier",
+                        'qualifier_value': "upregulated"
+                    }
+                ]
+            },
+            ""    # this particular use case should pass
+        ),
+        # (   #  *** Currently unsupported use case:
+        #     # Query xx - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
+        #     #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'
+        #     {
+        #         'qualifiers': [
+        #             {
+        #                 'qualifier_type_id': "biolink:object_direction_qualifier",
+        #                 'qualifier_value': "RO:0002213"   # RO 'exact match' term for 'upregulated'
+        #             }
+        #         ]
+        #     },
+        #     ""    # this other use case should also pass
+        # ),
+        (   # Query 13 - 'qualifier_type_id' is a valid Biolink qualifier type and
+            #             'UBERON:0001981' a valid corresponding 'reachable from' enum 'qualifier_value'
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:anatomical_context_qualifier",
+                        'qualifier_value': "UBERON:0001981"  # Blood Vessel
+                    }
+                ]
+            },
+            ""    # this particular use case should also pass
+        )
+    ]
+)
+def test_validate_qualifiers(query: Tuple):
+    qualifier_validator(
+        tested_method=BiolinkValidator.validate_qualifiers,
+        edge_model="Edge",
+        query=query
+    )
 
 
 ##################################
