@@ -179,7 +179,7 @@ css = ["tinycss2 (>=1.1.0,<1.2)"]
 
 [[package]]
 name = "bmt"
-version = "1.0.0"
+version = "1.0.2"
 description = "Biolink Model Toolkit: A Python API for working with the Biolink Model"
 category = "main"
 optional = false
@@ -2558,7 +2558,7 @@ multidict = ">=4.0"
 
 [[package]]
 name = "zipp"
-version = "3.12.1"
+version = "3.13.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 category = "main"
 optional = false
@@ -2574,7 +2574,7 @@ docs = ["numpydoc", "sphinx", "myst-parser"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "592e13dcc9f5595f423411f6cddcddda7e02b99e004a2aaaac533017efd80cc6"
+content-hash = "5ed48e691daeac24ba488a0d49a8296c517168888d0186a3a9ba440faa43eb19"
 
 [metadata.files]
 aiohttp = [
@@ -2653,8 +2653,8 @@ bleach = [
     {file = "bleach-6.0.0.tar.gz", hash = "sha256:1a1a85c1595e07d8db14c5f09f09e6433502c51c595970edc090551f0db99414"},
 ]
 bmt = [
-    {file = "bmt-1.0.0-py3-none-any.whl", hash = "sha256:4fd04dc5f90108cdded0d18e79a503db997dd80925ceb699d61651616fb62899"},
-    {file = "bmt-1.0.0.tar.gz", hash = "sha256:b48f31001b961bd9ef70042b4087ff0c61e931a22074b12b40c16d47fb2a2833"},
+    {file = "bmt-1.0.2-py3-none-any.whl", hash = "sha256:eac827ad05bbc4b930d2910b92443d3938e961cd851ba3016d73305030127386"},
+    {file = "bmt-1.0.2.tar.gz", hash = "sha256:aa9dfa5c049982406a22b299e555eb3d5a9398eec67ef8a892fd85edd5837889"},
 ]
 cachetools = [
     {file = "cachetools-5.3.0-py3-none-any.whl", hash = "sha256:429e1a1e845c008ea6c85aa35d4b98b65d6a9763eeef3e37e92728a12d1de9d4"},
@@ -4337,6 +4337,6 @@ yarl = [
     {file = "yarl-1.8.2.tar.gz", hash = "sha256:49d43402c6e3013ad0978602bf6bf5328535c48d192304b91b97a3c6790b1562"},
 ]
 zipp = [
-    {file = "zipp-3.12.1-py3-none-any.whl", hash = "sha256:6c4fe274b8f85ec73c37a8e4e3fa00df9fb9335da96fb789e3b96b318e5097b3"},
-    {file = "zipp-3.12.1.tar.gz", hash = "sha256:a3cac813d40993596b39ea9e93a18e8a2076d5c378b8bc88ec32ab264e04ad02"},
+    {file = "zipp-3.13.0-py3-none-any.whl", hash = "sha256:e8b2a36ea17df80ffe9e2c4fda3f693c3dad6df1697d3cd3af232db680950b0b"},
+    {file = "zipp-3.13.0.tar.gz", hash = "sha256:23f70e964bc11a34cef175bc90ba2914e1e4545ea1e3e2f67c079671883f9cb6"},
 ]
