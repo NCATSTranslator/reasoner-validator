@@ -74,27 +74,43 @@ in a dictionary looking something like the following (as an example):
 .. code-block:: python
 
     messages: Dict[str, List[Dict[str,str]]] = {
-        "information": [
-            {
-                "edge_id": "(ZFIN:ZDB-GENE-060825-345$biolink:Gene)--[biolink:active_in]->(GO:0042645$biolink:CellularComponent)",
-                "code": "info.excluded"
-            }
-        ],
-        "warnings": [
-            {
-                "context": "Query Graph",
-                "edge_id": "a--['biolink:participates_in']->b",
-                "predicate": "biolink:participates_in",
-                "code": "warning.edge.predicate.non_canonical"
-            }
-        ],
-        "errors": [
-            {
-                "context": "raise_subject_entity() test predicate CHEBI:37565[biolink:SmallMolecule]",
-                "reason": "has no 'is_a' parent since it is either not an ontology term or does not map onto a parent ontology term.",
-                "code": "error.trapi.request.invalid"
-            }
-        ]
+        "information": {
+            "info.excluded": [
+                {  # parameters for one distinct message
+                    "edge_id": "(ZFIN:ZDB-GENE-060825-345$biolink:Gene)--[biolink:active_in]->(GO:0042645$biolink:CellularComponent)",
+                },
+                {...}  # another message (same code type)
+            ],
+            "info.compliant": []  # parameterless messages don't have distinct instances
+             # other 'info' code-indexed messages
+        },
+        "warnings": {
+            "warning.edge.predicate.non_canonical": [
+                {
+                    "context": "Query Graph",
+                    "edge_id": "a--['biolink:participates_in']->b",
+                    "predicate": "biolink:participates_in"
+                },
+                {...}  # another message (same code type)
+
+            ],
+            "warning.trapi.response.status.unknown" [
+                {
+                    "status": "some status message",
+                }
+            ],
+            # other 'warning' code-indexed messages
+         },
+        "errors": {
+            "error.trapi.request.invalid": [
+                {
+                    "context": "raise_subject_entity() test predicate CHEBI:37565[biolink:SmallMolecule]",
+                    "reason": "has no 'is_a' parent since it is either not an ontology term or does not map onto a parent ontology term."
+                },
+                {...} # another message (same code type)
+            ],
+            # other 'error' code-indexed messages
+        }
     }
 
 
