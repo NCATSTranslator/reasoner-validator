@@ -28,11 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> Reasoner Validator
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Reasoner Validator
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -47,9 +51,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.check_biolink_model_compliance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.check_biolink_model_compliance_of_input_edge()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_result"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_result()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.is_enum"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.is_enum()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.is_enum_value"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.is_enum_value()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.is_qualifier"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.is_qualifier()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.minimum_required_biolink_version"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.minimum_required_biolink_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.set_nodes"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.set_nodes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_attribute_constraints"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_attribute_constraints()</span></code></a></li>
@@ -61,6 +62,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_input_edge_node"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_input_edge_node()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_predicate"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_predicate()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_qualifier_constraints()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_entry"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_qualifier_entry()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifiers"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_qualifiers()</span></code></a></li>
 </ul>
 </li>
@@ -95,7 +97,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Biolink Validation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/reasoner_validator.biolink.rst.txt" rel="nofollow"> View page source</a>
@@ -197,12 +199,6 @@
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code>()</p></td>
 <td><p>Predicate to detect any recorded warning messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.is_enum" title="reasoner_validator.biolink.BiolinkValidator.is_enum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_enum</span></code></a>(name)</p></td>
-<td><p>Predicate to test (by name) if a Biolink element is an enum.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.is_qualifier" title="reasoner_validator.biolink.BiolinkValidator.is_qualifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_qualifier</span></code></a>(name)</p></td>
-<td><p>Predicate to test if a Biolink element is Qualifier class element.</p></td>
-</tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">return</dt>
@@ -264,19 +260,19 @@
 <col style="width: 23%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><strong>is_enum_value</strong></p></td>
+<tr class="row-odd"><td><p><strong>set_nodes</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>set_nodes</strong></p></td>
+<tr class="row-even"><td><p><strong>validate_attribute_constraints</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>validate_attribute_constraints</strong></p></td>
+<tr class="row-odd"><td><p><strong>validate_input_edge_node</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>validate_input_edge_node</strong></p></td>
+<tr class="row-even"><td><p><strong>validate_qualifier_constraints</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>validate_qualifier_constraints</strong></p></td>
+<tr class="row-odd"><td><p><strong>validate_qualifier_entry</strong></p></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><p><strong>validate_qualifiers</strong></p></td>
@@ -327,39 +323,6 @@ against the currently active Biolink Model Toolkit model version.</p>
 </dd>
 </dl>
 <p>:rtype Tuple[str, Optional[Dict[str, Set[str]]]]</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.is_enum">
-<span class="sig-name descname"><span class="pre">is_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.is_enum" title="Permalink to this definition"></a></dt>
-<dd><p>Predicate to test (by name) if a Biolink element is an enum.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> – str LinkML Element identifier</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if enum; False otherwise</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.is_enum_value">
-<span class="sig-name descname"><span class="pre">is_enum_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.is_enum_value" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.is_qualifier">
-<span class="sig-name descname"><span class="pre">is_qualifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.is_qualifier" title="Permalink to this definition"></a></dt>
-<dd><p>Predicate to test if a Biolink element is Qualifier class element.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> – str LinkML Element identifier</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if Qualifier; False otherwise</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -485,6 +448,11 @@ against the currently active Biolink Model Toolkit model version.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints">
 <span class="sig-name descname"><span class="pre">validate_qualifier_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_qualifier_entry">
+<span class="sig-name descname"><span class="pre">validate_qualifier_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualifiers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_entry" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

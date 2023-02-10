@@ -26,13 +26,13 @@
 
 **Description:** Input Edge data can have 'mixin' category classes.
 
-### info.input_edge.edge.predicate.abstract
+### info.input_edge.predicate.abstract
 
 **Message:** '{name}' is abstract.
 
 **Description:** Input Edge data can have 'abstract' predicates.
 
-### info.input_edge.edge.predicate.mixin
+### info.input_edge.predicate.mixin
 
 **Message:** '{name}' is a mixin.
 
@@ -54,19 +54,31 @@
 
 **Message:** '{name}' is abstract.
 
-**Description:** TRAPI Message Query Graphs can have 'mixin' predicates.
+**Description:** TRAPI Messages in Query Graphs can have 'mixin' predicates.
 
 ### info.query_graph.edge.predicate.mixin
 
 **Message:** '{name}' is a mixin.
 
-**Description:** TRAPI Message Query Graphs can have 'mixin' predicates.
+**Description:** TRAPI Messages in Query Graphs can have 'mixin' predicates.
 
 ### info.attribute_type_id.non_biolink_prefix
 
 **Message:** Edge attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink.
 
 **Description:** Non-Biolink CURIEs are tolerated as term value for the attribute_type_id properties of edge attributes.
+
+### info.knowledge_graph.node.category.abstract
+
+**Message:** '{name}' is abstract.
+
+**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' category classes when the mode of validation is 'non-strict'..
+
+### info.knowledge_graph.edge.predicate.abstract
+
+**Message:** '{name}' is abstract.
+
+**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' predicates when the mode of validation is 'non-strict'.
 
 ## Warning
 
@@ -106,13 +118,13 @@
 
 **Description:** The namespaces of Biolink model node of specified category may be incomplete with respect to identifiers being used in input edge data?
 
-### warning.input_edge.edge.predicate.deprecated
+### warning.input_edge.predicate.deprecated
 
 **Message:** '{name}' is deprecated?
 
 **Description:** Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
 
-### warning.input_edge.edge.predicate.non_canonical
+### warning.input_edge.predicate.non_canonical
 
 **Message:** {context} edge {edge_id} predicate '{predicate}' is non-canonical?
 
@@ -282,11 +294,17 @@
 
 **Description:** TRAPI Message.Results cannot resolve its reported identifier mappings to the original query.
 
+### error.input_edge.node.category.missing
+
+**Message:** Input edge node '{node_id}' is missing its category!
+
+**Description:** Category value must be specified in an input test data edge!
+
 ### error.input_edge.node.category.unknown
 
-**Message:** '{name}' is unknown!
+**Message:** Input edge node '{node_id}' has unknown category '{category}'!
 
-**Description:** Category specified in input test data edge node is not recorded in specified version of Biolink. Replace with a concrete category!
+**Description:** Category specified in input test data edge node is not recorded in specified version of Biolink. Replace with a known category!
 
 ### error.input_edge.node.category.abstract
 
@@ -306,23 +324,35 @@
 
 **Description:** Input test data edge data needs to have a specific node identifier for testing!
 
-### error.input_edge.edge.predicate.missing
+### error.input_edge.predicate.missing
 
 **Message:** {context} edge '{edge_id}' predicate is missing or empty!
 
 **Description:** Input test edge data needs to have a specific edge predicate for testing!
 
-### error.input_edge.edge.predicate.abstract
+### error.input_edge.predicate.unknown
 
-**Message:** '{name}' is abstract!
+**Message:** '{name}' is unknown predicate!
 
-**Description:** Input Edge data validation is currently strict: cannot have 'abstract' predicates!
+**Description:** Predicate specified in input test data edge is not recorded in specified version of Biolink. Replace with a known predicate!
 
-### error.input_edge.edge.predicate.mixin
+### error.input_edge.predicate.abstract
 
-**Message:** '{name}' is a mixin1
+**Message:** '{name}' is abstract predicate!
 
-**Description:** Input Edge data validation is currently strict: cannot have 'mixin' predicates!
+**Description:** Input Edge data validation is currently strict: predicates cannot be 'abstract'. Replace with a concrete predicate!
+
+### error.input_edge.predicate.mixin
+
+**Message:** '{name}' is a mixin predicate!
+
+**Description:** Input Edge data validation is currently strict: predicates cannot be of type 'mixin'. Replace with a concrete predicate!
+
+### error.input_edge.predicate.invalid
+
+**Message:** Edge '{edge_id}' predicate '{predicate}' is invalid!
+
+**Description:** Predicate specified in Input Edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!
 
 ### error.query_graph.node.category.unknown
 
@@ -360,11 +390,41 @@
 
 **Description:** The 'is_set' field in node of Query Graph, if present, must be a boolean value!
 
+### error.query_graph.edge.subject.missing
+
+**Message:** Edge '{edge_id}' has a missing or empty 'subject' slot value!
+
+**Description:** Query graph edge must have a 'subject' key with a non-empty associated value!
+
+### error.query_graph.edge.subject.missing_from_nodes
+
+**Message:** Edge 'subject' id '{object_id}' is missing from the nodes catalog!
+
+**Description:** Every 'subject' identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph!
+
+### error.query_graph.edge.object.missing
+
+**Message:** Edge '{edge_id}' has a missing or empty 'object' slot value!
+
+**Description:** Query graph edge must have a 'object' key with a non-empty associated value!
+
+### error.query_graph.edge.object.missing_from_nodes
+
+**Message:** Edge 'object' id '{object_id}' is missing from the nodes catalog!
+
+**Description:** Every 'object' identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph!
+
 ### error.query_graph.edge.predicate.missing
 
 **Message:** Edge '{edge_id}' predicate is missing or empty!
 
 **Description:** The predicate of Query Graph edge needs to specified using a 'predicate' key with an array list of one or more predicates!
+
+### error.query_graph.edge.predicate.unknown
+
+**Message:** Edge '{edge_id}' predicate '{predicate}' is unknown!
+
+**Description:** Predicate specified in Query Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!
 
 ### error.query_graph.edge.predicate.not_array
 
@@ -390,41 +450,29 @@
 
 **Description:** Query Graph data validation is currently strict: cannot have 'mixin' predicates!
 
+### error.query_graph.edge.predicate.invalid
+
+**Message:** Edge '{edge_id}' predicate '{predicate}' is invalid!
+
+**Description:** Predicate specified in Query Graph edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!
+
 ### error.query_graph.edge.attribute_constraints.not_array
 
 **Message:** Edge '{edge_id}' attribute_constraints property value is not an array!
 
 **Description:** Value of 'attribute_constraints' slot value in a Query Graph must be an array data type!
 
-### error.query_graph.edge.qualifier_constraints.qualifier_set.value.invalid
+### error.query_graph.edge.qualifier_constraints.qualifier_set.empty
 
-**Message:** Edge '{edge_id}' qualifier_set property value is empty or not a JSON object!
+**Message:** Edge '{edge_id}' qualifier_set property value is empty!
 
-**Description:** Value of a 'qualifier_set' property in a Query Graph must be non-empty array!
+**Description:** Value of a 'qualifier_constraints.qualifier_set' property in a Query Graph must not be non-empty array!
 
-### error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.not_biolink_curie
+### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid
 
-**Message:** Edge '{edge_id}' qualifier_type_id {identifier} is not a Biolink CURIE!
+**Message:** Edge '{edge_id}' qualifier entry is invalid!
 
-**Description:** A qualifier qualifier_type_id property value in a Query Graph must be a Biolink CURIE!
-
-### error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.unknown
-
-**Message:** Edge '{edge_id}' qualifier_type_id {identifier} is unknown!
-
-**Description:** This 'qualifier_type_id' in the Query Graph is undefined in the Biolink Model!
-
-### error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.invalid
-
-**Message:** Edge '{edge_id}' qualifier_type_id {identifier} is not a valid Biolink qualifier type id!
-
-**Description:** This 'qualifier_type_id' in the Query Graph not properly defined in the Biolink Model!
-
-### error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.range.missing
-
-**Message:** The value range of edge '{edge_id}' qualifier_type_id {identifier} is undefined!
-
-**Description:** The 'qualifier_type_id' in the Query Graph needs to have a defined enum or category value range!
+**Description:** A 'qualifier' entry must be a valid JSON object with valid 'qualifier_type_id' and corresponding 'qualifier_value'!
 
 ### error.knowledge_graph.nodes.empty
 
@@ -629,4 +677,16 @@
 **Message:** Edge '{edge_id}' 'qualifiers' are not an array!
 
 **Description:** Value of the 'qualifiers' slot in Knowledge Graph edge must be an array of attributes!
+
+### error.knowledge_graph.edge.qualifiers.empty
+
+**Message:** Edge '{edge_id}' qualifiers property value is empty!
+
+**Description:** Value of a 'qualifiers' property in a Knowledge Graph must not be non-empty array!
+
+### error.knowledge_graph.edge.qualifiers.qualifier.invalid
+
+**Message:** Edge '{edge_id}' qualifier entry is invalid!
+
+**Description:** A 'qualifier' entry must be a valid JSON object with valid 'qualifier_type_id' and corresponding 'qualifier_value'!
 

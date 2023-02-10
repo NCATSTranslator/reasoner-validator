@@ -28,11 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> Reasoner Validator
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Reasoner Validator
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -51,13 +55,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#info-compliant">info.compliant</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-input-edge-node-category-abstract">info.input_edge.node.category.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-input-edge-node-category-mixin">info.input_edge.node.category.mixin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#info-input-edge-edge-predicate-abstract">info.input_edge.edge.predicate.abstract</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#info-input-edge-edge-predicate-mixin">info.input_edge.edge.predicate.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-input-edge-predicate-abstract">info.input_edge.predicate.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-input-edge-predicate-mixin">info.input_edge.predicate.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-query-graph-node-category-abstract">info.query_graph.node.category.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-query-graph-node-category-mixin">info.query_graph.node.category.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-query-graph-edge-predicate-abstract">info.query_graph.edge.predicate.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-query-graph-edge-predicate-mixin">info.query_graph.edge.predicate.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-attribute-type-id-non-biolink-prefix">info.attribute_type_id.non_biolink_prefix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-knowledge-graph-node-category-abstract">info.knowledge_graph.node.category.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-knowledge-graph-edge-predicate-abstract">info.knowledge_graph.edge.predicate.abstract</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#warning">Warning</a><ul>
@@ -67,8 +73,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-response-results-empty">warning.response.results.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-node-category-deprecated">warning.input_edge.node.category.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-node-id-unmapped-to-category">warning.input_edge.node.id.unmapped_to_category</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-edge-predicate-deprecated">warning.input_edge.edge.predicate.deprecated</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-edge-predicate-non-canonical">warning.input_edge.edge.predicate.non_canonical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-predicate-deprecated">warning.input_edge.predicate.deprecated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-predicate-non-canonical">warning.input_edge.predicate.non_canonical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-node-ids-unmapped-to-categories">warning.query_graph.node.ids.unmapped_to_categories</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-edge-predicate-deprecated">warning.query_graph.edge.predicate.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-edge-predicate-non-canonical">warning.query_graph.edge.predicate.non_canonical</a></li>
@@ -99,30 +105,36 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-results-missing">error.trapi.response.results.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-results-non-array">error.trapi.response.results.non_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-results-missing-bindings">error.trapi.response.results.missing_bindings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-node-category-missing">error.input_edge.node.category.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-input-edge-node-category-unknown">error.input_edge.node.category.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-input-edge-node-category-abstract">error.input_edge.node.category.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-input-edge-node-category-mixin">error.input_edge.node.category.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-input-edge-node-id-missing">error.input_edge.node.id.missing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-edge-predicate-missing">error.input_edge.edge.predicate.missing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-edge-predicate-abstract">error.input_edge.edge.predicate.abstract</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-edge-predicate-mixin">error.input_edge.edge.predicate.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-predicate-missing">error.input_edge.predicate.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-predicate-unknown">error.input_edge.predicate.unknown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-predicate-abstract">error.input_edge.predicate.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-predicate-mixin">error.input_edge.predicate.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-input-edge-predicate-invalid">error.input_edge.predicate.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-category-unknown">error.query_graph.node.category.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-category-abstract">error.query_graph.node.category.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-category-mixin">error.query_graph.node.category.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-ids-not-array">error.query_graph.node.ids.not_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-categories-not-array">error.query_graph.node.categories.not_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-is-set-not-boolean">error.query_graph.node.is_set.not_boolean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-subject-missing">error.query_graph.edge.subject.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-subject-missing-from-nodes">error.query_graph.edge.subject.missing_from_nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-object-missing">error.query_graph.edge.object.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-object-missing-from-nodes">error.query_graph.edge.object.missing_from_nodes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-predicate-missing">error.query_graph.edge.predicate.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-predicate-unknown">error.query_graph.edge.predicate.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-predicate-not-array">error.query_graph.edge.predicate.not_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-predicate-empty-array">error.query_graph.edge.predicate.empty_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-predicate-abstract">error.query_graph.edge.predicate.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-predicate-mixin">error.query_graph.edge.predicate.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-predicate-invalid">error.query_graph.edge.predicate.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-attribute-constraints-not-array">error.query_graph.edge.attribute_constraints.not_array</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-invalid">error.query_graph.edge.qualifier_constraints.qualifier_set.value.invalid</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-not-biolink-curie">error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.not_biolink_curie</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-unknown">error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.unknown</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-invalid">error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.invalid</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-range-missing">error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.range.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-empty">error.query_graph.edge.qualifier_constraints.qualifier_set.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-invalid">error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-empty">error.knowledge_graph.nodes.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edges-empty">error.knowledge_graph.edges.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-missing">error.knowledge_graph.node.category.missing</a></li>
@@ -157,6 +169,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-value-empty">error.knowledge_graph.edge.attribute.value.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-provenance-infores-missing">error.knowledge_graph.edge.provenance.infores.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-not-array">error.knowledge_graph.edge.qualifiers.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-empty">error.knowledge_graph.edge.qualifiers.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-invalid">error.knowledge_graph.edge.qualifiers.qualifier.invalid</a></li>
 </ul>
 </li>
 </ul>
@@ -177,7 +191,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Validation Codes Dictionary</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/validation_codes_dictionary.md.txt" rel="nofollow"> View page source</a>
@@ -212,13 +226,13 @@
 <p><strong>Message:</strong> ‘{name}’ is a mixin.</p>
 <p><strong>Description:</strong> Input Edge data can have ‘mixin’ category classes.</p>
 </div>
-<div class="section" id="info-input-edge-edge-predicate-abstract">
-<h3>info.input_edge.edge.predicate.abstract<a class="headerlink" href="#info-input-edge-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
+<div class="section" id="info-input-edge-predicate-abstract">
+<h3>info.input_edge.predicate.abstract<a class="headerlink" href="#info-input-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> ‘{name}’ is abstract.</p>
 <p><strong>Description:</strong> Input Edge data can have ‘abstract’ predicates.</p>
 </div>
-<div class="section" id="info-input-edge-edge-predicate-mixin">
-<h3>info.input_edge.edge.predicate.mixin<a class="headerlink" href="#info-input-edge-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
+<div class="section" id="info-input-edge-predicate-mixin">
+<h3>info.input_edge.predicate.mixin<a class="headerlink" href="#info-input-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> ‘{name}’ is a mixin.</p>
 <p><strong>Description:</strong> Input Edge data can have ‘mixin’ predicates.</p>
 </div>
@@ -235,17 +249,27 @@
 <div class="section" id="info-query-graph-edge-predicate-abstract">
 <h3>info.query_graph.edge.predicate.abstract<a class="headerlink" href="#info-query-graph-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> ‘{name}’ is abstract.</p>
-<p><strong>Description:</strong> TRAPI Message Query Graphs can have ‘mixin’ predicates.</p>
+<p><strong>Description:</strong> TRAPI Messages in Query Graphs can have ‘mixin’ predicates.</p>
 </div>
 <div class="section" id="info-query-graph-edge-predicate-mixin">
 <h3>info.query_graph.edge.predicate.mixin<a class="headerlink" href="#info-query-graph-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> ‘{name}’ is a mixin.</p>
-<p><strong>Description:</strong> TRAPI Message Query Graphs can have ‘mixin’ predicates.</p>
+<p><strong>Description:</strong> TRAPI Messages in Query Graphs can have ‘mixin’ predicates.</p>
 </div>
 <div class="section" id="info-attribute-type-id-non-biolink-prefix">
 <h3>info.attribute_type_id.non_biolink_prefix<a class="headerlink" href="#info-attribute-type-id-non-biolink-prefix" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge attribute_type_id ‘{attribute_type_id}’ has a non-Biolink CURIE prefix mapped to Biolink.</p>
 <p><strong>Description:</strong> Non-Biolink CURIEs are tolerated as term value for the attribute_type_id properties of edge attributes.</p>
+</div>
+<div class="section" id="info-knowledge-graph-node-category-abstract">
+<h3>info.knowledge_graph.node.category.abstract<a class="headerlink" href="#info-knowledge-graph-node-category-abstract" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘{name}’ is abstract.</p>
+<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘abstract’ category classes when the mode of validation is ‘non-strict’..</p>
+</div>
+<div class="section" id="info-knowledge-graph-edge-predicate-abstract">
+<h3>info.knowledge_graph.edge.predicate.abstract<a class="headerlink" href="#info-knowledge-graph-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘{name}’ is abstract.</p>
+<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘abstract’ predicates when the mode of validation is ‘non-strict’.</p>
 </div>
 </div>
 <div class="section" id="warning">
@@ -280,13 +304,13 @@
 <p><strong>Message:</strong> ‘{node_id}’ has identifiers {unmapped_ids} unmapped to the target categories: {categories}?</p>
 <p><strong>Description:</strong> The namespaces of Biolink model node of specified category may be incomplete with respect to identifiers being used in input edge data?</p>
 </div>
-<div class="section" id="warning-input-edge-edge-predicate-deprecated">
-<h3>warning.input_edge.edge.predicate.deprecated<a class="headerlink" href="#warning-input-edge-edge-predicate-deprecated" title="Permalink to this heading"></a></h3>
+<div class="section" id="warning-input-edge-predicate-deprecated">
+<h3>warning.input_edge.predicate.deprecated<a class="headerlink" href="#warning-input-edge-predicate-deprecated" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> ‘{name}’ is deprecated?</p>
 <p><strong>Description:</strong> Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?</p>
 </div>
-<div class="section" id="warning-input-edge-edge-predicate-non-canonical">
-<h3>warning.input_edge.edge.predicate.non_canonical<a class="headerlink" href="#warning-input-edge-edge-predicate-non-canonical" title="Permalink to this heading"></a></h3>
+<div class="section" id="warning-input-edge-predicate-non-canonical">
+<h3>warning.input_edge.predicate.non_canonical<a class="headerlink" href="#warning-input-edge-predicate-non-canonical" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> {context} edge {edge_id} predicate ‘{predicate}’ is non-canonical?</p>
 <p><strong>Description:</strong> A predicate selected for use as input data should preferably be tagged as ‘canonical’ in the specified Biolink Model release?</p>
 </div>
@@ -428,10 +452,15 @@
 <p><strong>Message:</strong> Neither the input id ‘{input_id}’ nor resolved aliases were returned in the Result object IDs for node ‘{output_node_binding}’ binding!</p>
 <p><strong>Description:</strong> TRAPI Message.Results cannot resolve its reported identifier mappings to the original query.</p>
 </div>
+<div class="section" id="error-input-edge-node-category-missing">
+<h3>error.input_edge.node.category.missing<a class="headerlink" href="#error-input-edge-node-category-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Input edge node ‘{node_id}’ is missing its category!</p>
+<p><strong>Description:</strong> Category value must be specified in an input test data edge!</p>
+</div>
 <div class="section" id="error-input-edge-node-category-unknown">
 <h3>error.input_edge.node.category.unknown<a class="headerlink" href="#error-input-edge-node-category-unknown" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> ‘{name}’ is unknown!</p>
-<p><strong>Description:</strong> Category specified in input test data edge node is not recorded in specified version of Biolink. Replace with a concrete category!</p>
+<p><strong>Message:</strong> Input edge node ‘{node_id}’ has unknown category ‘{category}’!</p>
+<p><strong>Description:</strong> Category specified in input test data edge node is not recorded in specified version of Biolink. Replace with a known category!</p>
 </div>
 <div class="section" id="error-input-edge-node-category-abstract">
 <h3>error.input_edge.node.category.abstract<a class="headerlink" href="#error-input-edge-node-category-abstract" title="Permalink to this heading"></a></h3>
@@ -448,20 +477,30 @@
 <p><strong>Message:</strong> {context} node identifier is missing!</p>
 <p><strong>Description:</strong> Input test data edge data needs to have a specific node identifier for testing!</p>
 </div>
-<div class="section" id="error-input-edge-edge-predicate-missing">
-<h3>error.input_edge.edge.predicate.missing<a class="headerlink" href="#error-input-edge-edge-predicate-missing" title="Permalink to this heading"></a></h3>
+<div class="section" id="error-input-edge-predicate-missing">
+<h3>error.input_edge.predicate.missing<a class="headerlink" href="#error-input-edge-predicate-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> {context} edge ‘{edge_id}’ predicate is missing or empty!</p>
 <p><strong>Description:</strong> Input test edge data needs to have a specific edge predicate for testing!</p>
 </div>
-<div class="section" id="error-input-edge-edge-predicate-abstract">
-<h3>error.input_edge.edge.predicate.abstract<a class="headerlink" href="#error-input-edge-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> ‘{name}’ is abstract!</p>
-<p><strong>Description:</strong> Input Edge data validation is currently strict: cannot have ‘abstract’ predicates!</p>
+<div class="section" id="error-input-edge-predicate-unknown">
+<h3>error.input_edge.predicate.unknown<a class="headerlink" href="#error-input-edge-predicate-unknown" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘{name}’ is unknown predicate!</p>
+<p><strong>Description:</strong> Predicate specified in input test data edge is not recorded in specified version of Biolink. Replace with a known predicate!</p>
 </div>
-<div class="section" id="error-input-edge-edge-predicate-mixin">
-<h3>error.input_edge.edge.predicate.mixin<a class="headerlink" href="#error-input-edge-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> ‘{name}’ is a mixin1</p>
-<p><strong>Description:</strong> Input Edge data validation is currently strict: cannot have ‘mixin’ predicates!</p>
+<div class="section" id="error-input-edge-predicate-abstract">
+<h3>error.input_edge.predicate.abstract<a class="headerlink" href="#error-input-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘{name}’ is abstract predicate!</p>
+<p><strong>Description:</strong> Input Edge data validation is currently strict: predicates cannot be ‘abstract’. Replace with a concrete predicate!</p>
+</div>
+<div class="section" id="error-input-edge-predicate-mixin">
+<h3>error.input_edge.predicate.mixin<a class="headerlink" href="#error-input-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘{name}’ is a mixin predicate!</p>
+<p><strong>Description:</strong> Input Edge data validation is currently strict: predicates cannot be of type ‘mixin’. Replace with a concrete predicate!</p>
+</div>
+<div class="section" id="error-input-edge-predicate-invalid">
+<h3>error.input_edge.predicate.invalid<a class="headerlink" href="#error-input-edge-predicate-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ predicate ‘{predicate}’ is invalid!</p>
+<p><strong>Description:</strong> Predicate specified in Input Edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!</p>
 </div>
 <div class="section" id="error-query-graph-node-category-unknown">
 <h3>error.query_graph.node.category.unknown<a class="headerlink" href="#error-query-graph-node-category-unknown" title="Permalink to this heading"></a></h3>
@@ -493,10 +532,35 @@
 <p><strong>Message:</strong> Node ‘{node_id}.is_set’ slot is not a boolean value!</p>
 <p><strong>Description:</strong> The ‘is_set’ field in node of Query Graph, if present, must be a boolean value!</p>
 </div>
+<div class="section" id="error-query-graph-edge-subject-missing">
+<h3>error.query_graph.edge.subject.missing<a class="headerlink" href="#error-query-graph-edge-subject-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ has a missing or empty ‘subject’ slot value!</p>
+<p><strong>Description:</strong> Query graph edge must have a ‘subject’ key with a non-empty associated value!</p>
+</div>
+<div class="section" id="error-query-graph-edge-subject-missing-from-nodes">
+<h3>error.query_graph.edge.subject.missing_from_nodes<a class="headerlink" href="#error-query-graph-edge-subject-missing-from-nodes" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘subject’ id ‘{object_id}’ is missing from the nodes catalog!</p>
+<p><strong>Description:</strong> Every ‘subject’ identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph!</p>
+</div>
+<div class="section" id="error-query-graph-edge-object-missing">
+<h3>error.query_graph.edge.object.missing<a class="headerlink" href="#error-query-graph-edge-object-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ has a missing or empty ‘object’ slot value!</p>
+<p><strong>Description:</strong> Query graph edge must have a ‘object’ key with a non-empty associated value!</p>
+</div>
+<div class="section" id="error-query-graph-edge-object-missing-from-nodes">
+<h3>error.query_graph.edge.object.missing_from_nodes<a class="headerlink" href="#error-query-graph-edge-object-missing-from-nodes" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘object’ id ‘{object_id}’ is missing from the nodes catalog!</p>
+<p><strong>Description:</strong> Every ‘object’ identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph!</p>
+</div>
 <div class="section" id="error-query-graph-edge-predicate-missing">
 <h3>error.query_graph.edge.predicate.missing<a class="headerlink" href="#error-query-graph-edge-predicate-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge ‘{edge_id}’ predicate is missing or empty!</p>
 <p><strong>Description:</strong> The predicate of Query Graph edge needs to specified using a ‘predicate’ key with an array list of one or more predicates!</p>
+</div>
+<div class="section" id="error-query-graph-edge-predicate-unknown">
+<h3>error.query_graph.edge.predicate.unknown<a class="headerlink" href="#error-query-graph-edge-predicate-unknown" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ predicate ‘{predicate}’ is unknown!</p>
+<p><strong>Description:</strong> Predicate specified in Query Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!</p>
 </div>
 <div class="section" id="error-query-graph-edge-predicate-not-array">
 <h3>error.query_graph.edge.predicate.not_array<a class="headerlink" href="#error-query-graph-edge-predicate-not-array" title="Permalink to this heading"></a></h3>
@@ -518,35 +582,25 @@
 <p><strong>Message:</strong> ‘{name}’ is a mixin!</p>
 <p><strong>Description:</strong> Query Graph data validation is currently strict: cannot have ‘mixin’ predicates!</p>
 </div>
+<div class="section" id="error-query-graph-edge-predicate-invalid">
+<h3>error.query_graph.edge.predicate.invalid<a class="headerlink" href="#error-query-graph-edge-predicate-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ predicate ‘{predicate}’ is invalid!</p>
+<p><strong>Description:</strong> Predicate specified in Query Graph edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!</p>
+</div>
 <div class="section" id="error-query-graph-edge-attribute-constraints-not-array">
 <h3>error.query_graph.edge.attribute_constraints.not_array<a class="headerlink" href="#error-query-graph-edge-attribute-constraints-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge ‘{edge_id}’ attribute_constraints property value is not an array!</p>
 <p><strong>Description:</strong> Value of ‘attribute_constraints’ slot value in a Query Graph must be an array data type!</p>
 </div>
-<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-value-invalid">
-<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.value.invalid<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-invalid" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier_set property value is empty or not a JSON object!</p>
-<p><strong>Description:</strong> Value of a ‘qualifier_set’ property in a Query Graph must be non-empty array!</p>
+<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-empty">
+<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.empty<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-empty" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier_set property value is empty!</p>
+<p><strong>Description:</strong> Value of a ‘qualifier_constraints.qualifier_set’ property in a Query Graph must not be non-empty array!</p>
 </div>
-<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-not-biolink-curie">
-<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.not_biolink_curie<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-not-biolink-curie" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier_type_id {identifier} is not a Biolink CURIE!</p>
-<p><strong>Description:</strong> A qualifier qualifier_type_id property value in a Query Graph must be a Biolink CURIE!</p>
-</div>
-<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-unknown">
-<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.unknown<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-unknown" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier_type_id {identifier} is unknown!</p>
-<p><strong>Description:</strong> This ‘qualifier_type_id’ in the Query Graph is undefined in the Biolink Model!</p>
-</div>
-<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-invalid">
-<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.invalid<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-invalid" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier_type_id {identifier} is not a valid Biolink qualifier type id!</p>
-<p><strong>Description:</strong> This ‘qualifier_type_id’ in the Query Graph not properly defined in the Biolink Model!</p>
-</div>
-<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-range-missing">
-<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.value.qualifier.qualifier_type_id.range.missing<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-value-qualifier-qualifier-type-id-range-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The value range of edge ‘{edge_id}’ qualifier_type_id {identifier} is undefined!</p>
-<p><strong>Description:</strong> The ‘qualifier_type_id’ in the Query Graph needs to have a defined enum or category value range!</p>
+<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-invalid">
+<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier entry is invalid!</p>
+<p><strong>Description:</strong> A ‘qualifier’ entry must be a valid JSON object with valid ‘qualifier_type_id’ and corresponding ‘qualifier_value’!</p>
 </div>
 <div class="section" id="error-knowledge-graph-nodes-empty">
 <h3>error.knowledge_graph.nodes.empty<a class="headerlink" href="#error-knowledge-graph-nodes-empty" title="Permalink to this heading"></a></h3>
@@ -717,6 +771,16 @@
 <h3>error.knowledge_graph.edge.qualifiers.not_array<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge ‘{edge_id}’ ‘qualifiers’ are not an array!</p>
 <p><strong>Description:</strong> Value of the ‘qualifiers’ slot in Knowledge Graph edge must be an array of attributes!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-qualifiers-empty">
+<h3>error.knowledge_graph.edge.qualifiers.empty<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-empty" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifiers property value is empty!</p>
+<p><strong>Description:</strong> Value of a ‘qualifiers’ property in a Knowledge Graph must not be non-empty array!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-qualifiers-qualifier-invalid">
+<h3>error.knowledge_graph.edge.qualifiers.qualifier.invalid<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-qualifier-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ qualifier entry is invalid!</p>
+<p><strong>Description:</strong> A ‘qualifier’ entry must be a valid JSON object with valid ‘qualifier_type_id’ and corresponding ‘qualifier_value’!</p>
 </div>
 </div>
 </div>
