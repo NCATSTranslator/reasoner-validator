@@ -198,11 +198,13 @@ class ValidationReporter:
         :param message: named parameters representing extra (str-formatted) context for the given code message
         :return: None (internally record the validation message)
         """
+        # Sanity check: that the given code has been registered in the codes.yaml file
+        assert CodeDictionary.get_code_entry(code) is not None, f"ValidationReporter.report: unknown code '{code}'"
+
         message_type = self.get_message_type(code)
         message_set = self._message_type_name[message_type]
         if code not in self.messages[message_set]:
             self.messages[message_set][code] = list()
-
         # TODO: how can **message content duplication be avoided here(?)
         if message:
             self.messages[message_set][code].append(message)

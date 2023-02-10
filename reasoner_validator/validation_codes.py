@@ -138,7 +138,7 @@ class CodeDictionary:
         :param code: Optional[str], dot delimited validation message code identifier (None is ok, but returns None)
         :param facet: Optional[str], constraint on code entry facet to be returned; if specified, should be either
                                      "message" or "description" (default: return all facets of the code entry)
-        :return: Dict, single terminal leaf code entry (complete with indicated or all facets)
+        :return: Dict, single terminal leaf code entry (complete with indicated or all facets); None, if not available
         """
         value: Optional[Tuple[str, Dict[str, str]]] = cls.get_code_subtree(code, facet=facet, is_leaf=True)
         if not value:

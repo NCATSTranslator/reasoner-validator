@@ -9,6 +9,7 @@ from pprint import PrettyPrinter
 import logging
 
 from bmt import Toolkit
+from bmt.utils import parse_name
 from linkml_runtime.linkml_model import ClassDefinition, Element
 
 from reasoner_validator.sri.util import is_curie
@@ -502,27 +503,31 @@ class BiolinkValidator(ValidationReporter):
                     qualifier_set: List = qualifier_set_entry['qualifier_set']
                     # we have a putative list of qualifiers?
                     for qualifier in qualifier_set:
-                        # TODO: This test may not be necessary since
-                        #       TRAPI schema validation should pick it up?
-                        if not (qualifier and isinstance(qualifier, Dict)):
-                            self.report(
-                                code="error.query_graph.edge.qualifier_constraints." +
-                                     "qualifier_set.qualifier.invalid",
-                                edge_id=edge_id
-                            )
-                        else:
-                            qualifier_type_id: str = qualifier['qualifier_type_id']
-                            qualifier_value: str = qualifier['qualifier_value']
+                        qualifier_type_id: str = qualifier['qualifier_type_id']
+                        qualifier_value: str = qualifier['qualifier_value']
+                        try:
                             if not self.bmt.validate_qualifier(
-                                    qualifier_type_id=qualifier_type_id,
+                                    # TODO: temporary workaround, parse 'qualifier_type_id' to core name
+                                    qualifier_type_id=parse_name(qualifier_type_id),
                                     qualifier_value=qualifier_value
                             ):
                                 self.report(
-                                    code="error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid",
+                                    code="error.query_graph.edge.qualifier_constraints." +
+                                         "qualifier_set.qualifier.invalid",
                                     edge_id=edge_id,
                                     qualifier_type_id=qualifier_type_id,
                                     qualifier_value=qualifier_value
                                 )
+
+                        except Exception as e:
+                            # broad spectrum exception to trap anticipated short term issues with BMT validation
+                            logger.error(f"BMT validate_qualifier Exception: {str(e)}")
+                            self.report(
+                                code="error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid",
+                                edge_id=edge_id,
+                                qualifier_type_id=qualifier_type_id,
+                                qualifier_value=qualifier_value
+                            )
 
     def validate_predicate(self, edge_id: str, predicate: str):
         """
@@ -530,7 +535,11 @@ class BiolinkValidator(ValidationReporter):
         :param predicate: putative Biolink Model predicate to be validated
         :return:
         """
-        context: str = f"{self.graph_type.name.lower()}.edge.predicate"
+        graph_type_context: str = self.graph_type.name.lower()
+        if graph_type_context != "input_edge":
+            graph_type_context += ".edge"
+        context: str = f"{graph_type_context}.predicate"
+
         # Validate the putative predicate as *not* being abstract, deprecated or a mixin
         biolink_class = self.validate_element_status(
             context=context,
@@ -540,7 +549,6 @@ class BiolinkValidator(ValidationReporter):
             if not self.bmt.is_predicate(predicate):
                 self.report(
                     code=f"error.{context}.invalid",
-                    context=self.graph_type.value,
                     edge_id=edge_id,
                     predicate=predicate
                 )
@@ -646,7 +654,7 @@ class BiolinkValidator(ValidationReporter):
                     name=category
             )
             if biolink_class and not self.bmt.is_category(category):
-                self.report(code=f"error.{context}.node.category.unknown", category=category)
+                self.report(code=f"error.{context}.node.category.unknown", node_id=node_id, category=category)
                 biolink_class = None
         else:
             self.report(code=f"error.{context}.node.category.missing", node_id=node_id)
