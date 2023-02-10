@@ -138,27 +138,43 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 <p>The ‘messages’ returned are partitioned into ‘information’, ‘warning’ and ‘error’ messages
 in a dictionary looking something like the following (as an example):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;edge_id&quot;</span><span class="p">:</span> <span class="s2">&quot;(ZFIN:ZDB-GENE-060825-345$biolink:Gene)--[biolink:active_in]-&gt;(GO:0042645$biolink:CellularComponent)&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;info.excluded&quot;</span>
-        <span class="p">}</span>
-    <span class="p">],</span>
-    <span class="s2">&quot;warnings&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="s2">&quot;Query Graph&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;edge_id&quot;</span><span class="p">:</span> <span class="s2">&quot;a--[&#39;biolink:participates_in&#39;]-&gt;b&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;predicate&quot;</span><span class="p">:</span> <span class="s2">&quot;biolink:participates_in&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;warning.edge.predicate.non_canonical&quot;</span>
-        <span class="p">}</span>
-    <span class="p">],</span>
-    <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="s2">&quot;raise_subject_entity() test predicate CHEBI:37565[biolink:SmallMolecule]&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;has no &#39;is_a&#39; parent since it is either not an ontology term or does not map onto a parent ontology term.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;error.trapi.request.invalid&quot;</span>
-        <span class="p">}</span>
-    <span class="p">]</span>
+    <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;info.excluded&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>  <span class="c1"># parameters for one distinct message</span>
+                <span class="s2">&quot;edge_id&quot;</span><span class="p">:</span> <span class="s2">&quot;(ZFIN:ZDB-GENE-060825-345$biolink:Gene)--[biolink:active_in]-&gt;(GO:0042645$biolink:CellularComponent)&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="p">{</span><span class="o">...</span><span class="p">}</span>  <span class="c1"># another message (same code type)</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;info.compliant&quot;</span><span class="p">:</span> <span class="p">[]</span>  <span class="c1"># parameterless messages don&#39;t have distinct instances</span>
+         <span class="c1"># other &#39;info&#39; code-indexed messages</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;warnings&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;warning.edge.predicate.non_canonical&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="s2">&quot;Query Graph&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;edge_id&quot;</span><span class="p">:</span> <span class="s2">&quot;a--[&#39;biolink:participates_in&#39;]-&gt;b&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;predicate&quot;</span><span class="p">:</span> <span class="s2">&quot;biolink:participates_in&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span><span class="o">...</span><span class="p">}</span>  <span class="c1"># another message (same code type)</span>
+
+        <span class="p">],</span>
+        <span class="s2">&quot;warning.trapi.response.status.unknown&quot;</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;some status message&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="c1"># other &#39;warning&#39; code-indexed messages</span>
+     <span class="p">},</span>
+    <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;error.trapi.request.invalid&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="s2">&quot;raise_subject_entity() test predicate CHEBI:37565[biolink:SmallMolecule]&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;has no &#39;is_a&#39; parent since it is either not an ontology term or does not map onto a parent ontology term.&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span><span class="o">...</span><span class="p">}</span> <span class="c1"># another message (same code type)</span>
+        <span class="p">],</span>
+        <span class="c1"># other &#39;error&#39; code-indexed messages</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
