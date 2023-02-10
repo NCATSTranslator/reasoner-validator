@@ -2,6 +2,18 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink standards within the NCATS Biomedical Knowledge Translator. 
 
+### v3.3.2
+
+- Upgrade Python dependency to ^3.9 (BMT driven requirement)
+- Upgrade Biolink Model Toolkit (BMT) to 1.0.2 to gain access to latest Biolink 3 qualifier validation methods
+- Relatively full implementation of the Query Graph qualifier_constraints and Knowledge Graph qualifiers validation
+- Added some new and repaired some existing validation codes and unit tests - all unit tests pass (TRAPI 1.3 and Biolink 3.2.0)
+
+### v3.3.1
+
+- updated root project README with correct examples of new ValidationReporter JSON output
+- initial code to (partly) validate Biolink 3 edge qualifiers (still more work needed once Biolink Model Toolkit support for validation is available)
+
 ### v3.3.0
 
 - ValidationReporter internal message format recoded to avoid message duplication; repeated reporting of a given code is now indexed into a single list of error message parameters; Conversely, 'display()' methods now return lists of decoded messages.

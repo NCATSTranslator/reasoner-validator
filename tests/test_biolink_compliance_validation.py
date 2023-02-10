@@ -26,11 +26,13 @@ logger.setLevel("DEBUG")
 
 pp = PrettyPrinter(indent=4)
 
+# TRAPI 1.4 is still a work-in-progress as of February 2023, so we stay with 1.3 for now(?)
+LATEST_TRAPI_VERSION = "1.3"
+
 # January 25, 2023 - as of reasoner-validator 3.1.0, we don't pretend to totally support Biolink Models
 # any earlier than 3.1.1.  If earlier biolink model compliance testing is desired,
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
-LATEST_TRAPI_VERSION = "1.4"
-LATEST_BIOLINK_MODEL_VERSION = "3.1.1"
+LATEST_BIOLINK_MODEL_VERSION = "3.2.0"
 
 
 def test_set_default_biolink_versioned_global_environment():
@@ -180,7 +182,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate element " +
             # "'binds' is deprecated?"  # in Biolink 3.1.1
-            "warning.input_edge.edge.predicate.deprecated"
+            "warning.input_edge.predicate.deprecated"
         ),
         (   # Query 8 - Predicate is abstract
             LATEST_BIOLINK_MODEL_VERSION,
@@ -192,7 +194,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'object': 'ORCID:56789'
             },
             # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:contributor' is abstract."
-            "info.input_edge.edge.predicate.abstract"
+            "info.input_edge.predicate.abstract"
         ),
         (   # Query 9 - Predicate is a mixin
             LATEST_BIOLINK_MODEL_VERSION,
@@ -204,7 +206,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'object': 'GO:0006094'  # Gluconeogenesis
             },
             # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:decreases_amount_or_activity_of' is a mixin."
-            "info.input_edge.edge.predicate.mixin"
+            "info.input_edge.predicate.mixin"
         ),
         (   # Query 10 - Unknown predicate element
             LATEST_BIOLINK_MODEL_VERSION,
@@ -216,7 +218,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'object': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:not_a_predicate' is unknown!"
-            "error.input_edge.edge.predicate.unknown"
+            "error.input_edge.predicate.unknown"
         ),
         (   # Query 11 - Invalid or unknown predicate
             LATEST_BIOLINK_MODEL_VERSION,
@@ -227,8 +229,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
-            # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:has_unit' is inavlid!"
-            "error.input_edge.edge.predicate.invalid"
+            # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:has_unit' is invalid!"
+            "error.input_edge.predicate.invalid"
         ),
         (   # Query 12 - Non-canonical directed predicate
             LATEST_BIOLINK_MODEL_VERSION,
@@ -240,7 +242,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'object': 'MONDO:0005148'
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Edge predicate 'biolink:affected_by' is non-canonical?"
-            "warning.input_edge.edge.predicate.non_canonical"
+            "warning.input_edge.predicate.non_canonical"
         ),
         (   # Query 13 - Missing subject
             LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
@@ -1057,6 +1059,30 @@ def test_validate_attributes(query: Tuple):
     check_messages(validator, query[2])
 
 
+def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str]):
+    # Sanity check: does TRAPI validation catch this first?
+    trapi_validator = TRAPISchemaValidator(trapi_version=LATEST_TRAPI_VERSION)
+    # Wrap Qualifiers inside a small mock QEdge
+    mock_edge: Dict = copy.deepcopy(query[0])
+    mock_edge["subject"] = "mock_subject"
+    mock_edge["object"] = "mock_object"
+    trapi_validator.is_valid_trapi_query(mock_edge, edge_model)
+    if trapi_validator.has_errors():
+        validator = trapi_validator
+    else:
+        # if you get this far,then attempt additional Biolink Validation
+        validator = BiolinkValidator(
+            graph_type=TRAPIGraphType.Query_Graph,
+            biolink_version=LATEST_BIOLINK_MODEL_VERSION
+        )
+        tested_method(
+            validator,
+            edge_id=f"{tested_method.__name__} unit test",
+            edge=query[0]
+        )
+    check_messages(validator, query[1])
+
+
 @pytest.mark.parametrize(
     "query",
     [
@@ -1117,12 +1143,26 @@ def test_validate_attributes(query: Tuple):
         (  # Query 8 - 'qualifier_set' object value is not an array - invalidated by TRAPI schema
             {
                 'qualifier_constraints': [
-                    {"qualifier_set": {}}
+                    {
+                        "qualifier_set": {}
+                    }
                 ]
             },
             "error.trapi.validation"
         ),
-        (  # Query 9 - 'qualifier' entry is not a JSON object (dictionary) - invalidated by TRAPI schema
+        (  # Query 9 - 'qualifier' entry in the qualifier_set is empty - invalidated by TRAPI schema
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            None
+                        ]
+                    }
+                ]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 10 - 'qualifier' entry is not a JSON object (dictionary) - invalidated by TRAPI schema
             {
                 'qualifier_constraints': [
                     {
@@ -1134,7 +1174,7 @@ def test_validate_attributes(query: Tuple):
             },
             "error.trapi.validation"
         ),
-        (  # Query 10 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
+        (  # Query 11 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
             {
                 'qualifier_constraints': [
                     {
@@ -1149,7 +1189,7 @@ def test_validate_attributes(query: Tuple):
             },
             "error.trapi.validation"
         ),
-        (  # Query 11 - 'qualifier_type_id' property value is not a Biolink CURIE
+        (  # Query 12 - 'qualifier_type_id' property value is not a Biolink CURIE
             {
                 'qualifier_constraints': [
                     {
@@ -1162,9 +1202,9 @@ def test_validate_attributes(query: Tuple):
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.qualifier_type_id.not_biolink_curie"
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
         ),
-        (  # Query 12 - 'qualifier_type_id' property value is unknown
+        (  # Query 13 - 'qualifier_type_id' property value is unknown
             {
                 'qualifier_constraints': [
                     {
@@ -1177,24 +1217,25 @@ def test_validate_attributes(query: Tuple):
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier.unknown"
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
         ),
-        (  # Query 13 - 'qualifier_type_id' property value is abstract
+        (  # Query 14 - 'qualifier_type_id' property value is valid but abstract
             {
                 'qualifier_constraints': [
                     {
                         "qualifier_set": [
                             {
                                 'qualifier_type_id': "biolink:aspect_qualifier",
-                                'qualifier_value': "fake-qualifier-value"
+                                'qualifier_value': "stability"
                             }
                         ]
                     }
                 ]
             },
-            "info.query_graph.edge.qualifier.abstract"
+            # "info.query_graph.edge.qualifier.abstract"
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
         ),
-        (  # Query 14 - 'qualifier_type_id' property value is not a Biolink qualifier term
+        (  # Query 15 - 'qualifier_type_id' property value is not a Biolink qualifier term
             {
                 'qualifier_constraints': [
                     {
@@ -1207,9 +1248,9 @@ def test_validate_attributes(query: Tuple):
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.qualifier_type_id.invalid"
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
         ),
-        (  # Query 15 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
+        (  # Query 16 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
             {
                 'qualifier_constraints': [
                     {
@@ -1223,26 +1264,24 @@ def test_validate_attributes(query: Tuple):
             },
             "error.trapi.validation"
         ),
-        #
-        # TODO: reactivate these test data once Biolink Model Toolkit support for qualifiers is available
-        #
-        # (   # Query 16 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
-        #     #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
-        #     {
-        #         'qualifier_constraints': [
-        #             {
-        #                 "qualifier_set": [
-        #                     {
-        #                         'qualifier_type_id': "biolink:object_direction_qualifier",
-        #                         'qualifier_value': "upregulated"
-        #                     }
-        #                 ]
-        #             }
-        #         ]
-        #     },
-        #     ""    # this particular use case should pass
-        # ),
-        # (   # Query 17 - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
+        (   # Query 17 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
+            #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:object_direction_qualifier",
+                                'qualifier_value': "upregulated"
+                            }
+                        ]
+                    }
+                ]
+            },
+            ""    # this particular use case should pass
+        ),
+        # (   #  *** Currently unsupported use case:
+        #     # Query xx - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
         #     #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'
         #     {
         #         'qualifier_constraints': [
@@ -1258,63 +1297,180 @@ def test_validate_attributes(query: Tuple):
         #     },
         #     ""    # this other use case should also pass
         # ),
-        # (   # Query 18 - 'qualifier_type_id' is a valid Biolink qualifier type and
-        #     #             'UBERON:0001981' a valid corresponding 'reachable from' enum 'qualifier_value'
+        (   # Query 18 - 'qualifier_type_id' is a valid Biolink qualifier type and
+            #             'UBERON:0001981' a valid corresponding 'reachable from' enum 'qualifier_value'
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:anatomical_context_qualifier",
+                                'qualifier_value': "UBERON:0001981"  # Blood Vessel
+                            }
+                        ]
+                    }
+                ]
+            },
+            ""    # this particular use case should also pass
+        )
+    ]
+)
+def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
+    qualifier_validator(
+        tested_method=BiolinkValidator.validate_qualifier_constraints,
+        edge_model="QEdge",
+        query=query
+    )
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (  # Query 0 - no 'qualifiers' key - since nullable: true, this should pass
+            {},
+            ""
+        ),
+        (  # Query 1 - 'qualifiers' value is nullable: true, this should pass
+            {
+                'qualifiers': None
+            },
+            ""
+        ),
+        (  # Query 2 - 'qualifiers' value is not an array - invalidated by TRAPI schema
+            {
+                'qualifiers': {}
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 3 - empty 'qualifiers' array value - since nullable: true, this should pass
+            {
+                'qualifiers': []
+            },
+            ""
+        ),
+        (  # Query 4 - empty 'qualifier_set' entry - invalidated by TRAPI schema
+            {
+                'qualifiers': [{}]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 5 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
+            {
+                'qualifiers': [[]]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 6 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
+            {
+                'qualifiers': [
+                    {
+                        # 'qualifier_type_id': "",
+                        'qualifier_value': ""
+                    }
+                ]
+            },
+            "error.trapi.validation"
+        ),
+        (  # Query 7 - 'qualifier_type_id' property value is not a Biolink CURIE
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "not-a-curie",
+                        'qualifier_value': "fake-qualifier-value"
+                    }
+                ]
+            },
+            "error.knowledge_graph.edge.qualifiers.qualifier.invalid"
+        ),
+        (  # Query 8 - 'qualifier_type_id' property value is unknown
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:unknown_qualifier",
+                        'qualifier_value': "fake-qualifier-value"
+                    }
+                ]
+            },
+            "error.knowledge_graph.edge.qualifiers.qualifier.invalid"
+        ),
+        (  # Query 9 - 'qualifier_type_id' property value is valid but abstract
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:aspect_qualifier",
+                        'qualifier_value': "stability"
+                    }
+                ]
+            },
+            # "info.query_graph.edge.qualifier.abstract"
+            "error.knowledge_graph.edge.qualifiers.qualifier.invalid"
+        ),
+        (  # Query 10 - 'qualifier_type_id' property value is not a Biolink qualifier term
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:related_to",
+                        'qualifier_value': "fake-qualifier-value"
+                    }
+                ]
+            },
+            "error.knowledge_graph.edge.qualifiers.qualifier.invalid"
+        ),
+        (  # Query 11 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:object_direction_qualifier"
+                    }
+                ]
+            },
+            "error.trapi.validation"
+        ),
+        (   # Query 12 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
+            #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:object_direction_qualifier",
+                        'qualifier_value': "upregulated"
+                    }
+                ]
+            },
+            ""    # this particular use case should pass
+        ),
+        # (   #  *** Currently unsupported use case:
+        #     # Query xx - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
+        #     #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'
         #     {
-        #         'qualifier_constraints': [
+        #         'qualifiers': [
         #             {
-        #                 "qualifier_set": [
-        #                     {
-        #                         'qualifier_type_id': "biolink:anatomical_context_qualifier",
-        #                         'qualifier_value': "UBERON:0001981"  # Blood Vessel
-        #                     }
-        #                 ]
+        #                 'qualifier_type_id': "biolink:object_direction_qualifier",
+        #                 'qualifier_value': "RO:0002213"   # RO 'exact match' term for 'upregulated'
         #             }
         #         ]
         #     },
-        #     ""    # this particular use case should also pass
-        # )
+        #     ""    # this other use case should also pass
+        # ),
+        (   # Query 13 - 'qualifier_type_id' is a valid Biolink qualifier type and
+            #             'UBERON:0001981' a valid corresponding 'reachable from' enum 'qualifier_value'
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:anatomical_context_qualifier",
+                        'qualifier_value': "UBERON:0001981"  # Blood Vessel
+                    }
+                ]
+            },
+            ""    # this particular use case should also pass
+        )
     ]
 )
-def test_validate_qualifier_constraints(query: Tuple):
-    # Sanity check: does TRAPI validation catch this first?
-    trapi_validator = TRAPISchemaValidator(trapi_version=LATEST_TRAPI_VERSION)
-    # Wrap Qualifiers inside a small mock QEdge
-    mock_qedge: Dict = copy.deepcopy(query[0])
-    mock_qedge["subject"] = "mock_subject"
-    mock_qedge["object"] = "mock_object"
-    trapi_validator.is_valid_trapi_query(mock_qedge, "QEdge")
-    if trapi_validator.has_errors():
-        validator = trapi_validator
-    else:
-        # if you get this far,then attempt additional Biolink Validation
-        validator = BiolinkValidator(
-            graph_type=TRAPIGraphType.Query_Graph,
-            biolink_version=LATEST_BIOLINK_MODEL_VERSION
-        )
-        validator.validate_qualifier_constraints(
-            edge_id="validate_qualifier_constraints unit test",
-            edge=query[0]
-        )
-    check_messages(validator, query[1])
-
-
-#
-# Qualifier code not yet implemented for testing
-#
-# @pytest.mark.parametrize(
-#     "query",
-#     [
-#         ("", "")
-#     ]
-# )
-# def test_validate_qualifiers(query: Tuple):
-#     validator = BiolinkValidator(
-#         graph_type=TRAPIGraphType.Knowledge_Graph,
-#         biolink_version=LATEST_BIOLINK_MODEL
-#     )
-#     validator.validate_qualifiers(edge_id="test_validate_attributes unit test", edge=query[0])
-#     check_messages(validator, query[1])
+def test_validate_qualifiers(query: Tuple):
+    qualifier_validator(
+        tested_method=BiolinkValidator.validate_qualifiers,
+        edge_model="Edge",
+        query=query
+    )
 
 
 ##################################
@@ -2054,16 +2210,6 @@ def test_validate_qualifier_constraints(query: Tuple):
                         "categories": [
                             "biolink:SmallMolecule"  # Not valid in the latest model?
                         ],
-                        "attributes": [
-                            {
-                                "attribute_source": "infores:chembl",
-                                "attribute_type_id": "biolink:highest_FDA_approval_status",
-                                "attributes": [],
-                                "original_attribute_name": "max_phase",
-                                "value": "FDA Clinical Research Phase 2",
-                                "value_type_id": "biolink:FDA_approval_status_enum"
-                            }
-                        ]
                     }
                 },
                 # Sample edge
@@ -2072,30 +2218,9 @@ def test_validate_qualifier_constraints(query: Tuple):
                        "subject": "NCBIGene:29974",
                        "predicate": "biolink:physically_interacts_with",
                        "object": "PUBCHEM.COMPOUND:597",
-                       "attributes": [
-                           {
-                               "attribute_source": "infores:hmdb",
-                               "attribute_type_id": "biolink:primary_knowledge_source",
-                               "attributes": [],
-                               "description": "MolePro's HMDB target transformer",
-                               "original_attribute_name": "biolink:primary_knowledge_source",
-                               "value": "infores:hmdb",
-                               "value_type_id": "biolink:InformationResource"
-                           },
-                           {
-                               "attribute_source": "infores:hmdb",
-                               "attribute_type_id": "biolink:aggregator_knowledge_source",
-                               "attributes": [],
-                               "description": "Molecular Data Provider",
-                               "original_attribute_name": "biolink:aggregator_knowledge_source",
-                               "value": "infores:molepro",
-                               "value_type_id": "biolink:InformationResource"
-                           }
-                        ]
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Knowledge Graph Node element 'biolink:SmallMolecule' is unknown!"
             "error.knowledge_graph.node.category.unknown"
         )
     ]
