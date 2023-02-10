@@ -424,3 +424,10 @@ error:
         not_array:
           $message: "Edge '{edge_id}' 'qualifiers' are not an array!"
           $description: "Value of the 'qualifiers' slot in Knowledge Graph edge must be an array of attributes!"
+        empty:
+          $message: "Edge '{edge_id}' qualifiers property value is empty!"
+          $description: "Value of a 'qualifiers' property in a Knowledge Graph must not be non-empty array!"
+        qualifier:
+          invalid:
+            $message: "Edge '{edge_id}' qualifier entry is invalid!"
+            $description: "A 'qualifier' entry must be a valid JSON object with valid 'qualifier_type_id' and corresponding 'qualifier_value'!"

@@ -438,6 +438,33 @@ class BiolinkValidator(ValidationReporter):
             # TODO: not yet sure what else to do here (if anything...yet)
             attribute_constraints: List = edge['attribute_constraints']
 
+    def validate_qualifier_entry(self, context: str, edge_id: str, qualifiers: List[Dict[str, str]]):
+        for qualifier in qualifiers:
+            qualifier_type_id: str = qualifier['qualifier_type_id']
+            qualifier_value: str = qualifier['qualifier_value']
+            try:
+                if not self.bmt.validate_qualifier(
+                        # TODO: temporary workaround, parse 'qualifier_type_id' to core name
+                        qualifier_type_id=parse_name(qualifier_type_id),
+                        qualifier_value=qualifier_value
+                ):
+                    self.report(
+                        code=f"error.{context}.qualifier.invalid",
+                        edge_id=edge_id,
+                        qualifier_type_id=qualifier_type_id,
+                        qualifier_value=qualifier_value
+                    )
+
+            except Exception as e:
+                # broad spectrum exception to trap anticipated short term issues with BMT validation
+                logger.error(f"BMT validate_qualifier Exception: {str(e)}")
+                self.report(
+                    code=f"error.{context}.qualifier.invalid",
+                    edge_id=edge_id,
+                    qualifier_type_id=qualifier_type_id,
+                    qualifier_value=qualifier_value
+                )
+
     def validate_qualifiers(self, edge_id: str, edge: Dict):
         # Edge qualifiers will only be seen in Biolink 3 data,
         # but with missing 'qualifiers', no validation is attempted
@@ -449,35 +476,11 @@ class BiolinkValidator(ValidationReporter):
             return  # nullable: true... an empty 'qualifiers' array is ok?
         else:
             qualifiers: List = edge['qualifiers']
-            for qualifier in qualifiers:
-                # TODO: how do I validate qualifiers here?
-                #     Qualifier:
-                #       additionalProperties: false
-                #       description: >-
-                #         An additional nuance attached to an assertion
-                #       type: object
-                #       properties:
-                #         qualifier_type_id:
-                #           type: string
-                #           description: >-
-                #             The category of the qualifier, drawn from a hierarchy of qualifier
-                #             slots in the Biolink model (e.g. subject_aspect, subject_direction,
-                #             object_aspect, object_direction, etc).
-                #           example: subject_aspect
-                #           nullable: false
-                #         qualifier_value:
-                #           type: string
-                #           description: >-
-                #             The value associated with the type of the qualifier, drawn from
-                #             a set of controlled values by the type as specified in
-                #             the Biolink model (e.g. 'expression' or 'abundance' for the
-                #             qualifier type 'subject_aspect', etc).
-                #           example: expression
-                #           nullable: false
-                #       required:
-                #         - qualifier_type_id
-                #         - qualifier_value
-                pass
+            self.validate_qualifier_entry(
+                context="knowledge_graph.edge.qualifiers",
+                edge_id=edge_id,
+                qualifiers=qualifiers
+            )
 
     def validate_qualifier_constraints(self, edge_id: str, edge: Dict):
         # Edge qualifiers will only be seen in Biolink 3 data,
@@ -501,33 +504,11 @@ class BiolinkValidator(ValidationReporter):
                 else:
                     # We have a putative non-empty 'qualifier_set'
                     qualifier_set: List = qualifier_set_entry['qualifier_set']
-                    # we have a putative list of qualifiers?
-                    for qualifier in qualifier_set:
-                        qualifier_type_id: str = qualifier['qualifier_type_id']
-                        qualifier_value: str = qualifier['qualifier_value']
-                        try:
-                            if not self.bmt.validate_qualifier(
-                                    # TODO: temporary workaround, parse 'qualifier_type_id' to core name
-                                    qualifier_type_id=parse_name(qualifier_type_id),
-                                    qualifier_value=qualifier_value
-                            ):
-                                self.report(
-                                    code="error.query_graph.edge.qualifier_constraints." +
-                                         "qualifier_set.qualifier.invalid",
-                                    edge_id=edge_id,
-                                    qualifier_type_id=qualifier_type_id,
-                                    qualifier_value=qualifier_value
-                                )
-
-                        except Exception as e:
-                            # broad spectrum exception to trap anticipated short term issues with BMT validation
-                            logger.error(f"BMT validate_qualifier Exception: {str(e)}")
-                            self.report(
-                                code="error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid",
-                                edge_id=edge_id,
-                                qualifier_type_id=qualifier_type_id,
-                                qualifier_value=qualifier_value
-                            )
+                    self.validate_qualifier_entry(
+                        context="query_graph.edge.qualifier_constraints.qualifier_set",
+                        edge_id=edge_id,
+                        qualifiers=qualifier_set
+                    )
 
     def validate_predicate(self, edge_id: str, predicate: str):
         """

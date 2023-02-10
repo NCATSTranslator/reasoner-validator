@@ -26,10 +26,12 @@ logger.setLevel("DEBUG")
 
 pp = PrettyPrinter(indent=4)
 
+# TRAPI 1.4 is still a work-in-progress as of February 2023, so we stay with 1.3 for now(?)
+LATEST_TRAPI_VERSION = "1.3"
+
 # January 25, 2023 - as of reasoner-validator 3.1.0, we don't pretend to totally support Biolink Models
 # any earlier than 3.1.1.  If earlier biolink model compliance testing is desired,
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
-LATEST_TRAPI_VERSION = "1.4"
 LATEST_BIOLINK_MODEL_VERSION = "3.2.0"
 
 
@@ -1328,11 +1330,11 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
             {},
             ""
         ),
-        (  # Query 1 - 'qualifiers' value is None - invalidated by TRAPI schema
+        (  # Query 1 - 'qualifiers' value is nullable: true, this should pass
             {
                 'qualifiers': None
             },
-            "error.trapi.validation"
+            ""
         ),
         (  # Query 2 - 'qualifiers' value is not an array - invalidated by TRAPI schema
             {
@@ -1378,7 +1380,7 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
+            "error.knowledge_graph.edge.qualifiers.qualifier.invalid"
         ),
         (  # Query 8 - 'qualifier_type_id' property value is unknown
             {
@@ -1389,7 +1391,7 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
+            "error.knowledge_graph.edge.qualifiers.qualifier.invalid"
         ),
         (  # Query 9 - 'qualifier_type_id' property value is valid but abstract
             {
@@ -1401,7 +1403,7 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
                 ]
             },
             # "info.query_graph.edge.qualifier.abstract"
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
+            "error.knowledge_graph.edge.qualifiers.qualifier.invalid"
         ),
         (  # Query 10 - 'qualifier_type_id' property value is not a Biolink qualifier term
             {
@@ -1412,7 +1414,7 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
+            "error.knowledge_graph.edge.qualifiers.qualifier.invalid"
         ),
         (  # Query 11 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
             {
