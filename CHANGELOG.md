@@ -2,19 +2,23 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink standards within the NCATS Biomedical Knowledge Translator. 
 
-### v3.3.2
+## v3.3.3
+
+- update and clean up of web API Dockerfile
+
+## v3.3.2
 
 - Upgrade Python dependency to ^3.9 (BMT driven requirement)
 - Upgrade Biolink Model Toolkit (BMT) to 1.0.2 to gain access to latest Biolink 3 qualifier validation methods
 - Relatively full implementation of the Query Graph qualifier_constraints and Knowledge Graph qualifiers validation
 - Added some new and repaired some existing validation codes and unit tests - all unit tests pass (TRAPI 1.3 and Biolink 3.2.0)
 
-### v3.3.1
+## v3.3.1
 
 - updated root project README with correct examples of new ValidationReporter JSON output
 - initial code to (partly) validate Biolink 3 edge qualifiers (still more work needed once Biolink Model Toolkit support for validation is available)
 
-### v3.3.0
+## v3.3.0
 
 - ValidationReporter internal message format recoded to avoid message duplication; repeated reporting of a given code is now indexed into a single list of error message parameters; Conversely, 'display()' methods now return lists of decoded messages.
 - Added 'branch' version access to TRAPI schemata
@@ -23,33 +27,33 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 - KGX, BMT and LinkML updated to latest.
 - Note: poetry installation under MS Windows seems broken at the moment (thorny pywin32 dependency conflict). The project runs successfully under WSL2/Ubuntu (if you are Windoze challenged).
 
-### v3.2.4
+## v3.2.4
 - fixed scoping of TRAPI Response validator method to include more than just the message (i.e. workflows, etc.)
 
-### v3.2.3
+## v3.2.3
 - cleaned up validation codes, especially with respect to predicates
 
-### v3.2.2
+## v3.2.2
 - added validation message descriptions to the codes.yaml file
 - added additional validation codes
 - renamed yaml path for some codes for semantic clarity
 - update project 'ReadTheDocs' documentation including generation of page of code descriptions
 
-### v3.2.1
+## v3.2.1
 - pyproject.toml patch to fix configuration bug
 
-### v3.2.0
+## v3.2.0
 
 - Project converted to use **poetry** dependency management
 - Some structural changes to project (Sphinx) documentation
 - Added markdown generator for reading codes.yaml as a Markdown document in the project documentation.
 - Created this formal CHANGLOG.md!
 
-### v3.1.5
+## v3.1.5
 
 Enforce kgx upgrade to >=1.6.0 (to accommodated recent linkml dependencies) 
 
-### v3.1.4
+## v3.1.4
 
 Inject more graph validation context into codes; leverage this context in message management and generation. Unit tests all fixed.
 
