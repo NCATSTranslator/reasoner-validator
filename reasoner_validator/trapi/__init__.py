@@ -10,7 +10,7 @@ from yaml import load, CLoader as Loader
 
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.trapi.mapping import check_node_edge_mappings
-from reasoner_validator.versioning import latest, versions, GIT_ORG, GIT_REPO, branches
+from reasoner_validator.versioning import latest, GIT_ORG, GIT_REPO, branches
 
 
 @lru_cache()
@@ -112,11 +112,12 @@ class TRAPISchemaValidator(ValidationReporter):
         instance
             dict, instance to validate
         component : str
-            str, TRAPI subschema to validate (e.g. 'Query', 'QueryGraph', 'KnowledgeGraph', 'Result'; Default: 'Query')
+            TRAPI subschema to validate (e.g. 'Query', 'QueryGraph', 'KnowledgeGraph', 'Result'; Default: 'Query')
 
         Raises
         ------
-        `ValidationError <https://python-jsonschema.readthedocs.io/en/latest/errors/#jsonschema.exceptions.ValidationError>`_
+        `ValidationError
+            <https://python-jsonschema.readthedocs.io/en/latest/errors/#jsonschema.exceptions.ValidationError>`_
             If the instance is invalid.
 
         Examples
@@ -151,7 +152,7 @@ class TRAPISchemaValidator(ValidationReporter):
                 component=component
             )
         except jsonschema.ValidationError as e:
-            self.report(code="error.trapi.validation", trapi_version=self.trapi_version, exception=e.message)
+            self.report(code="error.trapi.validation", identifier=self.trapi_version, exception=e.message)
 
 
 def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPISchemaValidator:
@@ -169,7 +170,7 @@ def check_trapi_validity(instance, trapi_version: str, component: str = "Query")
 
     Returns
     -------
-    ValidationReporter catalog of "information", "warnings" or "errors" indexed messages (may be empty)
+    ValidationReporter catalog of "information", "warnings" or "errors" indexed messages (maybe empty)
     """
     trapi_validator = TRAPISchemaValidator(trapi_version=trapi_version)
     trapi_validator.is_valid_trapi_query(instance, component=component)

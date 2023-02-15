@@ -160,7 +160,7 @@ class BiolinkValidator(ValidationReporter):
             #       probably no longer relevant to the community?
             if 'categories' in slots:
                 if not isinstance(slots["categories"], List):
-                    self.report(code="error.knowledge_graph.node.categories.not_array", node_id=node_id)
+                    self.report(code="error.knowledge_graph.node.categories.not_array", identifier=node_id)
                 else:
                     categories = slots["categories"]
                     node_prefix_mapped: bool = False
@@ -178,12 +178,12 @@ class BiolinkValidator(ValidationReporter):
                     if not node_prefix_mapped:
                         self.report(
                             code="warning.knowledge_graph.node.unmapped_prefix",
-                            node_id=node_id, categories=str(categories)
+                            identifier=node_id, categories=str(categories)
                         )
             else:
                 self.report(
                     code="error.knowledge_graph.node.category.missing",
-                    context=self.graph_type.value, node_id=node_id
+                    context=self.graph_type.value, identifier=node_id
                 )
 
             # TODO: Do we need to (or can we) validate here, any other Knowledge Graph node fields? Perhaps not yet?
@@ -193,7 +193,7 @@ class BiolinkValidator(ValidationReporter):
             if "ids" in slots and slots["ids"]:
                 ids = slots["ids"]
                 if not isinstance(ids, List):
-                    self.report(code="error.query_graph.node.ids.not_array", node_id=node_id)
+                    self.report(code="error.query_graph.node.ids.not_array", identifier=node_id)
                     # we'll pretend that the ids were mistakenly
                     # just a scalar string, then continue validating
                     ids = [ids]
@@ -204,7 +204,7 @@ class BiolinkValidator(ValidationReporter):
                 categories = slots["categories"]
                 if categories:
                     if not isinstance(categories, List):
-                        self.report(code="error.query_graph.node.categories.not_array", node_id=node_id)
+                        self.report(code="error.query_graph.node.categories.not_array", identifier=node_id)
                     else:
                         id_prefix_mapped: Dict = {identifier: False for identifier in ids}
                         for category in categories:
@@ -226,7 +226,7 @@ class BiolinkValidator(ValidationReporter):
                         if unmapped_ids:
                             self.report(
                                 code="warning.query_graph.node.ids.unmapped_to_categories",
-                                node_id=node_id,
+                                identifier=node_id,
                                 unmapped_ids=str(unmapped_ids),
                                 categories=str(categories)
                             )
@@ -237,7 +237,7 @@ class BiolinkValidator(ValidationReporter):
             if 'is_set' in slots:
                 is_set = slots["is_set"]
                 if is_set and not isinstance(is_set, bool):
-                    self.report(code="error.query_graph.node.is_set.not_boolean", node_id=node_id)
+                    self.report(code="error.query_graph.node.is_set.not_boolean", identifier=node_id)
             # else:  # a missing key or null "is_set" value is permitted in QNodes but defaults to 'False'
 
             # constraints  # TODO: how do we validate node constraints?
@@ -257,24 +257,24 @@ class BiolinkValidator(ValidationReporter):
         """
         element: Optional[Element] = self.bmt.get_element(name)
         if not element:
-            self.report(code=f"error.{context}.unknown", name=name)
+            self.report(code=f"error.{context}.unknown", identifier=name)
             return None
         if element.deprecated:
-            self.report(code=f"warning.{context}.deprecated", name=name)
+            self.report(code=f"warning.{context}.deprecated", identifier=name)
             # return None - a deprecated term is not treated as a failure but just as a warning
         if element.abstract:
             if self.strict_validation:
-                self.report(code=f"error.{context}.abstract",  name=name)
+                self.report(code=f"error.{context}.abstract",  identifier=name)
                 return None
             else:
-                self.report(code=f"info.{context}.abstract", name=name)
+                self.report(code=f"info.{context}.abstract", identifier=name)
         elif self.bmt.is_mixin(name):
             # A mixin cannot be instantiated ...
             if self.strict_validation:
-                self.report(code=f"error.{context}.mixin", name=name)
+                self.report(code=f"error.{context}.mixin", identifier=name)
                 return None
             else:
-                self.report(code=f"info.{context}.mixin", name=name)
+                self.report(code=f"info.{context}.mixin", identifier=name)
         return element
 
     def validate_attributes(self, edge_id: str, edge: Dict):
@@ -284,11 +284,11 @@ class BiolinkValidator(ValidationReporter):
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
         if 'attributes' not in edge:
-            self.report(code="error.knowledge_graph.edge.attribute.missing", edge_id=edge_id)
+            self.report(code="error.knowledge_graph.edge.attribute.missing", identifier=edge_id)
         elif not edge['attributes']:
-            self.report(code="error.knowledge_graph.edge.attribute.empty", edge_id=edge_id)
+            self.report(code="error.knowledge_graph.edge.attribute.empty", identifier=edge_id)
         elif not isinstance(edge['attributes'], List):
-            self.report(code="error.knowledge_graph.edge.attribute.not_array", edge_id=edge_id)
+            self.report(code="error.knowledge_graph.edge.attribute.not_array", identifier=edge_id)
         else:
             attributes = edge['attributes']
 
@@ -338,7 +338,7 @@ class BiolinkValidator(ValidationReporter):
                     if not is_curie(attribute_type_id):
                         self.report(
                             code="error.knowledge_graph.edge.attribute.type_id.not_curie",
-                            attribute_type_id=str(attribute_type_id)
+                            identifier=str(attribute_type_id)
                         )
                     else:
                         # 'attribute_type_id' is a CURIE, but how well does it map?
@@ -352,7 +352,7 @@ class BiolinkValidator(ValidationReporter):
                                 if not self.bmt.is_association_slot(attribute_type_id):
                                     self.report(
                                         code="warning.knowledge_graph.edge.attribute.type_id.not_association_slot",
-                                        attribute_type_id=str(attribute_type_id)
+                                        identifier=str(attribute_type_id)
                                     )
 
                                 else:
@@ -385,7 +385,7 @@ class BiolinkValidator(ValidationReporter):
                                         if not infores.startswith("infores:"):
                                             self.report(
                                                 code="error.knowledge_graph.edge.provenance.infores.missing",
-                                                infores=infores
+                                                identifier=infores
                                             )
                                         else:
                                             if ara_source and \
@@ -403,13 +403,13 @@ class BiolinkValidator(ValidationReporter):
                         elif not self.bmt.get_element_by_prefix(prefix):
                             self.report(
                                 code="warning.knowledge_graph.edge.attribute.type_id.unknown_prefix",
-                                attribute_type_id=str(attribute_type_id)
+                                identifier=str(attribute_type_id)
                             )
 
                         else:
                             self.report(
                                 code="info.attribute.type_id.non_biolink_prefix",
-                                attribute_type_id=str(attribute_type_id)
+                                identifier=str(attribute_type_id)
                             )
 
             # TODO: After all the attributes have been scanned,
@@ -431,7 +431,7 @@ class BiolinkValidator(ValidationReporter):
         if 'attribute_constraints' not in edge or edge['attribute_constraints'] is None:
             return  # nullable: true... missing key or None value is ok?
         elif not isinstance(edge['attribute_constraints'], List):
-            self.report(code="error.query_graph.edge.attribute_constraints.not_array", edge_id=edge_id)
+            self.report(code="error.query_graph.edge.attribute_constraints.not_array", identifier=edge_id)
         elif not edge['attribute_constraints']:
             return  # nullable: true... an empty 'attribute_constraints' array is ok?
         else:
@@ -450,7 +450,7 @@ class BiolinkValidator(ValidationReporter):
                 ):
                     self.report(
                         code=f"error.{context}.qualifier.invalid",
-                        edge_id=edge_id,
+                        identifier=edge_id,
                         qualifier_type_id=qualifier_type_id,
                         qualifier_value=qualifier_value
                     )
@@ -460,7 +460,7 @@ class BiolinkValidator(ValidationReporter):
                 logger.error(f"BMT validate_qualifier Exception: {str(e)}")
                 self.report(
                     code=f"error.{context}.qualifier.invalid",
-                    edge_id=edge_id,
+                    identifier=edge_id,
                     qualifier_type_id=qualifier_type_id,
                     qualifier_value=qualifier_value
                 )
@@ -471,7 +471,7 @@ class BiolinkValidator(ValidationReporter):
         if 'qualifiers' not in edge or edge['qualifiers'] is None:
             return  # nullable: true... missing key or None value is ok?
         elif not isinstance(edge['qualifiers'], List):
-            self.report(code="error.knowledge_graph.edge.qualifiers.not_array", edge_id=edge_id)
+            self.report(code="error.knowledge_graph.edge.qualifiers.not_array", identifier=edge_id)
         elif not edge['qualifiers']:
             return  # nullable: true... an empty 'qualifiers' array is ok?
         else:
@@ -499,7 +499,7 @@ class BiolinkValidator(ValidationReporter):
                 if not qualifier_set_entry['qualifier_set']:
                     self.report(
                         code="error.query_graph.edge.qualifier_constraints.qualifier_set.empty",
-                        edge_id=edge_id
+                        identifier=edge_id
                     )
                 else:
                     # We have a putative non-empty 'qualifier_set'
@@ -530,7 +530,7 @@ class BiolinkValidator(ValidationReporter):
             if not self.bmt.is_predicate(predicate):
                 self.report(
                     code=f"error.{context}.invalid",
-                    edge_id=edge_id,
+                    identifier=edge_id,
                     predicate=predicate
                 )
             elif self.minimum_required_biolink_version("2.2.0") and \
@@ -538,7 +538,7 @@ class BiolinkValidator(ValidationReporter):
                 self.report(
                     code=f"warning.{context}.non_canonical",
                     context=self.graph_type.value,
-                    edge_id=edge_id,
+                    identifier=edge_id,
                     predicate=predicate
                 )
 
@@ -570,7 +570,7 @@ class BiolinkValidator(ValidationReporter):
 
         # Validate Subject node
         if not subject_id:
-            self.report(code=f"error.{context}.edge.subject.missing", edge_id=edge_id)
+            self.report(code=f"error.{context}.edge.subject.missing", identifier=edge_id)
         elif subject_id not in self.nodes:
             self.report(code=f"error.{context}.edge.subject.missing_from_nodes", object_id=subject_id)
 
@@ -579,7 +579,8 @@ class BiolinkValidator(ValidationReporter):
             if not predicate:
                 self.report(
                     code="error.knowledge_graph.edge.predicate.missing",
-                    context=self.graph_type.value, edge_id=edge_id
+                    context=self.graph_type.value,
+                    identifier=edge_id
                 )
             else:
                 self.validate_predicate(edge_id=edge_id, predicate=predicate)
@@ -588,9 +589,9 @@ class BiolinkValidator(ValidationReporter):
                 # Query Graphs can have a missing or null predicates slot
                 pass
             elif not isinstance(predicates, List):
-                self.report(code="error.query_graph.edge.predicate.not_array", edge_id=edge_id)
+                self.report(code="error.query_graph.edge.predicate.not_array", identifier=edge_id)
             elif len(predicates) == 0:
-                self.report(code="error.query_graph.edge.predicate.empty_array", edge_id=edge_id)
+                self.report(code="error.query_graph.edge.predicate.empty_array", identifier=edge_id)
             else:
                 # Should now be a non-empty list of CURIES which are valid Biolink Predicates
                 for predicate in predicates:
@@ -600,7 +601,7 @@ class BiolinkValidator(ValidationReporter):
 
         # Validate Object Node
         if not object_id:
-            self.report(code=f"error.{context}.edge.object.missing", edge_id=edge_id)
+            self.report(code=f"error.{context}.edge.object.missing", identifier=edge_id)
         elif object_id not in self.nodes:
             self.report(code=f"error.{context}.edge.object.missing_from_nodes", object_id=object_id)
 
@@ -635,10 +636,10 @@ class BiolinkValidator(ValidationReporter):
                     name=category
             )
             if biolink_class and not self.bmt.is_category(category):
-                self.report(code=f"error.{context}.node.category.unknown", node_id=node_id, category=category)
+                self.report(code=f"error.{context}.node.category.unknown", identifier=node_id, category=category)
                 biolink_class = None
         else:
-            self.report(code=f"error.{context}.node.category.missing", node_id=node_id)
+            self.report(code=f"error.{context}.node.category.missing", identifier=node_id)
 
         return biolink_class
 
@@ -655,12 +656,12 @@ class BiolinkValidator(ValidationReporter):
                     self.report(
                         code="warning.input_edge.node.id.unmapped_to_category",
                         context=context,
-                        node_id=node_id,
+                        identifier=node_id,
                         category=category
                     )
             # else, we will have already reported an error in validate_category()
         else:
-            self.report(code="error.input_edge.node.id.missing", context=context)
+            self.report(code="error.input_edge.node.id.missing", identifier=context)
 
     def check_biolink_model_compliance_of_input_edge(self, edge: Dict[str, str]):
         """
@@ -696,7 +697,7 @@ class BiolinkValidator(ValidationReporter):
         if not predicate:
             self.report(
                 code="error.input_edge.predicate.missing",
-                edge_id=edge_id
+                identifier=edge_id
             )
         else:
             self.validate_predicate(edge_id=edge_id, predicate=predicate)
@@ -716,7 +717,7 @@ class BiolinkValidator(ValidationReporter):
         :type graph: Dict
         """
         if not graph:
-            self.report(code="warning.graph.empty", context=self.graph_type.value)
+            self.report(code="warning.graph.empty", identifier=self.graph_type.value)
             return  # nothing really more to do here!
 
         # Access graph data fields to be validated

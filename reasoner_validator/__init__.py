@@ -143,7 +143,7 @@ class TRAPIResponseValidator(ValidationReporter):
 
         status: Optional[str] = response['status'] if 'status' in response else None
         if status and status not in ["Success", "QueryNotTraversable", "KPsNotAvailable"]:
-            self.report("warning.trapi.response.status.unknown", status=status)
+            self.report("warning.trapi.response.status.unknown", identifier=status)
 
         message: Optional[Dict] = response['message']
         if not message:

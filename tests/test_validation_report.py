@@ -71,7 +71,7 @@ def test_get_code_subtree_facet_message():
     assert isinstance(subtree, Dict)
     assert all([key in ["abstract", "mixin"] for key in subtree])
     assert CodeDictionary.MESSAGE in subtree["abstract"]
-    assert subtree["abstract"][CodeDictionary.MESSAGE] == "'{name}' is abstract."
+    assert subtree["abstract"][CodeDictionary.MESSAGE] == "'{identifier}' is abstract."
     assert CodeDictionary.DESCRIPTION not in subtree["abstract"]
 
 
@@ -136,7 +136,7 @@ def test_get_message_template():
     assert CodeDictionary.get_message_template("") is None
     assert CodeDictionary.get_message_template("info.compliant") == "Biolink Model-compliant TRAPI Message."
     assert CodeDictionary.get_message_template("error.trapi.request.invalid") == \
-           "{context} could not generate a valid TRAPI query request object because {reason}!"
+           "{identifier} could not generate a valid TRAPI query request object because {reason}!"
     assert CodeDictionary.get_message_template("foo.bar") is None
 
 
@@ -156,7 +156,7 @@ def test_message_display():
     assert "INFO - Input Edge Node Category: 'biolink:AdministrativeEntity' is abstract." \
            in CodeDictionary.display(
                 code="info.input_edge.node.category.abstract",
-                parameters=[{"name": "biolink:AdministrativeEntity"}]
+                parameters=[{"identifier": "biolink:AdministrativeEntity"}]
             )
 
 
@@ -164,7 +164,7 @@ def test_validator_reporter_message_display():
     reporter = ValidationReporter(prefix="Test Validation Report", trapi_version=TEST_TRAPI_VERSION)
     messages: List[str] = reporter.display({
             "info.input_edge.node.category.abstract": [
-                {"name": "biolink:AdministrativeEntity"}
+                {"identifier": "biolink:AdministrativeEntity"}
             ]
     })
     assert "Test Validation Report: INFO - Input Edge Node Category: 'biolink:AdministrativeEntity' is abstract." \
@@ -181,7 +181,7 @@ def test_message_report():
     reporter.report(code="info.compliant")
     reporter.report(
         code="info.input_edge.predicate.abstract",
-        name="biolink:contributor"
+        identifier="biolink:contributor"
     )
     report: Dict[str, Dict[str, List[Dict[str, str]]]] = reporter.get_messages()
     assert 'information' in report
@@ -219,7 +219,7 @@ def test_messages():
     reporter2.report(
         code="info.query_graph.edge.predicate.mixin",
         context="some_context",
-        name="biolink:this_is_a_mixin"
+        identifier="biolink:this_is_a_mixin"
     )
     reporter2.report("warning.response.results.empty")
     reporter2.report("error.knowledge_graph.edges.empty")
@@ -240,14 +240,14 @@ def test_messages():
             "info.input_edge.predicate.abstract": [
                 {
                     'context': "Well,... hello",
-                    'name': "Dolly"
+                    'identifier': "Dolly"
                 }
             ]
         },
         "warnings": {
             "warning.knowledge_graph.node.unmapped_prefix": [
                 {
-                    'node_id': "Will Robinson",
+                    'identifier': "Will Robinson",
                     'categories': "Lost in Space"
                 }
             ]
@@ -255,7 +255,7 @@ def test_messages():
         "errors": {
             "error.trapi.validation": [
                 {
-                    'trapi_version': "6.6.6",
+                    'identifier': "6.6.6",
                     'exception': "Dave, this can only be due to human error..."
                 }
             ]
@@ -318,11 +318,11 @@ def test_validator_method():
     def validator_method(validator: ValidationReporter, arg, **case):
         assert isinstance(arg, Dict)
         assert arg['some key'] == "some value"
-        validator.report("error.knowledge_graph.edge.provenance.infores.missing", infores="foo:bar")
+        validator.report("error.knowledge_graph.edge.provenance.infores.missing", identifier="foo:bar")
         assert len(case) == 2
         assert case['some parameter'] == "some parameter value"
         assert case['another parameter'] == "some other parameter value"
-        validator.report("warning.graph.empty", context="Fake")
+        validator.report("warning.graph.empty", identifier="Fake")
 
     reporter.apply_validation(validator_method, test_data, **test_parameters)
 
@@ -375,7 +375,7 @@ def test_validator_method():
                             "warning.deprecated": [
                                 {
                                     'context': "Input",
-                                    "name": "biolink:ChemicalSubstance"
+                                    "identifier": "biolink:ChemicalSubstance"
                                 }
                             ],
                             "warning.predicate.non_canonical": [
