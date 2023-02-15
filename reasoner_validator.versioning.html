@@ -49,7 +49,20 @@
 <li class="toctree-l1"><a class="reference internal" href="reasoner_validator.report.html">Validator Reporter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reasoner_validator.validation_codes.html">Validation Codes Dictionary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validation_codes_dictionary.html">Validation Codes</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">SemVer Version Utilities</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">SemVer Version Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.versioning.SemVer"><code class="docutils literal notranslate"><span class="pre">SemVer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.versioning.SemVer.buildmetadata"><code class="docutils literal notranslate"><span class="pre">SemVer.buildmetadata</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.versioning.SemVer.from_string"><code class="docutils literal notranslate"><span class="pre">SemVer.from_string()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.versioning.SemVer.major"><code class="docutils literal notranslate"><span class="pre">SemVer.major</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.versioning.SemVer.minor"><code class="docutils literal notranslate"><span class="pre">SemVer.minor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.versioning.SemVer.patch"><code class="docutils literal notranslate"><span class="pre">SemVer.patch</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.versioning.SemVer.prerelease"><code class="docutils literal notranslate"><span class="pre">SemVer.prerelease</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.versioning.SemVerError"><code class="docutils literal notranslate"><span class="pre">SemVerError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.versioning.SemVerUnderspecified"><code class="docutils literal notranslate"><span class="pre">SemVerUnderspecified</span></code></a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -76,8 +89,111 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="semver-versioning-utilities">
-<h1>SemVer Versioning Utilities<a class="headerlink" href="#semver-versioning-utilities" title="Permalink to this heading"></a></h1>
+  <div class="section" id="module-reasoner_validator.versioning">
+<span id="semver-versioning-utilities"></span><h1>SemVer Versioning Utilities<a class="headerlink" href="#module-reasoner_validator.versioning" title="Permalink to this heading"></a></h1>
+<p>Utilities.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="reasoner_validator.versioning.SemVer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.versioning.</span></span><span class="sig-name descname"><span class="pre">SemVer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">major</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prerelease</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buildmetadata</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.versioning.SemVer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>buildmetadata</strong></dt><dd><p>Alias for field number 4</p>
+</dd>
+<dt><strong>major</strong></dt><dd><p>Alias for field number 0</p>
+</dd>
+<dt><strong>minor</strong></dt><dd><p>Alias for field number 1</p>
+</dd>
+<dt><strong>patch</strong></dt><dd><p>Alias for field number 2</p>
+</dd>
+<dt><strong>prerelease</strong></dt><dd><p>Alias for field number 3</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.versioning.SemVer.from_string" title="reasoner_validator.versioning.SemVer.from_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_string</span></code></a>(string[, ignore_prefix])</p></td>
+<td><p>Initializes a SemVer from a string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.versioning.SemVer.buildmetadata">
+<span class="sig-name descname"><span class="pre">buildmetadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#reasoner_validator.versioning.SemVer.buildmetadata" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.versioning.SemVer.from_string">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.versioning.SemVer.from_string" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes a SemVer from a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> – str, string encoding the SemVer.</p></li>
+<li><p><strong>ignore_prefix</strong> – Optional[str], if set, gives a prefix of the SemVer string to be ignored before validating
+the SemVer string value, e.g. a Git Release ‘v’ character (i.e. v1.2.3); Default: None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.versioning.SemVer.major">
+<span class="sig-name descname"><span class="pre">major</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#reasoner_validator.versioning.SemVer.major" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.versioning.SemVer.minor">
+<span class="sig-name descname"><span class="pre">minor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#reasoner_validator.versioning.SemVer.minor" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.versioning.SemVer.patch">
+<span class="sig-name descname"><span class="pre">patch</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#reasoner_validator.versioning.SemVer.patch" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.versioning.SemVer.prerelease">
+<span class="sig-name descname"><span class="pre">prerelease</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#reasoner_validator.versioning.SemVer.prerelease" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="reasoner_validator.versioning.SemVerError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.versioning.</span></span><span class="sig-name descname"><span class="pre">SemVerError</span></span><a class="headerlink" href="#reasoner_validator.versioning.SemVerError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Invalid semantic version.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="reasoner_validator.versioning.SemVerUnderspecified">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.versioning.</span></span><span class="sig-name descname"><span class="pre">SemVerUnderspecified</span></span><a class="headerlink" href="#reasoner_validator.versioning.SemVerUnderspecified" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#reasoner_validator.versioning.SemVerError" title="reasoner_validator.versioning.SemVerError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SemVerError</span></code></a></p>
+<p>Semantic version underspecified.</p>
+</dd></dl>
+
 </div>
 
 
