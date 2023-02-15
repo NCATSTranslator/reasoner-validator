@@ -96,7 +96,9 @@ class ValidationReporter:
             str,  # message type (info/warning/error)
             Dict[
                 str,  # message 'code' as indexing key
-                List[Dict[str, str]]  # List of parameters (Maybe empty, if code doesn't have any associated parameters)
+                # Dictionary of 'identifier' indexed messages with parameters
+                # (Maybe None, if code doesn't have any additional parameters)
+                Optional[Dict[str, Optional[List[Dict[str, str]]]]]
             ]
         ] = {
             "information": dict(),
@@ -200,15 +202,44 @@ class ValidationReporter:
         # Sanity check: that the given code has been registered in the codes.yaml file
         assert CodeDictionary.get_code_entry(code) is not None, f"ValidationReporter.report: unknown code '{code}'"
 
-        message_type = self.get_message_type(code)
-        message_set = self._message_type_name[message_type]
-        if code not in self.messages[message_set]:
-            self.messages[message_set][code] = list()
-        # TODO: how can **message content duplication be avoided here(?)
+        message_type_id = self.get_message_type(code)
+        message_type = self._message_type_name[message_type_id]
+        if code not in self.messages[message_type]:
+            self.messages[message_type][code] = None
         if message:
-            self.messages[message_set][code].append(message)
+            # Should have at least an "identifier" parameter
+            if self.messages[message_type][code] is None:
+                self.messages[message_type][code] = dict()
 
-    def add_messages(self, new_messages: Dict[str, Dict[str, List[Dict[str, str]]]]):
+            # If a message has any parameters, then one of them is
+            # expected to be a message indexing identifier
+            if "identifier" in message:
+                message_identifier = message.pop("identifier")
+                if not message:
+                    # the message_identifier was the only parameter to keep track of...
+                    self.messages[message_type][code][message_identifier] = None
+                else:
+                    # keep track of additional parameters in a list of dictionaries
+                    # (may have additional, currently unavoidable, content duplication?)
+                    if message_identifier not in self.messages[message_type][code] or \
+                            self.messages[message_type][code][message_identifier] is None:
+                        self.messages[message_type][code][message_identifier] = list()
+
+                    self.messages[message_type][code][message_identifier].append(message)
+
+        # else: additional parameters are None
+
+    def add_messages(self, new_messages: Dict[
+            str,  # message type (info/warning/error)
+            Dict[
+                str,  # message 'code' as indexing key
+
+                # List of Dictionaries of parameters
+                # (Maybe None, if specific code doesn't
+                # have additional associated parameters)
+                Optional[Dict[str, Optional[List[Dict[str, str]]]]]
+            ]
+    ]):
         """
         Batch addition of a dictionary of messages to a ValidationReporter instance.
         :param new_messages: Dict[str, Dict], with key one of "information", "warnings" or "errors",
@@ -217,35 +248,50 @@ class ValidationReporter:
         for message_type in self.messages:   # 'info', 'warning', 'error'
             if message_type in new_messages:
                 message_type_contents = new_messages[message_type]
-                for code in message_type_contents:   # codes.yaml message codes
+                for code, content in message_type_contents.items():   # codes.yaml message codes
                     if code not in self.messages[message_type]:
-                        self.messages[message_type][code] = list()
+                        self.messages[message_type][code] = None
+                    if content:
+                        # content is of type Dict[str, Optional[List[Dict[str, str]]]]
+                        # where dictionary keys are a set of message discriminating 'identifier'
+                        identifier: str
+                        parameters: Optional[List[Dict[str, str]]]
+                        for identifier, parameters in content.items():
+                            if self.messages[message_type][code] is None:
+                                self.messages[message_type][code] = dict()
+                            if parameters:
+                                # additional parameters seen?
+                                if identifier not in self.messages[message_type][code] or \
+                                        self.messages[message_type][code][identifier] is None:
+                                    self.messages[message_type][code][identifier] = list()
 
-                    # TODO: how can **message content duplication be avoided here(?)
-                    self.messages[message_type][code].extend(message_type_contents[code])
+                                self.messages[message_type][code][identifier].extend(parameters)
+                            else:
+                                # the message 'identifier' is the only parameter
+                                self.messages[message_type][code][identifier] = None
 
-    def get_messages(self) -> Dict[str, Dict[str, Optional[List[Dict[str, str]]]]]:
+    def get_messages(self) -> Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]]:
         """
         Get copy of all messages as a Python data structure.
         :return: Dict (copy) of all validation messages in the ValidationReporter.
         """
         return copy.deepcopy(self.messages)
 
-    def get_info(self) -> Dict[str, Optional[List[Dict[str, str]]]]:
+    def get_info(self) -> Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]:
         """
         Get copy of all recorded information messages.
         :return: List, copy of all information messages.
         """
         return copy.deepcopy(self.messages["information"])
 
-    def get_warnings(self) -> Dict[str, Optional[List[Dict[str, str]]]]:
+    def get_warnings(self) -> Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]:
         """
         Get copy of all recorded warning messages.
         :return: List, copy of all warning messages.
         """
         return copy.deepcopy(self.messages["warnings"])
 
-    def get_errors(self) -> Dict[str, Optional[List[Dict[str, str]]]]:
+    def get_errors(self) -> Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]:
         """
         Get copy of all recorded error messages.
         :return: List, copy of all error messages.
@@ -323,7 +369,7 @@ class ValidationReporter:
         #             "warnings": [
         #                 {
         #                     "warning.predicate.non_canonical": [
-        #                         {"predicate": "biolink:participates_in"}
+        #                         {"predicate": "biolink:participates_in"}  xxx deprecated? better check this one!
         #                     ]
         #                 }
         #             ],

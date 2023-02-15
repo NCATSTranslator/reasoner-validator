@@ -158,7 +158,7 @@ class CodeDictionary:
         return entry[cls.DESCRIPTION] if entry else None
 
     @classmethod
-    def display(cls, code: str, parameters: Optional[List[Dict[str, str]]] = None) -> List[str]:
+    def display(cls, code: str, parameters: Optional[Dict[str, Optional[List[Dict[str, str]]]]] = None) -> List[str]:
         """
         Generate one or more full messages from provided Validation Reporter code and associated parameters (if applicable).
 
@@ -175,10 +175,19 @@ class CodeDictionary:
         if parameters:
             # Message template parameterized with one or more sets of additional
             # named message parameters, assumed to be referenced by the template
-            return [
-                f"{message_type.upper()} - {context}{template.format(**message)}"
-                for message in parameters
-            ]
+            message_list: List = list()
+            for identifier in parameters.keys():
+                other_parameters: Optional[List[Dict[str, str]]] = parameters[identifier]
+                content: Dict = {"identifier": identifier}
+                if other_parameters:
+                    # is a list of one or more dictionaries of additional parameters
+                    for another_parameter_dict in other_parameters:
+                        content.update(another_parameter_dict)
+                        message_list.append(
+                            f"{message_type.upper()} - "
+                            f"{context}{template.format({'identifier': identifier, **content})}"
+                        )
+            return message_list
         else:
             # simple scalar message without parameterization?
             return [f"{message_type.upper()} - {context}{template}"]

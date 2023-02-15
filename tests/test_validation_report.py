@@ -10,7 +10,7 @@ TEST_BIOLINK_VERSION = "2.4.8"
 
 
 def check_messages(validator: ValidationReporter, code, no_errors: bool = False):
-    messages: Dict[str, Dict[str, List[Dict[str, str]]]] = validator.get_messages()
+    messages: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = validator.get_messages()
     if code:
         # TODO: 'code' should be found in code.yaml
         # value: Optional[Tuple[str, str]] = CodeDictionary.get_code_subtree(code)
@@ -183,7 +183,7 @@ def test_message_report():
         code="info.input_edge.predicate.abstract",
         identifier="biolink:contributor"
     )
-    report: Dict[str, Dict[str, List[Dict[str, str]]]] = reporter.get_messages()
+    report: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = reporter.get_messages()
     assert 'information' in report
     assert len(report['information']) > 0
     messages: List[str] = list()
@@ -218,7 +218,6 @@ def test_messages():
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
     reporter2.report(
         code="info.query_graph.edge.predicate.mixin",
-        context="some_context",
         identifier="biolink:this_is_a_mixin"
     )
     reporter2.report("warning.response.results.empty")
@@ -235,36 +234,37 @@ def test_messages():
     assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION
 
     # testing addition a few raw batch messages
-    new_messages: Dict[str, Dict[str, List[Dict[str, str]]]] = {
+    new_messages: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = {
         "information": {
-            "info.input_edge.predicate.abstract": [
-                {
-                    'context': "Well,... hello",
-                    'identifier': "Dolly"
-                }
-            ]
+            "info.input_edge.predicate.abstract": {
+                "Dolly": None
+            }
         },
         "warnings": {
-            "warning.knowledge_graph.node.unmapped_prefix": [
-                {
-                    'identifier': "Will Robinson",
-                    'categories': "Lost in Space"
-                }
-            ]
+            "warning.knowledge_graph.node.unmapped_prefix": {
+                "Will Robinson": [
+                    {
+                        'identifier': "Will Robinson",
+                        "categories": "Danger"
+                    }
+                ]
+            }
         },
         "errors": {
-            "error.trapi.validation": [
-                {
-                    'identifier': "6.6.6",
-                    'exception': "Dave, this can only be due to human error..."
-                }
-            ]
+            "error.trapi.validation": {
+                "6.6.6": [
+                    {
+                        'exception': "Dave, this can only be due to human error..."
+                    }
+                ]
+
+            }
         }
     }
     reporter1.add_messages(new_messages)
 
     # Verify what we have
-    messages: Dict[str, Dict[str, List[Dict[str, str]]]] = reporter1.get_messages()
+    messages: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = reporter1.get_messages()
 
     assert "information" in messages
     assert len(messages['information']) > 0
@@ -326,7 +326,7 @@ def test_validator_method():
 
     reporter.apply_validation(validator_method, test_data, **test_parameters)
 
-    messages: Dict[str, Dict[str, List[Dict[str, str]]]] = reporter.get_messages()
+    messages: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = reporter.get_messages()
 
     assert "warnings" in messages
     assert len(messages['warnings']) > 0
