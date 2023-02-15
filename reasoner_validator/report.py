@@ -80,8 +80,7 @@ class ValidationReporter:
         #             { <parameters of second reported message...> },
         #             etc...
         #         ],
-        #         # codes without parameters can just be set to None?
-        #         # TODO: fix if this doesn't work for JSON serialization
+        #         # codes without parameters can just be set to an empty list?
         #         "info.compliant.message": []
         #
         #     },
