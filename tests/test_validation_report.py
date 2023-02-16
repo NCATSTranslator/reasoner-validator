@@ -295,8 +295,11 @@ def test_messages():
     assert "errors" in obj["messages"]
     assert "error.trapi.validation" in obj["messages"]["errors"]
     messages: Optional[Dict[str, List[Dict[str, str]]]] = obj["messages"]["errors"]["error.trapi.validation"]
+    assert messages, "Empty 'error.trapi.validation' messages set?"
+    assert "6.6.6" in messages
+    message_subset: List = messages["6.6.6"]
     assert "Dave, this can only be due to human error..."\
-           in [message['exception'] for message in messages if 'exception' in message]
+           in [message['exception'] for message in message_subset if 'exception' in message]
 
 
 def test_validator_method():
