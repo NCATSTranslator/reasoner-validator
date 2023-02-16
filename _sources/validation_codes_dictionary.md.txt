@@ -156,7 +156,7 @@
 
 ### warning.knowledge_graph.node.unmapped_prefix
 
-**Message:** '{identifier}' is unmapped to the target categories: {categories}?
+**Message:** '{identifier}' is unmapped to the target categories '{categories}'?
 
 **Description:** ID Namespaces of nodes of specified categories may be incomplete with respect to Biolink Model version being used in the knowledge graph?
 
@@ -275,6 +275,12 @@
 **Message:** TRAPI Message is missing its Knowledge Graph component!
 
 **Description:** TRAPI response should generally have a TRAPI request message Knowledge Graph key value in its reply.
+
+### error.trapi.response.knowledge_graph.missing_expected_edge
+
+**Message:** TRAPI Response Message is missing an expected edge '{identifier}' in its Knowledge Graph!
+
+**Description:** The given TRAPI Response is expected to return specific edge(s) relating to the original (test edge?) data used to prepare the TRAPI Request!
 
 ### error.trapi.response.results.missing
 

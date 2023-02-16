@@ -102,6 +102,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-query-graph-missing">error.trapi.response.query_graph.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-query-graph-empty">error.trapi.response.query_graph.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-knowledge-graph-missing">error.trapi.response.knowledge_graph.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-knowledge-graph-missing-expected-edge">error.trapi.response.knowledge_graph.missing_expected_edge</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-results-missing">error.trapi.response.results.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-results-non-array">error.trapi.response.results.non_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-results-missing-bindings">error.trapi.response.results.missing_bindings</a></li>
@@ -336,7 +337,7 @@
 </div>
 <div class="section" id="warning-knowledge-graph-node-unmapped-prefix">
 <h3>warning.knowledge_graph.node.unmapped_prefix<a class="headerlink" href="#warning-knowledge-graph-node-unmapped-prefix" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> ‘{identifier}’ is unmapped to the target categories: {categories}?</p>
+<p><strong>Message:</strong> ‘{identifier}’ is unmapped to the target categories ‘{categories}’?</p>
 <p><strong>Description:</strong> ID Namespaces of nodes of specified categories may be incomplete with respect to Biolink Model version being used in the knowledge graph?</p>
 </div>
 <div class="section" id="warning-knowledge-graph-node-id-unmapped-to-category">
@@ -436,6 +437,11 @@
 <h3>error.trapi.response.knowledge_graph.missing<a class="headerlink" href="#error-trapi-response-knowledge-graph-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> TRAPI Message is missing its Knowledge Graph component!</p>
 <p><strong>Description:</strong> TRAPI response should generally have a TRAPI request message Knowledge Graph key value in its reply.</p>
+</div>
+<div class="section" id="error-trapi-response-knowledge-graph-missing-expected-edge">
+<h3>error.trapi.response.knowledge_graph.missing_expected_edge<a class="headerlink" href="#error-trapi-response-knowledge-graph-missing-expected-edge" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> TRAPI Response Message is missing an expected edge ‘{identifier}’ in its Knowledge Graph!</p>
+<p><strong>Description:</strong> The given TRAPI Response is expected to return specific edge(s) relating to the original (test edge?) data used to prepare the TRAPI Request!</p>
 </div>
 <div class="section" id="error-trapi-response-results-missing">
 <h3>error.trapi.response.results.missing<a class="headerlink" href="#error-trapi-response-results-missing" title="Permalink to this heading"></a></h3>

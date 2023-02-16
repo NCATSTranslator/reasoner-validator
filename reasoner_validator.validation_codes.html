@@ -171,8 +171,16 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>code</strong> – str, valid (dot delimited YAML key path) identified code, which should be registered in the project codes.yaml file.</p></li>
-<li><p><strong>parameters</strong> – List[Dict[str,str]], list of entries of (named) parameters of a given (codes.yaml) encoded validation message</p></li>
+<li><p><strong>code</strong> – str, valid (dot delimited YAML key path) identified code,
+which should be registered in the project codes.yaml file.</p></li>
+<li><p><strong>parameters</strong> – Optional[Dict[str, Optional[List[Dict[str, str]]]]], collection of all
+message parameters dictionaries associated with list of messages of the given code,
+indexed by their unique ‘identifier’ template field (note: all messages with
+one or more template parameters are expected to have an ‘identifier’ parameter,
+the values for which corresponding to the keys of the dictionary. The value of those
+keys are either ‘None’ if the identifier is the only template parameter, or alternately,
+a list of dictionaries containing all the other expected parameters keys and their values
+for every distinct message).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
