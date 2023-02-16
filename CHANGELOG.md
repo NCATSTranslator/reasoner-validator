@@ -2,6 +2,12 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.4.0
+
+- This is a slightly disruptive 'minor' (not 'patch') release in that the internal and exported (JSON) validation message format is evolving.
+- Here, an additional level of internal validation message redesign was attempted to substantially reduce duplication in reported validation messages. 
+- To achieve the above, if templated messages in codes.yaml have one or more parameter fields, then the first such field must be called 'identifier' and be a message discriminating string field. Other parameters may be added to the template but these are not (yet) guaranteed to avoid duplication in reporting. The string value of a message 'identifier' field is internally used as keys to index messages under the given code identifier. See the library methods for details.
+
 ## v3.3.3
 
 - update and clean up of web API Dockerfile

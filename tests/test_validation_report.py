@@ -358,9 +358,9 @@ def test_validator_method():
                     "trapi_version": "1.3",
                     "biolink_version": "2.4.7",
                     "messages": {
-                        "information": [],
-                        "warnings": [],
-                        "errors": [""]
+                        "information": {},
+                        "warnings": {},
+                        "errors": {""}
                     }
                 }
             },
@@ -373,7 +373,7 @@ def test_validator_method():
                     "trapi_version": "1.3",
                     "biolink_version": "2.4.7",
                     "messages": {
-                        "information": [],
+                        "information": {},
                         "warnings": {
                             "warning.deprecated": [
                                 {
@@ -387,7 +387,7 @@ def test_validator_method():
                                 }
                             ]
                         },
-                        "errors": []
+                        "errors": {}
                     }
                 }
             },

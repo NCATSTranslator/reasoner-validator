@@ -72,7 +72,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 ```json
 {
   "trapi_version": "1.3.0",
-  "biolink_version": "3.1.1",
+  "biolink_version": "3.2.1",
   "sources": {
     "ara_source": "infores:aragorn",
     "kp_source": "infores:panther",
@@ -116,7 +116,7 @@ As an example of the kind of output to expect, if one posts the following JSON m
 ```json
 {
   "trapi_version": "1.3.0",
-  "biolink_version": "3.1.1",
+  "biolink_version": "3.2.1",
   "response": {
       "message": {
         "query_graph": {
@@ -159,33 +159,40 @@ one should typically get a response body something like the following JSON valid
 ```json
 {
   "trapi_version": "1.3.0",
-  "biolink_version": "3.1.1",
+  "biolink_version": "3.2.1",
   "messages": {
+    # some categories of messages may be absent, hence, empty dictionaries
     "information": {},
     "warnings": {
-      "warning.knowledge_graph.node.unmapped_prefix": [
-        {
-          "node_id": "CHEBI:6801",
-          "categories": "['biolink:Drug']"
+      # validation code
+      "warning.knowledge_graph.node.unmapped_prefix": {
+          # template identifier field value
+          "CHEBI:6801": [  
+              {
+                # additional message template field values, if applicable
+                "categories": "['biolink:Drug']"  
+              }
+          ]
+          
         }
-      ]
+      
     },
     "errors": {
-      "error.knowledge_graph.node.category.missing": [
-        {
-          "context": "Knowledge Graph",
-          "node_id": "MONDO:0005148"
+      "error.knowledge_graph.node.category.missing": {
+          # this message template does not have any additional parameters
+          # other than identifier hence it just has the unique identifier 
+          # value as a dictionary key, with associated value None
+           "MONDO:0005148": None
         }
-      ],
-      "error.knowledge_graph.edge.attribute.missing": [
-        {
-          "edge_id": "CHEBI:6801--biolink:treats->MONDO:0005148"
-        }
-      ]
     }
   }
 }
 ```
+
+To minimize redundancy in validation messages, messages are uniquely indexed in dictionaries at two levels:
+
+1. the (codes.yaml recorded) dot-delimited error code path string
+2. for messages with templated parameters, by a mandatory 'identifier' field (which is expected to exist as a field in a template if such template has one or more parameterized fields)
 
 ### Running the Web Service within Docker
 
