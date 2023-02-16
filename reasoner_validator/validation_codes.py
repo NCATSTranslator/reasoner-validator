@@ -158,12 +158,33 @@ class CodeDictionary:
         return entry[cls.DESCRIPTION] if entry else None
 
     @classmethod
-    def display(cls, code: str, parameters: Optional[Dict[str, Optional[List[Dict[str, str]]]]] = None) -> List[str]:
+    def display(
+            cls,
+            code: str,
+            parameters: Optional[
+                Dict[
+                    str,  # template 'identifier' key value
+                    Optional[
+                        List[
+                            Dict[str, str]  # dictionary of other template parameters (if present)
+                        ]
+                    ]
+                ]
+            ] = None
+    ) -> List[str]:
         """
         Generate one or more full messages from provided Validation Reporter code and associated parameters (if applicable).
 
-        :param code: str, valid (dot delimited YAML key path) identified code, which should be registered in the project codes.yaml file.
-        :param parameters: List[Dict[str,str]], list of entries of (named) parameters of a given (codes.yaml) encoded validation message
+        :param code: str, valid (dot delimited YAML key path) identified code,
+                     which should be registered in the project codes.yaml file.
+        :param parameters: Optional[Dict[str, Optional[List[Dict[str, str]]]]], collection of all
+                           message parameters dictionaries associated with list of messages of the given code,
+                           indexed by their unique 'identifier' template field (note: all messages with
+                           one or more template parameters are expected to have an 'identifier' parameter,
+                           the values for which corresponding to the keys of the dictionary. The value of those
+                           keys are either 'None' if the identifier is the only template parameter, or alternately,
+                           a list of dictionaries containing all the other expected parameters keys and their values
+                           for every distinct message).
         :return: List[str], list of decoded messages
         """
         value: Optional[Tuple[str, Dict[str, str]]] = cls.get_code_subtree(code, is_leaf=True)

@@ -153,19 +153,20 @@ def test_message_display():
     assert "INFO - Biolink Model-compliant TRAPI Message." in CodeDictionary.display(code="info.compliant")
     assert "ERROR - Knowledge Graph Nodes: No nodes found!" \
            in CodeDictionary.display("error.knowledge_graph.nodes.empty")
+    identifier_dict: Dict = {"identifier": "biolink:AdministrativeEntity"}
     assert "INFO - Input Edge Node Category: 'biolink:AdministrativeEntity' is abstract." \
            in CodeDictionary.display(
                 code="info.input_edge.node.category.abstract",
-                parameters=[{"identifier": "biolink:AdministrativeEntity"}]
+                parameters={"biolink:AdministrativeEntity": None}  # this code has no other parameters
             )
 
 
 def test_validator_reporter_message_display():
     reporter = ValidationReporter(prefix="Test Validation Report", trapi_version=TEST_TRAPI_VERSION)
     messages: List[str] = reporter.display({
-            "info.input_edge.node.category.abstract": [
-                {"identifier": "biolink:AdministrativeEntity"}
-            ]
+            "info.input_edge.node.category.abstract": {
+                "biolink:AdministrativeEntity": None
+            }
     })
     assert "Test Validation Report: INFO - Input Edge Node Category: 'biolink:AdministrativeEntity' is abstract." \
         in messages

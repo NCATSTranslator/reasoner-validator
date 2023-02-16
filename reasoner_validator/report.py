@@ -98,7 +98,18 @@ class ValidationReporter:
                 str,  # message 'code' as indexing key
                 # Dictionary of 'identifier' indexed messages with parameters
                 # (Maybe None, if code doesn't have any additional parameters)
-                Optional[Dict[str, Optional[List[Dict[str, str]]]]]
+                Optional[
+                    Dict[
+                        str,  # key is the message-unique template 'identifier' value of parameterized messages
+                        Optional[
+                            List[
+                                # Each reported message adds a dictionary of such parameters
+                                # to the list here; these are not guaranteed to be unique
+                                Dict[str, str]
+                            ]
+                        ]
+                    ]
+                ]
             ]
         ] = {
             "information": dict(),
@@ -391,14 +402,32 @@ class ValidationReporter:
         else:
             return False
 
-    def display(self, messages: Dict[str, List[Dict[str, str]]]) -> List[str]:
+    def display(
+            self,
+            messages: Dict[
+                str,  # unique validation message codes
+                Optional[
+                    Dict[
+                        str,  # template 'identifier' key value
+                        Optional[
+                            List[
+                                Dict[str, str]  # dictionary of other template parameters (if present)
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+    ) -> List[str]:
         """
         This augmented message display wrapper prepends
         the Validation Reporter contextual prefix to one or more
         resolved coded validation messages.
 
-        :param messages: Dict[str,List[Dict[str,str]]], dictionary of messages where the keys are message codes,
-                         and the values are (possibly empty) lists of dictionary objects of message parameters.
+        :param messages: Dict[str,Optional[Dict[str, Optional[List[Dict[str,str]]]]]], dictionary of messages where
+                         the keys are validation message codes, and the values are a dictionary of messages subsets
+                         keyed by message template 'identifier' field values. If the template has no other parameters,
+                         the given key has a value of None; otherwise, a list of dictionaries is given that report
+                         the values of message-specific template parameters in addition to the 'identifier' parameter.
         :return: List[str], one or more resolved and contextualized Validation Reporter messages
         """
         # TODO: are missing messages an absolute error?
