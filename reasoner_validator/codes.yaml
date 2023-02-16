@@ -118,7 +118,7 @@ warning:
           $message: "'{identifier}' is deprecated?"
           $description: "Knowledge graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?"
       unmapped_prefix:
-        $message: "'{identifier}' is unmapped to the target categories: {categories}?"
+        $message: "'{identifier}' is unmapped to the target categories '{categories}'?"
         $description: "ID Namespaces of nodes of specified categories may be incomplete with respect to Biolink Model version being used in the knowledge graph?"
       id:
         unmapped_to_category:
@@ -194,6 +194,9 @@ error:
         missing:
           $message: "TRAPI Message is missing its Knowledge Graph component!"
           $description: "TRAPI response should generally have a TRAPI request message Knowledge Graph key value in its reply."
+        missing_expected_edge:
+          $message: "TRAPI Response Message is missing an expected edge '{identifier}' in its Knowledge Graph!"
+          $description: "The given TRAPI Response is expected to return specific edge(s) relating to the original (test edge?) data used to prepare the TRAPI Request!"
       results:
         missing:
           $message: "TRAPI Message is missing its Results component!"

@@ -178,15 +178,22 @@ class CodeDictionary:
             message_list: List = list()
             for identifier in parameters.keys():
                 other_parameters: Optional[List[Dict[str, str]]] = parameters[identifier]
-                content: Dict = {"identifier": identifier}
+                identifier_dict: Dict = {'identifier': identifier}
                 if other_parameters:
                     # is a list of one or more dictionaries of additional parameters
                     for another_parameter_dict in other_parameters:
+                        # make copies, to be safe...
+                        content: Dict = identifier_dict.copy()
                         content.update(another_parameter_dict)
                         message_list.append(
                             f"{message_type.upper()} - "
-                            f"{context}{template.format({'identifier': identifier, **content})}"
+                            f"{context}{template.format(**content)}"
                         )
+                else:
+                    message_list.append(
+                        f"{message_type.upper()} - "
+                        f"{context}{template.format(**identifier_dict)}"
+                    )
             return message_list
         else:
             # simple scalar message without parameterization?

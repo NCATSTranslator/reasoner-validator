@@ -20,7 +20,7 @@ class MappingValidator(ValidationReporter):
 
     def check_dangling_references(self, graph: Dict):
         if not ('nodes' in graph and graph['nodes'] and 'edges' in graph and graph['edges']):
-            self.report(code="warning.graph.empty")
+            self.report(code="warning.graph.empty", identifier="MappingValidator")
         else:
             pass
 
