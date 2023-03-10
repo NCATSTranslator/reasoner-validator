@@ -193,6 +193,55 @@ _TEST_RESULTS_2 = [
 @pytest.mark.parametrize(
     "query",
     [
+        (   # Query 0 - No 'workflow' key
+            {},
+        ),
+        (   # Query 1 - Null 'workflow' key value
+            {
+                'workflow': None
+            },
+        ),
+        (  # Query 2 - Null 'workflow' key list
+            {
+                'workflow': []
+            },
+        ),
+        (  # Query 3 - 'runner_parameters' is Null
+            {
+                'workflow': [
+                    {
+                        'runner_parameters': None,
+                        'id': 'sort_results_score',
+                        'parameters': {"ascending_or_descending": "ascending"}
+                    }
+                ]
+            },
+        ),
+        (  # Query 4 - 'parameters' is Null
+            {
+                'workflow': [
+                    {'runner_parameters': {'allowlist': ["infores:aragorn"]}, 'id': 'lookup', 'parameters': None}
+                ]
+            },
+        ),
+        (  # Query 5 - both 'parameters' and 'runner_parameters' are Null
+            {
+                'workflow': [
+                    {'runner_parameters': None, 'id': 'lookup', 'parameters': None}
+                ]
+            },
+        )
+    ]
+)
+def test_sanitize_trapi_query(query: Tuple):
+    validator: TRAPIResponseValidator = TRAPIResponseValidator()
+    response: Dict = validator.sanitize_trapi_query(response=query[0])
+    # assert response == query[1]
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
         (   # Query 0 - Completely empty Response.Message
             {
                 "message": {
@@ -696,7 +745,7 @@ _TEST_RESULTS_2 = [
         )
     ]
 )
-def test_check_biolink_model_compliance_of_trapi_response(query: Tuple[Union[Dict, str]]):
+def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=query[1],
         biolink_version=query[2],
