@@ -47,9 +47,8 @@ class TRAPIResponseValidator(ValidationReporter):
             strict_validation=strict_validation
         )
 
-
     @staticmethod
-    def sanitize_trapi_query(response: Dict):
+    def sanitize_trapi_query(response: Dict) -> Dict:
         """
 
         :param response: Dict full TRAPI Response JSON object
@@ -98,13 +97,16 @@ class TRAPIResponseValidator(ValidationReporter):
         #         ]
         #     }
         # }
-        if 'workflow' in response:
-            workflow_steps: Dict = response['workflow']  # is a list of steps
+        if 'workflow' in response and response['workflow']:
+            # a 'workflow' is a list of steps, which are JSON object specifications
+            workflow_steps: List[Dict] = response['workflow']
             for step in workflow_steps:
                 if 'runner_parameters' in step and not step['runner_parameters']:
                     step.pop('runner_parameters')
                 if 'parameters' in step and not step['parameters']:
-                    step['parameters'] = dict()
+                    # There are some workflow types that have mandatory need for 'parameters'
+                    # but this should be caught in a later schema validation step
+                    step.pop('parameters')
         return response
 
     def check_compliance_of_trapi_response(self, response: Optional[Dict]):
@@ -131,7 +133,9 @@ class TRAPIResponseValidator(ValidationReporter):
         if not (response and 'message' in response):
             self.report("error.trapi.response.empty")
 
-        response: Dict = self.sanitize_trapi_query(response)
+        # RMB: 10 March 2023 - commenting this out for now, to see
+        # if the error which triggered this patch is still a concern
+        # response = self.sanitize_trapi_query(response)
 
         trapi_validator: TRAPISchemaValidator = check_trapi_validity(
             instance=response,
