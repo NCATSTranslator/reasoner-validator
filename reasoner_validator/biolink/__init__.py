@@ -345,7 +345,7 @@ class BiolinkValidator(ValidationReporter):
                         prefix = attribute_type_id.split(":", 1)[0]
                         if prefix == 'biolink':
                             biolink_class = self.validate_element_status(
-                                context="knowledge_graph.attribute.type_id",
+                                context="knowledge_graph.edge.attribute.type_id",
                                 name=attribute_type_id
                             )
                             if biolink_class:
@@ -408,7 +408,7 @@ class BiolinkValidator(ValidationReporter):
 
                         else:
                             self.report(
-                                code="info.attribute.type_id.non_biolink_prefix",
+                                code="info.knowledge_graph.edge.attribute.type_id.non_biolink_prefix",
                                 identifier=str(attribute_type_id)
                             )
 
