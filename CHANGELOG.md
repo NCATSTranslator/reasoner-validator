@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.4.1
+
+- Bug fix in TRAPIResponseValidator.sanitize_trapi_query (despite bug fix, commented out use of this method pending further evidence of KP/ARA non-compliance with the workflow schema)
+
 ## v3.4.0
 
 - This is a slightly disruptive 'minor' (not 'patch') release in that the internal and exported (JSON) validation message format is evolving.
