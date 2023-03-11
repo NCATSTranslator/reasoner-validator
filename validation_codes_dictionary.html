@@ -61,8 +61,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#info-query-graph-node-category-mixin">info.query_graph.node.category.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-query-graph-edge-predicate-abstract">info.query_graph.edge.predicate.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-query-graph-edge-predicate-mixin">info.query_graph.edge.predicate.mixin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#info-attribute-type-id-non-biolink-prefix">info.attribute_type_id.non_biolink_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-knowledge-graph-node-category-abstract">info.knowledge_graph.node.category.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-knowledge-graph-node-category-mixin">info.knowledge_graph.node.category.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-knowledge-graph-edge-predicate-abstract">info.knowledge_graph.edge.predicate.abstract</a></li>
 </ul>
 </li>
@@ -85,6 +85,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-predicate-non-canonical">warning.knowledge_graph.edge.predicate.non_canonical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-qualifiers-empty">warning.knowledge_graph.edge.qualifiers.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot">warning.knowledge_graph.edge.attribute.type_id.not_association_slot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix">warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-unknown-prefix">warning.knowledge_graph.edge.attribute.type_id.unknown_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated">warning.knowledge_graph.edge.attribute.type_id.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-ara-missing">warning.knowledge_graph.edge.provenance.ara.missing</a></li>
@@ -257,15 +258,15 @@
 <p><strong>Message:</strong> ‘{identifier}’ is a mixin.</p>
 <p><strong>Description:</strong> TRAPI Messages in Query Graphs can have ‘mixin’ predicates.</p>
 </div>
-<div class="section" id="info-attribute-type-id-non-biolink-prefix">
-<h3>info.attribute_type_id.non_biolink_prefix<a class="headerlink" href="#info-attribute-type-id-non-biolink-prefix" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge attribute_type_id ‘{identifier}’ has a non-Biolink CURIE prefix mapped to Biolink.</p>
-<p><strong>Description:</strong> Non-Biolink CURIEs are tolerated as term value for the attribute_type_id properties of edge attributes.</p>
-</div>
 <div class="section" id="info-knowledge-graph-node-category-abstract">
 <h3>info.knowledge_graph.node.category.abstract<a class="headerlink" href="#info-knowledge-graph-node-category-abstract" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> ‘{identifier}’ is abstract.</p>
 <p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘abstract’ category classes when the mode of validation is ‘non-strict’..</p>
+</div>
+<div class="section" id="info-knowledge-graph-node-category-mixin">
+<h3>info.knowledge_graph.node.category.mixin<a class="headerlink" href="#info-knowledge-graph-node-category-mixin" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘{identifier}’ is a mixin!</p>
+<p><strong>Description:</strong> Category specified in the Knowledge Graph is a ‘mixin’ in specified version of Biolink. Replace with a concrete category!</p>
 </div>
 <div class="section" id="info-knowledge-graph-edge-predicate-abstract">
 <h3>info.knowledge_graph.edge.predicate.abstract<a class="headerlink" href="#info-knowledge-graph-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
@@ -364,6 +365,11 @@
 <h3>warning.knowledge_graph.edge.attribute.type_id.not_association_slot<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge attribute_type_id ‘{identifier}’ not a biolink:association_slot?</p>
 <p><strong>Description:</strong> Knowledge graph edge ‘attribute_type_id’ value should generally be a term defined within the biolink:association_slot hierarchy.</p>
+</div>
+<div class="section" id="warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix">
+<h3>warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge attribute_type_id ‘{identifier}’ has a non-Biolink CURIE prefix mapped to Biolink.</p>
+<p><strong>Description:</strong> Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes.</p>
 </div>
 <div class="section" id="warning-knowledge-graph-edge-attribute-type-id-unknown-prefix">
 <h3>warning.knowledge_graph.edge.attribute.type_id.unknown_prefix<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-unknown-prefix" title="Permalink to this heading"></a></h3>
