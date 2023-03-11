@@ -45,16 +45,15 @@ info:
         mixin:
           $message: "'{identifier}' is a mixin."
           $description: "TRAPI Messages in Query Graphs can have 'mixin' predicates."
-  attribute_type_id:
-    non_biolink_prefix:
-      $message: "Edge attribute_type_id '{identifier}' has a non-Biolink CURIE prefix mapped to Biolink."
-      $description: "Non-Biolink CURIEs are tolerated as term value for the attribute_type_id properties of edge attributes."
   knowledge_graph:
     node:
       category:
         abstract:
           $message: "'{identifier}' is abstract."
           $description: "TRAPI Messages in Knowledge Graphs can have 'abstract' category classes when the mode of validation is 'non-strict'.."
+        mixin:
+          $message: "'{identifier}' is a mixin!"
+          $description: "Category specified in the Knowledge Graph is a 'mixin' in specified version of Biolink. Replace with a concrete category!"
     edge:
       predicate:
         abstract:
@@ -141,6 +140,9 @@ warning:
           not_association_slot:
             $message: "Edge attribute_type_id '{identifier}' not a biolink:association_slot?"
             $description: "Knowledge graph edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy."
+          non_biolink_prefix:
+            $message: "Edge attribute_type_id '{identifier}' has a non-Biolink CURIE prefix mapped to Biolink."
+            $description: "Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes."
           unknown_prefix:
             $message: "Edge attribute_type_id '{identifier}' has a CURIE prefix namespace unknown to Biolink!"
             $description: "The namespaces of 'attribute_type_id' terms may be incomplete with respect to Biolink Model version being used in the knowledge graph."

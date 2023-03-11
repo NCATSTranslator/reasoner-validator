@@ -35,6 +35,18 @@ cd reasoner-validator
 poetry install
 ```
 
+## Running Validation against an ARS UUID Result(*)
+
+A local script **`ars_uuid_result_test_runner.py`** is available to run TRAPI Response validation against a UUID indexed query result of the Biomedical Knowledge Translator "Autonomous Relay System" (ARS).
+
+For usage, type:
+
+```bash
+./ars_uuid_result_test_runner.py --help
+```
+
+(*) Thank you Eric Deutsch for the prototype of this script
+
 ## Building the Documentation Locally
 
 All paths here are relative to the root project directory.
