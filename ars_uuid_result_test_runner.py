@@ -19,7 +19,7 @@ from reasoner_validator.biolink import get_biolink_model_toolkit
 def main():
 
     # Parse command line options
-    arg_parser = argparse.ArgumentParser(description='CLI testing of the ResponseCache class')
+    arg_parser = argparse.ArgumentParser(description='CLI validation of ARS UUID indexed TRAPI Responses')
     arg_parser.add_argument('--verbose', action='count', help='If set, print more information about ongoing processing')
     arg_parser.add_argument('--biolink_version', type=str, help='Biolink Version for validation (if omitted or None, defaults to the current default version of the Biolink Model Toolkit)')
     arg_parser.add_argument('response_id', type=str, nargs='*', help='ARS response UUID of a response to read and display')
