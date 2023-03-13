@@ -142,10 +142,12 @@ def test_get_message_template():
 
 def test_get_description():
     assert CodeDictionary.get_description("") is None
-    assert CodeDictionary.get_description("info.compliant").\
-        startswith("Specified TRAPI message completely satisfies")
-    assert CodeDictionary.get_description("info.attribute_type_id.non_biolink_prefix").\
-        startswith("Non-Biolink CURIEs are tolerated as term value")
+    info_compliant = CodeDictionary.get_description("info.compliant")
+    assert info_compliant is not None
+    assert info_compliant.startswith("Specified TRAPI message completely satisfies")
+    info_attribute = CodeDictionary.get_description("warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix")
+    assert info_attribute is not None
+    assert info_attribute.startswith("Non-Biolink CURIEs are tolerated")
     assert CodeDictionary.get_description("foo.bar") is None
 
 

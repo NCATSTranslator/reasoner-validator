@@ -47,65 +47,24 @@ class TRAPIResponseValidator(ValidationReporter):
             strict_validation=strict_validation
         )
 
-    @staticmethod
-    def sanitize_trapi_query(response: Dict) -> Dict:
+    def sanitize_trapi_query(self, response: Dict) -> Dict:
         """
 
         :param response: Dict full TRAPI Response JSON object
         :return: Dict, response with discretionary removal of content which
                        triggers (temporarily) unwarranted TRAPI validation failures
         """
-        # Typical TRAPI Response
-        # {
-        #     'status_code': 200,
-        #     'response_json': {
-        #         'message': {
-        #             'query_graph': {
-        #                 'nodes': {
-        #                     'a': {
-        #                         'ids': ['NCBITaxon:2860379'],
-        #                         'categories': ['biolink:OrganismTaxon'],
-        #                         'is_set': False,
-        #                         'constraints': []
-        #                     }, 'b': {
-        #                         'ids': None,
-        #                         'categories': ['biolink:OrganismTaxon'],
-        #                         'is_set': False,
-        #                         'constraints': []
-        #                     }
-        #                 },
-        #                 'edges': {
-        #                     'ab': {
-        #                         'subject': 'a',
-        #                         'object': 'b',
-        #                         'knowledge_type': None,
-        #                         'predicates': ['biolink:subclass_of'],
-        #                         'attribute_constraints': [],
-        #                         'qualifier_constraints': []
-        #                     }
-        #                 }
-        #             },
-        #             'knowledge_graph': {
-        #                 'nodes': {},
-        #                 'edges': {}
-        #             },
-        #             'results': []
-        #         },
-        #         'log_level': None,
-        #         'workflow': [
-        #             {'runner_parameters': None, 'id': 'lookup', 'parameters': None}
-        #         ]
-        #     }
-        # }
         if 'workflow' in response and response['workflow']:
             # a 'workflow' is a list of steps, which are JSON object specifications
             workflow_steps: List[Dict] = response['workflow']
             for step in workflow_steps:
                 if 'runner_parameters' in step and not step['runner_parameters']:
+                    self.report("warning.trapi.response.workflow.runner_parameters.null")
                     step.pop('runner_parameters')
                 if 'parameters' in step and not step['parameters']:
                     # There are some workflow types that have mandatory need for 'parameters'
                     # but this should be caught in a later schema validation step
+                    self.report("warning.trapi.response.workflow.parameters.null")
                     step.pop('parameters')
         return response
 
@@ -133,9 +92,7 @@ class TRAPIResponseValidator(ValidationReporter):
         if not (response and 'message' in response):
             self.report("error.trapi.response.empty")
 
-        # RMB: 10 March 2023 - commenting this out for now, to see
-        # if the error which triggered this patch is still a concern
-        # response = self.sanitize_trapi_query(response)
+        response = self.sanitize_trapi_query(response)
 
         trapi_validator: TRAPISchemaValidator = check_trapi_validity(
             instance=response,

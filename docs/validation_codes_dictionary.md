@@ -88,6 +88,18 @@
 
 **Description:** The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable
 
+### warning.trapi.response.workflow.runner_parameters.null
+
+**Message:** TRAPI Response.workflow.runner_parameters property is missing?
+
+**Description:** If a 'runner_parameters' property value is given for a workflow step specification, it should not be null. This field will be ignored?
+
+### warning.trapi.response.workflow.parameters.null
+
+**Message:** TRAPI Response.workflow.parameters property is missing?
+
+**Description:** If a 'parameters' property value is given for a workflow step specification, it should not be null. This field will be ignored?
+
 ### warning.graph.empty
 
 **Message:** {identifier} data is empty?

@@ -66,6 +66,15 @@ warning:
         unknown:
           $message: "TRAPI Response status code '{identifier}' is unrecognized?"
           $description:  "The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable"
+      workflow:
+        runner_parameters:
+          null:
+            $message: "TRAPI Response.workflow.runner_parameters property is missing?"
+            $description: "If a 'runner_parameters' property value is given for a workflow step specification, it should not be null. This field will be ignored?"
+        parameters:
+          null:
+            $message: "TRAPI Response.workflow.parameters property is missing?"
+            $description: "If a 'parameters' property value is given for a workflow step specification, it should not be null. This field will be ignored?"
   graph:
     empty:
       $message: "{identifier} data is empty?"
