@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.4.3
+
+- Fixed some failing unit tests
+- Reversed v3.4.1 commenting out of TRAPIResponseValidator.sanitize_trapi_query but added validation warnings for null field values for workflow step 'parameters' or 'runner_parameters' 
+
 ## v3.4.2
 
 - Fixed missing or misaligned codes.yaml validation codes
