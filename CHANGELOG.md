@@ -1,7 +1,11 @@
 # Change Log
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
+ 
+## v3.4.4
 
+- Added in attribute Type Id validation codes that were missing for 'generic' element filters
+ 
 ## v3.4.3
 
 - Fixed some failing unit tests and some minor technical debt
