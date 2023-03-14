@@ -20,12 +20,6 @@ logger = logging.getLogger(__name__)
 
 pp = PrettyPrinter(indent=4)
 
-# TODO: is there a better way to ensure that a Biolink Model compliance test
-#       runs quickly enough if the knowledge graph is very large?
-#       Limiting nodes and edges viewed may miss deeply embedded errors(?)
-_MAX_TEST_NODES = 1000
-_MAX_TEST_EDGES = 100
-
 
 def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional[str]:
     # Get Biolink Model Schema
@@ -768,31 +762,17 @@ class BiolinkValidator(ValidationReporter):
             # else:  Query Graphs can omit the 'edges' tag
             edges = None
 
-        # I only do a sampling of node and edge content. This ensures that
-        # the tests are performant but may miss errors deeper inside the graph?
-        nodes_seen = 0
         if nodes:
             for node_id, details in nodes.items():
-
                 self.validate_graph_node(node_id, details)
-
-                nodes_seen += 1
-                if nodes_seen >= _MAX_TEST_NODES:
-                    break
 
             # Needed for the subsequent edge validation
             self.set_nodes(set(nodes.keys()))
 
-            edges_seen = 0
             if edges:
                 for edge in edges.values():
-
                     # print(f"{str(edge)}", flush=True)
                     self.validate_graph_edge(edge)
-
-                    edges_seen += 1
-                    if edges_seen >= _MAX_TEST_EDGES:
-                        break
 
 
 def check_biolink_model_compliance_of_input_edge(
