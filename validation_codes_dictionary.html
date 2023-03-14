@@ -64,6 +64,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#info-knowledge-graph-node-category-abstract">info.knowledge_graph.node.category.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-knowledge-graph-node-category-mixin">info.knowledge_graph.node.category.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-knowledge-graph-edge-predicate-abstract">info.knowledge_graph.edge.predicate.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-knowledge-graph-edge-predicate-mixin">info.knowledge_graph.edge.predicate.mixin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-knowledge-graph-edge-attribute-type-id-abstract">info.knowledge_graph.edge.attribute.type_id.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#info-knowledge-graph-edge-attribute-type-id-mixin">info.knowledge_graph.edge.attribute.type_id.mixin</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#warning">Warning</a><ul>
@@ -166,6 +169,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-missing">error.knowledge_graph.edge.attribute.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-empty">error.knowledge_graph.edge.attribute.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-not-array">error.knowledge_graph.edge.attribute.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-unknown">error.knowledge_graph.edge.attribute.type_id.unknown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-abstract">error.knowledge_graph.edge.attribute.type_id.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-mixin">error.knowledge_graph.edge.attribute.type_id.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-missing">error.knowledge_graph.edge.attribute.type_id.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-empty">error.knowledge_graph.edge.attribute.type_id.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-not-curie">error.knowledge_graph.edge.attribute.type_id.not_curie</a></li>
@@ -268,12 +274,27 @@
 <div class="section" id="info-knowledge-graph-node-category-mixin">
 <h3>info.knowledge_graph.node.category.mixin<a class="headerlink" href="#info-knowledge-graph-node-category-mixin" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> ‘{identifier}’ is a mixin!</p>
-<p><strong>Description:</strong> Category specified in the Knowledge Graph is a ‘mixin’ in specified version of Biolink. Replace with a concrete category!</p>
+<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘mixin’ category classes when the mode of validation is ‘non-strict’..</p>
 </div>
 <div class="section" id="info-knowledge-graph-edge-predicate-abstract">
 <h3>info.knowledge_graph.edge.predicate.abstract<a class="headerlink" href="#info-knowledge-graph-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> ‘{identifier}’ is abstract.</p>
 <p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘abstract’ predicates when the mode of validation is ‘non-strict’.</p>
+</div>
+<div class="section" id="info-knowledge-graph-edge-predicate-mixin">
+<h3>info.knowledge_graph.edge.predicate.mixin<a class="headerlink" href="#info-knowledge-graph-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘{identifier}’ is mixin.</p>
+<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘mixin’ predicates when the mode of validation is ‘non-strict’.</p>
+</div>
+<div class="section" id="info-knowledge-graph-edge-attribute-type-id-abstract">
+<h3>info.knowledge_graph.edge.attribute.type_id.abstract<a class="headerlink" href="#info-knowledge-graph-edge-attribute-type-id-abstract" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘{identifier}’ is abstract.</p>
+<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘abstract’ attribute type identifiers when the mode of validation is ‘non-strict’.</p>
+</div>
+<div class="section" id="info-knowledge-graph-edge-attribute-type-id-mixin">
+<h3>info.knowledge_graph.edge.attribute.type_id.mixin<a class="headerlink" href="#info-knowledge-graph-edge-attribute-type-id-mixin" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘{identifier}’ is mixin.</p>
+<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘mixin’ attribute type identifiers when the mode of validation is ‘non-strict’.</p>
 </div>
 </div>
 <div class="section" id="warning">
@@ -760,6 +781,21 @@
 <h3>error.knowledge_graph.edge.attribute.not_array<a class="headerlink" href="#error-knowledge-graph-edge-attribute-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge ‘{identifier}’ attributes are not an array!</p>
 <p><strong>Description:</strong> Value of the ‘attributes’ slot in Knowledge Graph edge must be an array of attributes!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-attribute-type-id-unknown">
+<h3>error.knowledge_graph.edge.attribute.type_id.unknown<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-unknown" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘{identifier}’ is unknown attribute type identifier!</p>
+<p><strong>Description:</strong> Edge Attribute type identifier specified in knowledge graph edge is not recorded in specified version of Biolink. Replace with a known term!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-attribute-type-id-abstract">
+<h3>error.knowledge_graph.edge.attribute.type_id.abstract<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-abstract" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘{identifier}’ is abstract attribute type identifier!</p>
+<p><strong>Description:</strong> Edge data validation is currently strict: attribute type identifiers cannot be ‘abstract’. Replace with a concrete attribute type identifier!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-attribute-type-id-mixin">
+<h3>error.knowledge_graph.edge.attribute.type_id.mixin<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-mixin" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘{identifier}’ is a mixin attribute type identifier!</p>
+<p><strong>Description:</strong> Edge data validation is currently strict: attribute type identifiers cannot be of type ‘mixin’. Replace with a concrete attribute type identifier!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-type-id-missing">
 <h3>error.knowledge_graph.edge.attribute.type_id.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-missing" title="Permalink to this heading"></a></h3>

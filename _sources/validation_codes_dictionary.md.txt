@@ -72,13 +72,31 @@
 
 **Message:** '{identifier}' is a mixin!
 
-**Description:** Category specified in the Knowledge Graph is a 'mixin' in specified version of Biolink. Replace with a concrete category!
+**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' category classes when the mode of validation is 'non-strict'..
 
 ### info.knowledge_graph.edge.predicate.abstract
 
 **Message:** '{identifier}' is abstract.
 
 **Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' predicates when the mode of validation is 'non-strict'.
+
+### info.knowledge_graph.edge.predicate.mixin
+
+**Message:** '{identifier}' is mixin.
+
+**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' predicates when the mode of validation is 'non-strict'.
+
+### info.knowledge_graph.edge.attribute.type_id.abstract
+
+**Message:** '{identifier}' is abstract.
+
+**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' attribute type identifiers when the mode of validation is 'non-strict'.
+
+### info.knowledge_graph.edge.attribute.type_id.mixin
+
+**Message:** '{identifier}' is mixin.
+
+**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' attribute type identifiers when the mode of validation is 'non-strict'.
 
 ## Warning
 
@@ -659,6 +677,24 @@
 **Message:** Edge '{identifier}' attributes are not an array!
 
 **Description:** Value of the 'attributes' slot in Knowledge Graph edge must be an array of attributes!
+
+### error.knowledge_graph.edge.attribute.type_id.unknown
+
+**Message:** '{identifier}' is unknown attribute type identifier!
+
+**Description:** Edge Attribute type identifier specified in knowledge graph edge is not recorded in specified version of Biolink. Replace with a known term!
+
+### error.knowledge_graph.edge.attribute.type_id.abstract
+
+**Message:** '{identifier}' is abstract attribute type identifier!
+
+**Description:** Edge data validation is currently strict: attribute type identifiers cannot be 'abstract'. Replace with a concrete attribute type identifier!
+
+### error.knowledge_graph.edge.attribute.type_id.mixin
+
+**Message:** '{identifier}' is a mixin attribute type identifier!
+
+**Description:** Edge data validation is currently strict: attribute type identifiers cannot be of type 'mixin'. Replace with a concrete attribute type identifier!
 
 ### error.knowledge_graph.edge.attribute.type_id.missing
 
