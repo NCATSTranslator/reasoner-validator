@@ -269,6 +269,56 @@ def test_sanitize_trapi_query(query: Tuple):
     # assert response == query[1]
 
 
+NUM_SAMPLE_NODES = 5
+
+SAMPLE_NODES: Dict = dict()
+for node_id in range(1, NUM_SAMPLE_NODES):
+    SAMPLE_NODES[f"n{node_id}"] = dict()
+
+SAMPLE_EDGES: Dict = dict()
+for subject_id in SAMPLE_NODES:
+    for object_id in SAMPLE_NODES:
+        if subject_id != object_id:
+            SAMPLE_EDGES[f"e{subject_id}{object_id}"] = {
+                "subject": subject_id,
+                "predicate": "biolink:related_to",
+                "object": object_id
+            }
+
+TEST_GRAPH: Dict = {
+    "nodes": SAMPLE_NODES,
+    "edges": SAMPLE_EDGES
+}
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (   # Query 0 - unlimited sample whole graph
+            0,  # edges_limit
+            len(SAMPLE_NODES),  # number of nodes returned
+            len(SAMPLE_EDGES)   # number of edges returned
+        ),
+        (   # Query 1 - sample just 2 edges
+            2,  # edges_limit
+            3,  # number of nodes returned
+            2   # number of edges returned
+        ),
+        (   # Query 2 - sample just edge_value is negative number (functionally equivalent to zero)
+            -1,  # edges_limit
+            len(SAMPLE_NODES),  # number of nodes returned
+            len(SAMPLE_EDGES)   # number of edges returned
+        )
+    ]
+)
+def test_sample_graph(query: Tuple[int, int, int]):
+    validator: TRAPIResponseValidator = TRAPIResponseValidator()
+    kg_sample: Dict = validator.sample_graph(graph=TEST_GRAPH, edges_limit=query[0])
+    assert kg_sample
+    assert len(kg_sample["nodes"]) == query[1]
+    assert len(kg_sample["edges"]) == query[2]
+
+
 @pytest.mark.parametrize(
     "query",
     [

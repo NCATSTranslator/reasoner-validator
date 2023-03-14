@@ -145,11 +145,18 @@ class TRAPIResponseValidator(ValidationReporter):
 
         :return: Dict, 'edges_limit' sized subset of knowledge graph
         """
-        if edges_limit:
+        # We don't check for non-empty graphs here simply because the sole caller of this
+        # method is the 'has_valid_knowledge_graph' method, which filters out empty graphs
+        if edges_limit > 0:
             kg_sample: Dict = {
                 "nodes": dict(),
                 "edges": dict()
             }
+            # 'sample_size' will always be a positive number here.
+            # The kg_sample size will always be the 'sample_size'
+            # or less, the latter situation arising if the number
+            # of graph edges is smaller or some subject or
+            # object id's are missing in the nodes list.
             sample_size = min(edges_limit, len(graph["edges"]))
             n = 0
             for key, edge in graph['edges'].items():
@@ -167,7 +174,7 @@ class TRAPIResponseValidator(ValidationReporter):
                     kg_sample['nodes'][edge['object']] = graph['nodes'][edge['object']]
 
                 n += 1
-                if n > sample_size:
+                if n == sample_size:
                     break
 
             return kg_sample
@@ -231,6 +238,10 @@ class TRAPIResponseValidator(ValidationReporter):
 
         :return: bool, False, if validation errors
         """
+        # This integrity constraint may not really be necessary
+        # since negative numbers are functionally inequivalent to zero
+        assert edges_limit >= 0, "The 'edges_limit' must be zero or a positive integer!"
+
         # The Knowledge Graph should not be missing
         if 'knowledge_graph' not in message:
             self.report(code="error.trapi.response.knowledge_graph.missing")
@@ -239,8 +250,8 @@ class TRAPIResponseValidator(ValidationReporter):
             # The Knowledge Graph should also not generally be empty? Issue a warning
             if not (
                     knowledge_graph and len(knowledge_graph) > 0 and
-                    "nodes" in knowledge_graph and len(knowledge_graph["nodes"]) > 0 and
-                    "edges" in knowledge_graph and len(knowledge_graph["edges"]) > 0
+                    "nodes" in knowledge_graph and knowledge_graph["nodes"] and
+                    "edges" in knowledge_graph and knowledge_graph["edges"]
             ):
                 self.report(code="warning.response.knowledge_graph.empty")
                 # An empty knowledge graph (warning) does not generally invalidate
