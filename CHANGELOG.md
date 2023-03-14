@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
  
+## v3.4.6
+
+- 'edge_limit' knowledge graph threshold argument added to `TRAPIResponseValidator.check_compliance_of_trapi_response` method
+- cleaned up a bit of technical debt
+ 
 ## v3.4.5
 
 - Missing 'primary_knowledge_source' now reported as an error
