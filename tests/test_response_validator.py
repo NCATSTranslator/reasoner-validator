@@ -190,6 +190,36 @@ _TEST_RESULTS_2 = [
     ]
 
 
+# Sample edge 2
+_TEST_EDGES_4 = {
+       "edge_1": {
+           "subject": "NCBIGene:29974",
+           "predicate": "biolink:physically_interacts_with",
+           "object": "PUBCHEM.COMPOUND:597",
+           "attributes": [
+               {
+                   "attribute_type_id": "biolink:aggregator_knowledge_source",
+                   "value": "infores:molepro"
+               },
+               {
+                   "attribute_type_id": "biolink:primary_knowledge_source",
+                   "value": "infores:automat-text-mining-provider"
+               },
+               {
+                   "attribute_type_id": "biolink:primary_knowledge_source",
+                   "value": "infores:hmdb"
+               }
+           ]
+        }
+    }
+
+
+_TEST_KG_4 = {
+    'nodes': _TEST_NODES_1,
+    'edges': _TEST_EDGES_4
+}
+
+
 @pytest.mark.parametrize(
     "query",
     [
@@ -513,7 +543,8 @@ def test_sanitize_trapi_query(query: Tuple):
             ""
         ),
         (
-            # Query 16 - Full Message, with strict validation and a non-null kp_source_type results in missing primary
+            # Query 16 - Full Message, with strict validation and
+            #            a non-null kp_source_type results in missing primary
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -532,7 +563,27 @@ def test_sanitize_trapi_query(query: Tuple):
             "error.knowledge_graph.edge.provenance.missing_primary"
         ),
         (
-            # Query 17 - Full Message, with non-strict validation
+            # Query 17 - Full Message, with strict validation and
+            #            non-null kp_source_type results, has multiple primary knowledge sources
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_4,
+                    "results": _TEST_RESULTS_1
+                }
+            },
+            None,
+            None,
+            {
+                "ara_source": None,
+                "kp_source": "infores:molepro",
+                "kp_source_type": "aggregator"
+            },
+            True,
+            "warning.knowledge_graph.edge.provenance.multiple_primary"
+        ),
+        (
+            # Query 18 - Full Message, with non-strict validation
             {
                 "message": {
                     "query_graph": _TEST_QG_2,
@@ -547,7 +598,7 @@ def test_sanitize_trapi_query(query: Tuple):
             ""
         ),
         (
-            # Query 18 - Full Message, WITH strict validation - abstract category?
+            # Query 19 - Full Message, WITH strict validation - abstract category?
             {
                 "message": {
                     "query_graph": _TEST_QG_2,
@@ -562,7 +613,7 @@ def test_sanitize_trapi_query(query: Tuple):
             "error.query_graph.node.category.abstract"
         ),
         (
-            # Query 19 - Full Message, WITH strict validation - abstract predicate?
+            # Query 20 - Full Message, WITH strict validation - abstract predicate?
             {
                 "message": {
                     "query_graph": _TEST_QG_2,
@@ -577,7 +628,7 @@ def test_sanitize_trapi_query(query: Tuple):
             "error.query_graph.edge.predicate.abstract"
         ),
         (
-            # Query 20 - Valid full Message, under strict validation.
+            # Query 21 - Valid full Message, under strict validation.
             #            Message is valid, but the 'workflow' field is not an array?
             {
                 "message": {
@@ -595,7 +646,7 @@ def test_sanitize_trapi_query(query: Tuple):
             "error.trapi.validation"
         ),
         (
-            # Query 21 - Valid full Message, under strict validation.
+            # Query 22 - Valid full Message, under strict validation.
             #            Message is valid, the 'workflow' field is an array,
             #            but the single list entry is an invalid workflow spec?
             {
@@ -615,7 +666,7 @@ def test_sanitize_trapi_query(query: Tuple):
             "error.trapi.validation"
         ),
         (
-            # Query 22 - Valid full Message, under strict validation.
+            # Query 23 - Valid full Message, under strict validation.
             #            Message is valid, the 'workflow' field is an array,
             #            but the single list entry is in the workflow schema
             #            and has at least the one required field 'id'
@@ -634,7 +685,7 @@ def test_sanitize_trapi_query(query: Tuple):
             ""   # this simple workflow spec should pass?
         ),
         (
-            # Query 23 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
+            # Query 24 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
             #            but the single list entry is an elaborated 'real world' workflow spec,
             #            but one entry overlay_compute_ngd is incomplete - doesn't fully validate!
             {
@@ -678,7 +729,7 @@ def test_sanitize_trapi_query(query: Tuple):
             "error.trapi.validation"
         ),
         (
-            # Query 24 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
+            # Query 25 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
             #            but the single list entry is an elaborated 'real world' workflow spec
             {
                 "message": {
@@ -720,7 +771,7 @@ def test_sanitize_trapi_query(query: Tuple):
             ""   # this simple workflow spec should pass?
         ),
         (
-            # Query 25 - Valid full Message, under strict validation. Message is valid,
+            # Query 26 - Valid full Message, under strict validation. Message is valid,
             #            the 'workflow' field is an array, but runner_parameters is None.
             #            This is technically invalid but we have a code patch which should filter it out (for now)
             {

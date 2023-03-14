@@ -158,26 +158,29 @@ warning:
       attribute:
         type_id:
           not_association_slot:
-            $message: "Edge attribute_type_id '{identifier}' not a biolink:association_slot?"
+            $message: "Edge '{identifier}' attribute_type_id '{attribute_type_id}' not a biolink:association_slot?"
             $description: "Knowledge graph edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy."
           non_biolink_prefix:
-            $message: "Edge attribute_type_id '{identifier}' has a non-Biolink CURIE prefix mapped to Biolink."
+            $message: "Edge '{identifier}' attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink."
             $description: "Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes."
           unknown_prefix:
-            $message: "Edge attribute_type_id '{identifier}' has a CURIE prefix namespace unknown to Biolink!"
+            $message: "Edge '{identifier}' attribute_type_id '{attribute_type_id}' has a CURIE prefix namespace unknown to Biolink!"
             $description: "The namespaces of 'attribute_type_id' terms may be incomplete with respect to Biolink Model version being used in the knowledge graph."
           deprecated:
             $message: "'{identifier}' is deprecated?"
             $description: "Knowledge graph edge 'attribute_type_id' is deprecated in current model, to be removed in the future. Review Biolink Model for replacement."
       provenance:
+        multiple_primary:
+          $message: "Edge '{identifier}' has recorded multiple 'primary' knowledge sources: '{sources}'?"
+          $description: "Knowledge graph edge attributes should record only a single primary knowledge source provenance attribute value."
         ara:
           missing:
-            $message: "Edge is missing ARA knowledge source provenance?"
-            $description: "Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to ARA."
+            $message: "Edge '{identifier}' is missing ARA knowledge source provenance '{ara_source}'?"
+            $description: "Knowledge graph edge attributes ARAs should record the infores identifier of their knowledge source provenance with respect to ARA."
         kp:
           missing:
-            $message: "Edge attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?"
-            $description: "Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to KP."
+            $message: "Edge '{identifier}' attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?"
+            $description: "Knowledge graph edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP."
 error:
   non_compliant:
     $message: "S-P-O statement '{identifier}' is not compliant to Biolink Model {biolink_release}"
@@ -440,29 +443,29 @@ error:
             $message: "'{identifier}' is a mixin attribute type identifier!"
             $description: "Edge data validation is currently strict: attribute type identifiers cannot be of type 'mixin'. Replace with a concrete attribute type identifier!"
           missing:
-            $message: "Edge attribute is missing its 'attribute_type_id' property!"
+            $message: "Edge '{identifier}' attribute is missing its 'attribute_type_id' property!"
             $description: "The attribute of a Knowledge graph edge must have a 'attribute_type_id' key with a non-empty associated value!"
           empty:
-            $message: "Edge attribute empty 'attribute_type_id' property!"
+            $message: "Edge'{identifier}' attribute empty 'attribute_type_id' property!"
             $description: "The value of the 'attribute_type_id' of an attribute of a Knowledge graph edge must not be empty!"
           not_curie:
-            $message: "Edge attribute_type_id '{identifier}' is not a CURIE!"
+            $message: "Edge '{identifier}' attribute_type_id '{attribute_type_id}' is not a CURIE!"
             $description: "The 'attribute_type_id' of a Knowledge graph edge attribute must be a controlled vocabulary term specified by a CURIE!"
         value:
           missing:
-            $message: "Edge attribute is missing its 'value' property!"
+            $message: "Edge '{identifier}' attribute is missing its 'value' property!"
             $description: "An attribute of a Knowledge graph edge must have a 'value' key with a non-empty associated value!"
           empty:
-            $message: "Edge attribute empty 'value' property!"
+            $message: "Edge '{identifier}' attribute empty 'value' property!"
             $description: "The value of an attribute of a Knowledge graph edge must not be empty!"
       provenance:
         infores:
           missing:
-            $message: "Edge has provenance value '{identifier}' which is not a well-formed InfoRes CURIE!"
+            $message: "Edge '{identifier}' has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
             $description: "The value of an attribute specifying the provenance of a Knowledge graph edge must be the well-formed InfoRes CURIE of a knowledge source!"
         missing_primary:
-          $message: "Edge does not record its 'primary' knowledge source?"
-          $description: "Knowledge graph edge attributes should record the infores identifier of their primary knowledge source provenance with respect to KP."
+          $message: "Edge '{identifier}' does not record its 'primary' knowledge source?"
+          $description: "Knowledge graph edge attributes should record the 'infores' identifier of their primary knowledge source provenance with respect to KP."
       qualifiers:
         not_array:
           $message: "Edge '{identifier}' 'qualifiers' are not an array!"
