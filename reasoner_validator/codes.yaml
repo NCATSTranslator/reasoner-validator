@@ -53,12 +53,23 @@ info:
           $description: "TRAPI Messages in Knowledge Graphs can have 'abstract' category classes when the mode of validation is 'non-strict'.."
         mixin:
           $message: "'{identifier}' is a mixin!"
-          $description: "Category specified in the Knowledge Graph is a 'mixin' in specified version of Biolink. Replace with a concrete category!"
+          $description: "TRAPI Messages in Knowledge Graphs can have 'mixin' category classes when the mode of validation is 'non-strict'.."
     edge:
       predicate:
         abstract:
           $message: "'{identifier}' is abstract."
           $description: "TRAPI Messages in Knowledge Graphs can have 'abstract' predicates when the mode of validation is 'non-strict'."
+        mixin:
+          $message: "'{identifier}' is mixin."
+          $description: "TRAPI Messages in Knowledge Graphs can have 'mixin' predicates when the mode of validation is 'non-strict'."
+      attribute:
+        type_id:
+          abstract:
+            $message: "'{identifier}' is abstract."
+            $description: "TRAPI Messages in Knowledge Graphs can have 'abstract' attribute type identifiers when the mode of validation is 'non-strict'."
+          mixin:
+            $message: "'{identifier}' is mixin."
+            $description: "TRAPI Messages in Knowledge Graphs can have 'mixin' attribute type identifiers when the mode of validation is 'non-strict'."
 warning:
   trapi:
     response:
@@ -423,6 +434,15 @@ error:
           $message: "Edge '{identifier}' attributes are not an array!"
           $description: "Value of the 'attributes' slot in Knowledge Graph edge must be an array of attributes!"
         type_id:
+          unknown:
+            $message: "'{identifier}' is unknown attribute type identifier!"
+            $description: "Edge Attribute type identifier specified in knowledge graph edge is not recorded in specified version of Biolink. Replace with a known term!"
+          abstract:
+            $message: "'{identifier}' is abstract attribute type identifier!"
+            $description: "Edge data validation is currently strict: attribute type identifiers cannot be 'abstract'. Replace with a concrete attribute type identifier!"
+          mixin:
+            $message: "'{identifier}' is a mixin attribute type identifier!"
+            $description: "Edge data validation is currently strict: attribute type identifiers cannot be of type 'mixin'. Replace with a concrete attribute type identifier!"
           missing:
             $message: "Edge attribute is missing its 'attribute_type_id' property!"
             $description: "The attribute of a Knowledge graph edge must have a 'attribute_type_id' key with a non-empty associated value!"
