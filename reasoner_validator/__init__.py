@@ -11,7 +11,9 @@ from reasoner_validator.biolink import (
 from reasoner_validator.trapi import check_trapi_validity, TRAPISchemaValidator
 from reasoner_validator.trapi.mapping import MappingValidator, check_node_edge_mappings
 
-TEST_DATA_SAMPLE_SIZE = 10
+# Unspoken assumption here is that validation of results returned for
+# Biolink Model release compliance only needs to be superficial
+RESULT_TEST_DATA_SAMPLE_SIZE = 10
 
 
 class TRAPIResponseValidator(ValidationReporter):
@@ -68,7 +70,7 @@ class TRAPIResponseValidator(ValidationReporter):
                     step.pop('parameters')
         return response
 
-    def check_compliance_of_trapi_response(self, response: Optional[Dict]):
+    def check_compliance_of_trapi_response(self, response: Optional[Dict], edges_limit: int = 100):
         """
         One stop validation of all components of a TRAPI-schema compliant
         Query.Response, including its Message against a designated Biolink Model release.
@@ -85,6 +87,9 @@ class TRAPIResponseValidator(ValidationReporter):
 
         :param response: Query.Response to be validated.
         :type response: Optional[Dict]
+        :param edges_limit: integer maximum number of edges to be validated in the knowledge graph. A value of zero
+                            triggers validation of all edges in the knowledge graph (could take awhile! Default: 100)
+        :type edges_limit: int
 
         :returns: Validator cataloging "information", "warning" and "error" messages (may be empty)
         :rtype: ValidationReporter
@@ -113,7 +118,7 @@ class TRAPIResponseValidator(ValidationReporter):
         # Sequentially validate the Query Graph, Knowledge Graph then validate
         # the Results (which rely on the validity of the other two components)
         elif self.has_valid_query_graph(message) and \
-                self.has_valid_knowledge_graph(message):
+                self.has_valid_knowledge_graph(message, edges_limit):
             self.has_valid_results(message)
 
     @staticmethod
@@ -121,36 +126,58 @@ class TRAPIResponseValidator(ValidationReporter):
         """
 
         :param results: List, original list of Results
-        :return: List, TEST_DATA_SAMPLE_SIZE sized subset of Results
+        :return: List, RESULT_TEST_DATA_SAMPLE_SIZE sized subset of Results
         """
-        sample_size = min(TEST_DATA_SAMPLE_SIZE, len(results))
+        sample_size = min(RESULT_TEST_DATA_SAMPLE_SIZE, len(results))
         result_subsample = results[0:sample_size]
         return result_subsample
 
     @staticmethod
-    def sample_graph(graph: Dict) -> Dict:
+    def sample_graph(graph: Dict, edges_limit: int = 100) -> Dict:
         """
+        Only process a strict subsample of the TRAPI Response Message knowledge graph.
 
-        :param graph: Dict, original knowledge graph
-        :return: Dict, TEST_DATA_SAMPLE_SIZE sized subset of knowledge graph
+        :param graph: original knowledge graph
+        :type graph: Dict
+        :param edges_limit: integer maximum number of edges to be validated in the knowledge graph. A value of zero
+                            triggers validation of all edges in the knowledge graph (could take awhile! Default: 100)
+        :type edges_limit: int
+
+        :return: Dict, 'edges_limit' sized subset of knowledge graph
         """
-        kg_sample: Dict = {
-            "nodes": dict(),
-            "edges": dict()
-        }
-        sample_size = min(TEST_DATA_SAMPLE_SIZE, len(graph["edges"]))
-        n = 0
-        for key, edge in graph['edges'].items():
-            kg_sample['edges'][key] = edge
-            if 'subject' in edge and edge['subject'] in graph['nodes']:
-                kg_sample['nodes'][edge['subject']] = graph['nodes'][edge['subject']]
-            if 'object' in edge and edge['object'] in graph['nodes']:
-                kg_sample['nodes'][edge['object']] = graph['nodes'][edge['object']]
-            n += 1
-            if n > sample_size:
-                break
+        if edges_limit:
+            kg_sample: Dict = {
+                "nodes": dict(),
+                "edges": dict()
+            }
+            sample_size = min(edges_limit, len(graph["edges"]))
+            n = 0
+            for key, edge in graph['edges'].items():
 
-        return kg_sample
+                kg_sample['edges'][key] = edge
+
+                if 'subject' in edge and \
+                        edge['subject'] in graph['nodes'] and \
+                        edge['subject'] not in kg_sample['nodes']:
+                    kg_sample['nodes'][edge['subject']] = graph['nodes'][edge['subject']]
+
+                if 'object' in edge and \
+                        edge['object'] in graph['nodes'] and \
+                        edge['object'] not in kg_sample['nodes']:
+                    kg_sample['nodes'][edge['object']] = graph['nodes'][edge['object']]
+
+                n += 1
+                if n > sample_size:
+                    break
+
+            return kg_sample
+
+        else:
+            # No pruning... just return the contents of the entire knowledge graph
+            return {
+                "nodes": graph["nodes"],
+                "edges": graph["edges"]
+            }
 
     def has_valid_query_graph(self, message: Dict) -> bool:
         """
@@ -192,10 +219,16 @@ class TRAPIResponseValidator(ValidationReporter):
         # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
         return False if self.has_errors() else True
 
-    def has_valid_knowledge_graph(self, message: Dict) -> bool:
+    def has_valid_knowledge_graph(self, message: Dict, edges_limit: int = 100) -> bool:
         """
         Validate a TRAPI Knowledge Graph.
+
         :param message: input message expected to contain the 'knowledge_graph'
+        :type message: Dict
+        :param edges_limit: integer maximum number of edges to be validated in the knowledge graph. A value of zero
+                            triggers validation of all edges in the knowledge graph (could take awhile! Default: 100)
+        :type edges_limit: int
+
         :return: bool, False, if validation errors
         """
         # The Knowledge Graph should not be missing
@@ -219,7 +252,7 @@ class TRAPIResponseValidator(ValidationReporter):
 
                 # ...then if not empty, validate a subgraph sample of the associated
                 # Knowledge Graph (since some TRAPI response kg's may be huge!)
-                kg_sample = self.sample_graph(knowledge_graph)
+                kg_sample = self.sample_graph(graph=knowledge_graph, edges_limit=edges_limit)
 
                 # Verify that the sample of the knowledge graph is TRAPI compliant
                 trapi_validator: TRAPISchemaValidator = check_trapi_validity(
@@ -232,14 +265,15 @@ class TRAPIResponseValidator(ValidationReporter):
 
                 # Verify that the sample of the knowledge graph is
                 # compliant to the currently applicable Biolink Model release
-                biolink_validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
-                    graph=kg_sample,
-                    biolink_version=self.biolink_version,
-                    sources=self.sources,
-                    # the ValidationReporter calling this function *might*
-                    # have an explicit strict_validation override (if not None)
-                    strict_validation=self.strict_validation
-                )
+                biolink_validator: BiolinkValidator = \
+                    check_biolink_model_compliance_of_knowledge_graph(
+                        graph=kg_sample,
+                        biolink_version=self.biolink_version,
+                        sources=self.sources,
+                        # the ValidationReporter calling this function *might*
+                        # have an explicit strict_validation override (if not None)
+                        strict_validation=self.strict_validation
+                    )
                 if biolink_validator.has_messages():
                     self.merge(biolink_validator)
 
