@@ -216,19 +216,19 @@
 
 ### warning.knowledge_graph.edge.attribute.type_id.not_association_slot
 
-**Message:** Edge attribute_type_id '{identifier}' not a biolink:association_slot?
+**Message:** Edge '{identifier}' attribute_type_id '{attribute_type_id}' not a biolink:association_slot?
 
 **Description:** Knowledge graph edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy.
 
 ### warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix
 
-**Message:** Edge attribute_type_id '{identifier}' has a non-Biolink CURIE prefix mapped to Biolink.
+**Message:** Edge '{identifier}' attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink.
 
 **Description:** Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes.
 
 ### warning.knowledge_graph.edge.attribute.type_id.unknown_prefix
 
-**Message:** Edge attribute_type_id '{identifier}' has a CURIE prefix namespace unknown to Biolink!
+**Message:** Edge '{identifier}' attribute_type_id '{attribute_type_id}' has a CURIE prefix namespace unknown to Biolink!
 
 **Description:** The namespaces of 'attribute_type_id' terms may be incomplete with respect to Biolink Model version being used in the knowledge graph.
 
@@ -238,23 +238,23 @@
 
 **Description:** Knowledge graph edge 'attribute_type_id' is deprecated in current model, to be removed in the future. Review Biolink Model for replacement.
 
+### warning.knowledge_graph.edge.provenance.multiple_primary
+
+**Message:** Edge '{identifier}' has recorded multiple 'primary' knowledge sources: '{sources}'?
+
+**Description:** Knowledge graph edge attributes should record only a single primary knowledge source provenance attribute value.
+
 ### warning.knowledge_graph.edge.provenance.ara.missing
 
-**Message:** Edge is missing ARA knowledge source provenance?
+**Message:** Edge '{identifier}' is missing ARA knowledge source provenance '{ara_source}'?
 
-**Description:** Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to ARA.
+**Description:** Knowledge graph edge attributes ARAs should record the infores identifier of their knowledge source provenance with respect to ARA.
 
 ### warning.knowledge_graph.edge.provenance.kp.missing
 
-**Message:** Edge attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?
+**Message:** Edge '{identifier}' attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?
 
-**Description:** Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to KP.
-
-### warning.knowledge_graph.edge.provenance.missing_primary
-
-**Message:** Edge does not record its 'primary' knowledge source?
-
-**Description:** Knowledge graph edge attributes should record the infores identifier of their primary knowledge source provenance with respect to KP.
+**Description:** Knowledge graph edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP.
 
 ## Error
 
@@ -698,39 +698,45 @@
 
 ### error.knowledge_graph.edge.attribute.type_id.missing
 
-**Message:** Edge attribute is missing its 'attribute_type_id' property!
+**Message:** Edge '{identifier}' attribute is missing its 'attribute_type_id' property!
 
 **Description:** The attribute of a Knowledge graph edge must have a 'attribute_type_id' key with a non-empty associated value!
 
 ### error.knowledge_graph.edge.attribute.type_id.empty
 
-**Message:** Edge attribute empty 'attribute_type_id' property!
+**Message:** Edge'{identifier}' attribute empty 'attribute_type_id' property!
 
 **Description:** The value of the 'attribute_type_id' of an attribute of a Knowledge graph edge must not be empty!
 
 ### error.knowledge_graph.edge.attribute.type_id.not_curie
 
-**Message:** Edge attribute_type_id '{identifier}' is not a CURIE!
+**Message:** Edge '{identifier}' attribute_type_id '{attribute_type_id}' is not a CURIE!
 
 **Description:** The 'attribute_type_id' of a Knowledge graph edge attribute must be a controlled vocabulary term specified by a CURIE!
 
 ### error.knowledge_graph.edge.attribute.value.missing
 
-**Message:** Edge attribute is missing its 'value' property!
+**Message:** Edge '{identifier}' attribute is missing its 'value' property!
 
 **Description:** An attribute of a Knowledge graph edge must have a 'value' key with a non-empty associated value!
 
 ### error.knowledge_graph.edge.attribute.value.empty
 
-**Message:** Edge attribute empty 'value' property!
+**Message:** Edge '{identifier}' attribute empty 'value' property!
 
 **Description:** The value of an attribute of a Knowledge graph edge must not be empty!
 
 ### error.knowledge_graph.edge.provenance.infores.missing
 
-**Message:** Edge has provenance value '{identifier}' which is not a well-formed InfoRes CURIE!
+**Message:** Edge '{identifier}' has provenance value '{infores}' which is not a well-formed InfoRes CURIE!
 
 **Description:** The value of an attribute specifying the provenance of a Knowledge graph edge must be the well-formed InfoRes CURIE of a knowledge source!
+
+### error.knowledge_graph.edge.provenance.missing_primary
+
+**Message:** Edge '{identifier}' does not record its 'primary' knowledge source?
+
+**Description:** Knowledge graph edge attributes should record the 'infores' identifier of their primary knowledge source provenance with respect to KP.
 
 ### error.knowledge_graph.edge.qualifiers.not_array
 
