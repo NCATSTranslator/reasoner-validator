@@ -93,9 +93,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix">warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-unknown-prefix">warning.knowledge_graph.edge.attribute.type_id.unknown_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated">warning.knowledge_graph.edge.attribute.type_id.deprecated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-multiple-primary">warning.knowledge_graph.edge.provenance.multiple_primary</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-ara-missing">warning.knowledge_graph.edge.provenance.ara.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-kp-missing">warning.knowledge_graph.edge.provenance.kp.missing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-missing-primary">warning.knowledge_graph.edge.provenance.missing_primary</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#error">Error</a><ul>
@@ -178,6 +178,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-value-missing">error.knowledge_graph.edge.attribute.value.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-value-empty">error.knowledge_graph.edge.attribute.value.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-provenance-infores-missing">error.knowledge_graph.edge.provenance.infores.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-provenance-missing-primary">error.knowledge_graph.edge.provenance.missing_primary</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-not-array">error.knowledge_graph.edge.qualifiers.not_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-empty">error.knowledge_graph.edge.qualifiers.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-invalid">error.knowledge_graph.edge.qualifiers.qualifier.invalid</a></li>
@@ -396,17 +397,17 @@
 </div>
 <div class="section" id="warning-knowledge-graph-edge-attribute-type-id-not-association-slot">
 <h3>warning.knowledge_graph.edge.attribute.type_id.not_association_slot<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge attribute_type_id ‘{identifier}’ not a biolink:association_slot?</p>
+<p><strong>Message:</strong> Edge ‘{identifier}’ attribute_type_id ‘{attribute_type_id}’ not a biolink:association_slot?</p>
 <p><strong>Description:</strong> Knowledge graph edge ‘attribute_type_id’ value should generally be a term defined within the biolink:association_slot hierarchy.</p>
 </div>
 <div class="section" id="warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix">
 <h3>warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge attribute_type_id ‘{identifier}’ has a non-Biolink CURIE prefix mapped to Biolink.</p>
+<p><strong>Message:</strong> Edge ‘{identifier}’ attribute_type_id ‘{attribute_type_id}’ has a non-Biolink CURIE prefix mapped to Biolink.</p>
 <p><strong>Description:</strong> Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes.</p>
 </div>
 <div class="section" id="warning-knowledge-graph-edge-attribute-type-id-unknown-prefix">
 <h3>warning.knowledge_graph.edge.attribute.type_id.unknown_prefix<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-unknown-prefix" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge attribute_type_id ‘{identifier}’ has a CURIE prefix namespace unknown to Biolink!</p>
+<p><strong>Message:</strong> Edge ‘{identifier}’ attribute_type_id ‘{attribute_type_id}’ has a CURIE prefix namespace unknown to Biolink!</p>
 <p><strong>Description:</strong> The namespaces of ‘attribute_type_id’ terms may be incomplete with respect to Biolink Model version being used in the knowledge graph.</p>
 </div>
 <div class="section" id="warning-knowledge-graph-edge-attribute-type-id-deprecated">
@@ -414,20 +415,20 @@
 <p><strong>Message:</strong> ‘{identifier}’ is deprecated?</p>
 <p><strong>Description:</strong> Knowledge graph edge ‘attribute_type_id’ is deprecated in current model, to be removed in the future. Review Biolink Model for replacement.</p>
 </div>
+<div class="section" id="warning-knowledge-graph-edge-provenance-multiple-primary">
+<h3>warning.knowledge_graph.edge.provenance.multiple_primary<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-multiple-primary" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{identifier}’ has recorded multiple ‘primary’ knowledge sources: ‘{sources}’?</p>
+<p><strong>Description:</strong> Knowledge graph edge attributes should record only a single primary knowledge source provenance attribute value.</p>
+</div>
 <div class="section" id="warning-knowledge-graph-edge-provenance-ara-missing">
 <h3>warning.knowledge_graph.edge.provenance.ara.missing<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-ara-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge is missing ARA knowledge source provenance?</p>
-<p><strong>Description:</strong> Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to ARA.</p>
+<p><strong>Message:</strong> Edge ‘{identifier}’ is missing ARA knowledge source provenance ‘{ara_source}’?</p>
+<p><strong>Description:</strong> Knowledge graph edge attributes ARAs should record the infores identifier of their knowledge source provenance with respect to ARA.</p>
 </div>
 <div class="section" id="warning-knowledge-graph-edge-provenance-kp-missing">
 <h3>warning.knowledge_graph.edge.provenance.kp.missing<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-kp-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge attribute values are missing expected Knowledge Provider ‘{kp_source}’ ‘{kp_source_type}’ provenance?</p>
-<p><strong>Description:</strong> Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to KP.</p>
-</div>
-<div class="section" id="warning-knowledge-graph-edge-provenance-missing-primary">
-<h3>warning.knowledge_graph.edge.provenance.missing_primary<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-missing-primary" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge does not record its ‘primary’ knowledge source?</p>
-<p><strong>Description:</strong> Knowledge graph edge attributes should record the infores identifier of their primary knowledge source provenance with respect to KP.</p>
+<p><strong>Message:</strong> Edge ‘{identifier}’ attribute values are missing expected Knowledge Provider ‘{kp_source}’ ‘{kp_source_type}’ provenance?</p>
+<p><strong>Description:</strong> Knowledge graph edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP.</p>
 </div>
 </div>
 <div class="section" id="error">
@@ -799,33 +800,38 @@
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-type-id-missing">
 <h3>error.knowledge_graph.edge.attribute.type_id.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge attribute is missing its ‘attribute_type_id’ property!</p>
+<p><strong>Message:</strong> Edge ‘{identifier}’ attribute is missing its ‘attribute_type_id’ property!</p>
 <p><strong>Description:</strong> The attribute of a Knowledge graph edge must have a ‘attribute_type_id’ key with a non-empty associated value!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-type-id-empty">
 <h3>error.knowledge_graph.edge.attribute.type_id.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge attribute empty ‘attribute_type_id’ property!</p>
+<p><strong>Message:</strong> Edge’{identifier}’ attribute empty ‘attribute_type_id’ property!</p>
 <p><strong>Description:</strong> The value of the ‘attribute_type_id’ of an attribute of a Knowledge graph edge must not be empty!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-type-id-not-curie">
 <h3>error.knowledge_graph.edge.attribute.type_id.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-not-curie" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge attribute_type_id ‘{identifier}’ is not a CURIE!</p>
+<p><strong>Message:</strong> Edge ‘{identifier}’ attribute_type_id ‘{attribute_type_id}’ is not a CURIE!</p>
 <p><strong>Description:</strong> The ‘attribute_type_id’ of a Knowledge graph edge attribute must be a controlled vocabulary term specified by a CURIE!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-value-missing">
 <h3>error.knowledge_graph.edge.attribute.value.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-value-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge attribute is missing its ‘value’ property!</p>
+<p><strong>Message:</strong> Edge ‘{identifier}’ attribute is missing its ‘value’ property!</p>
 <p><strong>Description:</strong> An attribute of a Knowledge graph edge must have a ‘value’ key with a non-empty associated value!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-value-empty">
 <h3>error.knowledge_graph.edge.attribute.value.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-value-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge attribute empty ‘value’ property!</p>
+<p><strong>Message:</strong> Edge ‘{identifier}’ attribute empty ‘value’ property!</p>
 <p><strong>Description:</strong> The value of an attribute of a Knowledge graph edge must not be empty!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-provenance-infores-missing">
 <h3>error.knowledge_graph.edge.provenance.infores.missing<a class="headerlink" href="#error-knowledge-graph-edge-provenance-infores-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge has provenance value ‘{identifier}’ which is not a well-formed InfoRes CURIE!</p>
+<p><strong>Message:</strong> Edge ‘{identifier}’ has provenance value ‘{infores}’ which is not a well-formed InfoRes CURIE!</p>
 <p><strong>Description:</strong> The value of an attribute specifying the provenance of a Knowledge graph edge must be the well-formed InfoRes CURIE of a knowledge source!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-provenance-missing-primary">
+<h3>error.knowledge_graph.edge.provenance.missing_primary<a class="headerlink" href="#error-knowledge-graph-edge-provenance-missing-primary" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge ‘{identifier}’ does not record its ‘primary’ knowledge source?</p>
+<p><strong>Description:</strong> Knowledge graph edge attributes should record the ‘infores’ identifier of their primary knowledge source provenance with respect to KP.</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-qualifiers-not-array">
 <h3>error.knowledge_graph.edge.qualifiers.not_array<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-not-array" title="Permalink to this heading"></a></h3>
