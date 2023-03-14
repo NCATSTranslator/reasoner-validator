@@ -433,8 +433,17 @@ class ValidationReporter:
         # TODO: are missing messages an absolute error?
         assert len(messages) > 0
         decoded_messages: List[str] = list()
-        code: str
-        parameters: List[Dict[str, str]]
+        code: str  # code for specific validation message template
+        parameters: Optional[
+                Dict[
+                    str,  # message template 'identifier' key value
+                    Optional[
+                        List[
+                            Dict[str, str]  # dictionary of other template parameters (if present)
+                        ]
+                    ]
+                ]
+            ]
         for code, parameters in messages.items():
             decoded_messages.extend(
                 [self.prefix + message for message in CodeDictionary.display(code, parameters)]

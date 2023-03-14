@@ -138,7 +138,7 @@
 
 ### warning.input_edge.predicate.non_canonical
 
-**Message:** {context} edge {identifier} predicate '{predicate}' is non-canonical?
+**Message:** Input data edge '{identifier}' predicate '{predicate}' is non-canonical?
 
 **Description:** A predicate selected for use as input data should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
@@ -156,7 +156,7 @@
 
 ### warning.query_graph.edge.predicate.non_canonical
 
-**Message:** {context} edge {identifier} predicate '{predicate}' is non-canonical?
+**Message:** Query graph edge '{identifier}' predicate '{predicate}' is non-canonical?
 
 **Description:** A predicate selected for use in a query graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
@@ -186,7 +186,7 @@
 
 ### warning.knowledge_graph.edge.predicate.non_canonical
 
-**Message:** {context} edge {identifier} predicate '{predicate}' is non-canonical?
+**Message:** Knowledge Graph '{identifier}' predicate '{predicate}' is non-canonical?
 
 **Description:** A predicate selected for use in a knowledge graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
@@ -314,7 +314,7 @@
 
 ### error.trapi.response.results.missing_bindings
 
-**Message:** Neither the input id '{input_id}' nor resolved aliases were returned in the Result object IDs for node '{output_node_binding}' binding!
+**Message:** Neither the input id '{identifier}' nor resolved aliases were returned in the Result object IDs for node '{output_node_binding}' binding!
 
 **Description:** TRAPI Message.Results cannot resolve its reported identifier mappings to the original query.
 
@@ -350,7 +350,7 @@
 
 ### error.input_edge.predicate.missing
 
-**Message:** {context} edge '{identifier}' predicate is missing or empty!
+**Message:** Input test data edge '{identifier}' predicate is missing or empty!
 
 **Description:** Input test edge data needs to have a specific edge predicate for testing!
 

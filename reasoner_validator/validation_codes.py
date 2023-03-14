@@ -160,10 +160,10 @@ class CodeDictionary:
     @classmethod
     def display(
             cls,
-            code: str,
+            code: str,  # code for specific validation message template
             parameters: Optional[
                 Dict[
-                    str,  # template 'identifier' key value
+                    str,  # message template 'identifier' key value
                     Optional[
                         List[
                             Dict[str, str]  # dictionary of other template parameters (if present)
@@ -173,7 +173,8 @@ class CodeDictionary:
             ] = None
     ) -> List[str]:
         """
-        Generate one or more full messages from provided Validation Reporter code and associated parameters (if applicable).
+        Generate one or more full messages from provided Validation Reporter code
+        and associated parameters (if applicable).
 
         :param code: str, valid (dot delimited YAML key path) identified code,
                      which should be registered in the project codes.yaml file.

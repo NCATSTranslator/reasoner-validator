@@ -537,7 +537,6 @@ class BiolinkValidator(ValidationReporter):
                     not self.bmt.is_translator_canonical_predicate(predicate):
                 self.report(
                     code=f"warning.{context}.non_canonical",
-                    context=self.graph_type.value,
                     identifier=edge_id,
                     predicate=predicate
                 )

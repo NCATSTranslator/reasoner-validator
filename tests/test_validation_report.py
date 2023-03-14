@@ -165,13 +165,26 @@ def test_message_display():
 
 def test_validator_reporter_message_display():
     reporter = ValidationReporter(prefix="Test Validation Report", trapi_version=TEST_TRAPI_VERSION)
-    messages: List[str] = reporter.display({
+    messages: List[str] = reporter.display(messages={
             "info.input_edge.node.category.abstract": {
                 "biolink:AdministrativeEntity": None
             }
     })
     assert "Test Validation Report: INFO - Input Edge Node Category: 'biolink:AdministrativeEntity' is abstract." \
         in messages
+
+    messages = reporter.display(messages={
+            # validation code revolving to template
+            "error.input_edge.predicate.invalid":
+            {
+                # this identifier is an 'edge_id'
+                "a--biolink:not_a_predicate->b": [
+                    {"predicate":  "biolink:not_a_predicate"}  # other parameters
+                ]
+            }
+    })
+    assert "Test Validation Report: ERROR - Input Edge Predicate: " +\
+           "Edge 'a--biolink:not_a_predicate->b' predicate 'biolink:not_a_predicate' is invalid!" in messages
 
 
 def test_unknown_message_code():
@@ -377,15 +390,15 @@ def test_validator_method():
                     "messages": {
                         "information": {},
                         "warnings": {
-                            "warning.deprecated": [
+                            "warning.input_edge.node.category.deprecated": [
                                 {
-                                    'context': "Input",
                                     "identifier": "biolink:ChemicalSubstance"
                                 }
                             ],
-                            "warning.predicate.non_canonical": [
+                            "warning.knowledge_graph.edge.predicate.non_canonical": [
                                 {
-                                    'predicate': "biolink:participates_in"
+                                    "identifier": "ABC1--biolink:participates_in->Glycolysis",
+                                    "predicate": "biolink:participates_in"
                                 }
                             ]
                         },

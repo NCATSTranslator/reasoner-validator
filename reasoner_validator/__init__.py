@@ -304,7 +304,7 @@ class TRAPIResponseValidator(ValidationReporter):
                     #     if not any([alias == object_id for alias in output_aliases for object_id in object_ids]):
                     #         validator.report(
                     #             code=error.results.missing_bindings,
-                    #             input_id=case[output_element],
+                    #             identifier=case[output_element],
                     #             output_node_binding=output_node_binding
                     #         )
                     #         # data_dump=f"Resolved aliases:\n{','.join(output_aliases)}\n" +
