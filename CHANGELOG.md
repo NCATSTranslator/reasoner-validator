@@ -2,6 +2,12 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
  
+## v3.4.5
+
+- Missing 'primary_knowledge_source' now reported as an error
+- 'primary_knowledge_source' value cardinality > 1 is reported as a warning
+- made attribute validation context more explicit (with the edge identifier, now used as indexing identifier of message templates)
+ 
 ## v3.4.4
 
 - Added in attribute Type Id validation codes that were missing for 'generic' element filters
