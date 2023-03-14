@@ -529,7 +529,7 @@ def test_sanitize_trapi_query(query: Tuple):
                 "kp_source_type": "aggregator"
             },
             True,
-            "warning.knowledge_graph.edge.provenance.missing_primary"
+            "error.knowledge_graph.edge.provenance.missing_primary"
         ),
         (
             # Query 17 - Full Message, with non-strict validation

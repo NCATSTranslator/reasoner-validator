@@ -178,10 +178,6 @@ warning:
           missing:
             $message: "Edge attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?"
             $description: "Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to KP."
-        missing_primary:
-          $message: "Edge does not record its 'primary' knowledge source?"
-          $description: "Knowledge graph edge attributes should record the infores identifier of their primary knowledge source provenance with respect to KP."
-
 error:
   non_compliant:
     $message: "S-P-O statement '{identifier}' is not compliant to Biolink Model {biolink_release}"
@@ -464,6 +460,9 @@ error:
           missing:
             $message: "Edge has provenance value '{identifier}' which is not a well-formed InfoRes CURIE!"
             $description: "The value of an attribute specifying the provenance of a Knowledge graph edge must be the well-formed InfoRes CURIE of a knowledge source!"
+        missing_primary:
+          $message: "Edge does not record its 'primary' knowledge source?"
+          $description: "Knowledge graph edge attributes should record the infores identifier of their primary knowledge source provenance with respect to KP."
       qualifiers:
         not_array:
           $message: "Edge '{identifier}' 'qualifiers' are not an array!"

@@ -425,7 +425,7 @@ class BiolinkValidator(ValidationReporter):
                 )
 
             if not found_primary_or_original_knowledge_source:
-                self.report(code="warning.knowledge_graph.edge.provenance.missing_primary")
+                self.report(code="error.knowledge_graph.edge.provenance.missing_primary")
 
     def validate_attribute_constraints(self, edge_id: str, edge: Dict):
         if 'attribute_constraints' not in edge or edge['attribute_constraints'] is None:
