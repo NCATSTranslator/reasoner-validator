@@ -1024,7 +1024,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             },
             get_ara_test_case({"kp_source_type": "aggregator"}),
             # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge has neither a 'primary' nor 'original' knowledge source?"
-            "warning.knowledge_graph.edge.provenance.missing_primary"
+            "error.knowledge_graph.edge.provenance.missing_primary"
         ),
         (
             # Query 13. Is complete and should pass?

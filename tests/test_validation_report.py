@@ -336,7 +336,11 @@ def test_validator_method():
     def validator_method(validator: ValidationReporter, arg, **case):
         assert isinstance(arg, Dict)
         assert arg['some key'] == "some value"
-        validator.report("error.knowledge_graph.edge.provenance.infores.missing", identifier="foo:bar")
+        validator.report(
+            "error.knowledge_graph.edge.provenance.infores.missing",
+            identifier="fake-edge-id",
+            infores="foo:bar"
+        )
         assert len(case) == 2
         assert case['some parameter'] == "some parameter value"
         assert case['another parameter'] == "some other parameter value"
@@ -359,7 +363,7 @@ def test_validator_method():
     for code, parameters in messages['errors'].items():
         errors.extend(CodeDictionary.display(code, parameters))
     assert "ERROR - Knowledge Graph Edge Provenance Infores: " + \
-           "Edge has provenance value 'foo:bar' which is not a well-formed InfoRes CURIE!" in errors
+           "Edge 'fake-edge-id' has provenance value 'foo:bar' which is not a well-formed InfoRes CURIE!" in errors
 
 
 # has_validation_errors(root_key: str = 'validation', case: Optional[Dict] = None)
