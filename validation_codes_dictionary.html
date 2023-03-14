@@ -68,6 +68,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#warning">Warning</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-status-unknown">warning.trapi.response.status.unknown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-workflow-runner-parameters-null">warning.trapi.response.workflow.runner_parameters.null</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-workflow-parameters-null">warning.trapi.response.workflow.parameters.null</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-graph-empty">warning.graph.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-response-knowledge-graph-empty">warning.response.knowledge_graph.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-response-results-empty">warning.response.results.empty</a></li>
@@ -281,6 +283,16 @@
 <p><strong>Message:</strong> TRAPI Response status code ‘{identifier}’ is unrecognized?</p>
 <p><strong>Description:</strong> The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable</p>
 </div>
+<div class="section" id="warning-trapi-response-workflow-runner-parameters-null">
+<h3>warning.trapi.response.workflow.runner_parameters.null<a class="headerlink" href="#warning-trapi-response-workflow-runner-parameters-null" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> TRAPI Response.workflow.runner_parameters property is missing?</p>
+<p><strong>Description:</strong> If a ‘runner_parameters’ property value is given for a workflow step specification, it should not be null. This field will be ignored?</p>
+</div>
+<div class="section" id="warning-trapi-response-workflow-parameters-null">
+<h3>warning.trapi.response.workflow.parameters.null<a class="headerlink" href="#warning-trapi-response-workflow-parameters-null" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> TRAPI Response.workflow.parameters property is missing?</p>
+<p><strong>Description:</strong> If a ‘parameters’ property value is given for a workflow step specification, it should not be null. This field will be ignored?</p>
+</div>
 <div class="section" id="warning-graph-empty">
 <h3>warning.graph.empty<a class="headerlink" href="#warning-graph-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> {identifier} data is empty?</p>
@@ -313,7 +325,7 @@
 </div>
 <div class="section" id="warning-input-edge-predicate-non-canonical">
 <h3>warning.input_edge.predicate.non_canonical<a class="headerlink" href="#warning-input-edge-predicate-non-canonical" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> {context} edge {identifier} predicate ‘{predicate}’ is non-canonical?</p>
+<p><strong>Message:</strong> Input data edge ‘{identifier}’ predicate ‘{predicate}’ is non-canonical?</p>
 <p><strong>Description:</strong> A predicate selected for use as input data should preferably be tagged as ‘canonical’ in the specified Biolink Model release?</p>
 </div>
 <div class="section" id="warning-query-graph-node-ids-unmapped-to-categories">
@@ -328,7 +340,7 @@
 </div>
 <div class="section" id="warning-query-graph-edge-predicate-non-canonical">
 <h3>warning.query_graph.edge.predicate.non_canonical<a class="headerlink" href="#warning-query-graph-edge-predicate-non-canonical" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> {context} edge {identifier} predicate ‘{predicate}’ is non-canonical?</p>
+<p><strong>Message:</strong> Query graph edge ‘{identifier}’ predicate ‘{predicate}’ is non-canonical?</p>
 <p><strong>Description:</strong> A predicate selected for use in a query graph should preferably be tagged as ‘canonical’ in the specified Biolink Model release?</p>
 </div>
 <div class="section" id="warning-knowledge-graph-node-category-deprecated">
@@ -353,7 +365,7 @@
 </div>
 <div class="section" id="warning-knowledge-graph-edge-predicate-non-canonical">
 <h3>warning.knowledge_graph.edge.predicate.non_canonical<a class="headerlink" href="#warning-knowledge-graph-edge-predicate-non-canonical" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> {context} edge {identifier} predicate ‘{predicate}’ is non-canonical?</p>
+<p><strong>Message:</strong> Knowledge Graph ‘{identifier}’ predicate ‘{predicate}’ is non-canonical?</p>
 <p><strong>Description:</strong> A predicate selected for use in a knowledge graph should preferably be tagged as ‘canonical’ in the specified Biolink Model release?</p>
 </div>
 <div class="section" id="warning-knowledge-graph-edge-qualifiers-empty">
@@ -461,7 +473,7 @@
 </div>
 <div class="section" id="error-trapi-response-results-missing-bindings">
 <h3>error.trapi.response.results.missing_bindings<a class="headerlink" href="#error-trapi-response-results-missing-bindings" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Neither the input id ‘{input_id}’ nor resolved aliases were returned in the Result object IDs for node ‘{output_node_binding}’ binding!</p>
+<p><strong>Message:</strong> Neither the input id ‘{identifier}’ nor resolved aliases were returned in the Result object IDs for node ‘{output_node_binding}’ binding!</p>
 <p><strong>Description:</strong> TRAPI Message.Results cannot resolve its reported identifier mappings to the original query.</p>
 </div>
 <div class="section" id="error-input-edge-node-category-missing">
@@ -491,7 +503,7 @@
 </div>
 <div class="section" id="error-input-edge-predicate-missing">
 <h3>error.input_edge.predicate.missing<a class="headerlink" href="#error-input-edge-predicate-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> {context} edge ‘{identifier}’ predicate is missing or empty!</p>
+<p><strong>Message:</strong> Input test data edge ‘{identifier}’ predicate is missing or empty!</p>
 <p><strong>Description:</strong> Input test edge data needs to have a specific edge predicate for testing!</p>
 </div>
 <div class="section" id="error-input-edge-predicate-unknown">
