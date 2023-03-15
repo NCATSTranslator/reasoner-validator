@@ -128,25 +128,25 @@ python-versions = "*"
 
 [[package]]
 name = "bioregistry"
-version = "0.5.143"
+version = "0.6.98"
 description = "Integrated registry of biological databases and nomenclatures"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 click = "*"
 curies = "*"
-more-click = "*"
+more-click = ">=0.1.2"
 pydantic = "*"
 pystow = ">=0.1.13"
 requests = "*"
 tqdm = "*"
 
 [package.extras]
-align = ["beautifulsoup4", "class-resolver", "defusedxml", "pyyaml", "tabulate"]
+align = ["beautifulsoup4", "class-resolver", "defusedxml", "fairsharing-client (>=0.1.0)", "pyyaml", "tabulate"]
 charts = ["matplotlib", "matplotlib-venn", "pandas", "seaborn"]
-docs = ["autodoc-pydantic", "sphinx", "sphinx-autodoc-typehints", "sphinx-automodapi", "sphinx-click", "sphinx-rtd-theme"]
+docs = ["autodoc-pydantic", "sphinx", "sphinx-autodoc-typehints (==1.21.1)", "sphinx-automodapi", "sphinx-click", "sphinx-rtd-theme"]
 export = ["ndex2", "pyyaml", "rdflib", "rdflib-jsonld"]
 gha = ["more-itertools"]
 health = ["click-default-group", "pandas", "pyyaml", "tabulate"]
@@ -196,7 +196,7 @@ css = ["tinycss2 (>=1.1.0,<1.2)"]
 
 [[package]]
 name = "bmt"
-version = "1.0.2"
+version = "1.0.3"
 description = "Biolink Model Toolkit: A Python API for working with the Biolink Model"
 category = "main"
 optional = false
@@ -204,9 +204,9 @@ python-versions = ">=3.9,<4.0"
 
 [package.dependencies]
 deprecation = ">=2.1.0,<3.0.0"
-linkml-runtime = ">=1.4,<2.0"
-oaklib = ">=0.1.71,<0.2.0"
-pytest = ">=7.2.0,<8.0.0"
+linkml-runtime = ">=1.4.9,<2.0.0"
+oaklib = ">=0.2.1,<0.3.0"
+pytest = ">=7.2.2,<8.0.0"
 recommonmark = ">=0.7.1,<0.8.0"
 sphinx-autodoc-typehints = ">=1.19.5,<2.0.0"
 sphinx-click = ">=4.3.0,<5.0.0"
@@ -475,15 +475,15 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "filelock"
-version = "3.9.0"
+version = "3.9.1"
 description = "A platform independent file lock."
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.extras]
-docs = ["furo (>=2022.12.7)", "sphinx (>=5.3)", "sphinx-autodoc-typehints (>=1.19.5)"]
-testing = ["covdefaults (>=2.2.2)", "coverage (>=7.0.1)", "pytest (>=7.2)", "pytest-cov (>=4)", "pytest-timeout (>=2.1)"]
+docs = ["furo (>=2022.12.7)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.22,!=1.23.4)"]
+testing = ["covdefaults (>=2.3)", "coverage (>=7.2.1)", "pytest (>=7.2.2)", "pytest-cov (>=4)", "pytest-timeout (>=2.1)"]
 
 [[package]]
 name = "flake8"
@@ -864,14 +864,14 @@ linkml-runtime = ">=1.1.24,<2.0.0"
 
 [[package]]
 name = "kgcl-schema"
-version = "0.3.1"
+version = "0.3.2"
 description = "Schema for the KGCL project."
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
-bioregistry = ">=0.5.49,<0.6.0"
+bioregistry = ">=0.6.0,<0.7.0"
 lark = ">=1.1.2,<2.0.0"
 linkml-runtime = ">=1.1.24,<2.0.0"
 
@@ -936,7 +936,7 @@ regex = ["regex"]
 
 [[package]]
 name = "linkml"
-version = "1.4.7"
+version = "1.4.8"
 description = "Linked Open Data Modeling Language"
 category = "main"
 optional = false
@@ -1238,7 +1238,7 @@ viz = ["pygraphviz"]
 
 [[package]]
 name = "oaklib"
-version = "0.1.73"
+version = "0.2.3"
 description = "Ontology Access Kit: Python library for common ontology operations over a variety of backends"
 category = "main"
 optional = false
@@ -1247,7 +1247,7 @@ python-versions = ">=3.9,<4.0.0"
 [package.dependencies]
 airium = ">=0.2.5,<0.3.0"
 appdirs = ">=1.4.4,<2.0.0"
-bioregistry = ">=0.5.64,<0.6.0"
+bioregistry = ">=0.6.35,<0.7.0"
 class-resolver = ">=0.3.10,<0.4.0"
 curies = ">=0.4.0,<0.5.0"
 funowl = ">=0.1.12,<0.2.0"
@@ -1382,7 +1382,7 @@ python-versions = "*"
 
 [[package]]
 name = "pathspec"
-version = "0.11.0"
+version = "0.11.1"
 description = "Utility library for gitignore style pattern matching of file paths."
 category = "main"
 optional = false
@@ -1645,7 +1645,7 @@ xml = ["lxml"]
 
 [[package]]
 name = "pytest"
-version = "7.2.0"
+version = "7.2.2"
 description = "pytest: simple powerful testing with Python"
 category = "main"
 optional = false
@@ -2141,14 +2141,14 @@ test = ["html5lib", "pytest"]
 
 [[package]]
 name = "sphinxcontrib-jquery"
-version = "2.0.0"
+version = "4.1"
 description = "Extension to include jQuery on newer Sphinx releases"
 category = "main"
 optional = false
 python-versions = ">=2.7"
 
 [package.dependencies]
-setuptools = "*"
+Sphinx = ">=1.8"
 
 [[package]]
 name = "sphinxcontrib-jsmath"
@@ -2581,7 +2581,7 @@ docs = ["numpydoc", "sphinx", "myst-parser"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "5ed48e691daeac24ba488a0d49a8296c517168888d0186a3a9ba440faa43eb19"
+content-hash = "bcbbf939dae6c00c1801dc72d52882d5acea4a4d27a562fd94d8036798b1379e"
 
 [metadata.files]
 aiohttp = [
@@ -2717,8 +2717,8 @@ bcp47 = [
     {file = "bcp47-0.0.4.tar.gz", hash = "sha256:4878d2f3e697ef39ef3891a147280705e4377d5a8d7eb0702129b8d4a3718702"},
 ]
 bioregistry = [
-    {file = "bioregistry-0.5.143-py3-none-any.whl", hash = "sha256:70e0221fae09bf3aa47799a8bfb592d42d95d6a2df4924ce10dfe40cc294150e"},
-    {file = "bioregistry-0.5.143.tar.gz", hash = "sha256:15e2beb3a7d53fa81abbf0339762fcec59f7ba5a1ac219f2c247e04c3eaa8007"},
+    {file = "bioregistry-0.6.98-py3-none-any.whl", hash = "sha256:0c8511fafca3394bc9fbf8fe09ccdcfdfbe8451dc3118858a3e752ecfc2d6e6a"},
+    {file = "bioregistry-0.6.98.tar.gz", hash = "sha256:ec24997e49f8215a3007ea67df1ab41cf374833402d4b34239ceee0da7348a80"},
 ]
 black = [
     {file = "black-21.12b0-py3-none-any.whl", hash = "sha256:a615e69ae185e08fdd73e4715e260e2479c861b5740057fde6e8b4e3b7dd589f"},
@@ -2729,8 +2729,8 @@ bleach = [
     {file = "bleach-6.0.0.tar.gz", hash = "sha256:1a1a85c1595e07d8db14c5f09f09e6433502c51c595970edc090551f0db99414"},
 ]
 bmt = [
-    {file = "bmt-1.0.2-py3-none-any.whl", hash = "sha256:eac827ad05bbc4b930d2910b92443d3938e961cd851ba3016d73305030127386"},
-    {file = "bmt-1.0.2.tar.gz", hash = "sha256:aa9dfa5c049982406a22b299e555eb3d5a9398eec67ef8a892fd85edd5837889"},
+    {file = "bmt-1.0.3-py3-none-any.whl", hash = "sha256:e9324ea22d1ad96d4cff468eae671c181fd8adca00b21940bc592c4bdaa8acf2"},
+    {file = "bmt-1.0.3.tar.gz", hash = "sha256:d79f5ed92539fb28bfbe0b6faafd5b521e7cd251a1563c047a69a700662443ec"},
 ]
 cachetools = [
     {file = "cachetools-5.3.0-py3-none-any.whl", hash = "sha256:429e1a1e845c008ea6c85aa35d4b98b65d6a9763eeef3e37e92728a12d1de9d4"},
@@ -3011,8 +3011,8 @@ fastobo = [
     {file = "fastobo-0.12.2.tar.gz", hash = "sha256:2f2779f70ac54874329dddc74cabd86fea88abe56c544c2238076c1d27fe045e"},
 ]
 filelock = [
-    {file = "filelock-3.9.0-py3-none-any.whl", hash = "sha256:f58d535af89bb9ad5cd4df046f741f8553a418c01a7856bf0d173bbc9f6bd16d"},
-    {file = "filelock-3.9.0.tar.gz", hash = "sha256:7b319f24340b51f55a2bf7a12ac0755a9b03e718311dac567a0f4f7fabd2f5de"},
+    {file = "filelock-3.9.1-py3-none-any.whl", hash = "sha256:4427cdda14a1c68e264845142842d6de2d0fa2c15ba31571a3d9c9a1ec9d191c"},
+    {file = "filelock-3.9.1.tar.gz", hash = "sha256:e393782f76abea324dee598d2ea145b857a20df0e0ee4f80fcf35e72a341d2c7"},
 ]
 flake8 = [
     {file = "flake8-6.0.0-py2.py3-none-any.whl", hash = "sha256:3833794e27ff64ea4e9cf5d410082a8b97ff1a06c16aa3d2027339cd0f1195c7"},
@@ -3342,8 +3342,8 @@ kgcl-rdflib = [
     {file = "kgcl_rdflib-0.3.0-py3-none-any.whl", hash = "sha256:0d81571187c2ae5b455e7699f27deb87f6f31ea41e94996d9a3ec07374790283"},
 ]
 kgcl-schema = [
-    {file = "kgcl_schema-0.3.1-py3-none-any.whl", hash = "sha256:76c031bc79926dba045e70d673ed60fd3d347df8d558335fe0de11e003667fcf"},
-    {file = "kgcl_schema-0.3.1.tar.gz", hash = "sha256:62338917809d6a078e2bf66ee35866299188e44c3aa816ab1b4707cff5941295"},
+    {file = "kgcl_schema-0.3.2-py3-none-any.whl", hash = "sha256:87182f97623bc6b8c638392eb2d029dce35df7cb008e46abeea6be7c430d7364"},
+    {file = "kgcl_schema-0.3.2.tar.gz", hash = "sha256:8c4832935597030d05b7e05321e7431e275b693a7611ee5b009726ea6769fe9c"},
 ]
 kgx = [
     {file = "kgx-1.7.2-py3-none-any.whl", hash = "sha256:ea14ddb05647897d0f7a135fde095bcaf722cd817e3df7cf1991090b4f38b65e"},
@@ -3354,8 +3354,8 @@ lark = [
     {file = "lark-1.1.5.tar.gz", hash = "sha256:4b534eae1f9af5b4ea000bea95776350befe1981658eea3820a01c37e504bb4d"},
 ]
 linkml = [
-    {file = "linkml-1.4.7-py3-none-any.whl", hash = "sha256:2722387b35b8f3787e34dceee864b157814b300482abaafdd8b2d07904b5ec83"},
-    {file = "linkml-1.4.7.tar.gz", hash = "sha256:f0b59ab13bc25888a5890931f2414bdf702c2034612a84500d4f4ca9eba4955a"},
+    {file = "linkml-1.4.8-py3-none-any.whl", hash = "sha256:d6ce88345994a5a34838ea891c32da2be90627499aa73fbfe50e1708a9841ac7"},
+    {file = "linkml-1.4.8.tar.gz", hash = "sha256:668ec6c02f9ca3926c62bf0df0051ea03f4bbb3c453f8e4a0f5326e57dc8b602"},
 ]
 linkml-dataops = [
     {file = "linkml_dataops-0.1.0-py3-none-any.whl", hash = "sha256:193cf7f659e5f07946d2c2761896910d5f7151d91282543b1363801f68307f4c"},
@@ -3603,8 +3603,8 @@ nxontology = [
     {file = "nxontology-0.4.1.tar.gz", hash = "sha256:8f1e5d6d7787542e9414be4ae34bb09e369dbaf2d6c646bba2d18b122c083d44"},
 ]
 oaklib = [
-    {file = "oaklib-0.1.73-py3-none-any.whl", hash = "sha256:6b9ee3dff80410768875f51890de62c5a4d135ec9bfc598340711262b23dc03c"},
-    {file = "oaklib-0.1.73.tar.gz", hash = "sha256:5bcf1eb7794048c7cecce75f26067a964c9c3b0f2517e01a3b9ce6fb2a03b112"},
+    {file = "oaklib-0.2.3-py3-none-any.whl", hash = "sha256:e19e213dc502ca783410b5941915858ed9f45eaab8f4ae1ced348ca8c6882395"},
+    {file = "oaklib-0.2.3.tar.gz", hash = "sha256:424f873db268d6ba5d9de0661f5e815e247a47de7b3e9d545fee8889fa60247c"},
 ]
 ols-client = [
     {file = "ols_client-0.1.3-py3-none-any.whl", hash = "sha256:911dd71ded4df772b4b2d88fdd35a21bbfe3b0203f999e2f61ceed1195db141e"},
@@ -3663,8 +3663,8 @@ parse = [
     {file = "parse-1.19.0.tar.gz", hash = "sha256:9ff82852bcb65d139813e2a5197627a94966245c897796760a3a2a8eb66f020b"},
 ]
 pathspec = [
-    {file = "pathspec-0.11.0-py3-none-any.whl", hash = "sha256:3a66eb970cbac598f9e5ccb5b2cf58930cd8e3ed86d393d541eaf2d8b1705229"},
-    {file = "pathspec-0.11.0.tar.gz", hash = "sha256:64d338d4e0914e91c1792321e6907b5a593f1ab1851de7fc269557a21b30ebbc"},
+    {file = "pathspec-0.11.1-py3-none-any.whl", hash = "sha256:d8af70af76652554bd134c22b3e8a1cc46ed7d91edcdd721ef1a0c51a84a5293"},
+    {file = "pathspec-0.11.1.tar.gz", hash = "sha256:2798de800fa92780e33acca925945e9a19a133b715067cf165b8866c15a31687"},
 ]
 pip = [
     {file = "pip-23.0.1-py3-none-any.whl", hash = "sha256:236bcb61156d76c4b8a05821b988c7b8c35bf0da28a4b614e8d6ab5212c25c6f"},
@@ -3814,8 +3814,8 @@ pystow = [
     {file = "pystow-0.5.0.tar.gz", hash = "sha256:490e9ecbe4f947c72f63297f43f6584323c9ca2f2d48d47f2a22a815dc552bb4"},
 ]
 pytest = [
-    {file = "pytest-7.2.0-py3-none-any.whl", hash = "sha256:892f933d339f068883b6fd5a459f03d85bfcb355e4981e146d2c7616c21fef71"},
-    {file = "pytest-7.2.0.tar.gz", hash = "sha256:c4014eb40e10f11f355ad4e3c2fb2c6c6d1919c73f3b5a433de4708202cade59"},
+    {file = "pytest-7.2.2-py3-none-any.whl", hash = "sha256:130328f552dcfac0b1cec75c12e3f005619dc5f874f0a06e8ff7263f0ee6225e"},
+    {file = "pytest-7.2.2.tar.gz", hash = "sha256:c99ab0c73aceb050f68929bc93af19ab6db0558791c6a0715723abe9d0ade9d4"},
 ]
 pytest-logging = [
     {file = "pytest-logging-2015.11.4.tar.gz", hash = "sha256:cec5c85ecf18aab7b2ead5498a31b9f758680ef5a902b9054ab3f2bdbb77c896"},
@@ -4066,8 +4066,8 @@ sphinxcontrib-htmlhelp = [
     {file = "sphinxcontrib_htmlhelp-2.0.1-py3-none-any.whl", hash = "sha256:c38cb46dccf316c79de6e5515e1770414b797162b23cd3d06e67020e1d2a6903"},
 ]
 sphinxcontrib-jquery = [
-    {file = "sphinxcontrib-jquery-2.0.0.tar.gz", hash = "sha256:8fb65f6dba84bf7bcd1aea1f02ab3955ac34611d838bcc95d4983b805b234daa"},
-    {file = "sphinxcontrib_jquery-2.0.0-py3-none-any.whl", hash = "sha256:ed47fa425c338ffebe3c37e1cdb56e30eb806116b85f01055b158c7057fdb995"},
+    {file = "sphinxcontrib-jquery-4.1.tar.gz", hash = "sha256:1620739f04e36a2c779f1a131a2dfd49b2fd07351bf1968ced074365933abc7a"},
+    {file = "sphinxcontrib_jquery-4.1-py2.py3-none-any.whl", hash = "sha256:f936030d7d0147dd026a4f2b5a57343d233f1fc7b363f68b3d4f1cb0993878ae"},
 ]
 sphinxcontrib-jsmath = [
     {file = "sphinxcontrib-jsmath-1.0.1.tar.gz", hash = "sha256:a9925e4a4587247ed2191a22df5f6970656cb8ca2bd6284309578f2153e0c4b8"},
