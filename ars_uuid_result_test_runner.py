@@ -15,6 +15,14 @@ from bmt import Toolkit
 from reasoner_validator import TRAPIResponseValidator
 from reasoner_validator.biolink import get_biolink_model_toolkit
 
+ARS_HOSTS = [
+    'ars-prod.transltr.io',
+    'ars.test.transltr.io',
+    'ars.ci.transltr.io',
+    'ars-dev.transltr.io',
+    'ars.transltr.io'
+]
+
 
 def main():
 
@@ -32,13 +40,36 @@ def main():
 
     response_id = params.response_id[0]
 
-    response_content = requests.get(
-        'https://ars-dev.transltr.io/ars/api/messages/'+response_id, headers={'accept': 'application/json'}
-    )
-    status_code = response_content.status_code
+    response_content: Optional = None
+    status_code: int = 404
+
+    if params.verbose:
+        print(f"Trying to retrieve ARS Response UUID '{response_id}'...")
+
+    for ars_host in ARS_HOSTS:
+        if params.verbose:
+            print(f"\n...from {ars_host}", end=None)
+        try:
+            response_content = requests.get(
+                f"https://{ars_host}/ars/api/messages/"+response_id,
+                headers={'accept': 'application/json'}
+            )
+            if response_content:
+                status_code = response_content.status_code
+                if status_code == 200:
+                    print("...Result returned!")
+                    break
+            else:
+                status_code = 404
+
+        except Exception as e:
+            print(f"Remote host {ars_host} unavailable: Connection attempt to {ars_host} triggered an exception: {e}")
+            response_content = None
+            status_code = 404
+            continue
 
     if status_code != 200:
-        print("Cannot fetch from ARS a response corresponding to response_id="+str(response_id))
+        print(f"Cannot fetch from ARS a TRAPI Response corresponding to UUID '{str(response_id)}'... Exiting.")
         return
 
     # Unpack the response content into a dict
