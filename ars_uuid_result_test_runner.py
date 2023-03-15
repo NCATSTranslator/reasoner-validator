@@ -28,9 +28,20 @@ def main():
 
     # Parse command line options
     arg_parser = argparse.ArgumentParser(description='CLI validation of ARS UUID indexed TRAPI Responses')
-    arg_parser.add_argument('--verbose', action='count', help='If set, print more information about ongoing processing')
-    arg_parser.add_argument('--biolink_version', type=str, help='Biolink Version for validation (if omitted or None, defaults to the current default version of the Biolink Model Toolkit)')
-    arg_parser.add_argument('response_id', type=str, nargs='*', help='ARS response UUID of a response to read and display')
+    arg_parser.add_argument(
+        '--verbose', action='count',
+        help='If set, show detailed information about ongoing processing, including validation results ' +
+             '(Note that even if this flag is not given, non-empty validation results can still be ' +
+             'selectively shown at end of script execution).'
+    )
+    arg_parser.add_argument(
+        '--biolink_version', type=str,
+        help='Biolink Version for validation (if omitted or None, ' +
+             'defaults to the current default version of the Biolink Model Toolkit)'
+    )
+    arg_parser.add_argument(
+        'response_id', type=str, nargs='*', help='ARS response UUID of a response to read and display'
+    )
     params = arg_parser.parse_args()
 
     # Query and print some rows from the reference tables
@@ -57,7 +68,7 @@ def main():
             if response_content:
                 status_code = response_content.status_code
                 if status_code == 200:
-                    print("...Result returned!")
+                    print(f"...Result returned from '{ars_host}'!")
                     break
             else:
                 status_code = 404
@@ -104,10 +115,22 @@ def main():
         validator.check_compliance_of_trapi_response(envelope)
         messages: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = validator.get_messages()
 
-        if params.verbose:
-            print(json.dumps(messages, sort_keys=True, indent=2))
+        def prompt_user(msg: str):
+            text = input(f"{msg} (Type 'Y' or 'Yes' to show): ")
+            text = text.upper()
+            if text == "YES" or text == "Y":
+                return True
+            else:
+                return False
 
-    return
+        show_messages: bool = False
+        if validator.has_errors() or validator.has_warnings():
+            show_messages = prompt_user("Validation errors and/or warnings were reported")
+        elif validator.has_information():
+            show_messages = prompt_user("No validation errors or warnings, but some information was reported")
+
+        if show_messages or params.verbose:
+            print(json.dumps(messages, sort_keys=True, indent=2))
 
 
 if __name__ == "__main__":
