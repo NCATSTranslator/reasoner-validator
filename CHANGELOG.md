@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
  
+## v3.4.7
+
+- `ars_uuid_result_test_runner.py` access generalized to poll available ARS servers
+- Upgrade BMT to 1.0.3 - may fix some misleading validation results
+ 
 ## v3.4.6
 
 - 'edge_limit' knowledge graph threshold argument added to `TRAPIResponseValidator.check_compliance_of_trapi_response` method
