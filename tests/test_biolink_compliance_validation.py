@@ -1202,7 +1202,7 @@ def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str])
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
         ),
         (  # Query 13 - 'qualifier_type_id' property value is unknown
             {
@@ -1217,7 +1217,7 @@ def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str])
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
         ),
         (  # Query 14 - 'qualifier_type_id' property value is valid but abstract
             {
@@ -1233,7 +1233,7 @@ def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str])
                 ]
             },
             # "info.query_graph.edge.qualifier.abstract"
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.unresolved"
         ),
         (  # Query 15 - 'qualifier_type_id' property value is not a Biolink qualifier term
             {
@@ -1248,7 +1248,7 @@ def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str])
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid"
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
         ),
         (  # Query 16 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
             {
@@ -1380,7 +1380,7 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
                     }
                 ]
             },
-            "error.knowledge_graph.edge.qualifiers.qualifier.invalid"
+            "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown"
         ),
         (  # Query 8 - 'qualifier_type_id' property value is unknown
             {
@@ -1391,7 +1391,7 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
                     }
                 ]
             },
-            "error.knowledge_graph.edge.qualifiers.qualifier.invalid"
+            "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown"
         ),
         (  # Query 9 - 'qualifier_type_id' property value is valid but abstract
             {
@@ -1403,7 +1403,7 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
                 ]
             },
             # "info.query_graph.edge.qualifier.abstract"
-            "error.knowledge_graph.edge.qualifiers.qualifier.invalid"
+            "error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved"
         ),
         (  # Query 10 - 'qualifier_type_id' property value is not a Biolink qualifier term
             {
@@ -1414,7 +1414,7 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
                     }
                 ]
             },
-            "error.knowledge_graph.edge.qualifiers.qualifier.invalid"
+            "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown"
         ),
         (  # Query 11 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
             {

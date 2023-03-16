@@ -510,11 +510,17 @@
 
 **Description:** Value of a 'qualifier_constraints.qualifier_set' property in a Query Graph must not be non-empty array!
 
-### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid
+### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown
 
-**Message:** Edge '{identifier}' qualifier entry is invalid!
+**Message:** Edge '{identifier}' qualifier type_id '{qualifier_type_id}' is unknown!
 
-**Description:** A 'qualifier' entry must be a valid JSON object with valid 'qualifier_type_id' and corresponding 'qualifier_value'!
+**Description:** A qualifier qualifier_type_id must be defined in the specified version of Biolink!
+
+### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.unresolved
+
+**Message:** Edge '{identifier}' qualifier_value '{qualifier_value}' for '{qualifier_type_id}' cannot be resolved!
+
+**Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
 
 ### error.knowledge_graph.nodes.empty
 
@@ -750,9 +756,15 @@
 
 **Description:** Value of a 'qualifiers' property in a Knowledge Graph must not be non-empty array!
 
-### error.knowledge_graph.edge.qualifiers.qualifier.invalid
+### error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown
 
-**Message:** Edge '{identifier}' qualifier entry is invalid!
+**Message:** Edge '{identifier}' qualifier type_id '{qualifier_type_id}' is unknown!
 
-**Description:** A 'qualifier' entry must be a valid JSON object with valid 'qualifier_type_id' and corresponding 'qualifier_value'!
+**Description:** A qualifier qualifier_type_id must be defined in the specified version of Biolink!
+
+### error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved
+
+**Message:** Edge '{identifier}' qualifier_value '{qualifier_value}' for '{qualifier_type_id}' cannot be resolved!
+
+**Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
 

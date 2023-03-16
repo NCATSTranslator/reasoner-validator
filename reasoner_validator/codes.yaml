@@ -334,9 +334,14 @@ error:
               $message: "Edge '{identifier}' qualifier_set property value is empty!"
               $description: "Value of a 'qualifier_constraints.qualifier_set' property in a Query Graph must not be non-empty array!"
           qualifier:
-            invalid:
-              $message: "Edge '{identifier}' qualifier entry is invalid!"
-              $description: "A 'qualifier' entry must be a valid JSON object with valid 'qualifier_type_id' and corresponding 'qualifier_value'!"
+            type_id:
+              unknown:
+                $message: "Edge '{identifier}' qualifier type_id '{qualifier_type_id}' is unknown!"
+                $description: "A qualifier qualifier_type_id must be defined in the specified version of Biolink!"
+            value:
+              unresolved:
+                $message: "Edge '{identifier}' qualifier_value '{qualifier_value}' for '{qualifier_type_id}' cannot be resolved!"
+                $description: "A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!"
   knowledge_graph:
     nodes:
       empty:
@@ -474,6 +479,11 @@ error:
           $message: "Edge '{identifier}' qualifiers property value is empty!"
           $description: "Value of a 'qualifiers' property in a Knowledge Graph must not be non-empty array!"
         qualifier:
-          invalid:
-            $message: "Edge '{identifier}' qualifier entry is invalid!"
-            $description: "A 'qualifier' entry must be a valid JSON object with valid 'qualifier_type_id' and corresponding 'qualifier_value'!"
+          type_id:
+            unknown:
+              $message: "Edge '{identifier}' qualifier type_id '{qualifier_type_id}' is unknown!"
+              $description: "A qualifier qualifier_type_id must be defined in the specified version of Biolink!"
+          value:
+            unresolved:
+              $message: "Edge '{identifier}' qualifier_value '{qualifier_value}' for '{qualifier_type_id}' cannot be resolved!"
+              $description: "A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!"

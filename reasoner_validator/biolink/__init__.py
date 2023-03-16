@@ -466,13 +466,19 @@ class BiolinkValidator(ValidationReporter):
             qualifier_type_id: str = qualifier['qualifier_type_id']
             qualifier_value: str = qualifier['qualifier_value']
             try:
-                if not self.bmt.validate_qualifier(
+                if not self.bmt.is_qualifier(name=qualifier_type_id):
+                    self.report(
+                        code=f"error.{context}.qualifier.type_id.unknown",
+                        identifier=edge_id,
+                        qualifier_type_id=qualifier_type_id
+                    )
+                elif not self.bmt.validate_qualifier(
                         # TODO: temporary workaround, parse 'qualifier_type_id' to core name
                         qualifier_type_id=parse_name(qualifier_type_id),
                         qualifier_value=qualifier_value
                 ):
                     self.report(
-                        code=f"error.{context}.qualifier.invalid",
+                        code=f"error.{context}.qualifier.value.unresolved",
                         identifier=edge_id,
                         qualifier_type_id=qualifier_type_id,
                         qualifier_value=qualifier_value
