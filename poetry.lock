@@ -128,7 +128,7 @@ python-versions = "*"
 
 [[package]]
 name = "bioregistry"
-version = "0.6.98"
+version = "0.6.99"
 description = "Integrated registry of biological databases and nomenclatures"
 category = "main"
 optional = false
@@ -936,7 +936,7 @@ regex = ["regex"]
 
 [[package]]
 name = "linkml"
-version = "1.4.8"
+version = "1.4.9"
 description = "Linked Open Data Modeling Language"
 category = "main"
 optional = false
@@ -2717,8 +2717,8 @@ bcp47 = [
     {file = "bcp47-0.0.4.tar.gz", hash = "sha256:4878d2f3e697ef39ef3891a147280705e4377d5a8d7eb0702129b8d4a3718702"},
 ]
 bioregistry = [
-    {file = "bioregistry-0.6.98-py3-none-any.whl", hash = "sha256:0c8511fafca3394bc9fbf8fe09ccdcfdfbe8451dc3118858a3e752ecfc2d6e6a"},
-    {file = "bioregistry-0.6.98.tar.gz", hash = "sha256:ec24997e49f8215a3007ea67df1ab41cf374833402d4b34239ceee0da7348a80"},
+    {file = "bioregistry-0.6.99-py3-none-any.whl", hash = "sha256:7c30edaea11cbed1e13f64ba1debdabc12b65b70c0bc2d904b8b2ed692b9a404"},
+    {file = "bioregistry-0.6.99.tar.gz", hash = "sha256:22bc981f39c5aaa1a5430d695728a6dade6edcbfb0abbc2e42b4013a9fe4102b"},
 ]
 black = [
     {file = "black-21.12b0-py3-none-any.whl", hash = "sha256:a615e69ae185e08fdd73e4715e260e2479c861b5740057fde6e8b4e3b7dd589f"},
@@ -3354,8 +3354,8 @@ lark = [
     {file = "lark-1.1.5.tar.gz", hash = "sha256:4b534eae1f9af5b4ea000bea95776350befe1981658eea3820a01c37e504bb4d"},
 ]
 linkml = [
-    {file = "linkml-1.4.8-py3-none-any.whl", hash = "sha256:d6ce88345994a5a34838ea891c32da2be90627499aa73fbfe50e1708a9841ac7"},
-    {file = "linkml-1.4.8.tar.gz", hash = "sha256:668ec6c02f9ca3926c62bf0df0051ea03f4bbb3c453f8e4a0f5326e57dc8b602"},
+    {file = "linkml-1.4.9-py3-none-any.whl", hash = "sha256:48d54b38e95311d37fbd9b20f943431ac68e9e9cae9756569ef6e57852eda10a"},
+    {file = "linkml-1.4.9.tar.gz", hash = "sha256:0860ebc88ac209d15f9ec78f5107fb499ea946d2ba2e7cc259ee1ae2b5647a30"},
 ]
 linkml-dataops = [
     {file = "linkml_dataops-0.1.0-py3-none-any.whl", hash = "sha256:193cf7f659e5f07946d2c2761896910d5f7151d91282543b1363801f68307f4c"},

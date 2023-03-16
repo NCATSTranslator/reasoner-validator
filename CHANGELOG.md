@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
  
+## v3.4.9
+
+- Split the qualifier validation reporting into distinct codes for the qualifier_type_id ("**qualifier.type_id.unknown**") versus `qualifier_value` ("**qualifier.value.unresolved**")
+- `ars_uuid_result_test_runner.py` made slightly more user friendly
+
 ## v3.4.8
 
 - Python dependency conflict between bmt and pytest fixed. 3.4.7 patched and reissued as v3.4.8
