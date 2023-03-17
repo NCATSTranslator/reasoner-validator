@@ -167,6 +167,7 @@ def test_validator_reporter_message_display():
     reporter = ValidationReporter(prefix="Test Validation Report", trapi_version=TEST_TRAPI_VERSION)
     messages: List[str] = reporter.display(messages={
             "info.input_edge.node.category.abstract": {
+                # this message only has an indexing 'identifier' parameter
                 "biolink:AdministrativeEntity": None
             }
     })
