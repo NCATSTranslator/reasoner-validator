@@ -850,8 +850,10 @@ def check_biolink_model_compliance_of_query_graph(
     # One typically won't be stringent in QueryGraph validation; however,
     # the strict_validation flag is set to a default of 'False' only if it is NOT set
     if strict_validation is None:
-        # Query Graph data can use abstract and mixins
+        # The default is that abstract and mixins are
+        # allowed in Query Graphs for a TRAPI query
         strict_validation = False
+
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Query_Graph,
         biolink_version=biolink_version,
@@ -887,8 +889,10 @@ def check_biolink_model_compliance_of_knowledge_graph(
     # One typically will want stringent validation for Knowledge Graphs; however,
     # the strict_validation flag is set to a default of 'True' only if it is NOT set
     if strict_validation is None:
-        # Knowledge Graphs generally ought NOT to use abstract and mixins
+        # Knowledge Graphs generally ought NOT to use
+        # abstract and mixins in TRAPI Responses (and Requests)
         strict_validation = True
+
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
         biolink_version=biolink_version,
