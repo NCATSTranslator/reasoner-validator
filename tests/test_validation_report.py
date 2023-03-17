@@ -1,5 +1,7 @@
 """Testing Validation Report methods"""
 from typing import Optional, Dict, Tuple, List
+from sys import stderr
+
 import pytest
 
 from reasoner_validator.report import ValidationReporter
@@ -316,6 +318,15 @@ def test_messages():
     message_subset: List = messages["6.6.6"]
     assert "Dave, this can only be due to human error..."\
            in [message['exception'] for message in message_subset if 'exception' in message]
+
+    # Informal test of a text 'dump' of all the messages as a
+    # text blob, using the 'display_all' method to format them
+    print(
+        "\n\nThis is an indirect 'test' of the ValidationReporter.dump() method\n"
+        "which simply executes the function and look at the results here on the console:\n",
+        file=stderr
+    )
+    reporter1.dump(file=stderr)
 
 
 def test_validator_method():

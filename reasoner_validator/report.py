@@ -1,6 +1,8 @@
 """Error and Warning Reporting Module"""
-import copy
 from typing import Optional, Dict, List
+from sys import stdout
+import copy
+
 from json import dumps, JSONEncoder
 
 from reasoner_validator.validation_codes import CodeDictionary
@@ -112,9 +114,9 @@ class ValidationReporter:
                 ]
             ]
         ] = {
-            "information": dict(),
+            "errors": dict(),
             "warnings": dict(),
-            "errors": dict()
+            "information": dict()
         }
 
     def get_trapi_version(self) -> str:
@@ -419,9 +421,8 @@ class ValidationReporter:
             ]
     ) -> List[str]:
         """
-        This augmented message display wrapper prepends
-        the Validation Reporter contextual prefix to one or more
-        resolved coded validation messages.
+        This augmented message display wrapper prepends the Validation Reporter
+        contextual prefix to one or more resolved coded validation messages.
 
         :param messages: Dict[str,Optional[Dict[str, Optional[List[Dict[str,str]]]]]], dictionary of messages where
                          the keys are validation message codes, and the values are a dictionary of messages subsets
@@ -430,8 +431,6 @@ class ValidationReporter:
                          the values of message-specific template parameters in addition to the 'identifier' parameter.
         :return: List[str], one or more resolved and contextualized Validation Reporter messages
         """
-        # TODO: are missing messages an absolute error?
-        assert len(messages) > 0
         decoded_messages: List[str] = list()
         code: str  # code for specific validation message template
         parameters: Optional[
@@ -449,3 +448,30 @@ class ValidationReporter:
                 [self.prefix + message for message in CodeDictionary.display(code, parameters)]
             )
         return decoded_messages
+
+    def display_all(self) -> Dict[str, List[str]]:
+        """
+        This method applies the display() method in sequence to each of the
+        validation message partitions for error, warning and information.
+
+        :return: Dict[str, List[str]], one or more resolved and contextualized Validation Reporter
+                                       messages for each validation message partition
+        """
+        message_catalog: Dict[str, List[str]] = dict()
+
+        for message_type, messages in self.messages.items():
+            message_catalog[message_type] = self.display(messages=messages)
+
+        return message_catalog
+
+    def dump(self, file=stdout):
+        """
+        Dump, on a specified file device, all the ValidationReporter messages as templated formatted text.
+        """
+        report_all: Dict[str, List[str]] = self.display_all()
+        message_type: str
+        messages: Dict
+        for message_type, messages in report_all.items():
+            print(f"\n\033[4m{message_type.capitalize()}\033[0m\n", file=file)
+            for message in messages:
+                print(message, file=file)

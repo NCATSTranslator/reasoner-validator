@@ -130,7 +130,6 @@ def main():
             show_messages = prompt_user("No validation errors or warnings, but some information was reported")
 
         if show_messages or params.verbose:
-            # TODO: we should be able to
             print(json.dumps(messages, sort_keys=True, indent=2))
 
 
