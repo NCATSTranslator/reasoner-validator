@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
  
+## v3.4.10
+
+- reasoner_validator.biolink.BiolinkValidator.validate_category()  now only returns a non-None value if it is a 'concrete' category, and reports 'unknown' or 'missing' (None or empty string) category names as errors; deprecated categories are reported as warnings; but both 'mixin' and 'abstract' categories are accepted as valid categories silently ignored, but are not considered 'concrete', thus the method returns None. Bottom line is when at least one valid 'concrete' `category` is provided in the subject/object category input edges, or categories list for TRAPI query or knowledge graphs, and if all identifiers provided have a namespace recorded in the `id_prefix` slot list of at least one provided 'concrete' category, then the edge categories and ids will properly validate.
+ 
 ## v3.4.9
 
 - Split the qualifier validation reporting into distinct codes for the qualifier_type_id ("**qualifier.type_id.unknown**") versus `qualifier_value` ("**qualifier.value.unresolved**")
