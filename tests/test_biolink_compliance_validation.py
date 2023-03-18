@@ -315,7 +315,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         #     # f"{INPUT_EDGE_PREFIX}: WARNING - Subject 'biolink:Nutrient' is deprecated?"
         #     "warning.input_edge.node.category.deprecated"
         # ),
-        (   # Query 18 - inform that the input category is a mixin?
+        (   # Query 18 - inform that the input category is a mixin? Simply ignored now during validation...
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:GeneOrGeneProduct',
@@ -324,10 +324,9 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'HGNC:9604',
                 'object': 'UniProtKB:P23219'
             },
-            # f"{INPUT_EDGE_PREFIX}: INFO - Subject element 'biolink:GeneOrGeneProduct' is a mixin."
-            "info.input_edge.node.category.mixin"
+            ""
         ),
-        (   # Query 19 - inform that the input category is abstract?
+        (   # Query 19 - inform that the input category is abstract? Simply ignored now during validation...
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AdministrativeEntity',
@@ -336,8 +335,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'isbn:1234',
                 'object': 'ORCID:1234'
             },
-            # f"{INPUT_EDGE_PREFIX}: INFO - Subject element 'biolink:AdministrativeEntity' is abstract."
-            "info.input_edge.node.category.abstract"
+            ""
         )
     ]
 )
@@ -720,7 +718,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 21: Abstract category in query graph
+            # Query 21: Abstract category in query graph? Simply ignored now during validation...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -736,12 +734,11 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            # f"{QUERY_GRAPH_PREFIX}: INFO - Query Graph Node element 'biolink:BiologicalEntity' is abstract."
-            "info.query_graph.node.category.abstract"
+            ""
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 22: Mixin category in query graph
+            # Query 22: Mixin category in query graph? Simply ignored now during validation...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -757,8 +754,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
                     }
                 }
             },
-            # f"{QUERY_GRAPH_PREFIX}: INFO - Query Graph Node element 'biolink:ChemicalOrDrugOrTreatment' is a mixin."
-            "info.query_graph.node.category.mixin"
+            ""
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -1651,12 +1647,15 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 8: abstract category not allowed in Knowledge Graphs
+            # Query 8: abstract category in Knowledge Graphs? Itself ignored now during validation,
+            #          although if at least one 'concrete' class is not given, other related
+            #          validation errors (e.g. 'unmapped_prefix'?) may be reported?
             {
                 "nodes": {
                     "NCBIGene:29974": {
                        "categories": [
-                           "biolink:AdministrativeEntity"
+                           "biolink:Entity",
+                           "biolink:Gene"
                        ]
                     }
                 },
@@ -1665,22 +1664,28 @@ def test_validate_qualifiers(query: Tuple):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:primary_knowledge_source",
+                                "value": "infores:my-kp"
+                            }
+                        ]
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Knowledge Graph Node element " +
-            # "'biolink:AdministrativeEntity' is abstract!"
-            "error.knowledge_graph.node.category.abstract"
+            ""
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 9: mixin category not allowed in Knowledge Graphs
+            # Query 9: mixin category in Knowledge Graphs? Itself ignored now during validation,
+            #          although if at least one 'concrete' class is not given with id_prefix mappings,
+            #          other related validation errors (e.g. 'unmapped_prefix'?) may be reported?
             {
                 "nodes": {
                     "NCBIGene:29974": {
                        "categories": [
-                           "biolink:GeneOrGeneProduct"
+                           "biolink:GeneOrGeneProduct",
+                           "biolink:Gene"
                        ]
                     }
                 },
@@ -1689,12 +1694,16 @@ def test_validate_qualifiers(query: Tuple):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:primary_knowledge_source",
+                                "value": "infores:my-kp"
+                            }
+                        ]
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Knowledge Graph Node element 'biolink:GeneOrGeneProduct' is a mixin!"
-            "error.knowledge_graph.node.category.mixin"
+            ""
         ),
         # (   # no longer testable in Biolink 3.1.1 since Nutrient is
         #     # gone and no other deprecated categories in this release

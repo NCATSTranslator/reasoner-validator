@@ -14,18 +14,6 @@
 
 **Description:** Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards.
 
-### info.input_edge.node.category.abstract
-
-**Message:** '{identifier}' is abstract.
-
-**Description:** Input Edge data can have 'abstract' category classes.
-
-### info.input_edge.node.category.mixin
-
-**Message:** '{identifier}' is a mixin.
-
-**Description:** Input Edge data can have 'mixin' category classes.
-
 ### info.input_edge.predicate.abstract
 
 **Message:** '{identifier}' is abstract.
@@ -38,18 +26,6 @@
 
 **Description:** Input Edge data can have 'mixin' predicates.
 
-### info.query_graph.node.category.abstract
-
-**Message:** '{identifier}' is abstract.
-
-**Description:** TRAPI Message Query Graphs can have 'abstract' category classes.
-
-### info.query_graph.node.category.mixin
-
-**Message:** '{identifier}' is a mixin.
-
-**Description:** TRAPI Message Query Graphs can have 'mixin' category classes.
-
 ### info.query_graph.edge.predicate.abstract
 
 **Message:** '{identifier}' is abstract.
@@ -61,18 +37,6 @@
 **Message:** '{identifier}' is a mixin.
 
 **Description:** TRAPI Messages in Query Graphs can have 'mixin' predicates.
-
-### info.knowledge_graph.node.category.abstract
-
-**Message:** '{identifier}' is abstract.
-
-**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' category classes when the mode of validation is 'non-strict'..
-
-### info.knowledge_graph.node.category.mixin
-
-**Message:** '{identifier}' is a mixin!
-
-**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' category classes when the mode of validation is 'non-strict'..
 
 ### info.knowledge_graph.edge.predicate.abstract
 
@@ -159,6 +123,12 @@
 **Message:** Input data edge '{identifier}' predicate '{predicate}' is non-canonical?
 
 **Description:** A predicate selected for use as input data should preferably be tagged as 'canonical' in the specified Biolink Model release?
+
+### warning.query_graph.node.category.deprecated
+
+**Message:** '{identifier}' is deprecated?
+
+**Description:** Query graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
 
 ### warning.query_graph.node.ids.unmapped_to_categories
 
@@ -342,23 +312,17 @@
 
 **Description:** Category value must be specified in an input test data edge!
 
+### error.input_edge.node.category.not_a_category
+
+**Message:** Input edge node '{identifier}' asserted category '{category}' is not a category term!
+
+**Description:** Category specified in input test data edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!
+
 ### error.input_edge.node.category.unknown
 
-**Message:** Input edge node '{identifier}' has unknown category '{category}'!
+**Message:** Input edge node '{identifier}' has unknown category '{category}' element!
 
-**Description:** Category specified in input test data edge node is not recorded in specified version of Biolink. Replace with a known category!
-
-### error.input_edge.node.category.abstract
-
-**Message:** '{identifier}' is abstract!
-
-**Description:** Category specified in input test data edge node is 'abstract' in specified version of Biolink. Replace with a concrete category!
-
-### error.input_edge.node.category.mixin
-
-**Message:** '{identifier}' is a mixin!
-
-**Description:** Category specified in input test data edge node is a 'mixin' in specified version of Biolink. Replace with a concrete category!
+**Description:** Category specified in input test data edge node is not a model element recorded in specified version of Biolink. Replace with a known category!
 
 ### error.input_edge.node.id.missing
 
@@ -396,23 +360,23 @@
 
 **Description:** Predicate specified in Input Edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!
 
+### error.query_graph.node.category.missing
+
+**Message:** Input edge node '{identifier}' is missing its category!
+
+**Description:** Category value must be specified in an query graph edge!
+
+### error.query_graph.node.category.not_a_category
+
+**Message:** Input edge node '{identifier}' asserted category '{category}' is not a category term!
+
+**Description:** Category specified in query graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!
+
 ### error.query_graph.node.category.unknown
 
-**Message:** '{identifier}' is unknown!
+**Message:** Input edge node '{identifier}' has unknown category '{category}' element!
 
-**Description:** Category specified in Query Graph node is not recorded in specified version of Biolink. Replace with a defined category!
-
-### error.query_graph.node.category.abstract
-
-**Message:** '{identifier}' is abstract!
-
-**Description:** 'Abstract' category from specified version of Biolink is specified in Query Graph node. Replace with a concrete category!
-
-### error.query_graph.node.category.mixin
-
-**Message:** '{identifier}' is a mixin!
-
-**Description:** 'Mixin' category from specified version of Biolink is specified in Query Graph node. Replace with a concrete category!
+**Description:** Category specified in query graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!
 
 ### error.query_graph.node.ids.not_array
 
@@ -536,27 +500,21 @@
 
 ### error.knowledge_graph.node.category.missing
 
-**Message:** '{identifier}' has a missing Biolink category!
+**Message:** Input edge node '{identifier}' is missing its category!
 
-**Description:** Knowledge graph node must have a 'node' key with a non-empty associated value!
+**Description:** Category value must be specified in an knowledge graph edge!
+
+### error.knowledge_graph.node.category.not_a_category
+
+**Message:** Input edge node '{identifier}' asserted category '{category}' is not a category term!
+
+**Description:** Category specified in knowledge graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!
 
 ### error.knowledge_graph.node.category.unknown
 
-**Message:** '{identifier}' is unknown!
+**Message:** Input edge node '{identifier}' has unknown category '{category}' element!
 
-**Description:** Category specified in Knowledge Graph node is not recorded in specified version of Biolink. Replace with a defined category!
-
-### error.knowledge_graph.node.category.abstract
-
-**Message:** '{identifier}' is abstract!
-
-**Description:** 'Abstract' category from specified version of Biolink is specified in Knowledge Graph node. Replace with a concrete category!
-
-### error.knowledge_graph.node.category.mixin
-
-**Message:** '{identifier}' is a mixin!
-
-**Description:** 'Mixin' category from specified version of Biolink is specified in Knowledge Graph node. Replace with a concrete category!
+**Description:** Category specified in knowledge graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!
 
 ### error.knowledge_graph.node.id.missing
 

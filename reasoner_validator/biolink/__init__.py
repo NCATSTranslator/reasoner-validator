@@ -165,10 +165,16 @@ class BiolinkValidator(ValidationReporter):
                                 node_id=node_id,
                                 category=category
                             )
+                        # Only 'concrete' (non-abstract, non-mixin, preferably,
+                        # non-deprecated) categories are of interest here,
+                        # since only they will have associated namespaces
                         if category:
                             possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
                             if category.name in possible_subject_categories:
                                 node_prefix_mapped = True
+                                # don't need to search any more categories
+                                break
+
                     if not node_prefix_mapped:
                         self.report(
                             code="warning.knowledge_graph.node.unmapped_prefix",
@@ -184,15 +190,18 @@ class BiolinkValidator(ValidationReporter):
 
         else:  # Query Graph node validation
 
+            has_node_ids: bool
             if "ids" in slots and slots["ids"]:
-                ids = slots["ids"]
-                if not isinstance(ids, List):
+                has_node_ids = True
+                node_ids = slots["ids"]
+                if not isinstance(node_ids, List):
                     self.report(code="error.query_graph.node.ids.not_array", identifier=node_id)
                     # we'll pretend that the ids were mistakenly
                     # just a scalar string, then continue validating
-                    ids = [ids]
+                    node_ids = [node_ids]
             else:
-                ids = list()  # a null "ids" value is permitted in QNodes
+                has_node_ids = False
+                node_ids = list()  # a null "ids" value is permitted in QNodes
 
             if "categories" in slots:
                 categories = slots["categories"]
@@ -200,28 +209,32 @@ class BiolinkValidator(ValidationReporter):
                     if not isinstance(categories, List):
                         self.report(code="error.query_graph.node.categories.not_array", identifier=node_id)
                     else:
-                        id_prefix_mapped: Dict = {identifier: False for identifier in ids}
+                        id_prefix_mapped: Dict = {identifier: False for identifier in node_ids}
                         for category in categories:
-                            # category validation may report an error internally
                             category: Optional[ClassDefinition] = \
                                 self.validate_category(
                                     context="query_graph",
                                     node_id=node_id,
                                     category=category
                                 )
+                            # Only 'concrete' (non-abstract, non-mixin, preferably, non-deprecated)
+                            # categories will be tested here for identifier namespaces
                             if category:
-                                for identifier in ids:  # may be empty list if not provided...
+                                for identifier in node_ids:  # may be empty list if not provided...
                                     possible_subject_categories = self.bmt.get_element_by_prefix(identifier)
                                     if category.name in possible_subject_categories:
                                         id_prefix_mapped[identifier] = True
-                        unmapped_ids = [
-                            identifier for identifier in id_prefix_mapped if not id_prefix_mapped[identifier]
-                        ]
-                        if unmapped_ids:
+                                        node_ids.remove(identifier)
+                                        # found a suitable mapping for the given identifier
+                                        break
+
+                        # At this point, if any 'node_ids' are NOT
+                        # removed (above), then they are unmapped
+                        if has_node_ids and node_ids:
                             self.report(
                                 code="warning.query_graph.node.ids.unmapped_to_categories",
                                 identifier=node_id,
-                                unmapped_ids=str(unmapped_ids),
+                                unmapped_ids=str(node_ids),
                                 categories=str(categories)
                             )
 
@@ -651,21 +664,32 @@ class BiolinkValidator(ValidationReporter):
         """
         Validate a Biolink category.
 
+        Only returns a non-None value if it is a 'concrete' category, and reports 'unknown' or 'missing'
+        (None or empty string) category names as errors; deprecated categories are reported as warnings;
+        but both 'mixin' and 'abstract' categories are accepted as valid categories silently ignored,
+        but are not considered 'concrete', thus the method returns None.
+
         :param context: str, label for context of concept whose category is being validated, i.e. 'Subject' or 'Object'
         :param node_id: str, CURIE of concept node whose category is being validated
         :param category: str, CURIE of putative concept 'category'
-        :return:
+
+        :return: category as a ClassDefinition, only returned if 'concrete'; None otherwise.
         """
         biolink_class: Optional[ClassDefinition] = None
         if category:
-            # this method reports unknown Biolink Elements
-            biolink_class = self.validate_element_status(
-                    context=f"{context}.node.category",
-                    name=category
-            )
-            if biolink_class and not self.bmt.is_category(category):
+            biolink_class = self.bmt.get_element(category)
+            if biolink_class:
+                if biolink_class.deprecated:
+                    self.report(code=f"warning.{context}.node.category.deprecated", identifier=category)
+                if biolink_class.abstract or self.bmt.is_mixin(category):
+                    biolink_class = None
+                elif not self.bmt.is_category(category):
+                    self.report(
+                        code=f"error.{context}.node.category.not_a_category", identifier=node_id, category=category
+                    )
+                    biolink_class = None
+            else:
                 self.report(code=f"error.{context}.node.category.unknown", identifier=node_id, category=category)
-                biolink_class = None
         else:
             self.report(code=f"error.{context}.node.category.missing", identifier=node_id)
 
@@ -687,7 +711,9 @@ class BiolinkValidator(ValidationReporter):
                         identifier=node_id,
                         category=category
                     )
-            # else, we will have already reported an error in validate_category()
+            # else:
+            #     We may have already reported an error within validate_category()
+            #     Or the class may be abstract or mixin, which is allowed.
         else:
             self.report(code="error.input_edge.node.id.missing", identifier=context)
 

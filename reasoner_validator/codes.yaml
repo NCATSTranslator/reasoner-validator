@@ -13,14 +13,6 @@ info:
     $message: "Biolink Model-compliant TRAPI Message."
     $description: "Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards."
   input_edge:
-    node:
-      category:
-        abstract:
-          $message: "'{identifier}' is abstract."
-          $description: "Input Edge data can have 'abstract' category classes."
-        mixin:
-          $message: "'{identifier}' is a mixin."
-          $description: "Input Edge data can have 'mixin' category classes."
     predicate:
       abstract:
           $message: "'{identifier}' is abstract."
@@ -29,14 +21,6 @@ info:
         $message: "'{identifier}' is a mixin."
         $description: "Input Edge data can have 'mixin' predicates."
   query_graph:
-    node:
-      category:
-        abstract:
-          $message: "'{identifier}' is abstract."
-          $description: "TRAPI Message Query Graphs can have 'abstract' category classes."
-        mixin:
-          $message: "'{identifier}' is a mixin."
-          $description: "TRAPI Message Query Graphs can have 'mixin' category classes."
     edge:
       predicate:
         abstract:
@@ -46,14 +30,6 @@ info:
           $message: "'{identifier}' is a mixin."
           $description: "TRAPI Messages in Query Graphs can have 'mixin' predicates."
   knowledge_graph:
-    node:
-      category:
-        abstract:
-          $message: "'{identifier}' is abstract."
-          $description: "TRAPI Messages in Knowledge Graphs can have 'abstract' category classes when the mode of validation is 'non-strict'.."
-        mixin:
-          $message: "'{identifier}' is a mixin!"
-          $description: "TRAPI Messages in Knowledge Graphs can have 'mixin' category classes when the mode of validation is 'non-strict'.."
     edge:
       predicate:
         abstract:
@@ -118,6 +94,10 @@ warning:
         $description: "A predicate selected for use as input data should preferably be tagged as 'canonical' in the specified Biolink Model release?"
   query_graph:
     node:
+      category:
+        deprecated:
+          $message: "'{identifier}' is deprecated?"
+          $description: "Query graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?"
       ids:
         unmapped_to_categories:
           $message: "'{identifier}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
@@ -234,15 +214,12 @@ error:
         missing:
           $message: "Input edge node '{identifier}' is missing its category!"
           $description: "Category value must be specified in an input test data edge!"
+        not_a_category:
+          $message: "Input edge node '{identifier}' asserted category '{category}' is not a category term!"
+          $description: "Category specified in input test data edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!"
         unknown:
-          $message: "Input edge node '{identifier}' has unknown category '{category}'!"
-          $description: "Category specified in input test data edge node is not recorded in specified version of Biolink. Replace with a known category!"
-        abstract:
-          $message: "'{identifier}' is abstract!"
-          $description: "Category specified in input test data edge node is 'abstract' in specified version of Biolink. Replace with a concrete category!"
-        mixin:
-          $message: "'{identifier}' is a mixin!"
-          $description: "Category specified in input test data edge node is a 'mixin' in specified version of Biolink. Replace with a concrete category!"
+          $message: "Input edge node '{identifier}' has unknown category '{category}' element!"
+          $description: "Category specified in input test data edge node is not a model element recorded in specified version of Biolink. Replace with a known category!"
       id:
         missing:
           $message: "{identifier} node identifier is missing!"
@@ -266,15 +243,15 @@ error:
   query_graph:
     node:
       category:
+        missing:
+          $message: "Input edge node '{identifier}' is missing its category!"
+          $description: "Category value must be specified in an query graph edge!"
+        not_a_category:
+          $message: "Input edge node '{identifier}' asserted category '{category}' is not a category term!"
+          $description: "Category specified in query graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!"
         unknown:
-          $message: "'{identifier}' is unknown!"
-          $description: "Category specified in Query Graph node is not recorded in specified version of Biolink. Replace with a defined category!"
-        abstract:
-          $message: "'{identifier}' is abstract!"
-          $description: "'Abstract' category from specified version of Biolink is specified in Query Graph node. Replace with a concrete category!"
-        mixin:
-          $message: "'{identifier}' is a mixin!"
-          $description: "'Mixin' category from specified version of Biolink is specified in Query Graph node. Replace with a concrete category!"
+          $message: "Input edge node '{identifier}' has unknown category '{category}' element!"
+          $description: "Category specified in query graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!"
       ids:
         not_array:
           $message: "Node '{identifier}.ids' slot value is not an array!"
@@ -354,17 +331,14 @@ error:
     node:
       category:
         missing:
-          $message: "'{identifier}' has a missing Biolink category!"
-          $description: "Knowledge graph node must have a 'node' key with a non-empty associated value!"
+          $message: "Input edge node '{identifier}' is missing its category!"
+          $description: "Category value must be specified in an knowledge graph edge!"
+        not_a_category:
+          $message: "Input edge node '{identifier}' asserted category '{category}' is not a category term!"
+          $description: "Category specified in knowledge graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!"
         unknown:
-          $message: "'{identifier}' is unknown!"
-          $description: "Category specified in Knowledge Graph node is not recorded in specified version of Biolink. Replace with a defined category!"
-        abstract:
-          $message: "'{identifier}' is abstract!"
-          $description: "'Abstract' category from specified version of Biolink is specified in Knowledge Graph node. Replace with a concrete category!"
-        mixin:
-          $message: "'{identifier}' is a mixin!"
-          $description: "'Mixin' category from specified version of Biolink is specified in Knowledge Graph node. Replace with a concrete category!"
+          $message: "Input edge node '{identifier}' has unknown category '{category}' element!"
+          $description: "Category specified in knowledge graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!"
       id:
         missing:
           $message: "{identifier} node identifier is missing!"
