@@ -66,14 +66,15 @@ def test_get_code_subtree_facet_message():
     assert leaf[CodeDictionary.MESSAGE] == "Biolink Model-compliant TRAPI Message."
     assert CodeDictionary.DESCRIPTION not in leaf
 
-    result = CodeDictionary.get_code_subtree("info.query_graph.node.category", facet="message")
+    result = CodeDictionary.get_code_subtree("info.input_edge.predicate", facet="message")
     assert result is not None
     message_type, subtree = result
     assert subtree is not None
     assert isinstance(subtree, Dict)
     assert all([key in ["abstract", "mixin"] for key in subtree])
     assert CodeDictionary.MESSAGE in subtree["abstract"]
-    assert subtree["abstract"][CodeDictionary.MESSAGE] == "'{identifier}' is abstract."
+    assert subtree["abstract"][CodeDictionary.MESSAGE] == \
+           "Input Edge '{identifier}' has an 'abstract' predicate '{element_name}'."
     assert CodeDictionary.DESCRIPTION not in subtree["abstract"]
 
 
@@ -88,7 +89,7 @@ def test_get_code_subtree_facet_description():
     assert leaf[CodeDictionary.DESCRIPTION].startswith("Specified TRAPI message completely satisfies")
     assert CodeDictionary.MESSAGE not in leaf
 
-    result = CodeDictionary.get_code_subtree("info.query_graph.node.category", facet="description")
+    result = CodeDictionary.get_code_subtree("info.input_edge.predicate", facet="description")
     assert result is not None
     message_type, subtree = result
     assert subtree is not None
@@ -96,7 +97,7 @@ def test_get_code_subtree_facet_description():
     assert all([key in ["abstract", "mixin"] for key in subtree])
     assert CodeDictionary.DESCRIPTION in subtree["mixin"]
     assert subtree["mixin"][CodeDictionary.DESCRIPTION] == \
-           "TRAPI Message Query Graphs can have 'mixin' category classes."
+           "Input Edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'."
     assert CodeDictionary.MESSAGE not in subtree["mixin"]
 
 
@@ -157,23 +158,34 @@ def test_message_display():
     assert "INFO - Biolink Model-compliant TRAPI Message." in CodeDictionary.display(code="info.compliant")
     assert "ERROR - Knowledge Graph Nodes: No nodes found!" \
            in CodeDictionary.display("error.knowledge_graph.nodes.empty")
-    identifier_dict: Dict = {"identifier": "biolink:AdministrativeEntity"}
-    assert "INFO - Input Edge Node Category: 'biolink:AdministrativeEntity' is abstract." \
+    assert "INFO - User excluded S-P-O triple 'a->biolink:related_to->b' " + \
+           "or all test case S-P-O triples from resource test location." \
            in CodeDictionary.display(
-                code="info.input_edge.node.category.abstract",
-                parameters={"biolink:AdministrativeEntity": None}  # this code has no other parameters
+                code="info.excluded",
+                parameters={"a->biolink:related_to->b": None}  # this code has no other parameters
+            )
+    assert "INFO - Input Edge Predicate: Input Edge 'a->biolink:related_to->b' " + \
+           "has an 'abstract' predicate 'biolink:contributor'." \
+           in CodeDictionary.display(
+                code="info.input_edge.predicate.abstract",
+                parameters={
+                    "a->biolink:related_to->b": [
+                        {"element_name": "biolink:contributor"}
+                    ]
+                }  # this code has one other parameter named 'element_name'
             )
 
 
 def test_validator_reporter_message_display():
     reporter = ValidationReporter(prefix="Test Validation Report", trapi_version=TEST_TRAPI_VERSION)
     messages: List[str] = reporter.display(messages={
-            "info.input_edge.node.category.abstract": {
+            "info.excluded": {
                 # this message only has an indexing 'identifier' parameter
-                "biolink:AdministrativeEntity": None
+                "a->biolink:related_to->b": None
             }
     })
-    assert "Test Validation Report: INFO - Input Edge Node Category: 'biolink:AdministrativeEntity' is abstract." \
+    assert "Test Validation Report: INFO - User excluded S-P-O triple 'a->biolink:related_to->b' " + \
+           "or all test case S-P-O triples from resource test location." \
         in messages
 
     messages = reporter.display(messages={
@@ -200,7 +212,8 @@ def test_message_report():
     reporter.report(code="info.compliant")
     reporter.report(
         code="info.input_edge.predicate.abstract",
-        identifier="biolink:contributor"
+        identifier="a->biolink:contributor->b",
+        element_name="biolink:contributor"
     )
     report: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = reporter.get_messages()
     assert 'information' in report
@@ -209,7 +222,9 @@ def test_message_report():
     for code, parameters in report['information'].items():
         messages.extend(CodeDictionary.display(code, parameters))
     assert "INFO - Biolink Model-compliant TRAPI Message." in messages
-    assert "INFO - Input Edge Predicate: 'biolink:contributor' is abstract." in messages
+    assert "INFO - Input Edge Predicate: Input Edge 'a->biolink:contributor->b' " + \
+           "has an 'abstract' predicate 'biolink:contributor'." \
+           in messages
 
 
 def test_messages():
@@ -237,7 +252,8 @@ def test_messages():
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
     reporter2.report(
         code="info.query_graph.edge.predicate.mixin",
-        identifier="biolink:this_is_a_mixin"
+        identifier="a-biolink:this_is_a_mixin->b",
+        element_name="biolink:this_is_a_mixin"
     )
     reporter2.report("warning.response.results.empty")
     reporter2.report("error.knowledge_graph.edges.empty")
@@ -255,8 +271,8 @@ def test_messages():
     # testing addition a few raw batch messages
     new_messages: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = {
         "information": {
-            "info.input_edge.predicate.abstract": {
-                "Dolly": None
+            "info.excluded": {
+                "Horace van der Gelder": None
             }
         },
         "warnings": {
@@ -289,7 +305,8 @@ def test_messages():
     information: List[str] = list()
     for code, parameters in messages['information'].items():
         information.extend(CodeDictionary.display(code, parameters))
-    assert "INFO - Input Edge Predicate: 'Dolly' is abstract." in information
+    assert "INFO - User excluded S-P-O triple 'Horace van der Gelder' " +\
+           "or all test case S-P-O triples from resource test location." in information
 
     assert "warnings" in messages
     assert len(messages['warnings']) > 0

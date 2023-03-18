@@ -253,35 +253,42 @@ class BiolinkValidator(ValidationReporter):
     def set_nodes(self, nodes: Set):
         self.nodes.update(nodes)
 
-    def validate_element_status(self, context: str, name: str) -> Optional[Element]:
+    def validate_element_status(self, context: str, identifier: str, element_name: str) -> Optional[Element]:
         """
         Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.
 
-        :param context: parsing context (e.g. 'Node')
-        :param name: name of putative Biolink element ('class')
+        :param context: str, parsing context (e.g. 'Node')
+        :param identifier: str, identifier of enclosing instance containing the element (e.g. the 'edge_id')
+        :param element_name: str, name of the putative Biolink element ('class')
 
         :return: Optional[Element], Biolink Element resolved to 'name' if element no validation error; None otherwise.
         """
-        element: Optional[Element] = self.bmt.get_element(name)
+        element: Optional[Element] = self.bmt.get_element(element_name)
         if not element:
-            self.report(code=f"error.{context}.unknown", identifier=name)
+            self.report(code=f"error.{context}.unknown", identifier=identifier, element_name=element_name)
             return None
+
         if element.deprecated:
-            self.report(code=f"warning.{context}.deprecated", identifier=name)
+            # We won't index the instances where the deprecated element is seen, since we assume that
+            # component developers learning about the issue will globally fix it in their graphs
+            self.report(code=f"warning.{context}.deprecated", identifier=element_name)
             # return None - a deprecated term is not treated as a failure but just as a warning
+
         if element.abstract:
             if self.strict_validation:
-                self.report(code=f"error.{context}.abstract",  identifier=name)
+                self.report(code=f"error.{context}.abstract", identifier=identifier, element_name=element_name)
                 return None
             else:
-                self.report(code=f"info.{context}.abstract", identifier=name)
-        elif self.bmt.is_mixin(name):
+                self.report(code=f"info.{context}.abstract", identifier=identifier, element_name=element_name)
+
+        elif self.bmt.is_mixin(element_name):
             # A mixin cannot be instantiated ...
             if self.strict_validation:
-                self.report(code=f"error.{context}.mixin", identifier=name)
+                self.report(code=f"error.{context}.mixin", identifier=identifier, element_name=element_name)
                 return None
             else:
-                self.report(code=f"info.{context}.mixin", identifier=name)
+                self.report(code=f"info.{context}.mixin", identifier=identifier, element=element_name)
+
         return element
 
     def validate_attributes(self, edge_id: str, edge: Dict):
@@ -368,7 +375,8 @@ class BiolinkValidator(ValidationReporter):
                         if prefix == 'biolink':
                             biolink_class = self.validate_element_status(
                                 context="knowledge_graph.edge.attribute.type_id",
-                                name=attribute_type_id
+                                identifier=edge_id,
+                                element_name=attribute_type_id
                             )
                             if biolink_class:
                                 if not self.bmt.is_association_slot(attribute_type_id):
@@ -566,7 +574,8 @@ class BiolinkValidator(ValidationReporter):
         # Validate the putative predicate as *not* being abstract, deprecated or a mixin
         biolink_class = self.validate_element_status(
             context=context,
-            name=predicate
+            identifier=edge_id,
+            element_name=predicate
         )
         if biolink_class:
             if not self.bmt.is_predicate(predicate):
@@ -680,7 +689,10 @@ class BiolinkValidator(ValidationReporter):
             biolink_class = self.bmt.get_element(category)
             if biolink_class:
                 if biolink_class.deprecated:
-                    self.report(code=f"warning.{context}.node.category.deprecated", identifier=category)
+                    self.report(
+                        code=f"warning.{context}.node.category.deprecated",
+                        identifier=category
+                    )
                 if biolink_class.abstract or self.bmt.is_mixin(category):
                     biolink_class = None
                 elif not self.bmt.is_category(category):

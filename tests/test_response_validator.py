@@ -648,22 +648,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             ""
         ),
         (
-            # Query 19 - Full Message, WITH strict validation - abstract category?
-            {
-                "message": {
-                    "query_graph": _TEST_QG_2,
-                    "knowledge_graph": _TEST_KG_3,
-                    "results": _TEST_RESULTS_2
-                }
-            },
-            None,
-            None,
-            None,
-            True,
-            "error.query_graph.node.category.abstract"
-        ),
-        (
-            # Query 20 - Full Message, WITH strict validation - abstract predicate?
+            # Query 19 - Full Message, WITH strict validation - abstract predicate?
             {
                 "message": {
                     "query_graph": _TEST_QG_2,
@@ -678,7 +663,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             "error.query_graph.edge.predicate.abstract"
         ),
         (
-            # Query 21 - Valid full Message, under strict validation.
+            # Query 20 - Valid full Message, under strict validation.
             #            Message is valid, but the 'workflow' field is not an array?
             {
                 "message": {
@@ -696,7 +681,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             "error.trapi.validation"
         ),
         (
-            # Query 22 - Valid full Message, under strict validation.
+            # Query 21 - Valid full Message, under strict validation.
             #            Message is valid, the 'workflow' field is an array,
             #            but the single list entry is an invalid workflow spec?
             {
@@ -716,7 +701,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             "error.trapi.validation"
         ),
         (
-            # Query 23 - Valid full Message, under strict validation.
+            # Query 22 - Valid full Message, under strict validation.
             #            Message is valid, the 'workflow' field is an array,
             #            but the single list entry is in the workflow schema
             #            and has at least the one required field 'id'
@@ -735,7 +720,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             ""   # this simple workflow spec should pass?
         ),
         (
-            # Query 24 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
+            # Query 23 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
             #            but the single list entry is an elaborated 'real world' workflow spec,
             #            but one entry overlay_compute_ngd is incomplete - doesn't fully validate!
             {
@@ -779,7 +764,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             "error.trapi.validation"
         ),
         (
-            # Query 25 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
+            # Query 24 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
             #            but the single list entry is an elaborated 'real world' workflow spec
             {
                 "message": {
@@ -821,7 +806,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             ""   # this simple workflow spec should pass?
         ),
         (
-            # Query 26 - Valid full Message, under strict validation. Message is valid,
+            # Query 25 - Valid full Message, under strict validation. Message is valid,
             #            the 'workflow' field is an array, but runner_parameters is None.
             #            This is technically invalid but we have a code patch which should filter it out (for now)
             {
