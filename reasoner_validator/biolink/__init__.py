@@ -335,22 +335,22 @@ class BiolinkValidator(ValidationReporter):
                 if 'attribute_type_id' not in attribute:
                     self.report(
                         code="error.knowledge_graph.edge.attribute.type_id.missing",
-                        identifier=str(edge_id)
+                        identifier=edge_id
                     )
                 elif not attribute['attribute_type_id']:
                     self.report(
                         code="error.knowledge_graph.edge.attribute.type_id.empty",
-                        identifier=str(edge_id)
+                        identifier=edge_id
                     )
                 elif 'value' not in attribute:
                     self.report(
                         code="error.knowledge_graph.edge.attribute.value.missing",
-                        identifier=str(edge_id)
+                        identifier=edge_id
                     )
                 elif not attribute['value']:
                     self.report(
                         code="error.knowledge_graph.edge.attribute.value.empty",
-                        identifier=str(edge_id)
+                        identifier=edge_id
                     )
                 else:
                     attribute_type_id: str = attribute['attribute_type_id']
@@ -366,8 +366,8 @@ class BiolinkValidator(ValidationReporter):
                     if not is_curie(attribute_type_id):
                         self.report(
                             code="error.knowledge_graph.edge.attribute.type_id.not_curie",
-                            identifier=str(edge_id),
-                            attribute_type_id=str(attribute_type_id)
+                            identifier=edge_id,
+                            attribute_type_id=attribute_type_id
                         )
                     else:
                         # 'attribute_type_id' is a CURIE, but how well does it map?
@@ -382,8 +382,8 @@ class BiolinkValidator(ValidationReporter):
                                 if not self.bmt.is_association_slot(attribute_type_id):
                                     self.report(
                                         code="warning.knowledge_graph.edge.attribute.type_id.not_association_slot",
-                                        identifier=str(edge_id),
-                                        attribute_type_id=str(attribute_type_id)
+                                        identifier=attribute_type_id,
+                                        edge_id=edge_id
                                     )
 
                                 else:
@@ -409,7 +409,7 @@ class BiolinkValidator(ValidationReporter):
                                         if not infores.startswith("infores:"):
                                             self.report(
                                                 code="error.knowledge_graph.edge.provenance.infores.missing",
-                                                identifier=str(edge_id),
+                                                identifier=edge_id,
                                                 infores=str(infores)
                                             )
                                         else:
@@ -431,15 +431,15 @@ class BiolinkValidator(ValidationReporter):
                         elif not self.bmt.get_element_by_prefix(prefix):
                             self.report(
                                 code="warning.knowledge_graph.edge.attribute.type_id.unknown_prefix",
-                                identifier=str(edge_id),
-                                attribute_type_id=str(attribute_type_id)
+                                identifier=edge_id,
+                                attribute_type_id=attribute_type_id
                             )
 
                         else:
                             self.report(
                                 code="info.knowledge_graph.edge.attribute.type_id.non_biolink_prefix",
-                                identifier=str(edge_id),
-                                attribute_type_id=str(attribute_type_id)
+                                identifier=edge_id,
+                                attribute_type_id=attribute_type_id
                             )
 
             # TODO: After all the attributes have been scanned,
@@ -447,14 +447,14 @@ class BiolinkValidator(ValidationReporter):
             if ara_source and not found_ara_knowledge_source:
                 self.report(
                     code="warning.knowledge_graph.edge.provenance.ara.missing",
-                    identifier=str(edge_id),
+                    identifier=edge_id,
                     ara_source=ara_source
                 )
 
             if kp_source and not found_kp_knowledge_source:
                 self.report(
                     code="warning.knowledge_graph.edge.provenance.kp.missing",
-                    identifier=str(edge_id),
+                    identifier=edge_id,
                     kp_source=kp_source,
                     kp_source_type=kp_source_type
                 )
@@ -462,12 +462,12 @@ class BiolinkValidator(ValidationReporter):
             if not found_primary_knowledge_source:
                 self.report(
                     code="error.knowledge_graph.edge.provenance.missing_primary",
-                    identifier=str(edge_id)
+                    identifier=edge_id
                 )
             elif len(found_primary_knowledge_source) > 1:
                 self.report(
                     code="warning.knowledge_graph.edge.provenance.multiple_primary",
-                    identifier=str(edge_id),
+                    identifier=edge_id,
                     sources=",".join(found_primary_knowledge_source)
                 )
 

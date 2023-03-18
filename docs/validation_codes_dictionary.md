@@ -186,7 +186,7 @@
 
 ### warning.knowledge_graph.edge.attribute.type_id.not_association_slot
 
-**Message:** Edge '{identifier}' attribute_type_id '{attribute_type_id}' not a biolink:association_slot?
+**Message:** Edge '{edge_id}' attribute_type_id '{identifier}' not an association slot?
 
 **Description:** Knowledge graph edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy.
 

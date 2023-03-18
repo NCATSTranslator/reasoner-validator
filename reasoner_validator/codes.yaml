@@ -138,7 +138,7 @@ warning:
       attribute:
         type_id:
           not_association_slot:
-            $message: "Edge '{identifier}' attribute_type_id '{attribute_type_id}' not a biolink:association_slot?"
+            $message: "Edge '{edge_id}' attribute_type_id '{identifier}' not an association slot?"
             $description: "Knowledge graph edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy."
           non_biolink_prefix:
             $message: "Edge '{identifier}' attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink."
