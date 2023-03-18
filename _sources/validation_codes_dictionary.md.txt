@@ -14,89 +14,53 @@
 
 **Description:** Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards.
 
-### info.input_edge.node.category.abstract
-
-**Message:** '{identifier}' is abstract.
-
-**Description:** Input Edge data can have 'abstract' category classes.
-
-### info.input_edge.node.category.mixin
-
-**Message:** '{identifier}' is a mixin.
-
-**Description:** Input Edge data can have 'mixin' category classes.
-
 ### info.input_edge.predicate.abstract
 
-**Message:** '{identifier}' is abstract.
+**Message:** Input Edge '{edge_id}' has an 'abstract' predicate '{identifier}'.
 
-**Description:** Input Edge data can have 'abstract' predicates.
+**Description:** Input Edge data can have 'abstract' predicates, when the mode of validation is 'non-strict'.
 
 ### info.input_edge.predicate.mixin
 
-**Message:** '{identifier}' is a mixin.
+**Message:** Input Edge '{edge_id}' has an 'mixin' predicate '{identifier}'.
 
-**Description:** Input Edge data can have 'mixin' predicates.
-
-### info.query_graph.node.category.abstract
-
-**Message:** '{identifier}' is abstract.
-
-**Description:** TRAPI Message Query Graphs can have 'abstract' category classes.
-
-### info.query_graph.node.category.mixin
-
-**Message:** '{identifier}' is a mixin.
-
-**Description:** TRAPI Message Query Graphs can have 'mixin' category classes.
+**Description:** Input Edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'.
 
 ### info.query_graph.edge.predicate.abstract
 
-**Message:** '{identifier}' is abstract.
+**Message:** Query Graph edge '{edge_id}' has an 'abstract' predicate '{identifier}'.
 
-**Description:** TRAPI Messages in Query Graphs can have 'mixin' predicates.
+**Description:** TRAPI Messages in Query Graphs can have 'abstract' predicates, when the mode of validation is 'non-strict'.
 
 ### info.query_graph.edge.predicate.mixin
 
-**Message:** '{identifier}' is a mixin.
+**Message:** Query Graph edge '{edge_id}' has an 'mixin' predicate '{identifier}'.
 
-**Description:** TRAPI Messages in Query Graphs can have 'mixin' predicates.
-
-### info.knowledge_graph.node.category.abstract
-
-**Message:** '{identifier}' is abstract.
-
-**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' category classes when the mode of validation is 'non-strict'..
-
-### info.knowledge_graph.node.category.mixin
-
-**Message:** '{identifier}' is a mixin!
-
-**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' category classes when the mode of validation is 'non-strict'..
+**Description:** TRAPI Messages in Query Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'.
 
 ### info.knowledge_graph.edge.predicate.abstract
 
-**Message:** '{identifier}' is abstract.
+**Message:** Knowledge Graph edge '{edge_id}' has an 'abstract' predicate '{identifier}'.
 
-**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' predicates when the mode of validation is 'non-strict'.
+**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' predicates, when the mode of validation is 'non-strict'.
 
 ### info.knowledge_graph.edge.predicate.mixin
 
-**Message:** '{identifier}' is mixin.
+**Message:** Knowledge Graph edge '{edge_id}' has an 'mixin' predicate '{identifier}'.
 
-**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' predicates when the mode of validation is 'non-strict'.
+**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'.
 
 ### info.knowledge_graph.edge.attribute.type_id.abstract
 
-**Message:** '{identifier}' is abstract.
+**Message:** Knowledge Graph edge '{edge_id}' has an 'abstract' attribute_type_id '{identifier}'.
 
-**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' attribute type identifiers when the mode of validation is 'non-strict'.
+**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' attribute type identifiers, when the mode of validation is 'non-strict'.
 
 ### info.knowledge_graph.edge.attribute.type_id.mixin
 
-**Message:** '{identifier}' is mixin.
+**Message:** Knowledge Graph edge '{edge_id}' has an 'mixin' attribute_type_id '{identifier}'.
 
-**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' attribute type identifiers when the mode of validation is 'non-strict'.
+**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' attribute type identifiers, when the mode of validation is 'non-strict'.
 
 ## Warning
 
@@ -138,7 +102,7 @@
 
 ### warning.input_edge.node.category.deprecated
 
-**Message:** '{identifier}' is deprecated?
+**Message:** Input data node category '{identifier}' is deprecated?
 
 **Description:** Input data node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
 
@@ -150,7 +114,7 @@
 
 ### warning.input_edge.predicate.deprecated
 
-**Message:** '{identifier}' is deprecated?
+**Message:** Input data edge predicate '{identifier}' is deprecated?
 
 **Description:** Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
 
@@ -160,6 +124,12 @@
 
 **Description:** A predicate selected for use as input data should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
+### warning.query_graph.node.category.deprecated
+
+**Message:** Query graph node category '{identifier}' is deprecated?
+
+**Description:** Query graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
+
 ### warning.query_graph.node.ids.unmapped_to_categories
 
 **Message:** '{identifier}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?
@@ -168,7 +138,7 @@
 
 ### warning.query_graph.edge.predicate.deprecated
 
-**Message:** '{identifier}' is deprecated?
+**Message:** Query graph edge predicate '{identifier}' is deprecated?
 
 **Description:** Query graph edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
 
@@ -180,7 +150,7 @@
 
 ### warning.knowledge_graph.node.category.deprecated
 
-**Message:** '{identifier}' is deprecated?
+**Message:** Knowledge graph node category '{identifier}' is deprecated?
 
 **Description:** Knowledge graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
 
@@ -198,7 +168,7 @@
 
 ### warning.knowledge_graph.edge.predicate.deprecated
 
-**Message:** '{identifier}' is deprecated?
+**Message:** Knowledge graph edge predicate '{identifier}' is deprecated?
 
 **Description:** Knowledge graph edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
 
@@ -216,7 +186,7 @@
 
 ### warning.knowledge_graph.edge.attribute.type_id.not_association_slot
 
-**Message:** Edge '{identifier}' attribute_type_id '{attribute_type_id}' not a biolink:association_slot?
+**Message:** Edge '{edge_id}' attribute_type_id '{identifier}' not an association slot?
 
 **Description:** Knowledge graph edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy.
 
@@ -234,7 +204,7 @@
 
 ### warning.knowledge_graph.edge.attribute.type_id.deprecated
 
-**Message:** '{identifier}' is deprecated?
+**Message:** Knowledge graph edge attribute '{identifier}' is deprecated?
 
 **Description:** Knowledge graph edge 'attribute_type_id' is deprecated in current model, to be removed in the future. Review Biolink Model for replacement.
 
@@ -342,23 +312,17 @@
 
 **Description:** Category value must be specified in an input test data edge!
 
+### error.input_edge.node.category.not_a_category
+
+**Message:** Input edge node '{identifier}' asserted category '{category}' is not a category term!
+
+**Description:** Category specified in input test data edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!
+
 ### error.input_edge.node.category.unknown
 
-**Message:** Input edge node '{identifier}' has unknown category '{category}'!
+**Message:** Input edge node '{node_id}' has unknown category '{identifier}' element!
 
-**Description:** Category specified in input test data edge node is not recorded in specified version of Biolink. Replace with a known category!
-
-### error.input_edge.node.category.abstract
-
-**Message:** '{identifier}' is abstract!
-
-**Description:** Category specified in input test data edge node is 'abstract' in specified version of Biolink. Replace with a concrete category!
-
-### error.input_edge.node.category.mixin
-
-**Message:** '{identifier}' is a mixin!
-
-**Description:** Category specified in input test data edge node is a 'mixin' in specified version of Biolink. Replace with a concrete category!
+**Description:** Category specified in input test data edge node is not a model element recorded in specified version of Biolink. Replace with a known category!
 
 ### error.input_edge.node.id.missing
 
@@ -374,21 +338,21 @@
 
 ### error.input_edge.predicate.unknown
 
-**Message:** '{identifier}' is unknown predicate!
+**Message:** Input test data edge '{edge_id}' is unknown predicate {identifier}!
 
 **Description:** Predicate specified in input test data edge is not recorded in specified version of Biolink. Replace with a known predicate!
 
 ### error.input_edge.predicate.abstract
 
-**Message:** '{identifier}' is abstract predicate!
+**Message:** Input Edge '{edge_id}' is not permitted to have an 'abstract' predicate '{identifier}'!
 
-**Description:** Input Edge data validation is currently strict: predicates cannot be 'abstract'. Replace with a concrete predicate!
+**Description:** Input Edge data validation is currently strict: predicates cannot be 'abstract'! Replace with a concrete predicate.
 
 ### error.input_edge.predicate.mixin
 
-**Message:** '{identifier}' is a mixin predicate!
+**Message:** Input Edge '{edge_id}' is not permitted to have an 'mixin' predicate '{identifier}'!
 
-**Description:** Input Edge data validation is currently strict: predicates cannot be of type 'mixin'. Replace with a concrete predicate!
+**Description:** Input Edge data validation is currently strict: predicates cannot be of type 'mixin'! Replace with a concrete predicate.
 
 ### error.input_edge.predicate.invalid
 
@@ -396,23 +360,23 @@
 
 **Description:** Predicate specified in Input Edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!
 
+### error.query_graph.node.category.missing
+
+**Message:** Query graph node '{identifier}' is missing its category!
+
+**Description:** Category value must be specified in an query graph edge!
+
+### error.query_graph.node.category.not_a_category
+
+**Message:** Query graph node '{identifier}' asserted category '{category}' is not a category term!
+
+**Description:** Category specified in query graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!
+
 ### error.query_graph.node.category.unknown
 
-**Message:** '{identifier}' is unknown!
+**Message:** Query graph node '{node_id}' has unknown category '{identifier}' element!
 
-**Description:** Category specified in Query Graph node is not recorded in specified version of Biolink. Replace with a defined category!
-
-### error.query_graph.node.category.abstract
-
-**Message:** '{identifier}' is abstract!
-
-**Description:** 'Abstract' category from specified version of Biolink is specified in Query Graph node. Replace with a concrete category!
-
-### error.query_graph.node.category.mixin
-
-**Message:** '{identifier}' is a mixin!
-
-**Description:** 'Mixin' category from specified version of Biolink is specified in Query Graph node. Replace with a concrete category!
+**Description:** Category specified in query graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!
 
 ### error.query_graph.node.ids.not_array
 
@@ -464,7 +428,7 @@
 
 ### error.query_graph.edge.predicate.unknown
 
-**Message:** Edge '{identifier}' predicate '{predicate}' is unknown!
+**Message:** Query graph '{edge_id}' has unknown predicate {identifier}!
 
 **Description:** Predicate specified in Query Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!
 
@@ -482,15 +446,15 @@
 
 ### error.query_graph.edge.predicate.abstract
 
-**Message:** '{identifier}' is abstract!
+**Message:** Query Graph edge '{edge_id}' is not permitted to have an 'abstract' predicate '{identifier}'!
 
-**Description:** Query Graph data validation is currently strict: cannot have 'abstract' predicates!
+**Description:** Query Graph data validation is currently strict: cannot have 'abstract' predicates! Replace with a concrete predicate.
 
 ### error.query_graph.edge.predicate.mixin
 
-**Message:** '{identifier}' is a mixin!
+**Message:** Query Graph edge '{edge_id}' is not permitted to have an 'mixin' predicate '{identifier}'!
 
-**Description:** Query Graph data validation is currently strict: cannot have 'mixin' predicates!
+**Description:** Query Graph data validation is currently strict: cannot have 'mixin' predicates! Replace with a concrete predicate.
 
 ### error.query_graph.edge.predicate.invalid
 
@@ -512,7 +476,7 @@
 
 ### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown
 
-**Message:** Edge '{identifier}' qualifier type_id '{qualifier_type_id}' is unknown!
+**Message:** Edge '{edge_id}' qualifier type_id '{identifier}' is unknown!
 
 **Description:** A qualifier qualifier_type_id must be defined in the specified version of Biolink!
 
@@ -536,27 +500,21 @@
 
 ### error.knowledge_graph.node.category.missing
 
-**Message:** '{identifier}' has a missing Biolink category!
+**Message:** Input edge node '{identifier}' is missing its category!
 
-**Description:** Knowledge graph node must have a 'node' key with a non-empty associated value!
+**Description:** Category value must be specified in an knowledge graph edge!
+
+### error.knowledge_graph.node.category.not_a_category
+
+**Message:** Input edge node '{identifier}' asserted category '{category}' is not a category term!
+
+**Description:** Category specified in knowledge graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!
 
 ### error.knowledge_graph.node.category.unknown
 
-**Message:** '{identifier}' is unknown!
+**Message:** Input edge node '{node_id}' has unknown category '{identifier}' element!
 
-**Description:** Category specified in Knowledge Graph node is not recorded in specified version of Biolink. Replace with a defined category!
-
-### error.knowledge_graph.node.category.abstract
-
-**Message:** '{identifier}' is abstract!
-
-**Description:** 'Abstract' category from specified version of Biolink is specified in Knowledge Graph node. Replace with a concrete category!
-
-### error.knowledge_graph.node.category.mixin
-
-**Message:** '{identifier}' is a mixin!
-
-**Description:** 'Mixin' category from specified version of Biolink is specified in Knowledge Graph node. Replace with a concrete category!
+**Description:** Category specified in knowledge graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!
 
 ### error.knowledge_graph.node.id.missing
 
@@ -632,7 +590,7 @@
 
 ### error.knowledge_graph.edge.predicate.unknown
 
-**Message:** Edge '{identifier}' predicate '{predicate}' is unknown!
+**Message:** Knowledge graph '{edge_id}' has unknown predicate {identifier}!
 
 **Description:** Predicate specified in Knowledge Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!
 
@@ -656,15 +614,15 @@
 
 ### error.knowledge_graph.edge.predicate.abstract
 
-**Message:** '{identifier}' is abstract!
+**Message:** Knowledge Graph edge '{edge_id}' is not permitted to have an 'abstract' predicate '{identifier}'!
 
-**Description:** Knowledge Graph data validation is currently strict: cannot have 'abstract' predicates!
+**Description:** Knowledge Graph data validation is currently strict: cannot have 'abstract' predicates! Replace with a concrete predicate.
 
 ### error.knowledge_graph.edge.predicate.mixin
 
-**Message:** '{identifier}' is a mixin!
+**Message:** Knowledge Graph edge '{edge_id}' is not permitted to have an 'mixin' predicate '{identifier}'!
 
-**Description:** Knowledge Graph data validation is currently strict: cannot have 'mixin' predicates!
+**Description:** Knowledge Graph data validation is currently strict: cannot have 'mixin' predicates! Replace with a concrete predicate.
 
 ### error.knowledge_graph.edge.attribute.missing
 
@@ -686,21 +644,21 @@
 
 ### error.knowledge_graph.edge.attribute.type_id.unknown
 
-**Message:** '{identifier}' is unknown attribute type identifier!
+**Message:** Knowledge graph '{edge_id}' has unknown attribute_type_id {identifier}!
 
 **Description:** Edge Attribute type identifier specified in knowledge graph edge is not recorded in specified version of Biolink. Replace with a known term!
 
 ### error.knowledge_graph.edge.attribute.type_id.abstract
 
-**Message:** '{identifier}' is abstract attribute type identifier!
+**Message:** Knowledge Graph edge '{edge_id}' is not permitted to have an 'abstract' attribute_type_id '{identifier}'!
 
-**Description:** Edge data validation is currently strict: attribute type identifiers cannot be 'abstract'. Replace with a concrete attribute type identifier!
+**Description:** Edge data validation is currently strict: attribute type identifiers cannot be 'abstract'. Replace with a concrete attribute_type_id!
 
 ### error.knowledge_graph.edge.attribute.type_id.mixin
 
-**Message:** '{identifier}' is a mixin attribute type identifier!
+**Message:** Knowledge Graph edge '{edge_id}' is not permitted to have an 'mixin' attribute_type_id '{identifier}'!
 
-**Description:** Edge data validation is currently strict: attribute type identifiers cannot be of type 'mixin'. Replace with a concrete attribute type identifier!
+**Description:** Edge data validation is currently strict: attribute type identifiers cannot be of type 'mixin'. Replace with a concrete attribute_type_id!
 
 ### error.knowledge_graph.edge.attribute.type_id.missing
 
@@ -758,7 +716,7 @@
 
 ### error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown
 
-**Message:** Edge '{identifier}' qualifier type_id '{qualifier_type_id}' is unknown!
+**Message:** Edge '{edge_id}' qualifier type_id '{identifier}' is unknown!
 
 **Description:** A qualifier qualifier_type_id must be defined in the specified version of Biolink!
 

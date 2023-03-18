@@ -117,6 +117,12 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code>(messages)</p></td>
 <td><p>This augmented message display wrapper prepends the Validation Reporter contextual prefix to one or more resolved coded validation messages.</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">display_all</span></code>()</p></td>
+<td><p>This method applies the display() method in sequence to each of the validation message partitions for error, warning and information.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code>([file])</p></td>
+<td><p>Dump, on a specified file device, all the ValidationReporter messages as templated formatted text.</p></td>
+</tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_errors</span></code>([flat])</p></td>
 <td><p>Dump error messages as JSON.</p></td>
 </tr>

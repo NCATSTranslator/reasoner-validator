@@ -138,6 +138,12 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code>(messages)</p></td>
 <td><p>This augmented message display wrapper prepends the Validation Reporter contextual prefix to one or more resolved coded validation messages.</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">display_all</span></code>()</p></td>
+<td><p>This method applies the display() method in sequence to each of the validation message partitions for error, warning and information.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code>([file])</p></td>
+<td><p>Dump, on a specified file device, all the ValidationReporter messages as templated formatted text.</p></td>
+</tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_errors</span></code>([flat])</p></td>
 <td><p>Dump error messages as JSON.</p></td>
 </tr>
@@ -235,7 +241,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_category" title="reasoner_validator.biolink.BiolinkValidator.validate_category"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_category</span></code></a>(context, node_id, category)</p></td>
 <td><p>Validate a Biolink category.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_element_status" title="reasoner_validator.biolink.BiolinkValidator.validate_element_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_element_status</span></code></a>(context, name)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_element_status" title="reasoner_validator.biolink.BiolinkValidator.validate_element_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_element_status</span></code></a>(context, identifier, ...)</p></td>
 <td><p>Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_graph_edge" title="reasoner_validator.biolink.BiolinkValidator.validate_graph_edge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_edge</span></code></a>(edge)</p></td>
@@ -368,6 +374,10 @@ against the currently active Biolink Model Toolkit model version.</p>
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_category">
 <span class="sig-name descname"><span class="pre">validate_category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ClassDefinition</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_category" title="Permalink to this definition"></a></dt>
 <dd><p>Validate a Biolink category.</p>
+<p>Only returns a non-None value if it is a ‘concrete’ category, and reports ‘unknown’ or ‘missing’
+(None or empty string) category names as errors; deprecated categories are reported as warnings;
+but both ‘mixin’ and ‘abstract’ categories are accepted as valid categories silently ignored,
+but are not considered ‘concrete’, thus the method returns None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -377,20 +387,21 @@ against the currently active Biolink Model Toolkit model version.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>category as a ClassDefinition, only returned if ‘concrete’; None otherwise.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_element_status">
-<span class="sig-name descname"><span class="pre">validate_element_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_element_status" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_element_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_element_status" title="Permalink to this definition"></a></dt>
 <dd><p>Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>context</strong> – parsing context (e.g. ‘Node’)</p></li>
-<li><p><strong>name</strong> – name of putative Biolink element (‘class’)</p></li>
+<li><p><strong>context</strong> – str, parsing context (e.g. ‘Node’)</p></li>
+<li><p><strong>identifier</strong> – str, name of the putative Biolink element (‘class’)</p></li>
+<li><p><strong>edge_id</strong> – str, identifier of enclosing edge containing the element (e.g. the ‘edge_id’)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

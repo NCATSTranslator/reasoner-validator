@@ -57,6 +57,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.add_messages"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.add_messages()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.apply_validation"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.apply_validation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.display"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.display_all"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.display_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.dump()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_errors"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.dump_errors()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_info"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.dump_info()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_messages"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.dump_messages()</span></code></a></li>
@@ -181,6 +183,12 @@ this abstract level although their application is within specific pertinent subc
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.display" title="reasoner_validator.report.ValidationReporter.display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code></a>(messages)</p></td>
 <td><p>This augmented message display wrapper prepends the Validation Reporter contextual prefix to one or more resolved coded validation messages.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.display_all" title="reasoner_validator.report.ValidationReporter.display_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display_all</span></code></a>()</p></td>
+<td><p>This method applies the display() method in sequence to each of the validation message partitions for error, warning and information.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump" title="reasoner_validator.report.ValidationReporter.dump"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code></a>([file])</p></td>
+<td><p>Dump, on a specified file device, all the ValidationReporter messages as templated formatted text.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_errors" title="reasoner_validator.report.ValidationReporter.dump_errors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_errors</span></code></a>([flat])</p></td>
 <td><p>Dump error messages as JSON.</p></td>
 </tr>
@@ -295,9 +303,8 @@ ValidationReporter as its first argument, for use in reporting validation errors
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.display">
 <span class="sig-name descname"><span class="pre">display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.display" title="Permalink to this definition"></a></dt>
-<dd><p>This augmented message display wrapper prepends
-the Validation Reporter contextual prefix to one or more
-resolved coded validation messages.</p>
+<dd><p>This augmented message display wrapper prepends the Validation Reporter
+contextual prefix to one or more resolved coded validation messages.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>messages</strong> – Dict[str,Optional[Dict[str, Optional[List[Dict[str,str]]]]]], dictionary of messages where
@@ -310,6 +317,25 @@ the values of message-specific template parameters in addition to the ‘identif
 <dd class="field-even"><p>List[str], one or more resolved and contextualized Validation Reporter messages</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.display_all">
+<span class="sig-name descname"><span class="pre">display_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.display_all" title="Permalink to this definition"></a></dt>
+<dd><p>This method applies the display() method in sequence to each of the
+validation message partitions for error, warning and information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dict[str, List[str]], one or more resolved and contextualized Validation Reporter
+messages for each validation message partition</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.dump">
+<span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file=&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stdout&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='utf-8'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.dump" title="Permalink to this definition"></a></dt>
+<dd><p>Dump, on a specified file device, all the ValidationReporter messages as templated formatted text.</p>
 </dd></dl>
 
 <dl class="py method">
