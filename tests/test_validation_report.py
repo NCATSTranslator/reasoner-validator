@@ -74,7 +74,7 @@ def test_get_code_subtree_facet_message():
     assert all([key in ["abstract", "mixin"] for key in subtree])
     assert CodeDictionary.MESSAGE in subtree["abstract"]
     assert subtree["abstract"][CodeDictionary.MESSAGE] == \
-           "Input Edge '{identifier}' has an 'abstract' predicate '{element_name}'."
+           "Input Edge '{edge_id}' has an 'abstract' predicate '{identifier}'."
     assert CodeDictionary.DESCRIPTION not in subtree["abstract"]
 
 
@@ -169,8 +169,8 @@ def test_message_display():
            in CodeDictionary.display(
                 code="info.input_edge.predicate.abstract",
                 parameters={
-                    "a->biolink:related_to->b": [
-                        {"element_name": "biolink:contributor"}
+                    "biolink:contributor": [
+                        {"edge_id": "a->biolink:related_to->b"}
                     ]
                 }  # this code has one other parameter named 'element_name'
             )
@@ -212,8 +212,8 @@ def test_message_report():
     reporter.report(code="info.compliant")
     reporter.report(
         code="info.input_edge.predicate.abstract",
-        identifier="a->biolink:contributor->b",
-        element_name="biolink:contributor"
+        identifier="biolink:contributor",
+        edge_id="a->biolink:contributor->b"
     )
     report: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = reporter.get_messages()
     assert 'information' in report
@@ -252,8 +252,8 @@ def test_messages():
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
     reporter2.report(
         code="info.query_graph.edge.predicate.mixin",
-        identifier="a-biolink:this_is_a_mixin->b",
-        element_name="biolink:this_is_a_mixin"
+        identifier="biolink:this_is_a_mixin",
+        edge_id="a-biolink:this_is_a_mixin->b"
     )
     reporter2.report("warning.response.results.empty")
     reporter2.report("error.knowledge_graph.edges.empty")

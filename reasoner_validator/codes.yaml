@@ -15,36 +15,36 @@ info:
   input_edge:
     predicate:
       abstract:
-          $message: "Input Edge '{identifier}' has an 'abstract' predicate '{element_name}'."
+          $message: "Input Edge '{edge_id}' has an 'abstract' predicate '{identifier}'."
           $description: "Input Edge data can have 'abstract' predicates, when the mode of validation is 'non-strict'."
       mixin:
-        $message: "Input Edge '{identifier}' has an 'mixin' predicate '{element_name}'."
+        $message: "Input Edge '{edge_id}' has an 'mixin' predicate '{identifier}'."
         $description: "Input Edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'."
   query_graph:
     edge:
       predicate:
         abstract:
-          $message: "Query Graph edge '{identifier}' has an 'abstract' predicate '{element_name}'."
+          $message: "Query Graph edge '{edge_id}' has an 'abstract' predicate '{identifier}'."
           $description: "TRAPI Messages in Query Graphs can have 'abstract' predicates, when the mode of validation is 'non-strict'."
         mixin:
-          $message: "Query Graph edge '{identifier}' has an 'mixin' predicate '{element_name}'."
+          $message: "Query Graph edge '{edge_id}' has an 'mixin' predicate '{identifier}'."
           $description: "TRAPI Messages in Query Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'."
   knowledge_graph:
     edge:
       predicate:
         abstract:
-          $message: "Knowledge Graph edge '{identifier}' has an 'abstract' predicate '{element_name}'."
+          $message: "Knowledge Graph edge '{edge_id}' has an 'abstract' predicate '{identifier}'."
           $description: "TRAPI Messages in Knowledge Graphs can have 'abstract' predicates, when the mode of validation is 'non-strict'."
         mixin:
-          $message: "Knowledge Graph edge '{identifier}' has an 'mixin' predicate '{element_name}'."
+          $message: "Knowledge Graph edge '{edge_id}' has an 'mixin' predicate '{identifier}'."
           $description: "TRAPI Messages in Knowledge Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'."
       attribute:
         type_id:
           abstract:
-            $message: "Knowledge Graph edge '{identifier}' has an 'abstract' attribute_type_id '{element_name}'."
+            $message: "Knowledge Graph edge '{edge_id}' has an 'abstract' attribute_type_id '{identifier}'."
             $description: "TRAPI Messages in Knowledge Graphs can have 'abstract' attribute type identifiers, when the mode of validation is 'non-strict'."
           mixin:
-            $message: "Knowledge Graph edge '{identifier}' has an 'mixin' attribute_type_id '{element_name}'."
+            $message: "Knowledge Graph edge '{edge_id}' has an 'mixin' attribute_type_id '{identifier}'."
             $description: "TRAPI Messages in Knowledge Graphs can have 'mixin' attribute type identifiers, when the mode of validation is 'non-strict'."
 warning:
   trapi:
@@ -218,7 +218,7 @@ error:
           $message: "Input edge node '{identifier}' asserted category '{category}' is not a category term!"
           $description: "Category specified in input test data edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!"
         unknown:
-          $message: "Input edge node '{identifier}' has unknown category '{category}' element!"
+          $message: "Input edge node '{node_id}' has unknown category '{identifier}' element!"
           $description: "Category specified in input test data edge node is not a model element recorded in specified version of Biolink. Replace with a known category!"
       id:
         missing:
@@ -229,13 +229,13 @@ error:
         $message: "Input test data edge '{identifier}' predicate is missing or empty!"
         $description: "Input test edge data needs to have a specific edge predicate for testing!"
       unknown:
-        $message: "Input test data edge '{identifier}' is unknown predicate {element_name}!"
+        $message: "Input test data edge '{edge_id}' is unknown predicate {identifier}!"
         $description: "Predicate specified in input test data edge is not recorded in specified version of Biolink. Replace with a known predicate!"
       abstract:
-        $message: "Input Edge '{identifier}' is not permitted to have an 'abstract' predicate '{element_name}'!"
+        $message: "Input Edge '{edge_id}' is not permitted to have an 'abstract' predicate '{identifier}'!"
         $description: "Input Edge data validation is currently strict: predicates cannot be 'abstract'! Replace with a concrete predicate."
       mixin:
-        $message: "Input Edge '{identifier}' is not permitted to have an 'mixin' predicate '{element_name}'!"
+        $message: "Input Edge '{edge_id}' is not permitted to have an 'mixin' predicate '{identifier}'!"
         $description: "Input Edge data validation is currently strict: predicates cannot be of type 'mixin'! Replace with a concrete predicate."
       invalid:
         $message: "Edge '{identifier}' predicate '{predicate}' is invalid!"
@@ -250,7 +250,7 @@ error:
           $message: "Query graph node '{identifier}' asserted category '{category}' is not a category term!"
           $description: "Category specified in query graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!"
         unknown:
-          $message: "Query graph node '{identifier}' has unknown category '{category}' element!"
+          $message: "Query graph node '{node_id}' has unknown category '{identifier}' element!"
           $description: "Category specified in query graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!"
       ids:
         not_array:
@@ -284,7 +284,7 @@ error:
           $message: "Edge '{identifier}' predicate is missing or empty!"
           $description: "The predicate of Query Graph edge needs to specified using a 'predicate' key with an array list of one or more predicates!"
         unknown:
-          $message: "Query graph '{identifier}' has unknown predicate {element_name}!"
+          $message: "Query graph '{edge_id}' has unknown predicate {identifier}!"
           $description: "Predicate specified in Query Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!"
         not_array:
           $message: "Edge '{identifier}' predicate slot value is not an array!"
@@ -293,10 +293,10 @@ error:
           $message: "Edge '{identifier}' predicate slot value is an empty array!"
           $description: "Value of 'predicate' array slot value in Query Graph must contain one or more predicates!"
         abstract:
-            $message: "Query Graph edge '{identifier}' is not permitted to have an 'abstract' predicate '{element_name}'!"
+            $message: "Query Graph edge '{edge_id}' is not permitted to have an 'abstract' predicate '{identifier}'!"
             $description: "Query Graph data validation is currently strict: cannot have 'abstract' predicates! Replace with a concrete predicate."
         mixin:
-          $message: "Query Graph edge '{identifier}' is not permitted to have an 'mixin' predicate '{element_name}'!"
+          $message: "Query Graph edge '{edge_id}' is not permitted to have an 'mixin' predicate '{identifier}'!"
           $description: "Query Graph data validation is currently strict: cannot have 'mixin' predicates! Replace with a concrete predicate."
         invalid:
           $message: "Edge '{identifier}' predicate '{predicate}' is invalid!"
@@ -313,7 +313,7 @@ error:
           qualifier:
             type_id:
               unknown:
-                $message: "Edge '{identifier}' qualifier type_id '{qualifier_type_id}' is unknown!"
+                $message: "Edge '{edge_id}' qualifier type_id '{identifier}' is unknown!"
                 $description: "A qualifier qualifier_type_id must be defined in the specified version of Biolink!"
             value:
               unresolved:
@@ -337,7 +337,7 @@ error:
           $message: "Input edge node '{identifier}' asserted category '{category}' is not a category term!"
           $description: "Category specified in knowledge graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!"
         unknown:
-          $message: "Input edge node '{identifier}' has unknown category '{category}' element!"
+          $message: "Input edge node '{node_id}' has unknown category '{identifier}' element!"
           $description: "Category specified in knowledge graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!"
       id:
         missing:
@@ -384,7 +384,7 @@ error:
           $message: "Edge '{identifier}' predicate is missing or empty!"
           $description: "Knowledge graph edge must have a 'predicate' key with a non-empty associated value!"
         unknown:
-          $message: "Knowledge graph '{identifier}' has unknown predicate {element_name}!"
+          $message: "Knowledge graph '{edge_id}' has unknown predicate {identifier}!"
           $description: "Predicate specified in Knowledge Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!"
         invalid:
           $message: "Edge '{identifier}' predicate '{predicate}' is invalid!"
@@ -396,10 +396,10 @@ error:
           $message: "Value of the 'predicate' array slot in Knowledge Graph edge must contain one or more predicates!"
           $description: "Value of the 'predicate' array slot in Knowledge Graph edge must contain one or more predicates!"
         abstract:
-            $message: "Knowledge Graph edge '{identifier}' is not permitted to have an 'abstract' predicate '{element_name}'!"
+            $message: "Knowledge Graph edge '{edge_id}' is not permitted to have an 'abstract' predicate '{identifier}'!"
             $description: "Knowledge Graph data validation is currently strict: cannot have 'abstract' predicates! Replace with a concrete predicate."
         mixin:
-          $message: "Knowledge Graph edge '{identifier}' is not permitted to have an 'mixin' predicate '{element_name}'!"
+          $message: "Knowledge Graph edge '{edge_id}' is not permitted to have an 'mixin' predicate '{identifier}'!"
           $description: "Knowledge Graph data validation is currently strict: cannot have 'mixin' predicates! Replace with a concrete predicate."
       attribute:
         missing:
@@ -413,13 +413,13 @@ error:
           $description: "Value of the 'attributes' slot in Knowledge Graph edge must be an array of attributes!"
         type_id:
           unknown:
-            $message: "Knowledge graph '{identifier}' has unknown attribute_type_id {element_name}!"
+            $message: "Knowledge graph '{edge_id}' has unknown attribute_type_id {identifier}!"
             $description: "Edge Attribute type identifier specified in knowledge graph edge is not recorded in specified version of Biolink. Replace with a known term!"
           abstract:
-            $message: "Knowledge Graph edge '{identifier}' is not permitted to have an 'abstract' attribute_type_id '{element_name}'!"
+            $message: "Knowledge Graph edge '{edge_id}' is not permitted to have an 'abstract' attribute_type_id '{identifier}'!"
             $description: "Edge data validation is currently strict: attribute type identifiers cannot be 'abstract'. Replace with a concrete attribute_type_id!"
           mixin:
-            $message: "Knowledge Graph edge '{identifier}' is not permitted to have an 'mixin' attribute_type_id '{element_name}'!"
+            $message: "Knowledge Graph edge '{edge_id}' is not permitted to have an 'mixin' attribute_type_id '{identifier}'!"
             $description: "Edge data validation is currently strict: attribute type identifiers cannot be of type 'mixin'. Replace with a concrete attribute_type_id!"
           missing:
             $message: "Edge '{identifier}' attribute is missing its 'attribute_type_id' property!"
@@ -455,7 +455,7 @@ error:
         qualifier:
           type_id:
             unknown:
-              $message: "Edge '{identifier}' qualifier type_id '{qualifier_type_id}' is unknown!"
+              $message: "Edge '{edge_id}' qualifier type_id '{identifier}' is unknown!"
               $description: "A qualifier qualifier_type_id must be defined in the specified version of Biolink!"
           value:
             unresolved:

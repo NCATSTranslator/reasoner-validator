@@ -253,41 +253,41 @@ class BiolinkValidator(ValidationReporter):
     def set_nodes(self, nodes: Set):
         self.nodes.update(nodes)
 
-    def validate_element_status(self, context: str, identifier: str, element_name: str) -> Optional[Element]:
+    def validate_element_status(self, context: str, identifier: str, edge_id: str) -> Optional[Element]:
         """
         Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.
 
         :param context: str, parsing context (e.g. 'Node')
-        :param identifier: str, identifier of enclosing instance containing the element (e.g. the 'edge_id')
-        :param element_name: str, name of the putative Biolink element ('class')
+        :param identifier: str, name of the putative Biolink element ('class')
+        :param edge_id: str, identifier of enclosing edge containing the element (e.g. the 'edge_id')
 
         :return: Optional[Element], Biolink Element resolved to 'name' if element no validation error; None otherwise.
         """
-        element: Optional[Element] = self.bmt.get_element(element_name)
+        element: Optional[Element] = self.bmt.get_element(identifier)
         if not element:
-            self.report(code=f"error.{context}.unknown", identifier=identifier, element_name=element_name)
+            self.report(code=f"error.{context}.unknown", identifier=identifier, edge_id=edge_id)
             return None
 
         if element.deprecated:
             # We won't index the instances where the deprecated element is seen, since we assume that
             # component developers learning about the issue will globally fix it in their graphs
-            self.report(code=f"warning.{context}.deprecated", identifier=element_name)
+            self.report(code=f"warning.{context}.deprecated", identifier=identifier)
             # return None - a deprecated term is not treated as a failure but just as a warning
 
         if element.abstract:
             if self.strict_validation:
-                self.report(code=f"error.{context}.abstract", identifier=identifier, element_name=element_name)
+                self.report(code=f"error.{context}.abstract", identifier=identifier, edge_id=edge_id)
                 return None
             else:
-                self.report(code=f"info.{context}.abstract", identifier=identifier, element_name=element_name)
+                self.report(code=f"info.{context}.abstract", identifier=identifier, edge_id=edge_id)
 
-        elif self.bmt.is_mixin(element_name):
+        elif self.bmt.is_mixin(identifier):
             # A mixin cannot be instantiated ...
             if self.strict_validation:
-                self.report(code=f"error.{context}.mixin", identifier=identifier, element_name=element_name)
+                self.report(code=f"error.{context}.mixin", identifier=identifier, edge_id=edge_id)
                 return None
             else:
-                self.report(code=f"info.{context}.mixin", identifier=identifier, element=element_name)
+                self.report(code=f"info.{context}.mixin", identifier=identifier, edge_id=edge_id)
 
         return element
 
@@ -375,8 +375,8 @@ class BiolinkValidator(ValidationReporter):
                         if prefix == 'biolink':
                             biolink_class = self.validate_element_status(
                                 context="knowledge_graph.edge.attribute.type_id",
-                                identifier=edge_id,
-                                element_name=attribute_type_id
+                                identifier=attribute_type_id,
+                                edge_id=edge_id
                             )
                             if biolink_class:
                                 if not self.bmt.is_association_slot(attribute_type_id):
@@ -490,8 +490,8 @@ class BiolinkValidator(ValidationReporter):
                 if not self.bmt.is_qualifier(name=qualifier_type_id):
                     self.report(
                         code=f"error.{context}.qualifier.type_id.unknown",
-                        identifier=edge_id,
-                        qualifier_type_id=qualifier_type_id
+                        identifier=qualifier_type_id,
+                        edge_id=edge_id
                     )
                 elif not self.bmt.validate_qualifier(
                         # TODO: temporary workaround, parse 'qualifier_type_id' to core name
@@ -574,8 +574,8 @@ class BiolinkValidator(ValidationReporter):
         # Validate the putative predicate as *not* being abstract, deprecated or a mixin
         biolink_class = self.validate_element_status(
             context=context,
-            identifier=edge_id,
-            element_name=predicate
+            identifier=predicate,
+            edge_id=edge_id
         )
         if biolink_class:
             if not self.bmt.is_predicate(predicate):
@@ -701,7 +701,7 @@ class BiolinkValidator(ValidationReporter):
                     )
                     biolink_class = None
             else:
-                self.report(code=f"error.{context}.node.category.unknown", identifier=node_id, category=category)
+                self.report(code=f"error.{context}.node.category.unknown", identifier=category, node_id=node_id)
         else:
             self.report(code=f"error.{context}.node.category.missing", identifier=node_id)
 
