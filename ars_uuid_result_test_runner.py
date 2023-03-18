@@ -35,6 +35,10 @@ def main():
              'selectively shown at end of script execution).'
     )
     arg_parser.add_argument(
+        '--json', action='count',
+        help='If set, dump any messages in JSON format (otherwise, dump messages in human readable format).'
+    )
+    arg_parser.add_argument(
         '--biolink_version', type=str,
         help='Biolink Version for validation (if omitted or None, ' +
              'defaults to the current default version of the Biolink Model Toolkit)'
@@ -130,7 +134,10 @@ def main():
             show_messages = prompt_user("No validation errors or warnings, but some information was reported")
 
         if show_messages or params.verbose:
-            print(json.dumps(messages, sort_keys=True, indent=2))
+            if params.json:
+                print(json.dumps(messages, sort_keys=True, indent=2))
+            else:
+                validator.dump()
 
 
 if __name__ == "__main__":
