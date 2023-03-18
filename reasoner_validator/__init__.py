@@ -108,7 +108,7 @@ class TRAPIResponseValidator(ValidationReporter):
             self.merge(trapi_validator)
 
         status: Optional[str] = response['status'] if 'status' in response else None
-        if status and status not in ["Success", "QueryNotTraversable", "KPsNotAvailable"]:
+        if status and status not in ["OK", "Success", "QueryNotTraversable", "KPsNotAvailable"]:
             self.report("warning.trapi.response.status.unknown", identifier=status)
 
         message: Optional[Dict] = response['message']

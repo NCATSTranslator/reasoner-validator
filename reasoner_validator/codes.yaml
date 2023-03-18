@@ -284,7 +284,7 @@ error:
           $message: "Edge '{identifier}' predicate is missing or empty!"
           $description: "The predicate of Query Graph edge needs to specified using a 'predicate' key with an array list of one or more predicates!"
         unknown:
-          $message: "Edge '{identifier}' predicate '{predicate}' is unknown!"
+          $message: "'{identifier}' is unknown predicate!"
           $description: "Predicate specified in Query Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!"
         not_array:
           $message: "Edge '{identifier}' predicate slot value is not an array!"
@@ -384,7 +384,7 @@ error:
           $message: "Edge '{identifier}' predicate is missing or empty!"
           $description: "Knowledge graph edge must have a 'predicate' key with a non-empty associated value!"
         unknown:
-          $message: "Edge '{identifier}' predicate '{predicate}' is unknown!"
+          $message: "'{identifier}' is unknown predicate!"
           $description: "Predicate specified in Knowledge Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!"
         invalid:
           $message: "Edge '{identifier}' predicate '{predicate}' is invalid!"
