@@ -65,7 +65,7 @@ class ValidationReporter:
                                   if None or False, just issue a 'warning'
         :type strict_validation: Optional[bool] = None
         """
-        self.prefix: str = prefix + ": " if prefix else ""
+        self.prefix: str = prefix if prefix else ""
         self.trapi_version = trapi_version if trapi_version else latest.get(self.DEFAULT_TRAPI_VERSION)
         self.biolink_version = biolink_version
         self.sources: Optional[Dict] = sources
@@ -418,7 +418,8 @@ class ValidationReporter:
                         ]
                     ]
                 ]
-            ]
+            ],
+            add_prefix: bool = False
     ) -> List[str]:
         """
         This augmented message display wrapper prepends the Validation Reporter
@@ -429,6 +430,8 @@ class ValidationReporter:
                          keyed by message template 'identifier' field values. If the template has no other parameters,
                          the given key has a value of None; otherwise, a list of dictionaries is given that report
                          the values of message-specific template parameters in addition to the 'identifier' parameter.
+        :param add_prefix: bool, flag to prepend the ValidatorReporter prefix to displayed messages (default: False)
+
         :return: List[str], one or more resolved and contextualized Validation Reporter messages
         """
         decoded_messages: List[str] = list()
@@ -445,7 +448,10 @@ class ValidationReporter:
             ]
         for code, parameters in messages.items():
             decoded_messages.extend(
-                [self.prefix + message for message in CodeDictionary.display(code, parameters)]
+                [
+                    f"{self.prefix}: " + message if add_prefix else message
+                    for message in CodeDictionary.display(code, parameters, add_prefix=add_prefix)
+                ]
             )
         return decoded_messages
 
@@ -471,7 +477,8 @@ class ValidationReporter:
         report_all: Dict[str, List[str]] = self.display_all()
         message_type: str
         messages: Dict
+        print(f"\n\033[4mValidation Report for {self.prefix}\033[0m", file=file)
         for message_type, messages in report_all.items():
             print(f"\n\033[4m{message_type.capitalize()}\033[0m\n", file=file)
             for message in messages:
-                print(message, file=file)
+                print(f"* {message}", file=file)

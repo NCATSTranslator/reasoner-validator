@@ -170,7 +170,8 @@ class CodeDictionary:
                         ]
                     ]
                 ]
-            ] = None
+            ] = None,
+            add_prefix: bool = False
     ) -> List[str]:
         """
         Generate one or more full messages from provided Validation Reporter code
@@ -186,11 +187,15 @@ class CodeDictionary:
                            keys are either 'None' if the identifier is the only template parameter, or alternately,
                            a list of dictionaries containing all the other expected parameters keys and their values
                            for every distinct message).
+        :param add_prefix: bool, flag to prepend a prefix for the message type
+                           (i.e. error, warning, info) to displayed messages (default: False)
+
         :return: List[str], list of decoded messages
         """
         value: Optional[Tuple[str, Dict[str, str]]] = cls.get_code_subtree(code, is_leaf=True)
         assert value, f"CodeDictionary.display(): unknown message code {code}"
         message_type, entry = value
+        message_type_prefix: str = f"{message_type.upper()} - " if add_prefix else ""
         code_parts: List[str] = [part.capitalize() for part in code.replace("_", ".").split(".")[1:-1]]
         context: str = ' '.join(code_parts) + ': ' if code_parts else ''
         template: str = entry[cls.MESSAGE]
@@ -208,18 +213,16 @@ class CodeDictionary:
                         content: Dict = identifier_dict.copy()
                         content.update(another_parameter_dict)
                         message_list.append(
-                            f"{message_type.upper()} - "
-                            f"{context}{template.format(**content)}"
+                            f"{message_type_prefix}{context}{template.format(**content)}"
                         )
                 else:
                     message_list.append(
-                        f"{message_type.upper()} - "
-                        f"{context}{template.format(**identifier_dict)}"
+                        f"{message_type_prefix}{context}{template.format(**identifier_dict)}"
                     )
             return message_list
         else:
             # simple scalar message without parameterization?
-            return [f"{message_type.upper()} - {context}{template}"]
+            return [f"{message_type_prefix}{context}{template}"]
 
     @classmethod
     def _dump_code_markdown_entries(cls, root: str, code_subtree: Dict, markdown_file):

@@ -155,14 +155,17 @@ def test_get_description():
 
 
 def test_message_display():
-    assert "INFO - Biolink Model-compliant TRAPI Message." in CodeDictionary.display(code="info.compliant")
+    assert "INFO - Biolink Model-compliant TRAPI Message." in CodeDictionary.display(
+        code="info.compliant", add_prefix=True
+    )
     assert "ERROR - Knowledge Graph Nodes: No nodes found!" \
-           in CodeDictionary.display("error.knowledge_graph.nodes.empty")
+           in CodeDictionary.display("error.knowledge_graph.nodes.empty", add_prefix=True)
     assert "INFO - User excluded S-P-O triple 'a->biolink:related_to->b' " + \
            "or all test case S-P-O triples from resource test location." \
            in CodeDictionary.display(
                 code="info.excluded",
-                parameters={"a->biolink:related_to->b": None}  # this code has no other parameters
+                parameters={"a->biolink:related_to->b": None}, # this code has no other parameters
+                add_prefix=True
             )
     assert "INFO - Input Edge Predicate: Input Edge 'a->biolink:related_to->b' " + \
            "has an 'abstract' predicate 'biolink:contributor'." \
@@ -172,23 +175,28 @@ def test_message_display():
                     "biolink:contributor": [
                         {"edge_id": "a->biolink:related_to->b"}
                     ]
-                }  # this code has one other parameter named 'element_name'
+                },  # this code has one other parameter named 'element_name'
+                add_prefix=True
             )
 
 
 def test_validator_reporter_message_display():
     reporter = ValidationReporter(prefix="Test Validation Report", trapi_version=TEST_TRAPI_VERSION)
-    messages: List[str] = reporter.display(messages={
+    messages: List[str] = reporter.display(
+        messages={
             "info.excluded": {
                 # this message only has an indexing 'identifier' parameter
                 "a->biolink:related_to->b": None
             }
-    })
+        },
+        add_prefix=True
+    )
     assert "Test Validation Report: INFO - User excluded S-P-O triple 'a->biolink:related_to->b' " + \
            "or all test case S-P-O triples from resource test location." \
         in messages
 
-    messages = reporter.display(messages={
+    messages = reporter.display(
+        messages={
             # validation code revolving to template
             "error.input_edge.predicate.invalid":
             {
@@ -197,7 +205,9 @@ def test_validator_reporter_message_display():
                     {"predicate":  "biolink:not_a_predicate"}  # other parameters
                 ]
             }
-    })
+        },
+        add_prefix=True
+    )
     assert "Test Validation Report: ERROR - Input Edge Predicate: " +\
            "Edge 'a--biolink:not_a_predicate->b' predicate 'biolink:not_a_predicate' is invalid!" in messages
 
@@ -220,7 +230,7 @@ def test_message_report():
     assert len(report['information']) > 0
     messages: List[str] = list()
     for code, parameters in report['information'].items():
-        messages.extend(CodeDictionary.display(code, parameters))
+        messages.extend(CodeDictionary.display(code, parameters, add_prefix=True))
     assert "INFO - Biolink Model-compliant TRAPI Message." in messages
     assert "INFO - Input Edge Predicate: Input Edge 'a->biolink:contributor->b' " + \
            "has an 'abstract' predicate 'biolink:contributor'." \
@@ -229,7 +239,7 @@ def test_message_report():
 
 def test_messages():
     # Loading and checking a first reporter
-    reporter1 = ValidationReporter(prefix="First Validation Report", trapi_version=TEST_TRAPI_VERSION)
+    reporter1 = ValidationReporter(prefix="1st Test Message Set", trapi_version=TEST_TRAPI_VERSION)
     assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter1.get_biolink_version() is None
     assert not reporter1.has_messages()
@@ -245,7 +255,7 @@ def test_messages():
 
     # Testing merging of messages from a second reporter
     reporter2 = ValidationReporter(
-        prefix="Second Validation Report",
+        prefix="2nd Test Message Set",
         biolink_version=TEST_BIOLINK_VERSION
     )
     assert reporter2.get_trapi_version() == TEST_TRAPI_VERSION
@@ -304,7 +314,7 @@ def test_messages():
     assert len(messages['information']) > 0
     information: List[str] = list()
     for code, parameters in messages['information'].items():
-        information.extend(CodeDictionary.display(code, parameters))
+        information.extend(CodeDictionary.display(code, parameters, add_prefix=True))
     assert "INFO - User excluded S-P-O triple 'Horace van der Gelder' " +\
            "or all test case S-P-O triples from resource test location." in information
 
@@ -312,7 +322,7 @@ def test_messages():
     assert len(messages['warnings']) > 0
     warnings: List[str] = list()
     for code, parameters in messages['warnings'].items():
-        warnings.extend(CodeDictionary.display(code, parameters))
+        warnings.extend(CodeDictionary.display(code, parameters, add_prefix=True))
     assert "WARNING - Knowledge Graph Node Unmapped: 'Will Robinson' is unmapped " + \
            "to the target categories 'Lost in Space'?" in warnings
 
@@ -320,7 +330,7 @@ def test_messages():
     assert len(messages['errors']) > 0
     errors: List[str] = list()
     for code, parameters in messages['errors'].items():
-        errors.extend(CodeDictionary.display(code, parameters))
+        errors.extend(CodeDictionary.display(code, parameters, add_prefix=True))
     assert "ERROR - Trapi: TRAPI 6.6.6 schema exception: 'Dave, this can only be due to human error...'!" in errors
     
     obj = reporter1.to_dict()
@@ -383,14 +393,14 @@ def test_validator_method():
     assert len(messages['warnings']) > 0
     warnings: List[str] = list()
     for code, parameters in messages['warnings'].items():
-        warnings.extend(CodeDictionary.display(code, parameters))
+        warnings.extend(CodeDictionary.display(code, parameters, add_prefix=True))
     assert "WARNING - Graph: Fake data is empty?" in warnings
 
     assert "errors" in messages
     assert len(messages['errors']) > 0
     errors: List[str] = list()
     for code, parameters in messages['errors'].items():
-        errors.extend(CodeDictionary.display(code, parameters))
+        errors.extend(CodeDictionary.display(code, parameters, add_prefix=True))
     assert "ERROR - Knowledge Graph Edge Provenance Infores: " + \
            "Edge 'fake-edge-id' has provenance value 'foo:bar' which is not a well-formed InfoRes CURIE!" in errors
 
