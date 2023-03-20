@@ -633,7 +633,9 @@ def test_sample_graph(query: Tuple[int, int, int]):
             "warning.knowledge_graph.edge.provenance.multiple_primary"
         ),
         (
-            # Query 18 - Full Message, with non-strict validation
+            # Query 18 - Full Message, with non-strict validation.
+            #            Both knowledge graph nodes have 'mixin' categories   , the list of categories for knowledge graphs
+            #            must have at least one concrete category, hence, a validation error is now reported:
             {
                 "message": {
                     "query_graph": _TEST_QG_2,
@@ -645,7 +647,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             None,
             None,
             False,
-            ""
+            "error.knowledge_graph.node.categories.not_concrete"
         ),
         (
             # Query 19 - Full Message, WITH strict validation - abstract predicate?
@@ -808,7 +810,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
         (
             # Query 25 - Valid full Message, under strict validation. Message is valid,
             #            the 'workflow' field is an array, but runner_parameters is None.
-            #            This is technically invalid but we have a code patch which should filter it out (for now)
+            #            This is technically invalid, but we have a code patch which should filter it out (for now)
             {
                 "message": {
                     "query_graph": _TEST_QG_1,

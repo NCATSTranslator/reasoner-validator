@@ -102,9 +102,15 @@
 
 ### warning.input_edge.node.category.deprecated
 
-**Message:** Input data node category '{identifier}' is deprecated?
+**Message:** Input data node '{node_id}' category '{identifier}' is deprecated?
 
 **Description:** Input data node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
+
+### warning.input_edge.node.category.not_concrete
+
+**Message:** Input data node '{node_id}' category '{identifier}' may be unknown, abstract or a mixin?
+
+**Description:** Input data node category may be unknown, abstract or a mixin in the current model. TRAPI Responses using this edge may not resolve any Knowledge Graph nodes with this category. Review Biolink Model for 'concrete' replacement?
 
 ### warning.input_edge.node.id.unmapped_to_category
 
@@ -126,7 +132,7 @@
 
 ### warning.query_graph.node.category.deprecated
 
-**Message:** Query graph node category '{identifier}' is deprecated?
+**Message:** Query graph node '{node_id}' category '{identifier}' is deprecated?
 
 **Description:** Query graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
 
@@ -150,7 +156,7 @@
 
 ### warning.knowledge_graph.node.category.deprecated
 
-**Message:** Knowledge graph node category '{identifier}' is deprecated?
+**Message:** Knowledge graph node '{node_id}' category '{identifier}' is deprecated?
 
 **Description:** Knowledge graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
 
@@ -314,7 +320,7 @@
 
 ### error.input_edge.node.category.not_a_category
 
-**Message:** Input edge node '{identifier}' asserted category '{category}' is not a category term!
+**Message:** Input edge node '{node_id}' asserted category '{identifier}' is not a category term!
 
 **Description:** Category specified in input test data edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!
 
@@ -368,7 +374,7 @@
 
 ### error.query_graph.node.category.not_a_category
 
-**Message:** Query graph node '{identifier}' asserted category '{category}' is not a category term!
+**Message:** Query graph node '{node_id}' asserted category '{identifier}' is not a category term!
 
 **Description:** Category specified in query graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!
 
@@ -506,7 +512,7 @@
 
 ### error.knowledge_graph.node.category.not_a_category
 
-**Message:** Input edge node '{identifier}' asserted category '{category}' is not a category term!
+**Message:** Input edge node '{node_id}' asserted category '{identifier}' is not a category term!
 
 **Description:** Category specified in knowledge graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!
 
@@ -542,9 +548,15 @@
 
 ### error.knowledge_graph.node.categories.not_array
 
-**Message:** Node '{identifier}.categories' slot value is not an array!
+**Message:** Node '{identifier} categories slot value is not an array!
 
 **Description:** Value of 'categories' slot in Knowledge Graph node must be an array data type!
+
+### error.knowledge_graph.node.categories.not_concrete
+
+**Message:** Input edge node '{identifier}' asserted categories '{categories}' is not a concrete category!
+
+**Description:** Categories specified in knowledge graph edge node may not resolve to any (non-abstract, non-mixin) category terms in the specified version of Biolink. Add at least one 'concrete' category (as the most specific category?)!
 
 ### error.knowledge_graph.node.empty_categories
 

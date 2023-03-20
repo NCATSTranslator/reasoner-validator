@@ -158,6 +158,7 @@ class BiolinkValidator(ValidationReporter):
                 else:
                     categories = slots["categories"]
                     node_prefix_mapped: bool = False
+                    concrete_category_found: bool = False
                     for category in categories:
                         category: Optional[ClassDefinition] = \
                             self.validate_category(
@@ -169,16 +170,25 @@ class BiolinkValidator(ValidationReporter):
                         # non-deprecated) categories are of interest here,
                         # since only they will have associated namespaces
                         if category:
+                            concrete_category_found: bool = True
                             possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
                             if possible_subject_categories and category.name in possible_subject_categories:
                                 node_prefix_mapped = True
                                 # don't need to search any more categories
                                 break
 
+                    if not concrete_category_found:
+                        self.report(
+                            code="error.knowledge_graph.node.categories.not_concrete",
+                            identifier=node_id,
+                            categories=str(categories)
+                        )
+
                     if not node_prefix_mapped:
                         self.report(
                             code="warning.knowledge_graph.node.unmapped_prefix",
-                            identifier=node_id, categories=str(categories)
+                            identifier=node_id,
+                            categories=str(categories)
                         )
             else:
                 self.report(
@@ -218,7 +228,8 @@ class BiolinkValidator(ValidationReporter):
                                     category=category
                                 )
                             # Only 'concrete' (non-abstract, non-mixin, preferably, non-deprecated)
-                            # categories will be tested here for identifier namespaces
+                            # categories will be tested here for identifier namespaces.  Also, we
+                            # actually don't care if Query Graphs don't have at least one concrete category...
                             if category:
                                 for identifier in node_ids:  # may be empty list if not provided...
                                     possible_subject_categories = self.bmt.get_element_by_prefix(identifier)
@@ -691,41 +702,54 @@ class BiolinkValidator(ValidationReporter):
                 if biolink_class.deprecated:
                     self.report(
                         code=f"warning.{context}.node.category.deprecated",
-                        identifier=category
+                        identifier=category,
+                        node_id=node_id
                     )
                 if biolink_class.abstract or self.bmt.is_mixin(category):
                     biolink_class = None
                 elif not self.bmt.is_category(category):
                     self.report(
-                        code=f"error.{context}.node.category.not_a_category", identifier=node_id, category=category
+                        code=f"error.{context}.node.category.not_a_category",
+                        identifier=category,
+                        node_id=node_id
                     )
                     biolink_class = None
             else:
-                self.report(code=f"error.{context}.node.category.unknown", identifier=category, node_id=node_id)
+                self.report(
+                    code=f"error.{context}.node.category.unknown",
+                    identifier=category,
+                    node_id=node_id
+                )
         else:
             self.report(code=f"error.{context}.node.category.missing", identifier=node_id)
 
         return biolink_class
 
-    def validate_input_edge_node(self, context: str, node_id: Optional[str], category: Optional[str]):
+    def validate_input_edge_node(self, context: str, node_id: Optional[str], category_name: Optional[str]):
         if node_id:
-            biolink_class: Optional[ClassDefinition] = self.validate_category(
+            category: Optional[ClassDefinition] = self.validate_category(
                 context="input_edge",
                 node_id=node_id,
-                category=category
+                category=category_name
             )
-            if biolink_class:
+            if category:
+                # Since input edges are used in Query Graphs, we ought not to actually
+                # care if they don't have at least one concrete category...However, it
+                # is unlikely for non-concrete classes to resolve to a TRAPI response containing them!
                 possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
-                if biolink_class.name not in possible_subject_categories:
+                if category.name not in possible_subject_categories:
                     self.report(
                         code="warning.input_edge.node.id.unmapped_to_category",
                         context=context,
                         identifier=node_id,
-                        category=category
+                        category=category_name
                     )
-            # else:
-            #     We may have already reported an error within validate_category()
-            #     Or the class may be abstract or mixin, which is allowed.
+            else:
+                self.report(
+                    code="warning.input_edge.node.category.not_concrete",
+                    identifier=node_id,
+                    category=category_name
+                )
         else:
             self.report(code="error.input_edge.node.id.missing", identifier=context)
 
@@ -758,7 +782,7 @@ class BiolinkValidator(ValidationReporter):
         self.validate_input_edge_node(
             context='Subject',
             node_id=subject_curie,
-            category=subject_category_curie
+            category_name=subject_category_curie
         )
         if not predicate:
             self.report(
@@ -771,7 +795,7 @@ class BiolinkValidator(ValidationReporter):
         self.validate_input_edge_node(
             context='Object',
             node_id=object_curie,
-            category=object_category_curie
+            category_name=object_category_curie
         )
 
     def check_biolink_model_compliance(self, graph: Dict):
