@@ -170,7 +170,7 @@ class BiolinkValidator(ValidationReporter):
                         # since only they will have associated namespaces
                         if category:
                             possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
-                            if category.name in possible_subject_categories:
+                            if possible_subject_categories and category.name in possible_subject_categories:
                                 node_prefix_mapped = True
                                 # don't need to search any more categories
                                 break
