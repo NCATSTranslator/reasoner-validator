@@ -79,8 +79,11 @@ warning:
     node:
       category:
         deprecated:
-          $message: "Input data node category '{identifier}' is deprecated?"
+          $message: "Input data node '{node_id}' category '{identifier}' is deprecated?"
           $description: "Input data node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?"
+        not_concrete:
+          $message: "Input data node '{node_id}' category '{identifier}' may be unknown, abstract or a mixin?"
+          $description: "Input data node category may be unknown, abstract or a mixin in the current model. TRAPI Responses using this edge may not resolve any Knowledge Graph nodes with this category. Review Biolink Model for 'concrete' replacement?"
       id:
         unmapped_to_category:
           $message: "'{identifier}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?"
@@ -96,7 +99,7 @@ warning:
     node:
       category:
         deprecated:
-          $message: "Query graph node category '{identifier}' is deprecated?"
+          $message: "Query graph node '{node_id}' category '{identifier}' is deprecated?"
           $description: "Query graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?"
       ids:
         unmapped_to_categories:
@@ -114,7 +117,7 @@ warning:
     node:
       category:
         deprecated:
-          $message: "Knowledge graph node category '{identifier}' is deprecated?"
+          $message: "Knowledge graph node '{node_id}' category '{identifier}' is deprecated?"
           $description: "Knowledge graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?"
       unmapped_prefix:
         $message: "'{identifier}' is unmapped to the target categories '{categories}'?"
@@ -215,7 +218,7 @@ error:
           $message: "Input edge node '{identifier}' is missing its category!"
           $description: "Category value must be specified in an input test data edge!"
         not_a_category:
-          $message: "Input edge node '{identifier}' asserted category '{category}' is not a category term!"
+          $message: "Input edge node '{node_id}' asserted category '{identifier}' is not a category term!"
           $description: "Category specified in input test data edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!"
         unknown:
           $message: "Input edge node '{node_id}' has unknown category '{identifier}' element!"
@@ -247,7 +250,7 @@ error:
           $message: "Query graph node '{identifier}' is missing its category!"
           $description: "Category value must be specified in an query graph edge!"
         not_a_category:
-          $message: "Query graph node '{identifier}' asserted category '{category}' is not a category term!"
+          $message: "Query graph node '{node_id}' asserted category '{identifier}' is not a category term!"
           $description: "Category specified in query graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!"
         unknown:
           $message: "Query graph node '{node_id}' has unknown category '{identifier}' element!"
@@ -334,7 +337,7 @@ error:
           $message: "Input edge node '{identifier}' is missing its category!"
           $description: "Category value must be specified in an knowledge graph edge!"
         not_a_category:
-          $message: "Input edge node '{identifier}' asserted category '{category}' is not a category term!"
+          $message: "Input edge node '{node_id}' asserted category '{identifier}' is not a category term!"
           $description: "Category specified in knowledge graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!"
         unknown:
           $message: "Input edge node '{node_id}' has unknown category '{identifier}' element!"
@@ -355,8 +358,11 @@ error:
         $description: "Value of 'ids' array slot in Knowledge Graph node must contain one or more node identifiers!"
       categories:
         not_array:
-          $message: "Node '{identifier}.categories' slot value is not an array!"
+          $message: "Node '{identifier} categories slot value is not an array!"
           $description: "Value of 'categories' slot in Knowledge Graph node must be an array data type!"
+        not_concrete:
+          $message: "Input edge node '{identifier}' asserted categories '{categories}' is not a concrete category!"
+          $description: "Categories specified in knowledge graph edge node may not resolve to any (non-abstract, non-mixin) category terms in the specified version of Biolink. Add at least one 'concrete' category (as the most specific category?)!"
       empty_categories:
         $message: "Node '{identifier}.categories' slot array is empty!"
         $description: "Value of 'categories' array slot in Knowledge Graph node must contain one or more node category terms!"

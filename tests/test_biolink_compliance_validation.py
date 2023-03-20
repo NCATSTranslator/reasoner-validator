@@ -315,7 +315,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         #     # f"{INPUT_EDGE_PREFIX}: WARNING - Subject 'biolink:Nutrient' is deprecated?"
         #     "warning.input_edge.node.category.deprecated"
         # ),
-        (   # Query 18 - inform that the input category is a mixin? Simply ignored now during validation...
+        (   # Query 18 - Issue a warning for input_edge data with a category that is a mixin?
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:GeneOrGeneProduct',
@@ -324,9 +324,9 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'HGNC:9604',
                 'object': 'UniProtKB:P23219'
             },
-            ""
+            "warning.input_edge.node.category.not_concrete"
         ),
-        (   # Query 19 - inform that the input category is abstract? Simply ignored now during validation...
+        (   # Query 19 - Issue a warning for input_edge data with a category that is abstract?
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AdministrativeEntity',
@@ -335,7 +335,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject': 'isbn:1234',
                 'object': 'ORCID:1234'
             },
-            ""
+            "warning.input_edge.node.category.not_concrete"
         )
     ]
 )
@@ -1624,7 +1624,33 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 7: unknown category specified
+            # Query 7: Knowledge Graph 'categories' list values should include
+            #          at least one (non-abstract, non-mixin) category term
+            {
+                "nodes": {
+                    "UniProtKB:Q14191": {
+                       "categories": ["biolink:GeneProductMixin"]
+                    },
+                    "CHEBI:18420": {
+                        "name": "Magnesium",
+                        "categories": ["biolink:SmallMolecule"]
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "UniProtKB:Q14191",
+                        "predicate": "biolink:physically_interacts_with",
+                        "object": "CHEBI:18420",
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                    }
+                }
+            },
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot value is not an array!"
+            "error.knowledge_graph.node.categories.not_concrete"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 8: unknown category specified
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -1647,7 +1673,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 8: abstract category in Knowledge Graphs? Itself ignored now during validation,
+            # Query 9: abstract category in Knowledge Graphs? Itself ignored now during validation,
             #          although if at least one 'concrete' class is not given, other related
             #          validation errors (e.g. 'unmapped_prefix'?) may be reported?
             {
@@ -1677,7 +1703,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 9: mixin category in Knowledge Graphs? Itself ignored now during validation,
+            # Query 10: mixin category in Knowledge Graphs? Itself ignored now during validation,
             #          although if at least one 'concrete' class is not given with id_prefix mappings,
             #          other related validation errors (e.g. 'unmapped_prefix'?) may be reported?
             {
@@ -1736,7 +1762,7 @@ def test_validate_qualifiers(query: Tuple):
         # ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 10: invalid node CURIE prefix namespace, for specified category
+            # Query 11: invalid node CURIE prefix namespace, for specified category
             {
                 "nodes": {
                     "FOO:1234": {
@@ -1770,7 +1796,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 11: missing or empty subject, predicate, object values
+            # Query 12: missing or empty subject, predicate, object values
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -1795,7 +1821,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 12: 'subject' id is missing from the nodes catalog
+            # Query 13: 'subject' id is missing from the nodes catalog
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -1824,7 +1850,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 13: predicate is unknown
+            # Query 14: predicate is unknown
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -1853,7 +1879,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 14: predicate is invalid - may be a valid Biolink element but is not a predicate
+            # Query 15: predicate is invalid - may be a valid Biolink element but is not a predicate
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -1882,7 +1908,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 15: predicate is a mixin - not allowed in Knowledge Graphs
+            # Query 16: predicate is a mixin - not allowed in Knowledge Graphs
             {
                 "nodes": {
                     "HGNC:3059": {
@@ -1911,7 +1937,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 16: predicate is abstract - not allowed in Knowledge Graphs
+            # Query 17: predicate is abstract - not allowed in Knowledge Graphs
             {
                 "nodes": {
                     "PMID:1234": {
@@ -1940,7 +1966,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 17: predicate is non-canonical
+            # Query 18: predicate is non-canonical
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -1969,7 +1995,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 18: 'object' id is missing from the nodes catalog
+            # Query 19: 'object' id is missing from the nodes catalog
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -1999,7 +2025,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 19: attribute 'attribute_type_id' is missing
+            # Query 20: attribute 'attribute_type_id' is missing
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2028,7 +2054,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 20: attribute 'value' is missing?
+            # Query 21: attribute 'value' is missing?
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2057,7 +2083,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 21: 'attribute_type_id' is not a CURIE
+            # Query 22: 'attribute_type_id' is not a CURIE
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2086,7 +2112,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 22: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
+            # Query 23: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2116,7 +2142,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 23: 'attribute_type_id' has a 'biolink' CURIE prefix and is an association_slot, so it should pass
+            # Query 24: 'attribute_type_id' has a 'biolink' CURIE prefix and is an association_slot, so it should pass
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2147,7 +2173,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 24: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
+            # Query 25: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2177,7 +2203,7 @@ def test_validate_qualifiers(query: Tuple):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 25: has missing or empty attributes?
+            # Query 26: has missing or empty attributes?
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2204,7 +2230,7 @@ def test_validate_qualifiers(query: Tuple):
             # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge has no 'attributes' key!"
             "error.knowledge_graph.edge.attribute.missing"
         ),
-        (   # Query 26:  # An earlier Biolink Model won't recognize a category not found in its specified release
+        (   # Query 27:  # An earlier Biolink Model won't recognize a category not found in its specified release
             "1.8.2",
             {
                 # Sample nodes
