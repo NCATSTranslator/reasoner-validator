@@ -155,12 +155,13 @@ def test_get_description():
 
 
 def test_message_display():
-    assert "INFO - Biolink Model-compliant TRAPI Message." in CodeDictionary.display(
-        code="info.compliant", add_prefix=True
+    assert "INFO - Compliant: Biolink Model-compliant TRAPI Message." in CodeDictionary.display(
+        code="info.compliant",
+        add_prefix=True
     )
     assert "ERROR - Knowledge Graph Nodes: No nodes found!" \
            in CodeDictionary.display("error.knowledge_graph.nodes.empty", add_prefix=True)
-    assert "INFO - User excluded S-P-O triple 'a->biolink:related_to->b' " + \
+    assert "INFO - Excluded: User excluded S-P-O triple 'a->biolink:related_to->b' " + \
            "or all test case S-P-O triples from resource test location." \
            in CodeDictionary.display(
                 code="info.excluded",
@@ -182,7 +183,7 @@ def test_message_display():
 
 def test_validator_reporter_message_display():
     reporter = ValidationReporter(prefix="Test Validation Report", trapi_version=TEST_TRAPI_VERSION)
-    messages: List[str] = reporter.display(
+    messages: Dict[str, List[str]] = reporter.display(
         messages={
             "info.excluded": {
                 # this message only has an indexing 'identifier' parameter
@@ -191,9 +192,10 @@ def test_validator_reporter_message_display():
         },
         add_prefix=True
     )
-    assert "Test Validation Report: INFO - User excluded S-P-O triple 'a->biolink:related_to->b' " + \
+    assert "info.excluded" in messages
+    assert "Test Validation Report: INFO - Excluded: User excluded S-P-O triple 'a->biolink:related_to->b' " + \
            "or all test case S-P-O triples from resource test location." \
-        in messages
+        in messages["info.excluded"]
 
     messages = reporter.display(
         messages={
@@ -208,8 +210,10 @@ def test_validator_reporter_message_display():
         },
         add_prefix=True
     )
+    assert "error.input_edge.predicate.invalid" in messages
     assert "Test Validation Report: ERROR - Input Edge Predicate: " +\
-           "Edge 'a--biolink:not_a_predicate->b' predicate 'biolink:not_a_predicate' is invalid!" in messages
+           "Edge 'a--biolink:not_a_predicate->b' predicate 'biolink:not_a_predicate' is invalid!" \
+           in messages["error.input_edge.predicate.invalid"]
 
 
 def test_unknown_message_code():
@@ -231,7 +235,7 @@ def test_message_report():
     messages: List[str] = list()
     for code, parameters in report['information'].items():
         messages.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "INFO - Biolink Model-compliant TRAPI Message." in messages
+    assert "INFO - Compliant: Biolink Model-compliant TRAPI Message." in messages
     assert "INFO - Input Edge Predicate: Input Edge 'a->biolink:contributor->b' " + \
            "has an 'abstract' predicate 'biolink:contributor'." \
            in messages
@@ -315,7 +319,7 @@ def test_messages():
     information: List[str] = list()
     for code, parameters in messages['information'].items():
         information.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "INFO - User excluded S-P-O triple 'Horace van der Gelder' " +\
+    assert "INFO - Excluded: User excluded S-P-O triple 'Horace van der Gelder' " + \
            "or all test case S-P-O triples from resource test location." in information
 
     assert "warnings" in messages

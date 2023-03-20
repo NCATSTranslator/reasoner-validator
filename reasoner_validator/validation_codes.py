@@ -157,6 +157,14 @@ class CodeDictionary:
         entry: Optional[Dict[str, str]] = cls.get_code_entry(code)
         return entry[cls.DESCRIPTION] if entry else None
 
+    @staticmethod
+    def validation_code_tag(code: str) -> str:
+        assert code, "Empty code!"
+        path: List[str] = [part for part in code.replace("_", ".").split(".")]
+        code_parts: List[str] = [part.capitalize() for part in path[1:-1]]
+        tag: str = ' '.join(code_parts) if code_parts else path[-1].capitalize()
+        return tag
+
     @classmethod
     def display(
             cls,
@@ -196,8 +204,7 @@ class CodeDictionary:
         assert value, f"CodeDictionary.display(): unknown message code {code}"
         message_type, entry = value
         message_type_prefix: str = f"{message_type.upper()} - " if add_prefix else ""
-        code_parts: List[str] = [part.capitalize() for part in code.replace("_", ".").split(".")[1:-1]]
-        context: str = ' '.join(code_parts) + ': ' if code_parts else ''
+        context: str = cls.validation_code_tag(code) + ": " if add_prefix else ""
         template: str = entry[cls.MESSAGE]
         if parameters:
             # Message template parameterized with one or more sets of additional

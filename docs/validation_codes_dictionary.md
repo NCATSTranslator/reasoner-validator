@@ -192,13 +192,13 @@
 
 ### warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix
 
-**Message:** Edge '{identifier}' attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink.
+**Message:** Edge '{edge_id}' attribute_type_id '{identifier}' has a non-Biolink CURIE prefix mapped to Biolink.
 
 **Description:** Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes.
 
 ### warning.knowledge_graph.edge.attribute.type_id.unknown_prefix
 
-**Message:** Edge '{identifier}' attribute_type_id '{attribute_type_id}' has a CURIE prefix namespace unknown to Biolink!
+**Message:** Edge '{edge_id}' attribute_type_id '{identifier}' has a CURIE prefix namespace unknown to Biolink!
 
 **Description:** The namespaces of 'attribute_type_id' terms may be incomplete with respect to Biolink Model version being used in the knowledge graph.
 
@@ -216,13 +216,13 @@
 
 ### warning.knowledge_graph.edge.provenance.ara.missing
 
-**Message:** Edge '{identifier}' is missing ARA knowledge source provenance '{ara_source}'?
+**Message:** Edge '{edge_id}' is missing ARA knowledge source provenance '{identifier}'?
 
 **Description:** Knowledge graph edge attributes ARAs should record the infores identifier of their knowledge source provenance with respect to ARA.
 
 ### warning.knowledge_graph.edge.provenance.kp.missing
 
-**Message:** Edge '{identifier}' attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?
+**Message:** Edge '{edge_id}' attribute values are missing expected Knowledge Provider '{identifier}' '{kp_source_type}' provenance?
 
 **Description:** Knowledge graph edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP.
 

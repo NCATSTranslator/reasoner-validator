@@ -420,7 +420,7 @@ class ValidationReporter:
                 ]
             ],
             add_prefix: bool = False
-    ) -> List[str]:
+    ) -> Dict[str, List[str]]:
         """
         This augmented message display wrapper prepends the Validation Reporter
         contextual prefix to one or more resolved coded validation messages.
@@ -434,7 +434,7 @@ class ValidationReporter:
 
         :return: List[str], one or more resolved and contextualized Validation Reporter messages
         """
-        decoded_messages: List[str] = list()
+        decoded_messages: Dict[str, List[str]] = dict()
         code: str  # code for specific validation message template
         parameters: Optional[
                 Dict[
@@ -447,7 +447,9 @@ class ValidationReporter:
                 ]
             ]
         for code, parameters in messages.items():
-            decoded_messages.extend(
+            if code not in decoded_messages:
+                decoded_messages[code] = list()
+            decoded_messages[code].extend(
                 [
                     f"{self.prefix}: " + message if add_prefix else message
                     for message in CodeDictionary.display(code, parameters, add_prefix=add_prefix)
@@ -455,7 +457,7 @@ class ValidationReporter:
             )
         return decoded_messages
 
-    def display_all(self) -> Dict[str, List[str]]:
+    def display_all(self) -> Dict[str, Dict[str, List[str]]]:
         """
         This method applies the display() method in sequence to each of the
         validation message partitions for error, warning and information.
@@ -463,9 +465,17 @@ class ValidationReporter:
         :return: Dict[str, List[str]], one or more resolved and contextualized Validation Reporter
                                        messages for each validation message partition
         """
-        message_catalog: Dict[str, List[str]] = dict()
+        message_catalog: Dict[
+            str,           # 'error', 'warning', 'info'
+            Dict[
+                str,       # validation code
+                List[str]  # list of messages
+            ]
+        ] = dict()
 
         for message_type, messages in self.messages.items():
+            if message_type not in message_catalog:
+                message_catalog[message_type] = dict()
             message_catalog[message_type] = self.display(messages=messages)
 
         return message_catalog
@@ -474,11 +484,14 @@ class ValidationReporter:
         """
         Dump, on a specified file device, all the ValidationReporter messages as templated formatted text.
         """
-        report_all: Dict[str, List[str]] = self.display_all()
+        report_all: Dict[str, Dict[str, List[str]]] = self.display_all()
         message_type: str
         messages: Dict
-        print(f"\n\033[4mValidation Report for {self.prefix}\033[0m", file=file)
-        for message_type, messages in report_all.items():
-            print(f"\n\033[4m{message_type.capitalize()}\033[0m\n", file=file)
-            for message in messages:
-                print(f"* {message}", file=file)
+        print(f"\n\033[4mValidation Report for {self.prefix}\033[0m\n", file=file)
+        for message_type, coded_messages in report_all.items():
+            print(f"\033[4m{message_type.capitalize()}\033[0m\n", file=file)
+            for code, messages in coded_messages.items():
+                print(f"{CodeDictionary.validation_code_tag(code)}:", file=file)
+                for message in messages:
+                    print(f"\t* {message}", file=file)
+                print(file=file)

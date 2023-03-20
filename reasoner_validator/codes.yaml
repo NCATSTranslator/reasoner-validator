@@ -141,10 +141,10 @@ warning:
             $message: "Edge '{edge_id}' attribute_type_id '{identifier}' not an association slot?"
             $description: "Knowledge graph edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy."
           non_biolink_prefix:
-            $message: "Edge '{identifier}' attribute_type_id '{attribute_type_id}' has a non-Biolink CURIE prefix mapped to Biolink."
+            $message: "Edge '{edge_id}' attribute_type_id '{identifier}' has a non-Biolink CURIE prefix mapped to Biolink."
             $description: "Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes."
           unknown_prefix:
-            $message: "Edge '{identifier}' attribute_type_id '{attribute_type_id}' has a CURIE prefix namespace unknown to Biolink!"
+            $message: "Edge '{edge_id}' attribute_type_id '{identifier}' has a CURIE prefix namespace unknown to Biolink!"
             $description: "The namespaces of 'attribute_type_id' terms may be incomplete with respect to Biolink Model version being used in the knowledge graph."
           deprecated:
             $message: "Knowledge graph edge attribute '{identifier}' is deprecated?"
@@ -155,11 +155,11 @@ warning:
           $description: "Knowledge graph edge attributes should record only a single primary knowledge source provenance attribute value."
         ara:
           missing:
-            $message: "Edge '{identifier}' is missing ARA knowledge source provenance '{ara_source}'?"
+            $message: "Edge '{edge_id}' is missing ARA knowledge source provenance '{identifier}'?"
             $description: "Knowledge graph edge attributes ARAs should record the infores identifier of their knowledge source provenance with respect to ARA."
         kp:
           missing:
-            $message: "Edge '{identifier}' attribute values are missing expected Knowledge Provider '{kp_source}' '{kp_source_type}' provenance?"
+            $message: "Edge '{edge_id}' attribute values are missing expected Knowledge Provider '{identifier}' '{kp_source_type}' provenance?"
             $description: "Knowledge graph edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP."
 error:
   non_compliant:

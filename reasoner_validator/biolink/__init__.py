@@ -431,15 +431,15 @@ class BiolinkValidator(ValidationReporter):
                         elif not self.bmt.get_element_by_prefix(prefix):
                             self.report(
                                 code="warning.knowledge_graph.edge.attribute.type_id.unknown_prefix",
-                                identifier=edge_id,
-                                attribute_type_id=attribute_type_id
+                                identifier=attribute_type_id,
+                                edge_id=edge_id
                             )
 
                         else:
                             self.report(
                                 code="info.knowledge_graph.edge.attribute.type_id.non_biolink_prefix",
-                                identifier=edge_id,
-                                attribute_type_id=attribute_type_id
+                                identifier=attribute_type_id,
+                                edge_id=edge_id
                             )
 
             # TODO: After all the attributes have been scanned,
@@ -447,16 +447,16 @@ class BiolinkValidator(ValidationReporter):
             if ara_source and not found_ara_knowledge_source:
                 self.report(
                     code="warning.knowledge_graph.edge.provenance.ara.missing",
-                    identifier=edge_id,
-                    ara_source=ara_source
+                    identifier=ara_source,
+                    edge_id=edge_id
                 )
 
             if kp_source and not found_kp_knowledge_source:
                 self.report(
                     code="warning.knowledge_graph.edge.provenance.kp.missing",
-                    identifier=edge_id,
-                    kp_source=kp_source,
-                    kp_source_type=kp_source_type
+                    identifier=kp_source,
+                    kp_source_type=kp_source_type,
+                    identedge_idifier=edge_id
                 )
 
             if not found_primary_knowledge_source:
