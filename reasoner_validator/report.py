@@ -489,9 +489,10 @@ class ValidationReporter:
         messages: Dict
         print(f"\n\033[4mValidation Report for {self.prefix}\033[0m\n", file=file)
         for message_type, coded_messages in report_all.items():
-            print(f"\033[4m{message_type.capitalize()}\033[0m\n", file=file)
-            for code, messages in coded_messages.items():
-                print(f"{CodeDictionary.validation_code_tag(code)}:", file=file)
-                for message in messages:
-                    print(f"\t* {message}", file=file)
-                print(file=file)
+            if coded_messages:  # if there are coded messages of a given type
+                print(f"\033[4m{message_type.capitalize()}\033[0m\n", file=file)
+                for code, messages in coded_messages.items():
+                    print(f"{CodeDictionary.validation_code_tag(code)}:", file=file)
+                    for message in messages:
+                        print(f"\t* {message}", file=file)
+                    print(file=file)
