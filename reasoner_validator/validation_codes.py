@@ -30,11 +30,13 @@ class CodeDictionary:
     @classmethod
     def filter_copy_by_facet(cls, tree: Dict, facet: str) -> Dict:
         """
-        Copy subtree, filtering out leaf data by specified facet.
+        Copy subtree, filtering out leaf data by specified facet. Leaves are simply identified by
+        the presence of the mandatory '$message' tree parameter dictionary key.
 
         :param tree: Dict, message code dictionary tree to be copied, possibly filtered by facet
         :param facet: str, constraint on code entry facet to be returned; if specified, should be either
                         "message" or "description" (default: return all facets of the code entry)
+
         :return: Dict, tree filtered by facet
         """
         if facet:
