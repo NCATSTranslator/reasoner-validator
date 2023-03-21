@@ -84,7 +84,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-id-unmapped-to-category">warning.knowledge_graph.node.id.unmapped_to_category</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-predicate-deprecated">warning.knowledge_graph.edge.predicate.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-predicate-non-canonical">warning.knowledge_graph.edge.predicate.non_canonical</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-qualifiers-empty">warning.knowledge_graph.edge.qualifiers.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot">warning.knowledge_graph.edge.attribute.type_id.not_association_slot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix">warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-unknown-prefix">warning.knowledge_graph.edge.attribute.type_id.unknown_prefix</a></li>
@@ -367,11 +366,6 @@
 <p><strong>Message:</strong> Knowledge Graph ‘{identifier}’ predicate ‘{predicate}’ is non-canonical?</p>
 <p><strong>Description:</strong> A predicate selected for use in a knowledge graph should preferably be tagged as ‘canonical’ in the specified Biolink Model release?</p>
 </div>
-<div class="section" id="warning-knowledge-graph-edge-qualifiers-empty">
-<h3>warning.knowledge_graph.edge.qualifiers.empty<a class="headerlink" href="#warning-knowledge-graph-edge-qualifiers-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge qualifiers</p>
-<p><strong>Description:</strong> Knowledge graph edge attributes should record the infores identifier of their knowledge source provenance with respect to ARA.</p>
-</div>
 <div class="section" id="warning-knowledge-graph-edge-attribute-type-id-not-association-slot">
 <h3>warning.knowledge_graph.edge.attribute.type_id.not_association_slot<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge ‘{edge_id}’ attribute_type_id ‘{identifier}’ not an association slot?</p>
@@ -389,7 +383,7 @@
 </div>
 <div class="section" id="warning-knowledge-graph-edge-attribute-type-id-deprecated">
 <h3>warning.knowledge_graph.edge.attribute.type_id.deprecated<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge graph edge attribute ‘{identifier}’ is deprecated?</p>
+<p><strong>Message:</strong> Edge attribute ‘{identifier}’ is deprecated?</p>
 <p><strong>Description:</strong> Knowledge graph edge ‘attribute_type_id’ is deprecated in current model, to be removed in the future. Review Biolink Model for replacement.</p>
 </div>
 <div class="section" id="warning-knowledge-graph-edge-provenance-multiple-primary">
@@ -477,17 +471,17 @@
 </div>
 <div class="section" id="error-input-edge-node-category-missing">
 <h3>error.input_edge.node.category.missing<a class="headerlink" href="#error-input-edge-node-category-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input edge node ‘{identifier}’ is missing its category!</p>
+<p><strong>Message:</strong> Node ‘{identifier}’ is missing its category!</p>
 <p><strong>Description:</strong> Category value must be specified in an input test data edge!</p>
 </div>
 <div class="section" id="error-input-edge-node-category-not-a-category">
 <h3>error.input_edge.node.category.not_a_category<a class="headerlink" href="#error-input-edge-node-category-not-a-category" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input edge node ‘{node_id}’ asserted category ‘{identifier}’ is not a category term!</p>
+<p><strong>Message:</strong> Node ‘{node_id}’ asserted category ‘{identifier}’ is not a category term!</p>
 <p><strong>Description:</strong> Category specified in input test data edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!</p>
 </div>
 <div class="section" id="error-input-edge-node-category-unknown">
 <h3>error.input_edge.node.category.unknown<a class="headerlink" href="#error-input-edge-node-category-unknown" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input edge node ‘{node_id}’ has unknown category ‘{identifier}’ element!</p>
+<p><strong>Message:</strong> Node ‘{node_id}’ has unknown category ‘{identifier}’ element!</p>
 <p><strong>Description:</strong> Category specified in input test data edge node is not a model element recorded in specified version of Biolink. Replace with a known category!</p>
 </div>
 <div class="section" id="error-input-edge-node-id-missing">
@@ -497,22 +491,22 @@
 </div>
 <div class="section" id="error-input-edge-predicate-missing">
 <h3>error.input_edge.predicate.missing<a class="headerlink" href="#error-input-edge-predicate-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input test data edge ‘{identifier}’ predicate is missing or empty!</p>
+<p><strong>Message:</strong> Edge ‘{identifier}’ predicate is missing or empty!</p>
 <p><strong>Description:</strong> Input test edge data needs to have a specific edge predicate for testing!</p>
 </div>
 <div class="section" id="error-input-edge-predicate-unknown">
 <h3>error.input_edge.predicate.unknown<a class="headerlink" href="#error-input-edge-predicate-unknown" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input test data edge ‘{edge_id}’ is unknown predicate {identifier}!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ is unknown predicate {identifier}!</p>
 <p><strong>Description:</strong> Predicate specified in input test data edge is not recorded in specified version of Biolink. Replace with a known predicate!</p>
 </div>
 <div class="section" id="error-input-edge-predicate-abstract">
 <h3>error.input_edge.predicate.abstract<a class="headerlink" href="#error-input-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input Edge ‘{edge_id}’ is not permitted to have an ‘abstract’ predicate ‘{identifier}’!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ is not permitted to have an ‘abstract’ predicate ‘{identifier}’!</p>
 <p><strong>Description:</strong> Input Edge data validation is currently strict: predicates cannot be ‘abstract’! Replace with a concrete predicate.</p>
 </div>
 <div class="section" id="error-input-edge-predicate-mixin">
 <h3>error.input_edge.predicate.mixin<a class="headerlink" href="#error-input-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input Edge ‘{edge_id}’ is not permitted to have an ‘mixin’ predicate ‘{identifier}’!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ is not permitted to have an ‘mixin’ predicate ‘{identifier}’!</p>
 <p><strong>Description:</strong> Input Edge data validation is currently strict: predicates cannot be of type ‘mixin’! Replace with a concrete predicate.</p>
 </div>
 <div class="section" id="error-input-edge-predicate-invalid">
@@ -577,7 +571,7 @@
 </div>
 <div class="section" id="error-query-graph-edge-predicate-unknown">
 <h3>error.query_graph.edge.predicate.unknown<a class="headerlink" href="#error-query-graph-edge-predicate-unknown" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Query graph ‘{edge_id}’ has unknown predicate {identifier}!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ has unknown predicate {identifier}!</p>
 <p><strong>Description:</strong> Predicate specified in Query Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!</p>
 </div>
 <div class="section" id="error-query-graph-edge-predicate-not-array">
@@ -592,12 +586,12 @@
 </div>
 <div class="section" id="error-query-graph-edge-predicate-abstract">
 <h3>error.query_graph.edge.predicate.abstract<a class="headerlink" href="#error-query-graph-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Query Graph edge ‘{edge_id}’ is not permitted to have an ‘abstract’ predicate ‘{identifier}’!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ is not permitted to have an ‘abstract’ predicate ‘{identifier}’!</p>
 <p><strong>Description:</strong> Query Graph data validation is currently strict: cannot have ‘abstract’ predicates! Replace with a concrete predicate.</p>
 </div>
 <div class="section" id="error-query-graph-edge-predicate-mixin">
 <h3>error.query_graph.edge.predicate.mixin<a class="headerlink" href="#error-query-graph-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Query Graph edge ‘{edge_id}’ is not permitted to have an ‘mixin’ predicate ‘{identifier}’!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ is not permitted to have an ‘mixin’ predicate ‘{identifier}’!</p>
 <p><strong>Description:</strong> Query Graph data validation is currently strict: cannot have ‘mixin’ predicates! Replace with a concrete predicate.</p>
 </div>
 <div class="section" id="error-query-graph-edge-predicate-invalid">
@@ -637,17 +631,17 @@
 </div>
 <div class="section" id="error-knowledge-graph-node-category-missing">
 <h3>error.knowledge_graph.node.category.missing<a class="headerlink" href="#error-knowledge-graph-node-category-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input edge node ‘{identifier}’ is missing its category!</p>
+<p><strong>Message:</strong> Node ‘{identifier}’ is missing its category!</p>
 <p><strong>Description:</strong> Category value must be specified in an knowledge graph edge!</p>
 </div>
 <div class="section" id="error-knowledge-graph-node-category-not-a-category">
 <h3>error.knowledge_graph.node.category.not_a_category<a class="headerlink" href="#error-knowledge-graph-node-category-not-a-category" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input edge node ‘{node_id}’ asserted category ‘{identifier}’ is not a category term!</p>
+<p><strong>Message:</strong> Node ‘{node_id}’ asserted category ‘{identifier}’ is not a category term!</p>
 <p><strong>Description:</strong> Category specified in knowledge graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!</p>
 </div>
 <div class="section" id="error-knowledge-graph-node-category-unknown">
 <h3>error.knowledge_graph.node.category.unknown<a class="headerlink" href="#error-knowledge-graph-node-category-unknown" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input edge node ‘{node_id}’ has unknown category ‘{identifier}’ element!</p>
+<p><strong>Message:</strong> Node ‘{node_id}’ has unknown category ‘{identifier}’ element!</p>
 <p><strong>Description:</strong> Category specified in knowledge graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!</p>
 </div>
 <div class="section" id="error-knowledge-graph-node-id-missing">
@@ -677,12 +671,12 @@
 </div>
 <div class="section" id="error-knowledge-graph-node-categories-not-concrete">
 <h3>error.knowledge_graph.node.categories.not_concrete<a class="headerlink" href="#error-knowledge-graph-node-categories-not-concrete" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input edge node ‘{identifier}’ asserted categories ‘{categories}’ is not a concrete category!</p>
+<p><strong>Message:</strong> Node ‘{identifier}’ asserted categories ‘{categories}’ is not a concrete category!</p>
 <p><strong>Description:</strong> Categories specified in knowledge graph edge node may not resolve to any (non-abstract, non-mixin) category terms in the specified version of Biolink. Add at least one ‘concrete’ category (as the most specific category?)!</p>
 </div>
 <div class="section" id="error-knowledge-graph-node-empty-categories">
 <h3>error.knowledge_graph.node.empty_categories<a class="headerlink" href="#error-knowledge-graph-node-empty-categories" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Node ‘{identifier}.categories’ slot array is empty!</p>
+<p><strong>Message:</strong> Node {identifier} categories slot array is empty!</p>
 <p><strong>Description:</strong> Value of ‘categories’ array slot in Knowledge Graph node must contain one or more node category terms!</p>
 </div>
 <div class="section" id="error-knowledge-graph-node-is-set-not-boolean">
@@ -697,7 +691,7 @@
 </div>
 <div class="section" id="error-knowledge-graph-edge-subject-missing-from-nodes">
 <h3>error.knowledge_graph.edge.subject.missing_from_nodes<a class="headerlink" href="#error-knowledge-graph-edge-subject-missing-from-nodes" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge ‘subject’ id ‘{object_id}’ is missing from the nodes catalog!</p>
+<p><strong>Message:</strong> Edge ‘subject’ id ‘{identifier}’ is missing from the nodes catalog!</p>
 <p><strong>Description:</strong> Every ‘subject’ identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-object-missing">
@@ -707,7 +701,7 @@
 </div>
 <div class="section" id="error-knowledge-graph-edge-object-missing-from-nodes">
 <h3>error.knowledge_graph.edge.object.missing_from_nodes<a class="headerlink" href="#error-knowledge-graph-edge-object-missing-from-nodes" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge ‘object’ id ‘{object_id}’ is missing from the nodes catalog!</p>
+<p><strong>Message:</strong> Edge ‘object’ id ‘{identifier}’ is missing from the nodes catalog!</p>
 <p><strong>Description:</strong> Every ‘object’ identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-predicate-missing">
@@ -717,7 +711,7 @@
 </div>
 <div class="section" id="error-knowledge-graph-edge-predicate-unknown">
 <h3>error.knowledge_graph.edge.predicate.unknown<a class="headerlink" href="#error-knowledge-graph-edge-predicate-unknown" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge graph ‘{edge_id}’ has unknown predicate {identifier}!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ has unknown predicate {identifier}!</p>
 <p><strong>Description:</strong> Predicate specified in Knowledge Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-predicate-invalid">
@@ -737,12 +731,12 @@
 </div>
 <div class="section" id="error-knowledge-graph-edge-predicate-abstract">
 <h3>error.knowledge_graph.edge.predicate.abstract<a class="headerlink" href="#error-knowledge-graph-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge Graph edge ‘{edge_id}’ is not permitted to have an ‘abstract’ predicate ‘{identifier}’!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ is not permitted to have an ‘abstract’ predicate ‘{identifier}’!</p>
 <p><strong>Description:</strong> Knowledge Graph data validation is currently strict: cannot have ‘abstract’ predicates! Replace with a concrete predicate.</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-predicate-mixin">
 <h3>error.knowledge_graph.edge.predicate.mixin<a class="headerlink" href="#error-knowledge-graph-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge Graph edge ‘{edge_id}’ is not permitted to have an ‘mixin’ predicate ‘{identifier}’!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ is not permitted to have an ‘mixin’ predicate ‘{identifier}’!</p>
 <p><strong>Description:</strong> Knowledge Graph data validation is currently strict: cannot have ‘mixin’ predicates! Replace with a concrete predicate.</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-missing">
@@ -762,17 +756,17 @@
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-type-id-unknown">
 <h3>error.knowledge_graph.edge.attribute.type_id.unknown<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-unknown" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge graph ‘{edge_id}’ has unknown attribute_type_id {identifier}!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ has unknown attribute_type_id {identifier}!</p>
 <p><strong>Description:</strong> Edge Attribute type identifier specified in knowledge graph edge is not recorded in specified version of Biolink. Replace with a known term!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-type-id-abstract">
 <h3>error.knowledge_graph.edge.attribute.type_id.abstract<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-abstract" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge Graph edge ‘{edge_id}’ is not permitted to have an ‘abstract’ attribute_type_id ‘{identifier}’!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ is not permitted to have an ‘abstract’ attribute_type_id ‘{identifier}’!</p>
 <p><strong>Description:</strong> Edge data validation is currently strict: attribute type identifiers cannot be ‘abstract’. Replace with a concrete attribute_type_id!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-type-id-mixin">
 <h3>error.knowledge_graph.edge.attribute.type_id.mixin<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-mixin" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge Graph edge ‘{edge_id}’ is not permitted to have an ‘mixin’ attribute_type_id ‘{identifier}’!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ is not permitted to have an ‘mixin’ attribute_type_id ‘{identifier}’!</p>
 <p><strong>Description:</strong> Edge data validation is currently strict: attribute type identifiers cannot be of type ‘mixin’. Replace with a concrete attribute_type_id!</p>
 </div>
 <div class="section" id="error-knowledge-graph-edge-attribute-type-id-missing">
