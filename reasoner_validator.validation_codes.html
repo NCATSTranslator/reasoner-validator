@@ -61,6 +61,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.get_description"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.get_description()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.get_message_template"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.get_message_template()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.markdown"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.markdown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.validation_code_tag"><code class="docutils literal notranslate"><span class="pre">CodeDictionary.validation_code_tag()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -113,7 +114,7 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.display" title="reasoner_validator.validation_codes.CodeDictionary.display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code></a>(code[, parameters])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.display" title="reasoner_validator.validation_codes.CodeDictionary.display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code></a>(code[, parameters, add_prefix])</p></td>
 <td><p>Generate one or more full messages from provided Validation Reporter code and associated parameters (if applicable).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.filter_copy_by_facet" title="reasoner_validator.validation_codes.CodeDictionary.filter_copy_by_facet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_copy_by_facet</span></code></a>(tree, facet)</p></td>
@@ -142,6 +143,9 @@
 <tr class="row-even"><td><p><strong>get_message_template</strong></p></td>
 <td></td>
 </tr>
+<tr class="row-odd"><td><p><strong>validation_code_tag</strong></p></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <dl class="py attribute">
@@ -166,7 +170,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary.display">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.display" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.display" title="Permalink to this definition"></a></dt>
 <dd><p>Generate one or more full messages from provided Validation Reporter code
 and associated parameters (if applicable).</p>
 <dl class="field-list simple">
@@ -182,6 +186,8 @@ the values for which corresponding to the keys of the dictionary. The value of t
 keys are either ‘None’ if the identifier is the only template parameter, or alternately,
 a list of dictionaries containing all the other expected parameters keys and their values
 for every distinct message).</p></li>
+<li><p><strong>add_prefix</strong> – bool, flag to prepend a prefix for the message type
+(i.e. error, warning, info) to displayed messages (default: False)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -271,6 +277,11 @@ or (if the is_leaf option is ‘True’) if the code doesn’t resolve to a sing
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary.validation_code_tag">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validation_code_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.validation_code_tag" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

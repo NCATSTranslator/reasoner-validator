@@ -71,6 +71,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-response-knowledge-graph-empty">warning.response.knowledge_graph.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-response-results-empty">warning.response.results.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-node-category-deprecated">warning.input_edge.node.category.deprecated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-node-category-not-concrete">warning.input_edge.node.category.not_concrete</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-node-id-unmapped-to-category">warning.input_edge.node.id.unmapped_to_category</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-predicate-deprecated">warning.input_edge.predicate.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-predicate-non-canonical">warning.input_edge.predicate.non_canonical</a></li>
@@ -147,6 +148,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-ids-not-array">error.knowledge_graph.node.ids.not_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-empty-ids">error.knowledge_graph.node.empty_ids</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-categories-not-array">error.knowledge_graph.node.categories.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-categories-not-concrete">error.knowledge_graph.node.categories.not_concrete</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-empty-categories">error.knowledge_graph.node.empty_categories</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-is-set-not-boolean">error.knowledge_graph.node.is_set.not_boolean</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-subject-missing">error.knowledge_graph.edge.subject.missing</a></li>
@@ -297,8 +299,13 @@
 </div>
 <div class="section" id="warning-input-edge-node-category-deprecated">
 <h3>warning.input_edge.node.category.deprecated<a class="headerlink" href="#warning-input-edge-node-category-deprecated" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input data node category ‘{identifier}’ is deprecated?</p>
+<p><strong>Message:</strong> Input data node ‘{node_id}’ category ‘{identifier}’ is deprecated?</p>
 <p><strong>Description:</strong> Input data node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?</p>
+</div>
+<div class="section" id="warning-input-edge-node-category-not-concrete">
+<h3>warning.input_edge.node.category.not_concrete<a class="headerlink" href="#warning-input-edge-node-category-not-concrete" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Input data node ‘{node_id}’ category ‘{identifier}’ may be unknown, abstract or a mixin?</p>
+<p><strong>Description:</strong> Input data node category may be unknown, abstract or a mixin in the current model. TRAPI Responses using this edge may not resolve any Knowledge Graph nodes with this category. Review Biolink Model for ‘concrete’ replacement?</p>
 </div>
 <div class="section" id="warning-input-edge-node-id-unmapped-to-category">
 <h3>warning.input_edge.node.id.unmapped_to_category<a class="headerlink" href="#warning-input-edge-node-id-unmapped-to-category" title="Permalink to this heading"></a></h3>
@@ -317,7 +324,7 @@
 </div>
 <div class="section" id="warning-query-graph-node-category-deprecated">
 <h3>warning.query_graph.node.category.deprecated<a class="headerlink" href="#warning-query-graph-node-category-deprecated" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Query graph node category ‘{identifier}’ is deprecated?</p>
+<p><strong>Message:</strong> Query graph node ‘{node_id}’ category ‘{identifier}’ is deprecated?</p>
 <p><strong>Description:</strong> Query graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?</p>
 </div>
 <div class="section" id="warning-query-graph-node-ids-unmapped-to-categories">
@@ -337,7 +344,7 @@
 </div>
 <div class="section" id="warning-knowledge-graph-node-category-deprecated">
 <h3>warning.knowledge_graph.node.category.deprecated<a class="headerlink" href="#warning-knowledge-graph-node-category-deprecated" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge graph node category ‘{identifier}’ is deprecated?</p>
+<p><strong>Message:</strong> Knowledge graph node ‘{node_id}’ category ‘{identifier}’ is deprecated?</p>
 <p><strong>Description:</strong> Knowledge graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?</p>
 </div>
 <div class="section" id="warning-knowledge-graph-node-unmapped-prefix">
@@ -372,12 +379,12 @@
 </div>
 <div class="section" id="warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix">
 <h3>warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge ‘{identifier}’ attribute_type_id ‘{attribute_type_id}’ has a non-Biolink CURIE prefix mapped to Biolink.</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ attribute_type_id ‘{identifier}’ has a non-Biolink CURIE prefix mapped to Biolink.</p>
 <p><strong>Description:</strong> Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes.</p>
 </div>
 <div class="section" id="warning-knowledge-graph-edge-attribute-type-id-unknown-prefix">
 <h3>warning.knowledge_graph.edge.attribute.type_id.unknown_prefix<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-unknown-prefix" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge ‘{identifier}’ attribute_type_id ‘{attribute_type_id}’ has a CURIE prefix namespace unknown to Biolink!</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ attribute_type_id ‘{identifier}’ has a CURIE prefix namespace unknown to Biolink!</p>
 <p><strong>Description:</strong> The namespaces of ‘attribute_type_id’ terms may be incomplete with respect to Biolink Model version being used in the knowledge graph.</p>
 </div>
 <div class="section" id="warning-knowledge-graph-edge-attribute-type-id-deprecated">
@@ -392,12 +399,12 @@
 </div>
 <div class="section" id="warning-knowledge-graph-edge-provenance-ara-missing">
 <h3>warning.knowledge_graph.edge.provenance.ara.missing<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-ara-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge ‘{identifier}’ is missing ARA knowledge source provenance ‘{ara_source}’?</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ is missing ARA knowledge source provenance ‘{identifier}’?</p>
 <p><strong>Description:</strong> Knowledge graph edge attributes ARAs should record the infores identifier of their knowledge source provenance with respect to ARA.</p>
 </div>
 <div class="section" id="warning-knowledge-graph-edge-provenance-kp-missing">
 <h3>warning.knowledge_graph.edge.provenance.kp.missing<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-kp-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge ‘{identifier}’ attribute values are missing expected Knowledge Provider ‘{kp_source}’ ‘{kp_source_type}’ provenance?</p>
+<p><strong>Message:</strong> Edge ‘{edge_id}’ attribute values are missing expected Knowledge Provider ‘{identifier}’ ‘{kp_source_type}’ provenance?</p>
 <p><strong>Description:</strong> Knowledge graph edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP.</p>
 </div>
 </div>
@@ -475,7 +482,7 @@
 </div>
 <div class="section" id="error-input-edge-node-category-not-a-category">
 <h3>error.input_edge.node.category.not_a_category<a class="headerlink" href="#error-input-edge-node-category-not-a-category" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input edge node ‘{identifier}’ asserted category ‘{category}’ is not a category term!</p>
+<p><strong>Message:</strong> Input edge node ‘{node_id}’ asserted category ‘{identifier}’ is not a category term!</p>
 <p><strong>Description:</strong> Category specified in input test data edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!</p>
 </div>
 <div class="section" id="error-input-edge-node-category-unknown">
@@ -520,7 +527,7 @@
 </div>
 <div class="section" id="error-query-graph-node-category-not-a-category">
 <h3>error.query_graph.node.category.not_a_category<a class="headerlink" href="#error-query-graph-node-category-not-a-category" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Query graph node ‘{identifier}’ asserted category ‘{category}’ is not a category term!</p>
+<p><strong>Message:</strong> Query graph node ‘{node_id}’ asserted category ‘{identifier}’ is not a category term!</p>
 <p><strong>Description:</strong> Category specified in query graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!</p>
 </div>
 <div class="section" id="error-query-graph-node-category-unknown">
@@ -635,7 +642,7 @@
 </div>
 <div class="section" id="error-knowledge-graph-node-category-not-a-category">
 <h3>error.knowledge_graph.node.category.not_a_category<a class="headerlink" href="#error-knowledge-graph-node-category-not-a-category" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Input edge node ‘{identifier}’ asserted category ‘{category}’ is not a category term!</p>
+<p><strong>Message:</strong> Input edge node ‘{node_id}’ asserted category ‘{identifier}’ is not a category term!</p>
 <p><strong>Description:</strong> Category specified in knowledge graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!</p>
 </div>
 <div class="section" id="error-knowledge-graph-node-category-unknown">
@@ -665,8 +672,13 @@
 </div>
 <div class="section" id="error-knowledge-graph-node-categories-not-array">
 <h3>error.knowledge_graph.node.categories.not_array<a class="headerlink" href="#error-knowledge-graph-node-categories-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Node ‘{identifier}.categories’ slot value is not an array!</p>
+<p><strong>Message:</strong> Node ‘{identifier} categories slot value is not an array!</p>
 <p><strong>Description:</strong> Value of ‘categories’ slot in Knowledge Graph node must be an array data type!</p>
+</div>
+<div class="section" id="error-knowledge-graph-node-categories-not-concrete">
+<h3>error.knowledge_graph.node.categories.not_concrete<a class="headerlink" href="#error-knowledge-graph-node-categories-not-concrete" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Input edge node ‘{identifier}’ asserted categories ‘{categories}’ is not a concrete category!</p>
+<p><strong>Description:</strong> Categories specified in knowledge graph edge node may not resolve to any (non-abstract, non-mixin) category terms in the specified version of Biolink. Add at least one ‘concrete’ category (as the most specific category?)!</p>
 </div>
 <div class="section" id="error-knowledge-graph-node-empty-categories">
 <h3>error.knowledge_graph.node.empty_categories<a class="headerlink" href="#error-knowledge-graph-node-empty-categories" title="Permalink to this heading"></a></h3>
