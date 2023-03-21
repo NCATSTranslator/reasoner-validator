@@ -484,7 +484,13 @@ class ValidationReporter:
         """
         Dump, on a specified file device, all the ValidationReporter messages as templated formatted text.
         """
-        report_all: Dict[str, Dict[str, List[str]]] = self.display_all()
+        report_all: Dict[
+            str,  # message type 'error', 'warning' or 'info'
+            Dict[
+                str,  # validation code
+                List[str]
+            ]
+        ] = self.display_all()
         message_type: str
         messages: Dict
         print(f"\n\033[4mValidation Report for {self.prefix}\033[0m\n", file=file)

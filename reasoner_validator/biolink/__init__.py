@@ -633,7 +633,7 @@ class BiolinkValidator(ValidationReporter):
         if not subject_id:
             self.report(code=f"error.{context}.edge.subject.missing", identifier=edge_id)
         elif subject_id not in self.nodes:
-            self.report(code=f"error.{context}.edge.subject.missing_from_nodes", object_id=subject_id)
+            self.report(code=f"error.{context}.edge.subject.missing_from_nodes", identifier=subject_id)
 
         # Validate Predicates
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
@@ -664,7 +664,7 @@ class BiolinkValidator(ValidationReporter):
         if not object_id:
             self.report(code=f"error.{context}.edge.object.missing", identifier=edge_id)
         elif object_id not in self.nodes:
-            self.report(code=f"error.{context}.edge.object.missing_from_nodes", object_id=object_id)
+            self.report(code=f"error.{context}.edge.object.missing_from_nodes", identifier=object_id)
 
         # Validate edge attributes (or attribute_constraints)
         # and (Biolink 3) edge qualifiers (or qualifier_constraints)

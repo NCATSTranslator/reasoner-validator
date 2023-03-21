@@ -115,6 +115,7 @@ class CodeDictionary:
         :param facet: Optional[str], constraint on code entry facet to be returned; if specified, should be either
                                      "message" or "description" (default: return all facets of the code entry)
         :param is_leaf: Optional[bool], only return entry if it is a 'leaf' of the code tree (default: False)
+
         :return: Optional[Tuple[str, Dict[str,str]]], 2-tuple of the code type (i.e. info, warning, error) and the
                  validation message entry (dictionary); None if empty code or code unknown in the code dictionary,
                  or (if the is_leaf option is 'True') if the code doesn't resolve to a single leaf.
@@ -138,6 +139,7 @@ class CodeDictionary:
         :param code: Optional[str], dot delimited validation message code identifier (None is ok, but returns None)
         :param facet: Optional[str], constraint on code entry facet to be returned; if specified, should be either
                                      "message" or "description" (default: return all facets of the code entry)
+
         :return: Dict, single terminal leaf code entry (complete with indicated or all facets); None, if not available
         """
         value: Optional[Tuple[str, Dict[str, str]]] = cls.get_code_subtree(code, facet=facet, is_leaf=True)
