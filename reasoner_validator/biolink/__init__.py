@@ -186,7 +186,7 @@ class BiolinkValidator(ValidationReporter):
 
                     if not node_prefix_mapped:
                         self.report(
-                            code="warning.knowledge_graph.node.unmapped_prefix",
+                            code="warning.knowledge_graph.node.id.unmapped_prefix",
                             identifier=node_id,
                             categories=str(categories)
                         )
@@ -243,7 +243,7 @@ class BiolinkValidator(ValidationReporter):
                         # removed (above), then they are unmapped
                         if has_node_ids and node_ids:
                             self.report(
-                                code="warning.query_graph.node.ids.unmapped_to_categories",
+                                code="warning.query_graph.node.ids.unmapped_prefix",
                                 identifier=node_id,
                                 unmapped_ids=str(node_ids),
                                 categories=str(categories)
@@ -377,8 +377,8 @@ class BiolinkValidator(ValidationReporter):
                     if not is_curie(attribute_type_id):
                         self.report(
                             code="error.knowledge_graph.edge.attribute.type_id.not_curie",
-                            identifier=edge_id,
-                            attribute_type_id=attribute_type_id
+                            identifier=attribute_type_id,
+                            edge_id=edge_id
                         )
                     else:
                         # 'attribute_type_id' is a CURIE, but how well does it map?
@@ -420,8 +420,8 @@ class BiolinkValidator(ValidationReporter):
                                         if not infores.startswith("infores:"):
                                             self.report(
                                                 code="error.knowledge_graph.edge.provenance.infores.missing",
-                                                identifier=edge_id,
-                                                infores=str(infores)
+                                                identifier=str(infores),
+                                                edge_id=edge_id
                                             )
                                         else:
                                             if attribute_type_id == "biolink:primary_knowledge_source":
@@ -511,9 +511,9 @@ class BiolinkValidator(ValidationReporter):
                 ):
                     self.report(
                         code=f"error.{context}.qualifier.value.unresolved",
-                        identifier=edge_id,
-                        qualifier_type_id=qualifier_type_id,
-                        qualifier_value=qualifier_value
+                        identifier=qualifier_value,
+                        edge_id=edge_id,
+                        qualifier_type_id=qualifier_type_id
                     )
 
             except Exception as e:
@@ -592,15 +592,15 @@ class BiolinkValidator(ValidationReporter):
             if not self.bmt.is_predicate(predicate):
                 self.report(
                     code=f"error.{context}.invalid",
-                    identifier=edge_id,
-                    predicate=predicate
+                    identifier=predicate,
+                    edge_id=edge_id
                 )
             elif self.minimum_required_biolink_version("2.2.0") and \
                     not self.bmt.is_translator_canonical_predicate(predicate):
                 self.report(
                     code=f"warning.{context}.non_canonical",
-                    identifier=edge_id,
-                    predicate=predicate
+                    identifier=predicate,
+                    edge_id=edge_id
                 )
 
     def validate_graph_edge(self, edge: Dict):
@@ -633,7 +633,11 @@ class BiolinkValidator(ValidationReporter):
         if not subject_id:
             self.report(code=f"error.{context}.edge.subject.missing", identifier=edge_id)
         elif subject_id not in self.nodes:
-            self.report(code=f"error.{context}.edge.subject.missing_from_nodes", identifier=subject_id)
+            self.report(
+                code=f"error.{context}.edge.subject.missing_from_nodes",
+                identifier=subject_id,
+                edge_id=edge_id
+            )
 
         # Validate Predicates
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
@@ -664,7 +668,11 @@ class BiolinkValidator(ValidationReporter):
         if not object_id:
             self.report(code=f"error.{context}.edge.object.missing", identifier=edge_id)
         elif object_id not in self.nodes:
-            self.report(code=f"error.{context}.edge.object.missing_from_nodes", identifier=object_id)
+            self.report(
+                code=f"error.{context}.edge.object.missing_from_nodes",
+                identifier=object_id,
+                edge_id=edge_id
+            )
 
         # Validate edge attributes (or attribute_constraints)
         # and (Biolink 3) edge qualifiers (or qualifier_constraints)

@@ -523,23 +523,26 @@ class ValidationReporter:
             if coded_messages:
                 print(f"\033[4m{message_type.capitalize()}\033[0m\n", file=file)
                 for code, messages in coded_messages.items():
+
                     if isinstance(messages, str):
-                        # code has single non-parametric code
+                        # code has single non-parametric template associated with the message
                         print(f"{CodeDictionary.validation_code_tag(code)}: {str(messages)}", file=file)
 
                     elif isinstance(messages, List):
-                        # code has a list of 'identifier' parameters (only)
+                        # code has a list of 'identifier' parameters (only) associated with the message
                         print(
                             f"{CodeDictionary.validation_code_tag(code)}: " +
                             f"{CodeDictionary.display(code,)}" +
                             f"{','.join(messages)}",
                             file=file
                         )
+
                     elif isinstance(messages, Dict):
                         for message in messages.items():
                             print(f"\t* {message}", file=file)
+
                     else:
-                        raise RuntimeError(f"Unrecognized data type: {type(messages)}")
+                        raise RuntimeError(f"Unrecognized returned message data type: {type(messages)}")
 
                     print(file=file)
 

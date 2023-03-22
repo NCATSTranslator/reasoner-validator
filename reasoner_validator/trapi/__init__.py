@@ -152,7 +152,7 @@ class TRAPISchemaValidator(ValidationReporter):
                 component=component
             )
         except jsonschema.ValidationError as e:
-            self.report(code="error.trapi.validation", identifier=self.trapi_version, exception=e.message)
+            self.report(code="error.trapi.validation", identifier=self.trapi_version, reason=e.message)
 
 
 def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPISchemaValidator:
