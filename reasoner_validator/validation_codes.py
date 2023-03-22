@@ -102,6 +102,12 @@ class CodeDictionary:
         else:
             return cls._get_nested_code_entry(subtree, path, pos, facet, is_leaf)
 
+    @staticmethod
+    def get_message_type(code: str) -> str:
+        assert code, "Empty code!"
+        code_path = code.split(".")
+        return code_path[0]
+
     @classmethod
     def get_code_subtree(
             cls,
@@ -126,10 +132,9 @@ class CodeDictionary:
             return None
 
         codes: Dict = cls._get_code_dictionary()
-        code_path = code.split(".")
         value: Optional[Dict[str, str]] = cls._get_nested_code_entry(codes, code_path, 0, facet, is_leaf)
         if value is not None:
-            return code_path[0], value
+            return cls.get_message_type(code), value
         else:
             return None
 
@@ -170,6 +175,15 @@ class CodeDictionary:
         return tag
 
     @classmethod
+    def display_one(cls, code: str) -> str:
+        """
+        Retrieves the non-parameterized version of the message of a validation code
+        :param code:
+        :return:
+        """
+        pass
+
+    @classmethod
     def display(
             cls,
             code: str,  # code for specific validation message template
@@ -189,8 +203,8 @@ class CodeDictionary:
         Generate one or more full messages from provided Validation Reporter code
         and associated parameters (if applicable).
 
-        :param code: str, valid (dot delimited YAML key path) identified code,
-                     which should be registered in the project codes.yaml file.
+        :param code: str,  valid (dot delimited YAML key path) identified code,
+                           which should be registered in the project codes.yaml file.
         :param parameters: Optional[Dict[str, Optional[List[Dict[str, str]]]]], collection of all
                            message parameters dictionaries associated with list of messages of the given code,
                            indexed by their unique 'identifier' template field (note: all messages with
@@ -206,10 +220,13 @@ class CodeDictionary:
         """
         value: Optional[Tuple[str, Dict[str, str]]] = cls.get_code_subtree(code, is_leaf=True)
         assert value, f"CodeDictionary.display(): unknown message code {code}"
-        message_type, entry = value
+
+        message_type = cls.get_message_type(code)
         message_type_prefix: str = f"{message_type.upper()} - " if add_prefix else ""
         context: str = cls.validation_code_tag(code) + ": " if add_prefix else ""
-        template: str = entry[cls.MESSAGE]
+
+        template: str = cls.get_message_template(code)
+
         if parameters:
             # Message template parameterized with one or more sets of additional
             # named message parameters, assumed to be referenced by the template

@@ -499,10 +499,17 @@ class ValidationReporter:
         ValidationReporter messages, as formatted text.
         """
         report_all: Dict[
-            str,  # message type 'error', 'warning' or 'info'
+            str,  # message type: 'error', 'warning' or 'info'
             Dict[
                 str,  # validation code
-                Union[str, List[str], Dict[str, str]]
+                Union[
+                    str,        # singular scalar (non-parameterized) string message associated with the validation code
+                    List[str],  # list of string 'identifiers' solely associated with the validation code
+                    Dict[
+                        str,
+                        str
+                    ]
+                ]
             ]
         ] = self.display_all()
 
