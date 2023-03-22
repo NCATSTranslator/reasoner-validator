@@ -6,6 +6,8 @@
 
 **Message:** User excluded S-P-O triple '{identifier}' or all test case S-P-O triples from resource test location.
 
+**Context:** identifier
+
 **Description:** Check the JSON KP test edge data file for specific 'exclude_tests' directives, either global to the file, or on specific edges.
 
 ### info.compliant
@@ -16,49 +18,65 @@
 
 ### info.input_edge.predicate.abstract
 
-**Message:** Input Edge '{edge_id}' has an 'abstract' predicate '{identifier}'.
+**Message:** Edge '{edge_id}' has an 'abstract' predicate '{identifier}'.
 
-**Description:** Input Edge data can have 'abstract' predicates, when the mode of validation is 'non-strict'.
+**Context:** edge_id, identifier
+
+**Description:** Edge data can have 'abstract' predicates, when the mode of validation is 'non-strict'.
 
 ### info.input_edge.predicate.mixin
 
-**Message:** Input Edge '{edge_id}' has an 'mixin' predicate '{identifier}'.
+**Message:** Edge '{edge_id}' has an 'mixin' predicate '{identifier}'.
 
-**Description:** Input Edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'.
+**Context:** edge_id, identifier
+
+**Description:** Edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'.
 
 ### info.query_graph.edge.predicate.abstract
 
-**Message:** Query Graph edge '{edge_id}' has an 'abstract' predicate '{identifier}'.
+**Message:** Edge '{edge_id}' has an 'abstract' predicate '{identifier}'.
+
+**Context:** edge_id, identifier
 
 **Description:** TRAPI Messages in Query Graphs can have 'abstract' predicates, when the mode of validation is 'non-strict'.
 
 ### info.query_graph.edge.predicate.mixin
 
-**Message:** Query Graph edge '{edge_id}' has an 'mixin' predicate '{identifier}'.
+**Message:** Edge '{edge_id}' has an 'mixin' predicate '{identifier}'.
+
+**Context:** edge_id, identifier
 
 **Description:** TRAPI Messages in Query Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'.
 
 ### info.knowledge_graph.edge.predicate.abstract
 
-**Message:** Knowledge Graph edge '{edge_id}' has an 'abstract' predicate '{identifier}'.
+**Message:** Edge '{edge_id}' has an 'abstract' predicate '{identifier}'.
+
+**Context:** edge_id, identifier
 
 **Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' predicates, when the mode of validation is 'non-strict'.
 
 ### info.knowledge_graph.edge.predicate.mixin
 
-**Message:** Knowledge Graph edge '{edge_id}' has an 'mixin' predicate '{identifier}'.
+**Message:** Edge '{edge_id}' has an 'mixin' predicate '{identifier}'.
+
+**Context:** edge_id, identifier
 
 **Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'.
 
 ### info.knowledge_graph.edge.attribute.type_id.abstract
 
-**Message:** Knowledge Graph edge '{edge_id}' has an 'abstract' attribute_type_id '{identifier}'.
+**Message:** Edge '{edge_id}' has an 'abstract' attribute_type_id '{identifier}'.
+
+**Context:** edge_id, identifier
 
 **Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' attribute type identifiers, when the mode of validation is 'non-strict'.
 
 ### info.knowledge_graph.edge.attribute.type_id.mixin
 
-**Message:** Knowledge Graph edge '{edge_id}' has an 'mixin' attribute_type_id '{identifier}'.
+**Message:** Edge '{edge_id}' has an 'mixin' attribute_type_id '{identifier}'.
+
+**Context:** edge_id, identifier
 
 **Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' attribute type identifiers, when the mode of validation is 'non-strict'.
 
@@ -67,6 +85,8 @@
 ### warning.trapi.response.status.unknown
 
 **Message:** TRAPI Response status code '{identifier}' is unrecognized?
+
+**Context:** identifier
 
 **Description:** The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable
 
@@ -86,6 +106,8 @@
 
 **Message:** {identifier} data is empty?
 
+**Context:** identifier
+
 **Description:** An empty graph in this particular context is allowed but merits a boundary response warning?
 
 ### warning.response.knowledge_graph.empty
@@ -102,85 +124,105 @@
 
 ### warning.input_edge.node.category.deprecated
 
-**Message:** Input data node '{node_id}' category '{identifier}' is deprecated?
+**Message:** Node '{node_id}' category '{identifier}' is deprecated?
 
-**Description:** Input data node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
+**Context:** node_id, identifier
+
+**Description:** Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
 
 ### warning.input_edge.node.category.not_concrete
 
-**Message:** Input data node '{node_id}' category '{identifier}' may be unknown, abstract or a mixin?
+**Message:** Node '{node_id}' category '{identifier}' may be unknown, abstract or a mixin?
 
-**Description:** Input data node category may be unknown, abstract or a mixin in the current model. TRAPI Responses using this edge may not resolve any Knowledge Graph nodes with this category. Review Biolink Model for 'concrete' replacement?
+**Context:** node_id, identifier
+
+**Description:** Node category may be unknown, abstract or a mixin in the current model. TRAPI Responses using this edge may not resolve any Knowledge Graph nodes with this category. Review Biolink Model for 'concrete' replacement?
 
 ### warning.input_edge.node.id.unmapped_to_category
 
-**Message:** '{identifier}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?
+**Message:** '{identifier}' has identifiers {unmapped_ids} unmapped to the target categories '{categories}'?
+
+**Context:** identifier, unmapped_ids, categories
 
 **Description:** The namespaces of Biolink model node of specified category may be incomplete with respect to identifiers being used in input edge data?
 
 ### warning.input_edge.predicate.deprecated
 
-**Message:** Input data edge predicate '{identifier}' is deprecated?
+**Message:** Edge predicate '{identifier}' is deprecated?
+
+**Context:** identifier
 
 **Description:** Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
 
 ### warning.input_edge.predicate.non_canonical
 
-**Message:** Input data edge '{identifier}' predicate '{predicate}' is non-canonical?
+**Message:** Edge '{edge_id}' predicate '{identifier}' is non-canonical?
+
+**Context:** edge_id, identifier
 
 **Description:** A predicate selected for use as input data should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
 ### warning.query_graph.node.category.deprecated
 
-**Message:** Query graph node '{node_id}' category '{identifier}' is deprecated?
+**Message:** Node '{node_id}' category '{identifier}' is deprecated?
 
-**Description:** Query graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
+**Context:** node_id, identifier
 
-### warning.query_graph.node.ids.unmapped_to_categories
+**Description:** Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
 
-**Message:** '{identifier}' has identifiers {unmapped_ids} unmapped to the target categories: {categories}?
+### warning.query_graph.node.ids.unmapped_prefix
 
-**Description:** The namespaces of Biolink model node of specified categories may be incomplete with respect to identifiers being used in the query graph?
+**Message:** Node '{identifier}' has identifiers '{unmapped_ids}' unmapped to the target categories: '{categories}'?
+
+**Context:** identifier, unmapped_ids, categories
+
+**Description:** One or more node CURIE identifier namespaces are not found among any 'id_prefix' slot values in specified categories in the validating Biolink Model version?
 
 ### warning.query_graph.edge.predicate.deprecated
 
-**Message:** Query graph edge predicate '{identifier}' is deprecated?
+**Message:** Edge predicate '{identifier}' is deprecated?
 
-**Description:** Query graph edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
+**Context:** identifier
+
+**Description:** Edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
 
 ### warning.query_graph.edge.predicate.non_canonical
 
-**Message:** Query graph edge '{identifier}' predicate '{predicate}' is non-canonical?
+**Message:** Edge '{edge_id}' predicate '{identifier}' is non-canonical?
+
+**Context:** edge_id, identifier
 
 **Description:** A predicate selected for use in a query graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
 ### warning.knowledge_graph.node.category.deprecated
 
-**Message:** Knowledge graph node '{node_id}' category '{identifier}' is deprecated?
+**Message:** Node '{node_id}' category '{identifier}' is deprecated?
 
-**Description:** Knowledge graph node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
+**Context:** node_id, identifier
 
-### warning.knowledge_graph.node.unmapped_prefix
+**Description:** Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
+
+### warning.knowledge_graph.node.id.unmapped_prefix
 
 **Message:** '{identifier}' is unmapped to the target categories '{categories}'?
 
-**Description:** ID Namespaces of nodes of specified categories may be incomplete with respect to Biolink Model version being used in the knowledge graph?
+**Context:** identifier, categories
 
-### warning.knowledge_graph.node.id.unmapped_to_category
-
-**Message:** {context} node identifier '{identifier}' is unmapped to '{category}'?
-
-**Description:** ID Namespaces of nodes of specified categories may be incomplete with respect to Biolink Model version being used in the knowledge graph?
+**Description:** Node CURIE identifier namespace not found among any 'id_prefix' slot values in specified categories in the validating Biolink Model version?
 
 ### warning.knowledge_graph.edge.predicate.deprecated
 
-**Message:** Knowledge graph edge predicate '{identifier}' is deprecated?
+**Message:** Edge predicate '{identifier}' is deprecated?
 
-**Description:** Knowledge graph edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
+**Context:** identifier
+
+**Description:** Edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
 
 ### warning.knowledge_graph.edge.predicate.non_canonical
 
-**Message:** Knowledge Graph '{identifier}' predicate '{predicate}' is non-canonical?
+**Message:** Edge '{edge_id}' predicate '{identifier}' is non-canonical?
+
+**Context:** edge_id, identifier
 
 **Description:** A predicate selected for use in a knowledge graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
@@ -188,11 +230,15 @@
 
 **Message:** Edge '{edge_id}' attribute_type_id '{identifier}' not an association slot?
 
-**Description:** Knowledge graph edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy.
+**Context:** edge_id, identifier
+
+**Description:** Edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy.
 
 ### warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix
 
 **Message:** Edge '{edge_id}' attribute_type_id '{identifier}' has a non-Biolink CURIE prefix mapped to Biolink.
+
+**Context:** edge_id, identifier
 
 **Description:** Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes.
 
@@ -200,31 +246,41 @@
 
 **Message:** Edge '{edge_id}' attribute_type_id '{identifier}' has a CURIE prefix namespace unknown to Biolink!
 
+**Context:** edge_id, identifier
+
 **Description:** The namespaces of 'attribute_type_id' terms may be incomplete with respect to Biolink Model version being used in the knowledge graph.
 
 ### warning.knowledge_graph.edge.attribute.type_id.deprecated
 
 **Message:** Edge attribute '{identifier}' is deprecated?
 
-**Description:** Knowledge graph edge 'attribute_type_id' is deprecated in current model, to be removed in the future. Review Biolink Model for replacement.
+**Context:** identifier
+
+**Description:** Edge 'attribute_type_id' is deprecated in current model, to be removed in the future. Review Biolink Model for replacement.
 
 ### warning.knowledge_graph.edge.provenance.multiple_primary
 
 **Message:** Edge '{identifier}' has recorded multiple 'primary' knowledge sources: '{sources}'?
 
-**Description:** Knowledge graph edge attributes should record only a single primary knowledge source provenance attribute value.
+**Context:** identifier, sources
+
+**Description:** Edge attributes should record only a single primary knowledge source provenance attribute value.
 
 ### warning.knowledge_graph.edge.provenance.ara.missing
 
 **Message:** Edge '{edge_id}' is missing ARA knowledge source provenance '{identifier}'?
 
-**Description:** Knowledge graph edge attributes ARAs should record the infores identifier of their knowledge source provenance with respect to ARA.
+**Context:** edge_id, identifier
+
+**Description:** Edge attributes ARAs should record the infores identifier of their knowledge source provenance with respect to ARA.
 
 ### warning.knowledge_graph.edge.provenance.kp.missing
 
 **Message:** Edge '{edge_id}' attribute values are missing expected Knowledge Provider '{identifier}' '{kp_source_type}' provenance?
 
-**Description:** Knowledge graph edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP.
+**Context:** edge_id, identifier, kp_source_type
+
+**Description:** Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP.
 
 ## Error
 
@@ -232,17 +288,23 @@
 
 **Message:** S-P-O statement '{identifier}' is not compliant to Biolink Model {biolink_release}
 
+**Context:** identifier, biolink_release
+
 **Description:** This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause!
 
 ### error.trapi.validation
 
-**Message:** TRAPI {identifier} schema exception: '{exception}'!
+**Message:** TRAPI {identifier} schema exception: '{reason}'!
+
+**Context:** identifier, reason
 
 **Description:** TRAPI query attempt triggered an abnormal server exception as noted.
 
 ### error.trapi.request.invalid
 
 **Message:** {identifier} could not generate a valid TRAPI query request object because {reason}!
+
+**Context:** identifier, reason
 
 **Description:** TRAPI query message could not be prepared for the indicated reason, thus query was not attempted.
 
@@ -254,7 +316,9 @@
 
 ### error.trapi.response.unexpected_http_code
 
-**Message:** TRAPI Response has an unexpected HTTP status code: '{status_code}'!
+**Message:** TRAPI Response has an unexpected HTTP status code: '{identifier}'!
+
+**Context:** identifier
 
 **Description:** TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted.
 
@@ -286,6 +350,8 @@
 
 **Message:** TRAPI Response Message is missing an expected edge '{identifier}' in its Knowledge Graph!
 
+**Context:** identifier
+
 **Description:** The given TRAPI Response is expected to return specific edge(s) relating to the original (test edge?) data used to prepare the TRAPI Request!
 
 ### error.trapi.response.results.missing
@@ -304,11 +370,15 @@
 
 **Message:** Neither the input id '{identifier}' nor resolved aliases were returned in the Result object IDs for node '{output_node_binding}' binding!
 
+**Context:** identifier, output_node_binding
+
 **Description:** TRAPI Message.Results cannot resolve its reported identifier mappings to the original query.
 
 ### error.input_edge.node.category.missing
 
 **Message:** Node '{identifier}' is missing its category!
+
+**Context:** identifier
 
 **Description:** Category value must be specified in an input test data edge!
 
@@ -316,11 +386,15 @@
 
 **Message:** Node '{node_id}' asserted category '{identifier}' is not a category term!
 
+**Context:** node_id, identifier
+
 **Description:** Category specified in input test data edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!
 
 ### error.input_edge.node.category.unknown
 
 **Message:** Node '{node_id}' has unknown category '{identifier}' element!
+
+**Context:** node_id, identifier
 
 **Description:** Category specified in input test data edge node is not a model element recorded in specified version of Biolink. Replace with a known category!
 
@@ -328,11 +402,15 @@
 
 **Message:** {identifier} node identifier is missing!
 
+**Context:** identifier
+
 **Description:** Input test data edge data needs to have a specific node identifier for testing!
 
 ### error.input_edge.predicate.missing
 
 **Message:** Edge '{identifier}' predicate is missing or empty!
+
+**Context:** identifier
 
 **Description:** Input test edge data needs to have a specific edge predicate for testing!
 
@@ -340,59 +418,79 @@
 
 **Message:** Edge '{edge_id}' is unknown predicate {identifier}!
 
+**Context:** edge_id, identifier
+
 **Description:** Predicate specified in input test data edge is not recorded in specified version of Biolink. Replace with a known predicate!
 
 ### error.input_edge.predicate.abstract
 
 **Message:** Edge '{edge_id}' is not permitted to have an 'abstract' predicate '{identifier}'!
 
-**Description:** Input Edge data validation is currently strict: predicates cannot be 'abstract'! Replace with a concrete predicate.
+**Context:** edge_id, identifier
+
+**Description:** Edge data validation is currently strict: predicates cannot be 'abstract'! Replace with a concrete predicate.
 
 ### error.input_edge.predicate.mixin
 
 **Message:** Edge '{edge_id}' is not permitted to have an 'mixin' predicate '{identifier}'!
 
-**Description:** Input Edge data validation is currently strict: predicates cannot be of type 'mixin'! Replace with a concrete predicate.
+**Context:** edge_id, identifier
+
+**Description:** Edge data validation is currently strict: predicates cannot be of type 'mixin'! Replace with a concrete predicate.
 
 ### error.input_edge.predicate.invalid
 
-**Message:** Edge '{identifier}' predicate '{predicate}' is invalid!
+**Message:** Edge '{edge_id}' predicate '{identifier}' is invalid!
+
+**Context:** edge_id, identifier
 
 **Description:** Predicate specified in Input Edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!
 
 ### error.query_graph.node.category.missing
 
-**Message:** Query graph node '{identifier}' is missing its category!
+**Message:** Node '{identifier}' is missing its category!
+
+**Context:** identifier
 
 **Description:** Category value must be specified in an query graph edge!
 
 ### error.query_graph.node.category.not_a_category
 
-**Message:** Query graph node '{node_id}' asserted category '{identifier}' is not a category term!
+**Message:** Node '{node_id}' asserted category '{identifier}' is not a category term!
+
+**Context:** node_id, identifier
 
 **Description:** Category specified in query graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!
 
 ### error.query_graph.node.category.unknown
 
-**Message:** Query graph node '{node_id}' has unknown category '{identifier}' element!
+**Message:** Node '{node_id}' has unknown category '{identifier}' element!
+
+**Context:** node_id, identifier
 
 **Description:** Category specified in query graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!
 
 ### error.query_graph.node.ids.not_array
 
-**Message:** Node '{identifier}.ids' slot value is not an array!
+**Message:** Node {identifier} 'ids' slot value is not an array!
+
+**Context:** identifier
 
 **Description:** Value of 'ids' slot in Query Graph node must be an array data type (even if empty)!
 
 ### error.query_graph.node.categories.not_array
 
-**Message:** Node '{identifier}.categories' slot value is not an array!
+**Message:** Node {identifier} 'categories' slot value is not an array!
+
+**Context:** identifier
 
 **Description:** Value of 'categories' slot in Query Graph node must be an array data type (even if empty)!
 
 ### error.query_graph.node.is_set.not_boolean
 
-**Message:** Node '{identifier}.is_set' slot is not a boolean value!
+**Message:** Node {identifier} 'is_set' slot is not a boolean value!
+
+**Context:** identifier
 
 **Description:** The 'is_set' field in node of Query Graph, if present, must be a boolean value!
 
@@ -400,11 +498,15 @@
 
 **Message:** Edge '{identifier}' has a missing or empty 'subject' slot value!
 
-**Description:** Query graph edge must have a 'subject' key with a non-empty associated value!
+**Context:** identifier
+
+**Description:** Edge must have a 'subject' key with a non-empty associated value!
 
 ### error.query_graph.edge.subject.missing_from_nodes
 
-**Message:** Edge 'subject' id '{object_id}' is missing from the nodes catalog!
+**Message:** Edge '{edge_id}' subject id '{identifier}' is missing from the nodes catalog!
+
+**Context:** edge_id, identifier
 
 **Description:** Every 'subject' identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph!
 
@@ -412,11 +514,15 @@
 
 **Message:** Edge '{identifier}' has a missing or empty 'object' slot value!
 
-**Description:** Query graph edge must have a 'object' key with a non-empty associated value!
+**Context:** identifier
+
+**Description:** Edge must have a 'object' key with a non-empty associated value!
 
 ### error.query_graph.edge.object.missing_from_nodes
 
-**Message:** Edge 'object' id '{object_id}' is missing from the nodes catalog!
+**Message:** Edge '{edge_id}' object id '{identifier}' is missing from the nodes catalog!
+
+**Context:** edge_id, identifier
 
 **Description:** Every 'object' identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph!
 
@@ -424,11 +530,15 @@
 
 **Message:** Edge '{identifier}' predicate is missing or empty!
 
+**Context:** identifier
+
 **Description:** The predicate of Query Graph edge needs to specified using a 'predicate' key with an array list of one or more predicates!
 
 ### error.query_graph.edge.predicate.unknown
 
 **Message:** Edge '{edge_id}' has unknown predicate {identifier}!
+
+**Context:** edge_id, identifier
 
 **Description:** Predicate specified in Query Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!
 
@@ -436,11 +546,15 @@
 
 **Message:** Edge '{identifier}' predicate slot value is not an array!
 
+**Context:** identifier
+
 **Description:** Value of 'predicate' slot value in Query Graph must be an array data type!
 
 ### error.query_graph.edge.predicate.empty_array
 
 **Message:** Edge '{identifier}' predicate slot value is an empty array!
+
+**Context:** identifier
 
 **Description:** Value of 'predicate' array slot value in Query Graph must contain one or more predicates!
 
@@ -448,17 +562,23 @@
 
 **Message:** Edge '{edge_id}' is not permitted to have an 'abstract' predicate '{identifier}'!
 
+**Context:** edge_id, identifier
+
 **Description:** Query Graph data validation is currently strict: cannot have 'abstract' predicates! Replace with a concrete predicate.
 
 ### error.query_graph.edge.predicate.mixin
 
 **Message:** Edge '{edge_id}' is not permitted to have an 'mixin' predicate '{identifier}'!
 
+**Context:** edge_id, identifier
+
 **Description:** Query Graph data validation is currently strict: cannot have 'mixin' predicates! Replace with a concrete predicate.
 
 ### error.query_graph.edge.predicate.invalid
 
-**Message:** Edge '{identifier}' predicate '{predicate}' is invalid!
+**Message:** Edge '{edge_id}' predicate '{identifier}' is invalid!
+
+**Context:** edge_id, identifier
 
 **Description:** Predicate specified in Query Graph edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!
 
@@ -466,11 +586,15 @@
 
 **Message:** Edge '{identifier}' attribute_constraints property value is not an array!
 
+**Context:** identifier
+
 **Description:** Value of 'attribute_constraints' slot value in a Query Graph must be an array data type!
 
 ### error.query_graph.edge.qualifier_constraints.qualifier_set.empty
 
 **Message:** Edge '{identifier}' qualifier_set property value is empty!
+
+**Context:** identifier
 
 **Description:** Value of a 'qualifier_constraints.qualifier_set' property in a Query Graph must not be non-empty array!
 
@@ -478,11 +602,15 @@
 
 **Message:** Edge '{edge_id}' qualifier type_id '{identifier}' is unknown!
 
+**Context:** edge_id, identifier
+
 **Description:** A qualifier qualifier_type_id must be defined in the specified version of Biolink!
 
 ### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.unresolved
 
 **Message:** Edge '{identifier}' qualifier_value '{qualifier_value}' for '{qualifier_type_id}' cannot be resolved!
+
+**Context:** identifier, qualifier_value, qualifier_type_id
 
 **Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
 
@@ -502,11 +630,15 @@
 
 **Message:** Node '{identifier}' is missing its category!
 
+**Context:** identifier
+
 **Description:** Category value must be specified in an knowledge graph edge!
 
 ### error.knowledge_graph.node.category.not_a_category
 
 **Message:** Node '{node_id}' asserted category '{identifier}' is not a category term!
+
+**Context:** node_id, identifier
 
 **Description:** Category specified in knowledge graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!
 
@@ -514,11 +646,15 @@
 
 **Message:** Node '{node_id}' has unknown category '{identifier}' element!
 
+**Context:** node_id, identifier
+
 **Description:** Category specified in knowledge graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!
 
 ### error.knowledge_graph.node.id.missing
 
 **Message:** {identifier} node identifier is missing!
+
+**Context:** identifier
 
 **Description:** Knowledge graph node must have a 'id' key with a non-empty associated value!
 
@@ -526,17 +662,23 @@
 
 **Message:** Node '{identifier}' is missing its categories!
 
+**Context:** identifier
+
 **Description:** Knowledge graph node must have a 'categories' key with a non-empty associated value!
 
 ### error.knowledge_graph.node.ids.not_array
 
-**Message:** Node '{identifier}.ids' slot value is not an array!
+**Message:** Node {identifier} 'ids' slot value is not an array!
+
+**Context:** identifier
 
 **Description:** Value of 'ids' slot in Query Graph node must be an array data type!
 
 ### error.knowledge_graph.node.empty_ids
 
-**Message:** Node '{identifier}.ids' slot array is empty!
+**Message:** Node {identifier} 'ids' slot array is empty!
+
+**Context:** identifier
 
 **Description:** Value of 'ids' array slot in Knowledge Graph node must contain one or more node identifiers!
 
@@ -544,23 +686,31 @@
 
 **Message:** Node '{identifier} categories slot value is not an array!
 
+**Context:** identifier
+
 **Description:** Value of 'categories' slot in Knowledge Graph node must be an array data type!
 
 ### error.knowledge_graph.node.categories.not_concrete
 
 **Message:** Node '{identifier}' asserted categories '{categories}' is not a concrete category!
 
+**Context:** identifier, categories
+
 **Description:** Categories specified in knowledge graph edge node may not resolve to any (non-abstract, non-mixin) category terms in the specified version of Biolink. Add at least one 'concrete' category (as the most specific category?)!
 
 ### error.knowledge_graph.node.empty_categories
 
-**Message:** Node {identifier} categories slot array is empty!
+**Message:** Node {identifier} 'categories' slot array is empty!
+
+**Context:** identifier
 
 **Description:** Value of 'categories' array slot in Knowledge Graph node must contain one or more node category terms!
 
 ### error.knowledge_graph.node.is_set.not_boolean
 
-**Message:** Node '{identifier}.is_set' slot is not a boolean value!
+**Message:** Node {identifier} 'is_set' slot is not a boolean value!
+
+**Context:** identifier
 
 **Description:** The 'is_set' field in node of Knowledge Graph, if present, must be a boolean value!
 
@@ -568,11 +718,15 @@
 
 **Message:** Edge '{identifier}' has a missing or empty 'subject' slot value!
 
-**Description:** Knowledge graph edge must have a 'subject' key with a non-empty associated value!
+**Context:** identifier
+
+**Description:** Edge must have a 'subject' key with a non-empty associated value!
 
 ### error.knowledge_graph.edge.subject.missing_from_nodes
 
-**Message:** Edge 'subject' id '{identifier}' is missing from the nodes catalog!
+**Message:** Edge '{edge_id}' subject id '{identifier}' is missing from the nodes catalog!
+
+**Context:** edge_id, identifier
 
 **Description:** Every 'subject' identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph!
 
@@ -580,11 +734,15 @@
 
 **Message:** Edge '{identifier}' has a missing or empty 'object' slot value!
 
-**Description:** Knowledge graph edge must have a 'object' key with a non-empty associated value!
+**Context:** identifier
+
+**Description:** Edge must have a 'object' key with a non-empty associated value!
 
 ### error.knowledge_graph.edge.object.missing_from_nodes
 
-**Message:** Edge 'object' id '{identifier}' is missing from the nodes catalog!
+**Message:** Edge '{edge_id}' object id '{identifier}' is missing from the nodes catalog!
+
+**Context:** edge_id, identifier
 
 **Description:** Every 'object' identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph!
 
@@ -592,17 +750,23 @@
 
 **Message:** Edge '{identifier}' predicate is missing or empty!
 
-**Description:** Knowledge graph edge must have a 'predicate' key with a non-empty associated value!
+**Context:** identifier
+
+**Description:** Edge must have a 'predicate' key with a non-empty associated value!
 
 ### error.knowledge_graph.edge.predicate.unknown
 
 **Message:** Edge '{edge_id}' has unknown predicate {identifier}!
 
+**Context:** edge_id, identifier
+
 **Description:** Predicate specified in Knowledge Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!
 
 ### error.knowledge_graph.edge.predicate.invalid
 
-**Message:** Edge '{identifier}' predicate '{predicate}' is invalid!
+**Message:** Edge '{edge_id}' predicate '{identifier}' is invalid!
+
+**Context:** edge_id, identifier
 
 **Description:** Predicate specified in Knowledge Graph edge is not defined as a predicate in specified version of Biolink. Replace with a defined predicate!
 
@@ -610,11 +774,15 @@
 
 **Message:** Edge '{identifier}' predicate slot value is not an array!
 
+**Context:** identifier
+
 **Description:** Value of the 'predicate' slot in Knowledge Graph edge must be an array data type!
 
 ### error.knowledge_graph.edge.predicate.empty_array
 
-**Message:** Value of the 'predicate' array slot in Knowledge Graph edge must contain one or more predicates!
+**Message:** Edge '{identifier}' predicate slot value is an empty array!
+
+**Context:** identifier
 
 **Description:** Value of the 'predicate' array slot in Knowledge Graph edge must contain one or more predicates!
 
@@ -622,11 +790,15 @@
 
 **Message:** Edge '{edge_id}' is not permitted to have an 'abstract' predicate '{identifier}'!
 
+**Context:** edge_id, identifier
+
 **Description:** Knowledge Graph data validation is currently strict: cannot have 'abstract' predicates! Replace with a concrete predicate.
 
 ### error.knowledge_graph.edge.predicate.mixin
 
 **Message:** Edge '{edge_id}' is not permitted to have an 'mixin' predicate '{identifier}'!
+
+**Context:** edge_id, identifier
 
 **Description:** Knowledge Graph data validation is currently strict: cannot have 'mixin' predicates! Replace with a concrete predicate.
 
@@ -634,11 +806,15 @@
 
 **Message:** Edge '{identifier}' has no 'attributes' key!
 
-**Description:** Knowledge graph edge must have a 'attributes' key with a non-empty associated value!
+**Context:** identifier
+
+**Description:** Edge must have a 'attributes' key with a non-empty associated value!
 
 ### error.knowledge_graph.edge.attribute.empty
 
 **Message:** Edge '{identifier}' has empty attributes!
+
+**Context:** identifier
 
 **Description:** Value of 'attributes' slot in Knowledge Graph edge must contain a list of one or more attributes!
 
@@ -646,11 +822,15 @@
 
 **Message:** Edge '{identifier}' attributes are not an array!
 
+**Context:** identifier
+
 **Description:** Value of the 'attributes' slot in Knowledge Graph edge must be an array of attributes!
 
 ### error.knowledge_graph.edge.attribute.type_id.unknown
 
 **Message:** Edge '{edge_id}' has unknown attribute_type_id {identifier}!
+
+**Context:** edge_id, identifier
 
 **Description:** Edge Attribute type identifier specified in knowledge graph edge is not recorded in specified version of Biolink. Replace with a known term!
 
@@ -658,11 +838,15 @@
 
 **Message:** Edge '{edge_id}' is not permitted to have an 'abstract' attribute_type_id '{identifier}'!
 
+**Context:** edge_id, identifier
+
 **Description:** Edge data validation is currently strict: attribute type identifiers cannot be 'abstract'. Replace with a concrete attribute_type_id!
 
 ### error.knowledge_graph.edge.attribute.type_id.mixin
 
 **Message:** Edge '{edge_id}' is not permitted to have an 'mixin' attribute_type_id '{identifier}'!
+
+**Context:** edge_id, identifier
 
 **Description:** Edge data validation is currently strict: attribute type identifiers cannot be of type 'mixin'. Replace with a concrete attribute_type_id!
 
@@ -670,17 +854,23 @@
 
 **Message:** Edge '{identifier}' attribute is missing its 'attribute_type_id' property!
 
+**Context:** identifier
+
 **Description:** The attribute of a Knowledge graph edge must have a 'attribute_type_id' key with a non-empty associated value!
 
 ### error.knowledge_graph.edge.attribute.type_id.empty
 
 **Message:** Edge'{identifier}' attribute empty 'attribute_type_id' property!
 
+**Context:** identifier
+
 **Description:** The value of the 'attribute_type_id' of an attribute of a Knowledge graph edge must not be empty!
 
 ### error.knowledge_graph.edge.attribute.type_id.not_curie
 
-**Message:** Edge '{identifier}' attribute_type_id '{attribute_type_id}' is not a CURIE!
+**Message:** Edge '{edge_id}' attribute_type_id '{identifier}' is not a CURIE!
+
+**Context:** edge_id, identifier
 
 **Description:** The 'attribute_type_id' of a Knowledge graph edge attribute must be a controlled vocabulary term specified by a CURIE!
 
@@ -688,17 +878,23 @@
 
 **Message:** Edge '{identifier}' attribute is missing its 'value' property!
 
+**Context:** identifier
+
 **Description:** An attribute of a Knowledge graph edge must have a 'value' key with a non-empty associated value!
 
 ### error.knowledge_graph.edge.attribute.value.empty
 
 **Message:** Edge '{identifier}' attribute empty 'value' property!
 
+**Context:** identifier
+
 **Description:** The value of an attribute of a Knowledge graph edge must not be empty!
 
 ### error.knowledge_graph.edge.provenance.infores.missing
 
-**Message:** Edge '{identifier}' has provenance value '{infores}' which is not a well-formed InfoRes CURIE!
+**Message:** Edge '{edge_id}' has provenance value '{identifier}' which is not a well-formed InfoRes CURIE!
+
+**Context:** edge_id, identifier
 
 **Description:** The value of an attribute specifying the provenance of a Knowledge graph edge must be the well-formed InfoRes CURIE of a knowledge source!
 
@@ -706,11 +902,15 @@
 
 **Message:** Edge '{identifier}' does not record its 'primary' knowledge source?
 
-**Description:** Knowledge graph edge attributes should record the 'infores' identifier of their primary knowledge source provenance with respect to KP.
+**Context:** identifier
+
+**Description:** Edge attributes should record the 'infores' identifier of their primary knowledge source provenance with respect to KP.
 
 ### error.knowledge_graph.edge.qualifiers.not_array
 
 **Message:** Edge '{identifier}' 'qualifiers' are not an array!
+
+**Context:** identifier
 
 **Description:** Value of the 'qualifiers' slot in Knowledge Graph edge must be an array of attributes!
 
@@ -718,17 +918,23 @@
 
 **Message:** Edge '{identifier}' qualifiers property value is empty!
 
+**Context:** identifier
+
 **Description:** Value of a 'qualifiers' property in a Knowledge Graph must not be non-empty array!
 
 ### error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown
 
 **Message:** Edge '{edge_id}' qualifier type_id '{identifier}' is unknown!
 
+**Context:** edge_id, identifier
+
 **Description:** A qualifier qualifier_type_id must be defined in the specified version of Biolink!
 
 ### error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved
 
-**Message:** Edge '{identifier}' qualifier_value '{qualifier_value}' for '{qualifier_type_id}' cannot be resolved!
+**Message:** Edge '{edge_id}' qualifier_value '{identifier}' for '{qualifier_type_id}' cannot be resolved!
+
+**Context:** edge_id, identifier, qualifier_type_id
 
 **Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
 

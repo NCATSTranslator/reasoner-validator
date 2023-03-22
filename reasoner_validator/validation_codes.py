@@ -15,6 +15,7 @@ class CodeDictionary:
     CODE_DICTIONARY: str = abspath(join(dirname(__file__), "codes.yaml"))
 
     MESSAGE = "$message"
+    CONTEXT = "$context"
     DESCRIPTION = "$description"
 
     code_dictionary: Optional[Dict] = None
@@ -35,7 +36,7 @@ class CodeDictionary:
 
         :param tree: Dict, message code dictionary tree to be copied, possibly filtered by facet
         :param facet: str, constraint on code entry facet to be returned; if specified, should be either
-                        "message" or "description" (default: return all facets of the code entry)
+                        "message", "context" or "description" (default: return all facets of the code entry)
 
         :return: Dict, tree filtered by facet
         """
@@ -163,6 +164,11 @@ class CodeDictionary:
         return entry[cls.MESSAGE] if entry else None
 
     @classmethod
+    def get_message_context(cls, code: Optional[str]) -> Optional[List[str]]:
+        entry: Optional[Dict[str, str]] = cls.get_code_entry(code)
+        return entry[cls.CONTEXT] if entry else None
+
+    @classmethod
     def get_description(cls, code: Optional[str]) -> Optional[str]:
         entry: Optional[Dict[str, str]] = cls.get_code_entry(code)
         return entry[cls.DESCRIPTION] if entry else None
@@ -262,8 +268,11 @@ class CodeDictionary:
             else:
                 print(f"### {root}.{tag}\n", file=markdown_file)
                 message: str = value[cls.MESSAGE]
+                context: str = value[cls.CONTEXT] if cls.CONTEXT in value else None
                 description: str = value[cls.DESCRIPTION] if cls.DESCRIPTION in value else None
                 print(f"**Message:** {message}\n", file=markdown_file)
+                if context:
+                    print(f"**Context:** {', '.join(context)}\n", file=markdown_file)
                 if description:
                     print(f"**Description:** {description}\n", file=markdown_file)
 
