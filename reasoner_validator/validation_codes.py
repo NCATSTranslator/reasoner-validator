@@ -132,6 +132,7 @@ class CodeDictionary:
             return None
 
         codes: Dict = cls._get_code_dictionary()
+        code_path = code.split(".")
         value: Optional[Dict[str, str]] = cls._get_nested_code_entry(codes, code_path, 0, facet, is_leaf)
         if value is not None:
             return cls.get_message_type(code), value
