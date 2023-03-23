@@ -4,7 +4,7 @@
 
 ### info.excluded
 
-**Message:** User excluded S-P-O triple '{identifier}' or all test case S-P-O triples from resource test location.
+**Message:** All test case S-P-O triples from resource test location, or specific user excluded S-P-O triples
 
 **Context:** identifier
 
@@ -18,23 +18,23 @@
 
 ### info.input_edge.predicate.abstract
 
-**Message:** Edge '{edge_id}' has an 'abstract' predicate '{identifier}'.
+**Message:** Edge has an 'abstract' predicate
 
 **Context:** edge_id, identifier
 
-**Description:** Edge data can have 'abstract' predicates, when the mode of validation is 'non-strict'.
+**Description:** Input edge data can have 'abstract' predicates, when the mode of validation is 'non-strict'.
 
 ### info.input_edge.predicate.mixin
 
-**Message:** Edge '{edge_id}' has an 'mixin' predicate '{identifier}'.
+**Message:** Edge has an 'mixin' predicate
 
 **Context:** edge_id, identifier
 
-**Description:** Edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'.
+**Description:** Input edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'.
 
 ### info.query_graph.edge.predicate.abstract
 
-**Message:** Edge '{edge_id}' has an 'abstract' predicate '{identifier}'.
+**Message:** Edge has an 'abstract' predicate
 
 **Context:** edge_id, identifier
 
@@ -42,7 +42,7 @@
 
 ### info.query_graph.edge.predicate.mixin
 
-**Message:** Edge '{edge_id}' has an 'mixin' predicate '{identifier}'.
+**Message:** Edge has an 'mixin' predicate
 
 **Context:** edge_id, identifier
 
@@ -50,7 +50,7 @@
 
 ### info.knowledge_graph.edge.predicate.abstract
 
-**Message:** Edge '{edge_id}' has an 'abstract' predicate '{identifier}'.
+**Message:** Edge has an 'abstract' predicate
 
 **Context:** edge_id, identifier
 
@@ -58,7 +58,7 @@
 
 ### info.knowledge_graph.edge.predicate.mixin
 
-**Message:** Edge '{edge_id}' has an 'mixin' predicate '{identifier}'.
+**Message:** Edge has an 'mixin' predicate
 
 **Context:** edge_id, identifier
 
@@ -66,7 +66,7 @@
 
 ### info.knowledge_graph.edge.attribute.type_id.abstract
 
-**Message:** Edge '{edge_id}' has an 'abstract' attribute_type_id '{identifier}'.
+**Message:** Edge has an 'abstract' attribute_type_id
 
 **Context:** edge_id, identifier
 
@@ -74,7 +74,7 @@
 
 ### info.knowledge_graph.edge.attribute.type_id.mixin
 
-**Message:** Edge '{edge_id}' has an 'mixin' attribute_type_id '{identifier}'.
+**Message:** Edge has an 'mixin' attribute_type_id
 
 **Context:** edge_id, identifier
 
@@ -84,7 +84,7 @@
 
 ### warning.trapi.response.status.unknown
 
-**Message:** TRAPI Response status code '{identifier}' is unrecognized?
+**Message:** TRAPI Response has unrecognized status code
 
 **Context:** identifier
 
@@ -104,7 +104,7 @@
 
 ### warning.graph.empty
 
-**Message:** {identifier} data is empty?
+**Message:** Empty graph
 
 **Context:** identifier
 
@@ -124,7 +124,7 @@
 
 ### warning.input_edge.node.category.deprecated
 
-**Message:** Node '{node_id}' category '{identifier}' is deprecated?
+**Message:** Node category had deprecated category
 
 **Context:** node_id, identifier
 
@@ -132,7 +132,7 @@
 
 ### warning.input_edge.node.category.not_concrete
 
-**Message:** Node '{node_id}' category '{identifier}' may be unknown, abstract or a mixin?
+**Message:** Node has unknown, abstract or mixin category
 
 **Context:** node_id, identifier
 
@@ -140,7 +140,7 @@
 
 ### warning.input_edge.node.id.unmapped_to_category
 
-**Message:** '{identifier}' has identifiers {unmapped_ids} unmapped to the target categories '{categories}'?
+**Message:** Node identifier found unmapped to target categories for node
 
 **Context:** identifier, unmapped_ids, categories
 
@@ -148,7 +148,7 @@
 
 ### warning.input_edge.predicate.deprecated
 
-**Message:** Edge predicate '{identifier}' is deprecated?
+**Message:** Edge has deprecated predicate
 
 **Context:** identifier
 
@@ -156,7 +156,7 @@
 
 ### warning.input_edge.predicate.non_canonical
 
-**Message:** Edge '{edge_id}' predicate '{identifier}' is non-canonical?
+**Message:** Edge has non-canonical predicate
 
 **Context:** edge_id, identifier
 
@@ -164,7 +164,7 @@
 
 ### warning.query_graph.node.category.deprecated
 
-**Message:** Node '{node_id}' category '{identifier}' is deprecated?
+**Message:** Node has deprecated category
 
 **Context:** node_id, identifier
 
@@ -172,7 +172,7 @@
 
 ### warning.query_graph.node.ids.unmapped_prefix
 
-**Message:** Node '{identifier}' has identifiers '{unmapped_ids}' unmapped to the target categories: '{categories}'?
+**Message:** Node identifiers found unmapped to target categories for node
 
 **Context:** identifier, unmapped_ids, categories
 
@@ -180,7 +180,7 @@
 
 ### warning.query_graph.edge.predicate.deprecated
 
-**Message:** Edge predicate '{identifier}' is deprecated?
+**Message:** Edge has deprecated predicate
 
 **Context:** identifier
 
@@ -188,7 +188,7 @@
 
 ### warning.query_graph.edge.predicate.non_canonical
 
-**Message:** Edge '{edge_id}' predicate '{identifier}' is non-canonical?
+**Message:** Edge has non-canonical predicate
 
 **Context:** edge_id, identifier
 
@@ -196,7 +196,7 @@
 
 ### warning.knowledge_graph.node.category.deprecated
 
-**Message:** Node '{node_id}' category '{identifier}' is deprecated?
+**Message:** Node has deprecated category
 
 **Context:** node_id, identifier
 
@@ -204,7 +204,7 @@
 
 ### warning.knowledge_graph.node.id.unmapped_prefix
 
-**Message:** '{identifier}' is unmapped to the target categories '{categories}'?
+**Message:** Node identifier found unmapped to target categories for node
 
 **Context:** identifier, categories
 
@@ -212,7 +212,7 @@
 
 ### warning.knowledge_graph.edge.predicate.deprecated
 
-**Message:** Edge predicate '{identifier}' is deprecated?
+**Message:** Edge has deprecated predicate
 
 **Context:** identifier
 
@@ -220,7 +220,7 @@
 
 ### warning.knowledge_graph.edge.predicate.non_canonical
 
-**Message:** Edge '{edge_id}' predicate '{identifier}' is non-canonical?
+**Message:** Edge has non-canonical predicate
 
 **Context:** edge_id, identifier
 
@@ -228,7 +228,7 @@
 
 ### warning.knowledge_graph.edge.attribute.type_id.not_association_slot
 
-**Message:** Edge '{edge_id}' attribute_type_id '{identifier}' not an association slot?
+**Message:** Edge has an attribute_type_id that is not an association slot
 
 **Context:** edge_id, identifier
 
@@ -236,7 +236,7 @@
 
 ### warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix
 
-**Message:** Edge '{edge_id}' attribute_type_id '{identifier}' has a non-Biolink CURIE prefix mapped to Biolink.
+**Message:** Edge has an attribute_type_id that has a non-Biolink CURIE prefix mapped to Biolink
 
 **Context:** edge_id, identifier
 
@@ -244,7 +244,7 @@
 
 ### warning.knowledge_graph.edge.attribute.type_id.unknown_prefix
 
-**Message:** Edge '{edge_id}' attribute_type_id '{identifier}' has a CURIE prefix namespace unknown to Biolink!
+**Message:** Edge has an attribute_type_id that has a CURIE prefix namespace unknown to Biolink
 
 **Context:** edge_id, identifier
 
@@ -252,7 +252,7 @@
 
 ### warning.knowledge_graph.edge.attribute.type_id.deprecated
 
-**Message:** Edge attribute '{identifier}' is deprecated?
+**Message:** Edge has a deprecated attribute_type_id
 
 **Context:** identifier
 
@@ -260,7 +260,7 @@
 
 ### warning.knowledge_graph.edge.provenance.multiple_primary
 
-**Message:** Edge '{identifier}' has recorded multiple 'primary' knowledge sources: '{sources}'?
+**Message:** Edge has recorded multiple 'primary' knowledge sources
 
 **Context:** identifier, sources
 
@@ -268,15 +268,15 @@
 
 ### warning.knowledge_graph.edge.provenance.ara.missing
 
-**Message:** Edge '{edge_id}' is missing ARA knowledge source provenance '{identifier}'?
+**Message:** Edge is missing ARA knowledge source provenance
 
 **Context:** edge_id, identifier
 
-**Description:** Edge attributes ARAs should record the infores identifier of their knowledge source provenance with respect to ARA.
+**Description:** Edge attributes ARAs should record the Infores identifier of their knowledge source provenance with respect to ARA.
 
 ### warning.knowledge_graph.edge.provenance.kp.missing
 
-**Message:** Edge '{edge_id}' attribute values are missing expected Knowledge Provider '{identifier}' '{kp_source_type}' provenance?
+**Message:** Edge attribute values are missing expected Knowledge Provider provenance
 
 **Context:** edge_id, identifier, kp_source_type
 
@@ -286,7 +286,7 @@
 
 ### error.non_compliant
 
-**Message:** S-P-O statement '{identifier}' is not compliant to Biolink Model {biolink_release}
+**Message:** S-P-O statement is not compliant to Biolink Model release
 
 **Context:** identifier, biolink_release
 
@@ -294,7 +294,7 @@
 
 ### error.trapi.validation
 
-**Message:** TRAPI {identifier} schema exception: '{reason}'!
+**Message:** Schema validation exception
 
 **Context:** identifier, reason
 
@@ -302,7 +302,7 @@
 
 ### error.trapi.request.invalid
 
-**Message:** {identifier} could not generate a valid TRAPI query request object because {reason}!
+**Message:** Test could not generate a valid TRAPI query request object
 
 **Context:** identifier, reason
 
@@ -316,7 +316,7 @@
 
 ### error.trapi.response.unexpected_http_code
 
-**Message:** TRAPI Response has an unexpected HTTP status code: '{identifier}'!
+**Message:** TRAPI Response has an unexpected HTTP status code
 
 **Context:** identifier
 
@@ -348,7 +348,7 @@
 
 ### error.trapi.response.knowledge_graph.missing_expected_edge
 
-**Message:** TRAPI Response Message is missing an expected edge '{identifier}' in its Knowledge Graph!
+**Message:** Knowledge Graph of TRAPI Response Message is missing expected edge
 
 **Context:** identifier
 
@@ -368,7 +368,7 @@
 
 ### error.trapi.response.results.missing_bindings
 
-**Message:** Neither the input id '{identifier}' nor resolved aliases were returned in the Result object IDs for node '{output_node_binding}' binding!
+**Message:** Result object IDs for output node binding did not return the original identifier nor aliases for input id
 
 **Context:** identifier, output_node_binding
 
@@ -376,7 +376,7 @@
 
 ### error.input_edge.node.category.missing
 
-**Message:** Node '{identifier}' is missing its category!
+**Message:** Category missing for node
 
 **Context:** identifier
 
@@ -384,7 +384,7 @@
 
 ### error.input_edge.node.category.not_a_category
 
-**Message:** Node '{node_id}' asserted category '{identifier}' is not a category term!
+**Message:** Asserted category is not a proper category class for node
 
 **Context:** node_id, identifier
 
@@ -392,7 +392,7 @@
 
 ### error.input_edge.node.category.unknown
 
-**Message:** Node '{node_id}' has unknown category '{identifier}' element!
+**Message:** Node has unknown category
 
 **Context:** node_id, identifier
 
@@ -400,7 +400,7 @@
 
 ### error.input_edge.node.id.missing
 
-**Message:** {identifier} node identifier is missing!
+**Message:** Node identifier is missing for node
 
 **Context:** identifier
 
@@ -408,7 +408,7 @@
 
 ### error.input_edge.predicate.missing
 
-**Message:** Edge '{identifier}' predicate is missing or empty!
+**Message:** Edge has missing or empty predicate
 
 **Context:** identifier
 
@@ -416,7 +416,7 @@
 
 ### error.input_edge.predicate.unknown
 
-**Message:** Edge '{edge_id}' is unknown predicate {identifier}!
+**Message:** Edge has unknown predicate
 
 **Context:** edge_id, identifier
 
@@ -424,7 +424,7 @@
 
 ### error.input_edge.predicate.abstract
 
-**Message:** Edge '{edge_id}' is not permitted to have an 'abstract' predicate '{identifier}'!
+**Message:** Edge is not permitted to have 'abstract' predicate
 
 **Context:** edge_id, identifier
 
@@ -432,7 +432,7 @@
 
 ### error.input_edge.predicate.mixin
 
-**Message:** Edge '{edge_id}' is not permitted to have an 'mixin' predicate '{identifier}'!
+**Message:** Edge is not permitted to have an 'mixin' predicate
 
 **Context:** edge_id, identifier
 
@@ -440,7 +440,7 @@
 
 ### error.input_edge.predicate.invalid
 
-**Message:** Edge '{edge_id}' predicate '{identifier}' is invalid!
+**Message:** Edge has invalid predicate
 
 **Context:** edge_id, identifier
 
@@ -448,7 +448,7 @@
 
 ### error.query_graph.node.category.missing
 
-**Message:** Node '{identifier}' is missing its category!
+**Message:** Category is missing from node
 
 **Context:** identifier
 
@@ -456,7 +456,7 @@
 
 ### error.query_graph.node.category.not_a_category
 
-**Message:** Node '{node_id}' asserted category '{identifier}' is not a category term!
+**Message:** Node has invalid category
 
 **Context:** node_id, identifier
 
@@ -464,7 +464,7 @@
 
 ### error.query_graph.node.category.unknown
 
-**Message:** Node '{node_id}' has unknown category '{identifier}' element!
+**Message:** Node has unknown category
 
 **Context:** node_id, identifier
 
@@ -472,7 +472,7 @@
 
 ### error.query_graph.node.ids.not_array
 
-**Message:** Node {identifier} 'ids' slot value is not an array!
+**Message:** The 'ids' slot value is not an array in node
 
 **Context:** identifier
 
@@ -480,7 +480,7 @@
 
 ### error.query_graph.node.categories.not_array
 
-**Message:** Node {identifier} 'categories' slot value is not an array!
+**Message:** The 'categories' slot value is not an array in node
 
 **Context:** identifier
 
@@ -488,7 +488,7 @@
 
 ### error.query_graph.node.is_set.not_boolean
 
-**Message:** Node {identifier} 'is_set' slot is not a boolean value!
+**Message:** The 'is_set' slot is not a boolean value in node
 
 **Context:** identifier
 
@@ -496,7 +496,7 @@
 
 ### error.query_graph.edge.subject.missing
 
-**Message:** Edge '{identifier}' has a missing or empty 'subject' slot value!
+**Message:** The 'subject' slot value is missing or empty in edge
 
 **Context:** identifier
 
@@ -504,7 +504,7 @@
 
 ### error.query_graph.edge.subject.missing_from_nodes
 
-**Message:** Edge '{edge_id}' subject id '{identifier}' is missing from the nodes catalog!
+**Message:** The nodes catalog of query graph for missing the subject id recorded on edge
 
 **Context:** edge_id, identifier
 
@@ -512,7 +512,7 @@
 
 ### error.query_graph.edge.object.missing
 
-**Message:** Edge '{identifier}' has a missing or empty 'object' slot value!
+**Message:** The 'object' slot value is missing or empty in edge
 
 **Context:** identifier
 
@@ -520,7 +520,7 @@
 
 ### error.query_graph.edge.object.missing_from_nodes
 
-**Message:** Edge '{edge_id}' object id '{identifier}' is missing from the nodes catalog!
+**Message:** The nodes catalog of query graph for missing the object id recorded on edge
 
 **Context:** edge_id, identifier
 
@@ -528,7 +528,7 @@
 
 ### error.query_graph.edge.predicate.missing
 
-**Message:** Edge '{identifier}' predicate is missing or empty!
+**Message:** Predicate is missing or empty for edge
 
 **Context:** identifier
 
@@ -536,7 +536,7 @@
 
 ### error.query_graph.edge.predicate.unknown
 
-**Message:** Edge '{edge_id}' has unknown predicate {identifier}!
+**Message:** Edge has unknown predicate
 
 **Context:** edge_id, identifier
 
@@ -544,7 +544,7 @@
 
 ### error.query_graph.edge.predicate.not_array
 
-**Message:** Edge '{identifier}' predicate slot value is not an array!
+**Message:** Predicate slot value is not an array for edge
 
 **Context:** identifier
 
@@ -552,7 +552,7 @@
 
 ### error.query_graph.edge.predicate.empty_array
 
-**Message:** Edge '{identifier}' predicate slot value is an empty array!
+**Message:** Predicate slot value is an empty array for edge
 
 **Context:** identifier
 
@@ -560,7 +560,7 @@
 
 ### error.query_graph.edge.predicate.abstract
 
-**Message:** Edge '{edge_id}' is not permitted to have an 'abstract' predicate '{identifier}'!
+**Message:** Edge is not permitted to have an 'abstract' predicate
 
 **Context:** edge_id, identifier
 
@@ -568,7 +568,7 @@
 
 ### error.query_graph.edge.predicate.mixin
 
-**Message:** Edge '{edge_id}' is not permitted to have an 'mixin' predicate '{identifier}'!
+**Message:** Edge is not permitted to have an 'mixin' predicate
 
 **Context:** edge_id, identifier
 
@@ -576,7 +576,7 @@
 
 ### error.query_graph.edge.predicate.invalid
 
-**Message:** Edge '{edge_id}' predicate '{identifier}' is invalid!
+**Message:** Edge has invalid predicate
 
 **Context:** edge_id, identifier
 
@@ -584,7 +584,7 @@
 
 ### error.query_graph.edge.attribute_constraints.not_array
 
-**Message:** Edge '{identifier}' attribute_constraints property value is not an array!
+**Message:** Attribute_constraints property value is not an array for edge
 
 **Context:** identifier
 
@@ -592,7 +592,7 @@
 
 ### error.query_graph.edge.qualifier_constraints.qualifier_set.empty
 
-**Message:** Edge '{identifier}' qualifier_set property value is empty!
+**Message:** Qualifier_set property value is empty for edge
 
 **Context:** identifier
 
@@ -600,7 +600,7 @@
 
 ### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown
 
-**Message:** Edge '{edge_id}' qualifier type_id '{identifier}' is unknown!
+**Message:** Edge has unknown qualifier_type_id
 
 **Context:** edge_id, identifier
 
@@ -608,7 +608,7 @@
 
 ### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.unresolved
 
-**Message:** Edge '{identifier}' qualifier_value '{qualifier_value}' for '{qualifier_type_id}' cannot be resolved!
+**Message:** Qualifier_type_id for edge has unresolved qualifier_value
 
 **Context:** identifier, qualifier_value, qualifier_type_id
 
@@ -628,7 +628,7 @@
 
 ### error.knowledge_graph.node.category.missing
 
-**Message:** Node '{identifier}' is missing its category!
+**Message:** Category is missing for node
 
 **Context:** identifier
 
@@ -636,7 +636,7 @@
 
 ### error.knowledge_graph.node.category.not_a_category
 
-**Message:** Node '{node_id}' asserted category '{identifier}' is not a category term!
+**Message:** Node has invalid category
 
 **Context:** node_id, identifier
 
@@ -644,7 +644,7 @@
 
 ### error.knowledge_graph.node.category.unknown
 
-**Message:** Node '{node_id}' has unknown category '{identifier}' element!
+**Message:** Node has unknown category
 
 **Context:** node_id, identifier
 
@@ -652,7 +652,7 @@
 
 ### error.knowledge_graph.node.id.missing
 
-**Message:** {identifier} node identifier is missing!
+**Message:** Node identifier is missing for node
 
 **Context:** identifier
 
@@ -660,7 +660,7 @@
 
 ### error.knowledge_graph.node.missing_categories
 
-**Message:** Node '{identifier}' is missing its categories!
+**Message:** Categories are missing for node
 
 **Context:** identifier
 
@@ -668,7 +668,7 @@
 
 ### error.knowledge_graph.node.ids.not_array
 
-**Message:** Node {identifier} 'ids' slot value is not an array!
+**Message:** The 'ids' slot value is not an array for node
 
 **Context:** identifier
 
@@ -676,7 +676,7 @@
 
 ### error.knowledge_graph.node.empty_ids
 
-**Message:** Node {identifier} 'ids' slot array is empty!
+**Message:** The 'ids' slot array is empty for node
 
 **Context:** identifier
 
@@ -684,7 +684,7 @@
 
 ### error.knowledge_graph.node.categories.not_array
 
-**Message:** Node '{identifier} categories slot value is not an array!
+**Message:** The categories slot value is not an array for node
 
 **Context:** identifier
 
@@ -692,7 +692,7 @@
 
 ### error.knowledge_graph.node.categories.not_concrete
 
-**Message:** Node '{identifier}' asserted categories '{categories}' is not a concrete category!
+**Message:** None of the asserted categories are concrete for node
 
 **Context:** identifier, categories
 
@@ -700,7 +700,7 @@
 
 ### error.knowledge_graph.node.empty_categories
 
-**Message:** Node {identifier} 'categories' slot array is empty!
+**Message:** The 'categories' slot array is empty for node
 
 **Context:** identifier
 
@@ -708,7 +708,7 @@
 
 ### error.knowledge_graph.node.is_set.not_boolean
 
-**Message:** Node {identifier} 'is_set' slot is not a boolean value!
+**Message:** The 'is_set' slot is not a boolean value for node
 
 **Context:** identifier
 
@@ -716,7 +716,7 @@
 
 ### error.knowledge_graph.edge.subject.missing
 
-**Message:** Edge '{identifier}' has a missing or empty 'subject' slot value!
+**Message:** The 'subject' slot value is missing or empty for edge
 
 **Context:** identifier
 
@@ -724,7 +724,7 @@
 
 ### error.knowledge_graph.edge.subject.missing_from_nodes
 
-**Message:** Edge '{edge_id}' subject id '{identifier}' is missing from the nodes catalog!
+**Message:** The nodes catalog of query graph for missing the subject id recorded on edge
 
 **Context:** edge_id, identifier
 
@@ -732,7 +732,7 @@
 
 ### error.knowledge_graph.edge.object.missing
 
-**Message:** Edge '{identifier}' has a missing or empty 'object' slot value!
+**Message:** The 'object' slot value  is missing or empty for edge
 
 **Context:** identifier
 
@@ -740,7 +740,7 @@
 
 ### error.knowledge_graph.edge.object.missing_from_nodes
 
-**Message:** Edge '{edge_id}' object id '{identifier}' is missing from the nodes catalog!
+**Message:** The nodes catalog of query graph for missing the object id recorded on edge
 
 **Context:** edge_id, identifier
 
@@ -748,7 +748,7 @@
 
 ### error.knowledge_graph.edge.predicate.missing
 
-**Message:** Edge '{identifier}' predicate is missing or empty!
+**Message:** The predicate is missing or empty for edge
 
 **Context:** identifier
 
@@ -756,7 +756,7 @@
 
 ### error.knowledge_graph.edge.predicate.unknown
 
-**Message:** Edge '{edge_id}' has unknown predicate {identifier}!
+**Message:** Edge has unknown predicate
 
 **Context:** edge_id, identifier
 
@@ -764,7 +764,7 @@
 
 ### error.knowledge_graph.edge.predicate.invalid
 
-**Message:** Edge '{edge_id}' predicate '{identifier}' is invalid!
+**Message:** Edge has invalid predicate
 
 **Context:** edge_id, identifier
 
@@ -772,7 +772,7 @@
 
 ### error.knowledge_graph.edge.predicate.not_array
 
-**Message:** Edge '{identifier}' predicate slot value is not an array!
+**Message:** The predicate slot value is not an array for edge
 
 **Context:** identifier
 
@@ -780,7 +780,7 @@
 
 ### error.knowledge_graph.edge.predicate.empty_array
 
-**Message:** Edge '{identifier}' predicate slot value is an empty array!
+**Message:** The predicate slot value is an empty array for edge
 
 **Context:** identifier
 
@@ -788,7 +788,7 @@
 
 ### error.knowledge_graph.edge.predicate.abstract
 
-**Message:** Edge '{edge_id}' is not permitted to have an 'abstract' predicate '{identifier}'!
+**Message:** Edge is not permitted to have an 'abstract' predicate
 
 **Context:** edge_id, identifier
 
@@ -796,7 +796,7 @@
 
 ### error.knowledge_graph.edge.predicate.mixin
 
-**Message:** Edge '{edge_id}' is not permitted to have an 'mixin' predicate '{identifier}'!
+**Message:** Edge is not permitted to have an 'mixin' predicate
 
 **Context:** edge_id, identifier
 
@@ -804,7 +804,7 @@
 
 ### error.knowledge_graph.edge.attribute.missing
 
-**Message:** Edge '{identifier}' has no 'attributes' key!
+**Message:** Missing 'attributes' key for edge
 
 **Context:** identifier
 
@@ -812,7 +812,7 @@
 
 ### error.knowledge_graph.edge.attribute.empty
 
-**Message:** Edge '{identifier}' has empty attributes!
+**Message:** Empty attributes in edge
 
 **Context:** identifier
 
@@ -820,7 +820,7 @@
 
 ### error.knowledge_graph.edge.attribute.not_array
 
-**Message:** Edge '{identifier}' attributes are not an array!
+**Message:** The attributes are not an array in edge
 
 **Context:** identifier
 
@@ -828,7 +828,7 @@
 
 ### error.knowledge_graph.edge.attribute.type_id.unknown
 
-**Message:** Edge '{edge_id}' has unknown attribute_type_id {identifier}!
+**Message:** Edge has unknown attribute_type_id
 
 **Context:** edge_id, identifier
 
@@ -836,7 +836,7 @@
 
 ### error.knowledge_graph.edge.attribute.type_id.abstract
 
-**Message:** Edge '{edge_id}' is not permitted to have an 'abstract' attribute_type_id '{identifier}'!
+**Message:** Edge is not permitted to have an 'abstract' attribute_type_id
 
 **Context:** edge_id, identifier
 
@@ -844,7 +844,7 @@
 
 ### error.knowledge_graph.edge.attribute.type_id.mixin
 
-**Message:** Edge '{edge_id}' is not permitted to have an 'mixin' attribute_type_id '{identifier}'!
+**Message:** Edge is not permitted to have an 'mixin' attribute_type_id
 
 **Context:** edge_id, identifier
 
@@ -852,7 +852,7 @@
 
 ### error.knowledge_graph.edge.attribute.type_id.missing
 
-**Message:** Edge '{identifier}' attribute is missing its 'attribute_type_id' property!
+**Message:** An attribute is missing its 'attribute_type_id' property in edge
 
 **Context:** identifier
 
@@ -860,7 +860,7 @@
 
 ### error.knowledge_graph.edge.attribute.type_id.empty
 
-**Message:** Edge'{identifier}' attribute empty 'attribute_type_id' property!
+**Message:** An attribute has empty 'attribute_type_id' property in edge
 
 **Context:** identifier
 
@@ -868,7 +868,7 @@
 
 ### error.knowledge_graph.edge.attribute.type_id.not_curie
 
-**Message:** Edge '{edge_id}' attribute_type_id '{identifier}' is not a CURIE!
+**Message:** Edge has a value that is not a CURIE for attribute_type_id
 
 **Context:** edge_id, identifier
 
@@ -876,7 +876,7 @@
 
 ### error.knowledge_graph.edge.attribute.value.missing
 
-**Message:** Edge '{identifier}' attribute is missing its 'value' property!
+**Message:** An attribute is missing its 'value' property in edge
 
 **Context:** identifier
 
@@ -884,7 +884,7 @@
 
 ### error.knowledge_graph.edge.attribute.value.empty
 
-**Message:** Edge '{identifier}' attribute empty 'value' property!
+**Message:** An attribute has an empty value in edge
 
 **Context:** identifier
 
@@ -892,7 +892,7 @@
 
 ### error.knowledge_graph.edge.provenance.infores.missing
 
-**Message:** Edge '{edge_id}' has provenance value '{identifier}' which is not a well-formed InfoRes CURIE!
+**Message:** Edge has provenance value which is not a well-formed InfoRes CURIE
 
 **Context:** edge_id, identifier
 
@@ -900,7 +900,7 @@
 
 ### error.knowledge_graph.edge.provenance.missing_primary
 
-**Message:** Edge '{identifier}' does not record its 'primary' knowledge source?
+**Message:** A 'primary' knowledge source is missing for edge
 
 **Context:** identifier
 
@@ -908,7 +908,7 @@
 
 ### error.knowledge_graph.edge.qualifiers.not_array
 
-**Message:** Edge '{identifier}' 'qualifiers' are not an array!
+**Message:** The 'qualifiers' property is not an array in edge
 
 **Context:** identifier
 
@@ -916,7 +916,7 @@
 
 ### error.knowledge_graph.edge.qualifiers.empty
 
-**Message:** Edge '{identifier}' qualifiers property value is empty!
+**Message:** The qualifiers property value is empty in edge
 
 **Context:** identifier
 
@@ -924,7 +924,7 @@
 
 ### error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown
 
-**Message:** Edge '{edge_id}' qualifier type_id '{identifier}' is unknown!
+**Message:** Edge has unknown qualifier_type_id
 
 **Context:** edge_id, identifier
 
@@ -932,7 +932,7 @@
 
 ### error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved
 
-**Message:** Edge '{edge_id}' qualifier_value '{identifier}' for '{qualifier_type_id}' cannot be resolved!
+**Message:** Qualifier_type_id for edge has unresolved qualifier_value
 
 **Context:** edge_id, identifier, qualifier_type_id
 
