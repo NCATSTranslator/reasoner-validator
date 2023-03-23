@@ -2,6 +2,12 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
  
+## v3.4.12
+
+- added validation to explicitly detect presence of at least one concrete (non-abstract, non-mixin) category in categories list
+- refactored the codes.yaml code both to fix validation code deficiencies, distinctly record validation context, and to simplified template messages
+- finalized a first release of 'dump()',  a significantly enhanced human-readable text report formatter for validation code associated messages
+
 ## v3.4.11
 
 - added some code inadvertently not committed in v3.4.10.

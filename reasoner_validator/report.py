@@ -438,7 +438,8 @@ class ValidationReporter:
                 for code, messages_by_code in coded_messages.items():
 
                     print(
-                        f"* {CodeDictionary.validation_code_tag(code)}: {CodeDictionary.get_message_template(code)}",
+                        f"* {CodeDictionary.validation_code_tag(code)}:\n"
+                        f"= {CodeDictionary.get_message_template(code)}",
                         file=file
                     )
 
@@ -456,7 +457,7 @@ class ValidationReporter:
                                 # with the message, just print the identifier
 
                                 if first:
-                                    print("\t- ", end="", file=file)
+                                    print("# ", end="", file=file)
                                     first = False
 
                                 print(f"{delimiter}{identifier}", end="", file=file)
@@ -466,7 +467,7 @@ class ValidationReporter:
 
                                 id_count += 1
                                 if id_count == 5:
-                                    print("\n\t  ", end="", file=file)
+                                    print("\n\t", end="", file=file)
                                     delimiter: str = ""
                                     id_count: int = 0
 
@@ -475,36 +476,20 @@ class ValidationReporter:
                                 # In this case, the keys of the dictionary are the 'identifier'
                                 # strings and the values are lists of dictionaries, each of which
                                 # contains the additional contextual parameters for one message
-                                print(f"\t- {identifier}:", file=file)
+                                print(f"# {identifier}:", file=file)
 
-                                first: bool = True
-                                delimiter: str = ""
-                                id_count: int = 0
-
+                                second: bool = True
                                 for parameters in messages:
-
                                     for tag, value in parameters.items():
-
-                                        if first:
-                                            print(f"\t\t{tag}'s: ", end="", file=file)
-                                            first = False
-
-                                        print(f"{delimiter}{value}", end="", file=file)
-
-                                        if not delimiter:
-                                            delimiter = ", "
-
-                                        id_count += 1
-                                        if id_count == 5:
-                                            print("\n\t\t", end="", file=file)
-                                            delimiter: str = ""
-                                            id_count: int = 0
-
-                                    print(file=file)
+                                        if second:
+                                            print(f"- {tag}: ", file=file)
+                                            second = False
+                                        print(f"\t{value}", file=file)
 
                                 print(file=file)
 
                         print(file=file)
+
                     # else:
                     #     For codes with associated non-parametric templates,
                     #     just printing the template (done above) suffices
