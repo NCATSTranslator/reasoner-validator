@@ -73,8 +73,7 @@ def test_get_code_subtree_facet_message():
     assert isinstance(subtree, Dict)
     assert all([key in ["abstract", "mixin"] for key in subtree])
     assert CodeDictionary.MESSAGE in subtree["abstract"]
-    assert subtree["abstract"][CodeDictionary.MESSAGE] == \
-           "Input Edge '{edge_id}' has an 'abstract' predicate '{identifier}'."
+    assert subtree["abstract"][CodeDictionary.MESSAGE] == "Edge has an 'abstract' predicate:"
     assert CodeDictionary.DESCRIPTION not in subtree["abstract"]
 
 
@@ -97,7 +96,7 @@ def test_get_code_subtree_facet_description():
     assert all([key in ["abstract", "mixin"] for key in subtree])
     assert CodeDictionary.DESCRIPTION in subtree["mixin"]
     assert subtree["mixin"][CodeDictionary.DESCRIPTION] == \
-           "Input Edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'."
+           "Input edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'."
     assert CodeDictionary.MESSAGE not in subtree["mixin"]
 
 
@@ -139,7 +138,7 @@ def test_get_message_template():
     assert CodeDictionary.get_message_template("") is None
     assert CodeDictionary.get_message_template("info.compliant") == "Biolink Model-compliant TRAPI Message."
     assert CodeDictionary.get_message_template("error.trapi.request.invalid") == \
-           "{identifier} could not generate a valid TRAPI query request object because {reason}!"
+           "Test could not generate a valid TRAPI query request object:"
     assert CodeDictionary.get_message_template("foo.bar") is None
 
 
@@ -161,15 +160,14 @@ def test_message_display():
     )
     assert "ERROR - Knowledge Graph Nodes: No nodes found!" \
            in CodeDictionary.display("error.knowledge_graph.nodes.empty", add_prefix=True)
-    assert "INFO - Excluded: User excluded S-P-O triple 'a->biolink:related_to->b' " + \
-           "or all test case S-P-O triples from resource test location." \
+    assert "INFO - Excluded: All test case S-P-O triples from " + \
+           "resource test location, or specific user excluded S-P-O triples:" \
            in CodeDictionary.display(
                 code="info.excluded",
-                parameters={"a->biolink:related_to->b": None}, # this code has no other parameters
+                parameters={"a->biolink:related_to->b": None},  # this code has no other parameters
                 add_prefix=True
             )
-    assert "INFO - Input Edge Predicate: Input Edge 'a->biolink:related_to->b' " + \
-           "has an 'abstract' predicate 'biolink:contributor'." \
+    assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate:" \
            in CodeDictionary.display(
                 code="info.input_edge.predicate.abstract",
                 parameters={
@@ -179,41 +177,6 @@ def test_message_display():
                 },  # this code has one other parameter named 'element_name'
                 add_prefix=True
             )
-
-
-def test_validator_reporter_message_display():
-    reporter = ValidationReporter(prefix="Test Validation Report", trapi_version=TEST_TRAPI_VERSION)
-    messages: Dict[str, List[str]] = reporter.display(
-        messages={
-            "info.excluded": {
-                # this message only has an indexing 'identifier' parameter
-                "a->biolink:related_to->b": None
-            }
-        },
-        add_prefix=True
-    )
-    assert "info.excluded" in messages
-    assert "Test Validation Report: INFO - Excluded: User excluded S-P-O triple 'a->biolink:related_to->b' " + \
-           "or all test case S-P-O triples from resource test location." \
-        in messages["info.excluded"]
-
-    messages = reporter.display(
-        messages={
-            # validation code revolving to template
-            "error.input_edge.predicate.invalid":
-            {
-                # this identifier is an 'edge_id'
-                "a--biolink:not_a_predicate->b": [
-                    {"predicate":  "biolink:not_a_predicate"}  # other parameters
-                ]
-            }
-        },
-        add_prefix=True
-    )
-    assert "error.input_edge.predicate.invalid" in messages
-    assert "Test Validation Report: ERROR - Input Edge Predicate: " +\
-           "Edge 'a--biolink:not_a_predicate->b' predicate 'biolink:not_a_predicate' is invalid!" \
-           in messages["error.input_edge.predicate.invalid"]
 
 
 def test_unknown_message_code():
@@ -236,9 +199,7 @@ def test_message_report():
     for code, parameters in report['information'].items():
         messages.extend(CodeDictionary.display(code, parameters, add_prefix=True))
     assert "INFO - Compliant: Biolink Model-compliant TRAPI Message." in messages
-    assert "INFO - Input Edge Predicate: Input Edge 'a->biolink:contributor->b' " + \
-           "has an 'abstract' predicate 'biolink:contributor'." \
-           in messages
+    assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate:" in messages
 
 
 def test_messages():
@@ -319,23 +280,23 @@ def test_messages():
     information: List[str] = list()
     for code, parameters in messages['information'].items():
         information.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "INFO - Excluded: User excluded S-P-O triple 'Horace van der Gelder' " + \
-           "or all test case S-P-O triples from resource test location." in information
+    assert "INFO - Excluded: All test case S-P-O triples from resource test location, " + \
+           "or specific user excluded S-P-O triples:" in information
 
     assert "warnings" in messages
     assert len(messages['warnings']) > 0
     warnings: List[str] = list()
     for code, parameters in messages['warnings'].items():
         warnings.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "WARNING - Knowledge Graph Node Id Unmapped: 'Will Robinson' is unmapped " + \
-           "to the target categories 'Lost in Space'?" in warnings
+    assert "WARNING - Knowledge Graph Node Id Unmapped: " + \
+           "Node identifier found unmapped to target categories for node:" in warnings
 
     assert "errors" in messages
     assert len(messages['errors']) > 0
     errors: List[str] = list()
     for code, parameters in messages['errors'].items():
         errors.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "ERROR - Trapi: TRAPI 6.6.6 schema exception: 'Dave, this can only be due to human error...'!" in errors
+    assert "ERROR - Trapi: Schema validation exception:" in errors
     
     obj = reporter1.to_dict()
     assert obj["trapi_version"] == TEST_TRAPI_VERSION
@@ -409,7 +370,7 @@ def test_validator_method():
     warnings: List[str] = list()
     for code, parameters in messages['warnings'].items():
         warnings.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "WARNING - Graph: Fake data is empty?" in warnings
+    assert "WARNING - Graph: Empty graph:" in warnings
 
     assert "errors" in messages
     assert len(messages['errors']) > 0
@@ -417,7 +378,7 @@ def test_validator_method():
     for code, parameters in messages['errors'].items():
         errors.extend(CodeDictionary.display(code, parameters, add_prefix=True))
     assert "ERROR - Knowledge Graph Edge Provenance Infores: " + \
-           "Edge 'fake-edge-id' has provenance value 'foo:bar' which is not a well-formed InfoRes CURIE!" in errors
+           "Edge has provenance value which is not a well-formed InfoRes CURIE:" in errors
 
 
 # has_validation_errors(root_key: str = 'validation', case: Optional[Dict] = None)

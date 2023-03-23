@@ -714,7 +714,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             },
             # f"{QUERY_GRAPH_PREFIX}: WARNING - Node 'type-2 diabetes' has identifiers ['FOO:12345', 'BAR:67890'] " +
             # "unmapped to the target categories: ['biolink:Disease', 'biolink:Gene']?"
-            "warning.query_graph.node.ids.unmapped_to_categories"
+            "warning.query_graph.node.ids.unmapped_prefix"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -1792,7 +1792,7 @@ def test_validate_qualifiers(query: Tuple):
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Node 'FOO:1234' " +
             # "is unmapped to the target categories: ['biolink:Gene']?"
-            "warning.knowledge_graph.node.unmapped_prefix"
+            "warning.knowledge_graph.node.id.unmapped_prefix"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,

@@ -1,5 +1,5 @@
 """Error and Warning Reporting Module"""
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List
 from sys import stdout
 import copy
 
@@ -403,69 +403,6 @@ class ValidationReporter:
             return True
         else:
             return False
-
-    def display(
-            self,
-            messages: Dict[
-                str,  # unique validation message codes
-                Optional[
-                    Dict[
-                        str,  # template 'identifier' key value
-                        Optional[
-                            List[
-                                Dict[str, str]  # dictionary of other template parameters (if present)
-                            ]
-                        ]
-                    ]
-                ]
-            ],
-            add_prefix: bool = False
-    ) -> Dict[str, Dict[str, List[str]]]:
-        """
-        This augmented message display wrapper prepends the Validation Reporter
-        contextual prefix to one or more resolved coded validation messages.
-
-        :param messages: Dict[str,Optional[Dict[str, Optional[List[Dict[str,str]]]]]], dictionary of messages where
-                         the keys are validation message codes, and the values are a dictionary of messages subsets
-                         keyed by message template 'identifier' field values. If the template has no other parameters,
-                         the given key has a value of None; otherwise, a list of dictionaries is given that report
-                         the values of message-specific template parameters in addition to the 'identifier' parameter.
-        :param add_prefix: bool, flag to prepend the ValidatorReporter prefix to displayed messages (default: False)
-
-        :return: Dict[str, Dict[str, List[str]]], one or more resolved and contextualized Validation Reporter messages
-        """
-        decoded_messages: Dict[str, Dict[str, List[str]]] = dict()
-        code: str  # code for specific validation message template
-        parameters: Optional[
-                Dict[
-                    str,  # message template 'identifier' key value
-                    Optional[
-                        List[
-                            Dict[str, str]  # dictionary of other template parameters (if present)
-                        ]
-                    ]
-                ]
-            ]
-        for code, indexed_messages in messages.items():
-
-            if code not in decoded_messages:
-                decoded_messages[code] = dict()
-            if indexed_messages:
-                for identifier, parameters in indexed_messages.items():
-
-                    if identifier not in decoded_messages[code]:
-                        decoded_messages[code][identifier] = list()
-
-                    decoded_messages[code][identifier].extend(
-                        [
-                            f"{self.prefix}: " + message if add_prefix else message
-                            for message in CodeDictionary.display(code, parameters, add_prefix=add_prefix)
-                        ]
-                    )
-            else:
-                pass
-
-        return decoded_messages
 
     def dump(self, file=stdout):
         """

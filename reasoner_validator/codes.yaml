@@ -21,13 +21,13 @@ info:
           $context:
             - edge_id
             - identifier
-          $description: "Edge data can have 'abstract' predicates, when the mode of validation is 'non-strict'."
+          $description: "Input edge data can have 'abstract' predicates, when the mode of validation is 'non-strict'."
       mixin:
         $message: "Edge has an 'mixin' predicate:"
         $context:
           - edge_id
           - identifier
-        $description: "Edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'."
+        $description: "Input edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'."
   query_graph:
     edge:
       predicate:
@@ -92,7 +92,7 @@ warning:
             $description: "If a 'parameters' property value is given for a workflow step specification, it should not be null. This field will be ignored?"
   graph:
     empty:
-      $message: "Graph has no data:"
+      $message: "Empty graph:"
       $context:
         - identifier
       $description: "An empty graph in this particular context is allowed but merits a boundary response warning?"
@@ -255,7 +255,7 @@ error:
     $description: "This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause!"
   trapi:
     validation:
-      $message: "TRAPI schema exception:"
+      $message: "Schema validation exception:"
       $context:
         - identifier
         - reason
