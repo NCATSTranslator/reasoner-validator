@@ -182,15 +182,6 @@ class CodeDictionary:
         return tag
 
     @classmethod
-    def display_one(cls, code: str) -> str:
-        """
-        Retrieves the non-parameterized version of the message of a validation code
-        :param code:
-        :return:
-        """
-        pass
-
-    @classmethod
     def display(
             cls,
             code: str,  # code for specific validation message template

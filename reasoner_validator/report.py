@@ -467,83 +467,83 @@ class ValidationReporter:
 
         return decoded_messages
 
-    def display_all(self) -> Dict[str, Dict[str, List[str]]]:
-        """
-        This method applies the display() method in sequence to each of the
-        validation message partitions for error, warning and information.
-
-        :return: Dict[str, Dict[str, List[str]]], one or more resolved and contextualized Validation Reporter
-                                                  messages for each validation message partition
-        """
-        message_catalog: Dict[
-            str,           # 'error', 'warning', 'info'
-            Dict[
-                str,       # validation code
-                Dict[
-                    str,   # identifier (if applicable)
-                    List[str]  # list of messages
-                ]
-            ]
-        ] = dict()
-
-        for message_type, messages in self.messages.items():
-            if message_type not in message_catalog:
-                message_catalog[message_type] = dict()
-            message_catalog[message_type] = self.display(messages=messages)
-
-        return message_catalog
-
     def dump(self, file=stdout):
         """
         Dump, on a specified file device, all available
         ValidationReporter messages, as formatted text.
         """
-        report_all: Dict[
-            str,  # message type: 'error', 'warning' or 'info'
-            Dict[
-                str,  # validation code
-                Union[
-                    str,        # singular scalar (non-parameterized) string message associated with the validation code
-                    List[str],  # list of string 'identifiers' solely associated with the validation code
-                    Dict[
-                        str,
-                        str
-                    ]
-                ]
-            ]
-        ] = self.display_all()
+        print(f"\n\033[4mValidation Report for {self.prefix}\033[0m\n", file=file)
 
         message_type: str
-        messages: Dict
+        coded_messages: Dict
+        # Top level partition of messages into 'error', 'warning' or 'info'
+        for message_type, coded_messages in self.messages.items():
 
-        print(f"\n\033[4mValidation Report for {self.prefix}\033[0m\n", file=file)
-        for message_type, coded_messages in report_all.items():
-            # if there are coded validation messages of a
-            # given message type: error, warning or info
+            # if there are coded validation messages for a
+            # given message type: 'error', 'warning' or 'info' ...
             if coded_messages:
-                print(f"\033[4m{message_type.capitalize()}\033[0m\n", file=file)
-                for code, messages in coded_messages.items():
 
-                    if isinstance(messages, str):
-                        # code has single non-parametric template associated with the message
-                        print(f"{CodeDictionary.validation_code_tag(code)}: {str(messages)}", file=file)
+                # ... then iterate through them and print them out
+                print(f"\n\033[4m{message_type.capitalize()}\033[0m\n", file=file)
 
-                    elif isinstance(messages, List):
-                        # code has a list of 'identifier' parameters (only) associated with the message
-                        print(
-                            f"{CodeDictionary.validation_code_tag(code)}: " +
-                            f"{CodeDictionary.display(code,)}" +
-                            f"{','.join(messages)}",
-                            file=file
-                        )
+                code: str  # validation codes
+                messages_by_code:  Optional[
+                    Dict[
+                        str,      # Keys are 'identifiers' associated with the validation code
+                        Optional[
+                            List[
+                                Dict[str, str]
+                            ]
+                        ]
+                    ]
+                ]
+                # Grouping message outputs by validation codes
+                for code, messages_by_code in coded_messages.items():
 
-                    elif isinstance(messages, Dict):
-                        for message in messages.items():
-                            print(f"\t* {message}", file=file)
+                    print(
+                        f"* {CodeDictionary.validation_code_tag(code)}: {CodeDictionary.get_message_template(code)}",
+                        file=file
+                    )
 
-                    else:
-                        raise RuntimeError(f"Unrecognized returned message data type: {type(messages)}")
+                    if messages_by_code is not None:
 
-                    print(file=file)
+                        # Codes with associated parameters should have
+                        # an embedded dictionary with 'identifier' keys
+                        delimiter: str = ""
+                        id_count: int = 0
+                        for identifier, messages in messages_by_code.items():
+
+                            if messages is None:
+                                # For codes solely with a list of 'identifier' parameters associated
+                                # with the message, just print the identifier
+
+                                if not delimiter:
+                                    print("\t- ", end="", file=file)
+
+                                print(f"{delimiter}{identifier}", end="", file=file)
+
+                                if not delimiter:
+                                    delimiter = ", "
+
+                                id_count += 1
+                                if id_count == 10:
+                                    delimiter: str = ""
+                                    id_count: int = 0
+
+                            else:
+                                # Code has list of dictionaries of additional context for messages.
+                                # In this case, the keys of the dictionary are the 'identifier'
+                                # strings and the values are lists of dictionaries, each of which
+                                # contains the additional contextual parameters for one message
+                                print(f"\t- {identifier}:", file=file)
+                                for parameter in messages:
+                                    context = [f"'{tag}' = '{value}'" for tag, value in parameter.items()]
+                                    print(f"\t\tContext: {', '.join(context)}", file=file)
+
+                            # print(file=file)
+                    # else:
+                    #     For codes with associated non-parametric templates, just print the template
+
+                    # print(file=file)
 
             # else: print nothing

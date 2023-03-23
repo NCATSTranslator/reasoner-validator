@@ -290,7 +290,7 @@ def test_messages():
             }
         },
         "warnings": {
-            "warning.knowledge_graph.node.unmapped_prefix": {
+            "warning.knowledge_graph.node.id.unmapped_prefix": {
                 "Will Robinson": [
                     {
                         "categories": "Lost in Space"
@@ -302,7 +302,7 @@ def test_messages():
             "error.trapi.validation": {
                 "6.6.6": [
                     {
-                        'exception': "Dave, this can only be due to human error..."
+                        'reason': "Dave, this can only be due to human error..."
                     }
                 ]
 
@@ -327,7 +327,7 @@ def test_messages():
     warnings: List[str] = list()
     for code, parameters in messages['warnings'].items():
         warnings.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "WARNING - Knowledge Graph Node Unmapped: 'Will Robinson' is unmapped " + \
+    assert "WARNING - Knowledge Graph Node Id Unmapped: 'Will Robinson' is unmapped " + \
            "to the target categories 'Lost in Space'?" in warnings
 
     assert "errors" in messages
@@ -348,7 +348,7 @@ def test_messages():
     assert "6.6.6" in messages
     message_subset: List = messages["6.6.6"]
     assert "Dave, this can only be due to human error..."\
-           in [message['exception'] for message in message_subset if 'exception' in message]
+           in [message['reason'] for message in message_subset if 'reason' in message]
 
     # Informal test of a text 'dump' of all the messages as a
     # text blob, using the 'display_all' method to format them
