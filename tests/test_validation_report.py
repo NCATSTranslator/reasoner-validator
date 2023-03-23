@@ -350,6 +350,17 @@ def test_messages():
     assert "Dave, this can only be due to human error..."\
            in [message['reason'] for message in message_subset if 'reason' in message]
 
+    for n in range(0, 10):
+        reporter1.report(code="error.input_edge.node.category.missing", identifier=f"biolink:not_a_category_{n}")
+
+    for c in range(0, 5):
+        for n in range(0, 10):
+            reporter1.report(
+                code="error.input_edge.node.category.unknown",
+                identifier=f"biolink:not_a_category_{c}",
+                node_id=f"n{n}"
+            )
+
     # Informal test of a text 'dump' of all the messages as a
     # text blob, using the 'display_all' method to format them
     print(

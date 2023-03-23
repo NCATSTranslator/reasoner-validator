@@ -472,7 +472,7 @@ class ValidationReporter:
         Dump, on a specified file device, all available
         ValidationReporter messages, as formatted text.
         """
-        print(f"\n\033[4mValidation Report for {self.prefix}\033[0m\n", file=file)
+        print(f"\n\033[4mValidation Report for '{self.prefix}'\033[0m\n", file=file)
 
         message_type: str
         coded_messages: Dict
@@ -484,7 +484,7 @@ class ValidationReporter:
             if coded_messages:
 
                 # ... then iterate through them and print them out
-                print(f"\n\033[4m{message_type.capitalize()}\033[0m\n", file=file)
+                print(f"\033[4m{message_type.capitalize()}\033[0m\n", file=file)
 
                 code: str  # validation codes
                 messages_by_code:  Optional[
@@ -509,6 +509,7 @@ class ValidationReporter:
 
                         # Codes with associated parameters should have
                         # an embedded dictionary with 'identifier' keys
+                        first: bool = True
                         delimiter: str = ""
                         id_count: int = 0
                         for identifier, messages in messages_by_code.items():
@@ -517,8 +518,9 @@ class ValidationReporter:
                                 # For codes solely with a list of 'identifier' parameters associated
                                 # with the message, just print the identifier
 
-                                if not delimiter:
+                                if first:
                                     print("\t- ", end="", file=file)
+                                    first = False
 
                                 print(f"{delimiter}{identifier}", end="", file=file)
 
@@ -526,7 +528,8 @@ class ValidationReporter:
                                     delimiter = ", "
 
                                 id_count += 1
-                                if id_count == 10:
+                                if id_count == 5:
+                                    print("\n\t  ", end="", file=file)
                                     delimiter: str = ""
                                     id_count: int = 0
 
@@ -536,14 +539,37 @@ class ValidationReporter:
                                 # strings and the values are lists of dictionaries, each of which
                                 # contains the additional contextual parameters for one message
                                 print(f"\t- {identifier}:", file=file)
-                                for parameter in messages:
-                                    context = [f"'{tag}' = '{value}'" for tag, value in parameter.items()]
-                                    print(f"\t\tContext: {', '.join(context)}", file=file)
 
-                            # print(file=file)
+                                first: bool = True
+                                delimiter: str = ""
+                                id_count: int = 0
+
+                                for parameters in messages:
+
+                                    for tag, value in parameters.items():
+
+                                        if first:
+                                            print(f"\t\t{tag}'s: ", end="", file=file)
+                                            first = False
+
+                                        print(f"{delimiter}{value}", end="", file=file)
+
+                                        if not delimiter:
+                                            delimiter = ", "
+
+                                        id_count += 1
+                                        if id_count == 5:
+                                            print("\n\t\t", end="", file=file)
+                                            delimiter: str = ""
+                                            id_count: int = 0
+
+                                    print(file=file)
+
+                                print(file=file)
+
+                        print(file=file)
                     # else:
-                    #     For codes with associated non-parametric templates, just print the template
+                    #     For codes with associated non-parametric templates,
+                    #     just printing the template (done above) suffices
 
-                    # print(file=file)
-
-            # else: print nothing
+            # else: print nothing if a given message_type has no messages

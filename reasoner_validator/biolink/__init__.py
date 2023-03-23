@@ -632,6 +632,7 @@ class BiolinkValidator(ValidationReporter):
         # Validate Subject node
         if not subject_id:
             self.report(code=f"error.{context}.edge.subject.missing", identifier=edge_id)
+
         elif subject_id not in self.nodes:
             self.report(
                 code=f"error.{context}.edge.subject.missing_from_nodes",
