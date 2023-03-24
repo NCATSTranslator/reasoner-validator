@@ -113,7 +113,7 @@ def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
 
     # obj.minor == other.minor
     # Check 'patch' level
-    elif obj.patch >= other.patch:
+    elif obj.patch > other.patch:
         return True
     elif obj.patch < other.patch:
         return False
@@ -171,7 +171,8 @@ def _set_preferred_version(release_tag: str, candidate_release: SemVer):
     if release_tag not in _latest or (release_tag in _latest and candidate_release > _latest[release_tag]):
         _latest[release_tag] = candidate_major_release
 
-
+# You need to iterate twice through the versions
+# First time, to capture the 'latest' version overall
 for version in versions:
 
     major: Optional[int] = None
@@ -188,8 +189,14 @@ for version in versions:
 
     latest_minor[major] = max(minor, latest_minor.get(major, -1))
     latest_patch[(major, minor)] = max(patch, latest_patch.get((major, minor), -1))
-    latest_prerelease[(major, minor, patch)] = prerelease \
-        if prerelease and not latest_prerelease.get((major, minor, patch), None) else None
+
+    if prerelease and \
+            (
+                    (major, minor, patch) not in latest_prerelease
+                    or SemVer(major, minor, patch, prerelease)
+                    >= SemVer(major, minor, patch, latest_prerelease[(major, minor, patch)])
+            ):
+        latest_prerelease[(major, minor, patch)] = prerelease
 
     candidate_major_release: SemVer = SemVer(
         major,

@@ -78,6 +78,6 @@ def test_semver_greater_or_equal_to():
     assert not one_one_zero >= one_one_one_r_b
 
     # ... real world comparisons
-    assert one_three_zero_beta >= one_three_zero xx
-    assert one_four_zero >= one_four_zero_beta
+    assert one_three_zero_beta >= one_three_zero
+    assert not one_four_zero >= one_four_zero_beta
     assert one_four_zero >= one_three_zero
