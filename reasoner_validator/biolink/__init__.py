@@ -439,19 +439,23 @@ class BiolinkValidator(ValidationReporter):
                         # if not a Biolink association_slot, at least,
                         # check if it is an id prefix known to Biolink.
                         # We won't call it a hard error, but issue a warning
-                        elif not self.bmt.get_element_by_prefix(prefix):
-                            self.report(
-                                code="warning.knowledge_graph.edge.attribute.type_id.unknown_prefix",
-                                identifier=attribute_type_id,
-                                edge_id=edge_id
-                            )
-
-                        else:
-                            self.report(
-                                code="info.knowledge_graph.edge.attribute.type_id.non_biolink_prefix",
-                                identifier=attribute_type_id,
-                                edge_id=edge_id
-                            )
+                        # TODO: BMT get_element_by_prefix(prefix) only looks at
+                        #       the id_prefix namespaces of categories, not
+                        #       'attribute_type_id' registered namespaces
+                        # elif not self.bmt.get_element_by_prefix(prefix):
+                        #     self.report(
+                        #         code="warning.knowledge_graph.edge.attribute.type_id.unknown_prefix",
+                        #         identifier=attribute_type_id,
+                        #         edge_id=edge_id
+                        #     )
+                        # TODO: probably need to take a closer look at validating outlier terms here
+                        #       Maybe enumerations will help
+                        # else:
+                        #     self.report(
+                        #         code="info.knowledge_graph.edge.attribute.type_id.non_biolink_prefix",
+                        #         identifier=attribute_type_id,
+                        #         edge_id=edge_id
+                        #     )
 
             # TODO: After all the attributes have been scanned,
             #       check for provenance. Treat as warnings for now.
