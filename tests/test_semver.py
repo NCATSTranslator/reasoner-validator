@@ -46,6 +46,10 @@ def test_semver_greater_or_equal_to():
     one_one_one_r = SemVer.from_string("1.1.1-R1")
     one_one_zero_r_b = SemVer.from_string("1.1.0-R1+build123")
     one_one_one_r_b = SemVer.from_string("1.1.1-R2+build456")
+    one_three_zero = SemVer.from_string("1.3.0")
+    one_three_zero_beta = SemVer.from_string("1.3.0-beta")
+    one_four_zero = SemVer.from_string("1.4.0")
+    one_four_zero_beta = SemVer.from_string("1.4.0-beta")
 
     # Major release diff
     assert one_zero_zero >= zero_zero_one
@@ -72,3 +76,8 @@ def test_semver_greater_or_equal_to():
     assert not one_one_zero_r >= one_one_one_r_b
     assert one_one_one_r_b >= one_one_zero
     assert not one_one_zero >= one_one_one_r_b
+
+    # ... real world comparisons
+    assert one_three_zero_beta >= one_three_zero xx
+    assert one_four_zero >= one_four_zero_beta
+    assert one_four_zero >= one_three_zero
