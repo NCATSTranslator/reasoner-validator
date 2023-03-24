@@ -6,8 +6,9 @@ import pytest
 
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.validation_codes import CodeDictionary
+from reasoner_validator.versioning import latest
 
-TEST_TRAPI_VERSION = "1.3.0"
+TEST_TRAPI_VERSION = latest.get(ValidationReporter.DEFAULT_TRAPI_VERSION)
 TEST_BIOLINK_VERSION = "2.4.8"
 
 
@@ -73,7 +74,7 @@ def test_get_code_subtree_facet_message():
     assert isinstance(subtree, Dict)
     assert all([key in ["abstract", "mixin"] for key in subtree])
     assert CodeDictionary.MESSAGE in subtree["abstract"]
-    assert subtree["abstract"][CodeDictionary.MESSAGE] == "Edge has an 'abstract' predicate:"
+    assert subtree["abstract"][CodeDictionary.MESSAGE] == "Edge has an 'abstract' predicate"
     assert CodeDictionary.DESCRIPTION not in subtree["abstract"]
 
 
@@ -138,7 +139,7 @@ def test_get_message_template():
     assert CodeDictionary.get_message_template("") is None
     assert CodeDictionary.get_message_template("info.compliant") == "Biolink Model-compliant TRAPI Message."
     assert CodeDictionary.get_message_template("error.trapi.request.invalid") == \
-           "Test could not generate a valid TRAPI query request object:"
+           "Test could not generate a valid TRAPI query request object"
     assert CodeDictionary.get_message_template("foo.bar") is None
 
 
@@ -161,13 +162,13 @@ def test_message_display():
     assert "ERROR - Knowledge Graph Nodes: No nodes found!" \
            in CodeDictionary.display("error.knowledge_graph.nodes.empty", add_prefix=True)
     assert "INFO - Excluded: All test case S-P-O triples from " + \
-           "resource test location, or specific user excluded S-P-O triples:" \
+           "resource test location, or specific user excluded S-P-O triples" \
            in CodeDictionary.display(
                 code="info.excluded",
                 parameters={"a->biolink:related_to->b": None},  # this code has no other parameters
                 add_prefix=True
             )
-    assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate:" \
+    assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate" \
            in CodeDictionary.display(
                 code="info.input_edge.predicate.abstract",
                 parameters={
@@ -199,7 +200,7 @@ def test_message_report():
     for code, parameters in report['information'].items():
         messages.extend(CodeDictionary.display(code, parameters, add_prefix=True))
     assert "INFO - Compliant: Biolink Model-compliant TRAPI Message." in messages
-    assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate:" in messages
+    assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate" in messages
 
 
 def test_messages():
@@ -281,7 +282,7 @@ def test_messages():
     for code, parameters in messages['information'].items():
         information.extend(CodeDictionary.display(code, parameters, add_prefix=True))
     assert "INFO - Excluded: All test case S-P-O triples from resource test location, " + \
-           "or specific user excluded S-P-O triples:" in information
+           "or specific user excluded S-P-O triples" in information
 
     assert "warnings" in messages
     assert len(messages['warnings']) > 0
@@ -289,14 +290,14 @@ def test_messages():
     for code, parameters in messages['warnings'].items():
         warnings.extend(CodeDictionary.display(code, parameters, add_prefix=True))
     assert "WARNING - Knowledge Graph Node Id Unmapped: " + \
-           "Node identifier found unmapped to target categories for node:" in warnings
+           "Node identifier found unmapped to target categories for node" in warnings
 
     assert "errors" in messages
     assert len(messages['errors']) > 0
     errors: List[str] = list()
     for code, parameters in messages['errors'].items():
         errors.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "ERROR - Trapi: Schema validation exception:" in errors
+    assert "ERROR - Trapi: Schema validation exception" in errors
     
     obj = reporter1.to_dict()
     assert obj["trapi_version"] == TEST_TRAPI_VERSION
@@ -326,10 +327,26 @@ def test_messages():
     # text blob, using the 'display_all' method to format them
     print(
         "\n\nThis is an indirect 'test' of the ValidationReporter.dump() method\n"
-        "which simply executes the function and look at the results here on the console:\n",
+        "which simply executes the function and look at the results here on the console:",
         file=stderr
     )
     reporter1.dump(file=stderr)
+
+    print(
+        f"\n{'-'*80}\n" +
+        "ValidatorReporter.dump() with title suppressed using 'title=None'\n" +
+        "and compressed using 'id_rows=2', 'msg_rows=3', 'compress=True':\n",
+        file=stderr
+    )
+    reporter1.dump(title=None, id_rows=2, msg_rows=3, compress=True, file=stderr)
+
+    print(
+        f"\n{'-'*80}\n" +
+        "ValidatorReporter.dump() resetting the title to a user string\n" +
+        "and compressed using 'id_rows=1', 'msg_rows=1', 'compress=True':\n",
+        file=stderr
+    )
+    reporter1.dump(title="My KP Validation Report", id_rows=1, msg_rows=1, compress=True, file=stderr)
 
 
 def test_validator_method():
@@ -370,7 +387,7 @@ def test_validator_method():
     warnings: List[str] = list()
     for code, parameters in messages['warnings'].items():
         warnings.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "WARNING - Graph: Empty graph:" in warnings
+    assert "WARNING - Graph: Empty graph" in warnings
 
     assert "errors" in messages
     assert len(messages['errors']) > 0
@@ -378,7 +395,7 @@ def test_validator_method():
     for code, parameters in messages['errors'].items():
         errors.extend(CodeDictionary.display(code, parameters, add_prefix=True))
     assert "ERROR - Knowledge Graph Edge Provenance Infores: " + \
-           "Edge has provenance value which is not a well-formed InfoRes CURIE:" in errors
+           "Edge has provenance value which is not a well-formed InfoRes CURIE" in errors
 
 
 # has_validation_errors(root_key: str = 'validation', case: Optional[Dict] = None)
