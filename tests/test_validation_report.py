@@ -6,9 +6,9 @@ import pytest
 
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.validation_codes import CodeDictionary
-from reasoner_validator.versioning import latest
+from reasoner_validator.versioning import get_latest_version
 
-TEST_TRAPI_VERSION = latest.get(ValidationReporter.DEFAULT_TRAPI_VERSION)
+TEST_TRAPI_VERSION = get_latest_version(ValidationReporter.DEFAULT_TRAPI_VERSION)
 TEST_BIOLINK_VERSION = "2.4.8"
 
 

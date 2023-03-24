@@ -10,7 +10,7 @@ from yaml import load, CLoader as Loader
 
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.trapi.mapping import check_node_edge_mappings
-from reasoner_validator.versioning import latest, GIT_ORG, GIT_REPO, branches
+from reasoner_validator.versioning import get_latest_version, GIT_ORG, GIT_REPO, branches
 
 
 @lru_cache()
@@ -39,7 +39,7 @@ def load_schema(target: str):
     :param target: release semver or git branch name containing the target TRAPI schema.
     :return: loaded TRAPI schema
     """
-    mapped_release = latest.get(target)
+    mapped_release = get_latest_version(target)
     if mapped_release:
         schema_version = f"v{mapped_release}"  # version tag has 'v' prefix on the release identifier
     elif target in branches:

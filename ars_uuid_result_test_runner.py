@@ -13,7 +13,7 @@ import argparse
 
 from bmt import Toolkit
 from reasoner_validator import TRAPIResponseValidator
-from reasoner_validator.versioning import latest
+from reasoner_validator.versioning import get_latest_version
 from reasoner_validator.biolink import get_biolink_model_toolkit
 from reasoner_validator.report import ValidationReporter
 
@@ -140,7 +140,7 @@ def main():
         # Explicitly resolve the TRAPI release to be used
         inferred_trapi_version: str = params.trapi_version\
             if params.trapi_version else ValidationReporter.DEFAULT_TRAPI_VERSION
-        resolved_trapi_version = latest.get(inferred_trapi_version)
+        resolved_trapi_version = get_latest_version(inferred_trapi_version)
 
         # Explicitly resolve the Biolink Model version to be used
         bmt: Toolkit = get_biolink_model_toolkit(biolink_version=params.biolink_version)

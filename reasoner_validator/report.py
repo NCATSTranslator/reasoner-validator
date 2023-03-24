@@ -6,7 +6,7 @@ import copy
 from json import dumps, JSONEncoder
 
 from reasoner_validator.validation_codes import CodeDictionary
-from reasoner_validator.versioning import latest
+from reasoner_validator.versioning import get_latest_version
 
 
 class ReportJsonEncoder(JSONEncoder):
@@ -66,7 +66,7 @@ class ValidationReporter:
         :type strict_validation: Optional[bool] = None
         """
         self.prefix: str = prefix if prefix else ""
-        self.trapi_version = trapi_version if trapi_version else latest.get(self.DEFAULT_TRAPI_VERSION)
+        self.trapi_version = trapi_version if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
         self.biolink_version = biolink_version
         self.sources: Optional[Dict] = sources
         self.strict_validation: Optional[bool] = strict_validation

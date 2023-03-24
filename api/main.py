@@ -9,7 +9,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 
 from reasoner_validator.trapi import TRAPISchemaValidator
-from reasoner_validator.versioning import latest
+from reasoner_validator.versioning import get_latest_version
 from reasoner_validator import TRAPIResponseValidator
 
 app = FastAPI()
@@ -31,7 +31,7 @@ class Sources(BaseModel):
 
 
 class Query(BaseModel):
-    trapi_version: Optional[str] = latest.get(TRAPISchemaValidator.DEFAULT_TRAPI_VERSION)
+    trapi_version: Optional[str] = get_latest_version(TRAPISchemaValidator.DEFAULT_TRAPI_VERSION)
 
     # default: latest Biolink Model Toolkit supported version
     biolink_version: Optional[str] = None

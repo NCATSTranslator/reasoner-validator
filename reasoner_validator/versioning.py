@@ -1,6 +1,6 @@
 """Utilities."""
 import re
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Optional, List
 from os import environ
 import requests
 try:
@@ -115,19 +115,71 @@ def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
     # Check 'patch' level
     elif obj.patch >= other.patch:
         return True
-    else:
-        # obj.patch < other.patch
+    elif obj.patch < other.patch:
         return False
+
+    # obj.patch == other.patch
+
+    # Check 'prerelease' tagging
+    elif obj.prerelease and not other.prerelease:
+        return True
+    # elif not obj.prerelease and other.prerelease:
+    #     return False
+    return False  # cheating heuristic!
+
+    # both are prereleases to compare
+
+    # TODO: more comprehensive comparison needed (below)
+    # See: https://semver.org/ for the following precedence rules:
+    #
+    # Precedence for two pre-release versions with the same major, minor, and patch version MUST be determined by
+    # comparing each dot separated identifier from left to right until a difference is found as follows:
+    #
+    # 1. Identifiers consisting of only digits are compared numerically.
+    # 2. Identifiers with letters or hyphens are compared lexically in ASCII sort order.
+    # 3. Numeric identifiers always have lower precedence than non-numeric identifiers.
+    # 4. A larger set of pre-release fields has a higher precedence than a smaller set,
+    #    if all of the preceding identifiers are equal.
+    #
+    # Example:
+    # 1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-alpha.beta < 1.0.0-beta < 1.0.0-beta.2 < 1.0.0-beta.11 < 1.0.0-rc.1 < 1.0.0
+    # obj_path: List = obj.prerelease.split(".")
+    # other_path: List = other.prerelease.split(".")
+    # path_length: int = min(len(obj_path),len(other_path))
+    # for i in range(0, path_length):
+    #     fobj = obj_path[i]
+    #     oobj = other_path[i]
 
 
 SemVer.__ge__ = _semver_ge_
 
-
 latest_patch = dict()
 latest_minor = dict()
 latest_prerelease = dict()
-latest = dict()
+
+_latest = dict()
+
+
+# Provide an accessor function for retrieving the latest version in string format
+def get_latest_version(release_tag: str) -> str:
+    global _latest
+    return str(_latest.get(release_tag))
+
+
+def _set_preferred_version(release_tag: str, candidate_release: SemVer):
+    global _latest
+    if release_tag not in _latest or (release_tag in _latest and candidate_release > _latest[release_tag]):
+        _latest[release_tag] = candidate_major_release
+
+
 for version in versions:
+
+    major: Optional[int] = None
+    minor: Optional[int] = None
+    patch: Optional[int] = None
+    prerelease: Optional[str] = None
+    buildmetadata: Optional[str] = None
+
     try:
         major, minor, patch, prerelease, buildmetadata = SemVer.from_string(version)
     except SemVerError as err:
@@ -139,27 +191,57 @@ for version in versions:
     latest_prerelease[(major, minor, patch)] = prerelease \
         if prerelease and not latest_prerelease.get((major, minor, patch), None) else None
 
-    latest[f"{major}"] = str(SemVer(
+    candidate_major_release: SemVer = SemVer(
         major,
         latest_minor[major],
         latest_patch[(major, latest_minor[major])],
-    ))
-    latest[f"{major}.{minor}"] = str(SemVer(
+        latest_prerelease[(major, minor, patch)]
+    )
+
+    if str(candidate_major_release) in versions:
+        _set_preferred_version(f"{major}", candidate_major_release)
+
+    candidate_minor_release = SemVer(
         major,
         minor,
         latest_patch[(major, minor)],
-    ))
-    latest[f"{major}.{minor}.{patch}"] = str(SemVer(
+        latest_prerelease[(major, minor, patch)]
+    )
+
+    if str(candidate_minor_release) in versions:
+        _set_preferred_version(f"{major}.{minor}", candidate_minor_release)
+
+    candidate_patch_release: SemVer = SemVer(
         major,
         minor,
         patch,
-    ))
+        latest_prerelease[(major, minor, patch)]
+    )
+
+    if str(candidate_patch_release) in versions:
+        _set_preferred_version(f"{major}.{minor}.{patch}", candidate_patch_release)
+
     if prerelease:
-        latest[f"{major}.{minor}.{patch}-{prerelease}"] = str(SemVer(
+        candidate_prerelease: SemVer = SemVer(
             major,
             minor,
             patch,
-            prerelease,
-            buildmetadata
-        ))
+            prerelease
+        )
+
+        if str(candidate_prerelease) in versions:
+            _set_preferred_version(f"{major}.{minor}.{patch}-{prerelease}", candidate_prerelease)
+
     # TODO: we won't bother with buildmetadata for now
+
+    pass
+
+    # populate unresolved releases
+    if prerelease and f"{major}.{minor}.{patch}-{prerelease}" in _latest and f"{major}.{minor}.{patch}" not in _latest:
+        _latest[f"{major}.{minor}.{patch}"] = _latest[f"{major}.{minor}.{patch}-{prerelease}"]
+
+    if f"{major}.{minor}.{patch}" in _latest and f"{major}.{minor}" not in _latest:
+        _latest[f"{major}.{minor}"] = _latest[f"{major}.{minor}.{patch}"]
+
+    if f"{major}.{minor}" in _latest and f"{major}" not in _latest:
+        _latest[f"{major}"] = _latest[f"{major}.{minor}"]
