@@ -2199,6 +2199,7 @@ def test_validate_qualifiers(query: Tuple):
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge attribute_type_id 'foo:bar' " +
             # f"has a CURIE prefix namespace unknown to Biolink!"
+            # TODO: Code for validating this is commented out pending a BMT repair of the test
             "warning.knowledge_graph.edge.attribute.type_id.unknown_prefix"
         ),
         (

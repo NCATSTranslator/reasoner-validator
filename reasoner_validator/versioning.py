@@ -121,13 +121,17 @@ def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
     # obj.patch == other.patch
 
     # Check 'prerelease' tagging
-    elif obj.prerelease and not other.prerelease:
+    elif not other.prerelease:
         return True
-    # elif not obj.prerelease and other.prerelease:
-    #     return False
-    return False  # cheating heuristic!
+    elif not obj.prerelease:
+        return False
 
-    # both are prereleases to compare
+    elif obj.prerelease >= other.prerelease:
+        # cheating heuristic for now:
+        # simple prerelease string comparison
+        return True
+    else:
+        return False
 
     # TODO: more comprehensive comparison needed (below)
     # See: https://semver.org/ for the following precedence rules:
@@ -171,8 +175,9 @@ def _set_preferred_version(release_tag: str, candidate_release: SemVer):
     if release_tag not in _latest or (release_tag in _latest and candidate_release > _latest[release_tag]):
         _latest[release_tag] = candidate_major_release
 
-# You need to iterate twice through the versions
-# First time, to capture the 'latest' version overall
+
+# We need to iterate twice through the versions.
+# First time, to capture the 'latest' minor, patch and prerelease versions overall.
 for version in versions:
 
     major: Optional[int] = None
@@ -189,14 +194,13 @@ for version in versions:
 
     latest_minor[major] = max(minor, latest_minor.get(major, -1))
     latest_patch[(major, minor)] = max(patch, latest_patch.get((major, minor), -1))
-
-    if prerelease and \
-            (
-                    (major, minor, patch) not in latest_prerelease
-                    or SemVer(major, minor, patch, prerelease)
-                    >= SemVer(major, minor, patch, latest_prerelease[(major, minor, patch)])
-            ):
+    if prerelease and (
+        SemVer(major, minor, patch, prerelease)
+        >= SemVer(major, minor, patch, latest_prerelease.get((major, minor, patch), None))
+    ):
         latest_prerelease[(major, minor, patch)] = prerelease
+    else:
+        latest_prerelease[(major, minor, patch)] = None
 
     candidate_major_release: SemVer = SemVer(
         major,
