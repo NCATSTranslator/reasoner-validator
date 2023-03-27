@@ -7,7 +7,8 @@ from jsonschema.exceptions import ValidationError
 from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema
 
 # last 'version' is a branch name, i.e. master?
-TEST_VERSIONS = "1", "1.2", "1.2.0", "1.3", "1.3.0", "1.4.0-beta", "master"
+PRE_1_4_0_TEST_VERSIONS = "1.2", "1.2.0", "1.3", "1.3.0",
+LATEST_TEST_VERSIONS = "1", "1.4.0-beta", "master"
 
 
 @pytest.mark.parametrize(
@@ -38,7 +39,7 @@ def test_openapi_to_jsonschema(query):
     print(f"\nExiting openapi_to_jsonschema(schema: {str(query)})", file=stderr)
 
 
-@pytest.mark.parametrize("query", TEST_VERSIONS)
+@pytest.mark.parametrize("query", PRE_1_4_0_TEST_VERSIONS)
 def test_query_and_version_completion(query):
     """Test TRAPIValidator(trapi_version=query).validate()."""
     TRAPISchemaValidator(trapi_version=query).validate({
@@ -51,7 +52,7 @@ def test_query_and_version_completion(query):
         }, "Query")
 
 
-@pytest.mark.parametrize("query", TEST_VERSIONS)
+@pytest.mark.parametrize("query", PRE_1_4_0_TEST_VERSIONS)
 def test_edgebinding(query):
     """Test TRAPIValidator(trapi_version=query).validate_EdgeBinding()."""
     TRAPISchemaValidator(trapi_version=query).validate({
@@ -63,7 +64,7 @@ def test_edgebinding(query):
         }, "EdgeBinding")
 
 
-@pytest.mark.parametrize("query", TEST_VERSIONS)
+@pytest.mark.parametrize("query", PRE_1_4_0_TEST_VERSIONS)
 def test_nullable(query):
     """Test nullable categories property."""
     qnode = {
@@ -74,7 +75,7 @@ def test_nullable(query):
     # since QNode has 'additionalProperties: true' but no 'required:' properties
 
 
-@pytest.mark.parametrize("query", TEST_VERSIONS)
+@pytest.mark.parametrize("query", PRE_1_4_0_TEST_VERSIONS)
 def test_nullable_message_properties(query):
     """Test nullable message properties."""
     message = {
@@ -89,7 +90,7 @@ def test_nullable_message_properties(query):
         }, "Message")
 
 
-@pytest.mark.parametrize("query", TEST_VERSIONS)
+@pytest.mark.parametrize("query", PRE_1_4_0_TEST_VERSIONS)
 def test_nullable_query_level_properties(query):
     """Test nullable TRAPI Query level properties."""
     trapi_query = {
@@ -108,7 +109,7 @@ def test_nullable_query_level_properties(query):
         }, "Query")
 
 
-@pytest.mark.parametrize("query", TEST_VERSIONS)
+@pytest.mark.parametrize("query", PRE_1_4_0_TEST_VERSIONS)
 def test_nullable_async_query_level_properties(query):
     """Test nullable TRAPI Query level properties."""
     async_trapi_query = {
@@ -128,7 +129,7 @@ def test_nullable_async_query_level_properties(query):
         }, "AsyncQuery")
 
 
-@pytest.mark.parametrize("query", TEST_VERSIONS)
+@pytest.mark.parametrize("query", PRE_1_4_0_TEST_VERSIONS)
 def test_nullable_response_properties(query):
     """Test nullable TRAPI Query level properties."""
     async_trapi_query = {
@@ -147,7 +148,7 @@ def test_nullable_response_properties(query):
 
 
 # TODO: this test may not pass until TRAPI 1.3 query_id spec is fixed?
-@pytest.mark.parametrize("query", TEST_VERSIONS)
+@pytest.mark.parametrize("query", PRE_1_4_0_TEST_VERSIONS)
 def test_message_results_component_validation(query):
     """Test Message.Results component in TRAPIValidator(trapi_version=query).validate()."""
     sample_message_result = {
@@ -188,7 +189,7 @@ def test_message_results_component_validation(query):
 
 
 # TODO: this test may not pass until TRAPI 1.3 query_id spec is fixed?
-@pytest.mark.parametrize("query", TEST_VERSIONS)
+@pytest.mark.parametrize("query", PRE_1_4_0_TEST_VERSIONS)
 def test_message_node_binding_component_validation(query):
     """Test NodeBinding component in TRAPIValidator(trapi_version=query).validate()."""
     sample_node_binding = {
@@ -208,7 +209,7 @@ def test_message_node_binding_component_validation(query):
         }, "NodeBinding")
 
 
-@pytest.mark.parametrize("query", TEST_VERSIONS)
+@pytest.mark.parametrize("query", PRE_1_4_0_TEST_VERSIONS)
 def test_message_attribute_component_validation(query):
     """Test Attribute component in TRAPIValidator(trapi_version=query).validate()."""
     sample_attribute = {
@@ -231,8 +232,8 @@ def test_message_attribute_component_validation(query):
         }, "Attribute")
 
 
-@pytest.mark.parametrize("query", TEST_VERSIONS)
-def test_message_edge_component_validation(query):
+@pytest.mark.parametrize("query", PRE_1_4_0_TEST_VERSIONS)
+def test_message_edge_component_pre_1_4_0_validation(query):
     """Test Attribute component in TRAPIValidator(trapi_version=query).validate()."""
     sample_attribute = {
         "subject": "aSubject",
@@ -242,8 +243,32 @@ def test_message_edge_component_validation(query):
     TRAPISchemaValidator(trapi_version=query).validate(sample_attribute, "Edge")
     with pytest.raises(ValidationError):
         TRAPISchemaValidator(trapi_version=query).validate({
-            # missing required: subject, object
+            # missing required and not null: subject, predicate, object
             "foo": {},
+            "bar": {},
+        }, "Edge")
+    with pytest.raises(ValidationError):
+        TRAPISchemaValidator(trapi_version=query).validate({
+            # subject, object are not nullable, so...
+            "subject": None,
+            "object": None
+        }, "Edge")
+
+
+@pytest.mark.parametrize("query", LATEST_TEST_VERSIONS)
+def test_message_edge_component_validation(query):
+    """Test Attribute component in TRAPIValidator(trapi_version=query).validate()."""
+    sample_attribute = {
+        "subject": "aSubject",
+        "predicate": "biolink:related_to",
+        "object": "anObject"
+    }
+    TRAPISchemaValidator(trapi_version=query).validate(sample_attribute, "Edge")
+    with pytest.raises(ValidationError):
+        TRAPISchemaValidator(trapi_version=query).validate({
+            # missing required and not null: subject, predicate, object
+            "foo": {},
+            "predicate": None,
             "bar": {},
         }, "Edge")
     with pytest.raises(ValidationError):
