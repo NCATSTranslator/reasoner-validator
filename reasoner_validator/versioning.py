@@ -170,7 +170,11 @@ _latest = dict()
 # Provide an accessor function for retrieving the latest version in string format
 def get_latest_version(release_tag: str) -> Optional[str]:
     global _latest
-    return str(_latest.get(release_tag, None))
+    latest: SemVer = _latest.get(release_tag, None)
+    if latest:
+        return str(latest)
+    else:
+        return None
 
 
 def _set_preferred_version(release_tag: str, candidate_release: SemVer):
