@@ -233,7 +233,7 @@ def test_message_attribute_component_validation(query):
 
 
 @pytest.mark.parametrize("query", PRE_1_4_0_TEST_VERSIONS)
-def test_message_edge_component_pre_1_4_0_validation(query):
+def test_message_edge_component_pre_1_4_0_trapi_validation(query):
     """Test Attribute component in TRAPIValidator(trapi_version=query).validate()."""
     sample_attribute = {
         "subject": "aSubject",
@@ -256,12 +256,13 @@ def test_message_edge_component_pre_1_4_0_validation(query):
 
 
 @pytest.mark.parametrize("query", LATEST_TEST_VERSIONS)
-def test_message_edge_component_validation(query):
+def test_message_edge_component_latest_trapi_validation(query):
     """Test Attribute component in TRAPIValidator(trapi_version=query).validate()."""
     sample_attribute = {
         "subject": "aSubject",
         "predicate": "biolink:related_to",
-        "object": "anObject"
+        "object": "anObject",
+        "sources": "need-to-somehow-provide-a-retrieval-source"
     }
     TRAPISchemaValidator(trapi_version=query).validate(sample_attribute, "Edge")
     with pytest.raises(ValidationError):
