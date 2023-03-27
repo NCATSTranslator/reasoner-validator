@@ -2,6 +2,7 @@
 import re
 from typing import NamedTuple, Optional, List
 from os import environ
+from functools import lru_cache
 import requests
 try:
     from yaml import CLoader as Loader
@@ -51,6 +52,7 @@ class SemVer(NamedTuple):
     buildmetadata: Optional[str] = None
 
     @classmethod
+    @lru_cache(maxsize=32)
     def from_string(cls, string: str, ignore_prefix: Optional[str] = None):
         """
         Initializes a SemVer from a string.
@@ -121,11 +123,12 @@ def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
     # obj.patch == other.patch
 
     # Check 'prerelease' tagging
-    elif not other.prerelease:
-        return True
-    elif not obj.prerelease:
+    elif obj.prerelease and not other.prerelease:
         return False
+    elif not obj.prerelease:
+        return True
 
+    # or compare two non-empty prerelease spec strings
     elif obj.prerelease >= other.prerelease:
         # cheating heuristic for now:
         # simple prerelease string comparison
@@ -165,19 +168,18 @@ _latest = dict()
 
 
 # Provide an accessor function for retrieving the latest version in string format
-def get_latest_version(release_tag: str) -> str:
+def get_latest_version(release_tag: str) -> Optional[str]:
     global _latest
-    return str(_latest.get(release_tag))
+    return str(_latest.get(release_tag, None))
 
 
 def _set_preferred_version(release_tag: str, candidate_release: SemVer):
     global _latest
-    if release_tag not in _latest or (release_tag in _latest and candidate_release > _latest[release_tag]):
-        _latest[release_tag] = candidate_major_release
+    latest_4_release_tag: Optional[SemVer] = _latest.get(release_tag, None)
+    if not latest_4_release_tag or (candidate_release >= latest_4_release_tag):
+        _latest[release_tag] = candidate_release
 
 
-# We need to iterate twice through the versions.
-# First time, to capture the 'latest' minor, patch and prerelease versions overall.
 for version in versions:
 
     major: Optional[int] = None
@@ -192,67 +194,17 @@ for version in versions:
         print("\nWARNING:", err)
         continue
 
-    latest_minor[major] = max(minor, latest_minor.get(major, -1))
-    latest_patch[(major, minor)] = max(patch, latest_patch.get((major, minor), -1))
-    if prerelease and (
-        SemVer(major, minor, patch, prerelease)
-        >= SemVer(major, minor, patch, latest_prerelease.get((major, minor, patch), None))
-    ):
-        latest_prerelease[(major, minor, patch)] = prerelease
-    else:
-        latest_prerelease[(major, minor, patch)] = None
-
-    candidate_major_release: SemVer = SemVer(
-        major,
-        latest_minor[major],
-        latest_patch[(major, latest_minor[major])],
-        latest_prerelease[(major, minor, patch)]
-    )
-
-    if str(candidate_major_release) in versions:
-        _set_preferred_version(f"{major}", candidate_major_release)
-
-    candidate_minor_release = SemVer(
-        major,
-        minor,
-        latest_patch[(major, minor)],
-        latest_prerelease[(major, minor, patch)]
-    )
-
-    if str(candidate_minor_release) in versions:
-        _set_preferred_version(f"{major}.{minor}", candidate_minor_release)
-
-    candidate_patch_release: SemVer = SemVer(
+    candidate_release: SemVer = SemVer(
         major,
         minor,
         patch,
-        latest_prerelease[(major, minor, patch)]
+        prerelease
     )
 
-    if str(candidate_patch_release) in versions:
-        _set_preferred_version(f"{major}.{minor}.{patch}", candidate_patch_release)
-
-    if prerelease:
-        candidate_prerelease: SemVer = SemVer(
-            major,
-            minor,
-            patch,
-            prerelease
-        )
-
-        if str(candidate_prerelease) in versions:
-            _set_preferred_version(f"{major}.{minor}.{patch}-{prerelease}", candidate_prerelease)
-
-    # TODO: we won't bother with buildmetadata for now
-
-    pass
-
-    # populate unresolved releases
-    if prerelease and f"{major}.{minor}.{patch}-{prerelease}" in _latest and f"{major}.{minor}.{patch}" not in _latest:
-        _latest[f"{major}.{minor}.{patch}"] = _latest[f"{major}.{minor}.{patch}-{prerelease}"]
-
-    if f"{major}.{minor}.{patch}" in _latest and f"{major}.{minor}" not in _latest:
-        _latest[f"{major}.{minor}"] = _latest[f"{major}.{minor}.{patch}"]
-
-    if f"{major}.{minor}" in _latest and f"{major}" not in _latest:
-        _latest[f"{major}"] = _latest[f"{major}.{minor}"]
+    if str(candidate_release) in versions:
+        _set_preferred_version(f"{major}", candidate_release)
+        _set_preferred_version(f"{major}.{minor}", candidate_release)
+        _set_preferred_version(f"{major}.{minor}.{patch}", candidate_release)
+        if prerelease:
+            _set_preferred_version(f"{major}.{minor}.{patch}-{prerelease}", candidate_release)
+        # TODO: we won't bother with buildmetadata for now
