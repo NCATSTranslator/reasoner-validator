@@ -136,6 +136,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-empty">error.query_graph.edge.qualifier_constraints.qualifier_set.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-type-id-unknown">error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-value-unresolved">error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.unresolved</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-invalid">error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-empty">error.knowledge_graph.nodes.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edges-empty">error.knowledge_graph.edges.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-missing">error.knowledge_graph.node.category.missing</a></li>
@@ -177,6 +178,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-empty">error.knowledge_graph.edge.qualifiers.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-type-id-unknown">error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-value-unresolved">error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-invalid">error.knowledge_graph.edge.qualifiers.qualifier.invalid</a></li>
 </ul>
 </li>
 </ul>
@@ -680,6 +682,12 @@
 <p><strong>Context:</strong> identifier, qualifier_value, qualifier_type_id</p>
 <p><strong>Description:</strong> A ‘qualifier_value’ for the specified ‘qualifier_type_id’ of a qualifier likely could not be resolved without knowledge of the edge category!</p>
 </div>
+<div class="section" id="error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-invalid">
+<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Validation of qualifier in a qualifier_constraints qualifier_set threw an unexpected exception!</p>
+<p><strong>Context:</strong> identifier, qualifier_type_id, qualifier_value, reason</p>
+<p><strong>Description:</strong> Validation of a specified ‘qualifier_type_id’ and ‘qualifier_value’ failed for a given exceptional reason!</p>
+</div>
 <div class="section" id="error-knowledge-graph-nodes-empty">
 <h3>error.knowledge_graph.nodes.empty<a class="headerlink" href="#error-knowledge-graph-nodes-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> No nodes found!</p>
@@ -923,6 +931,12 @@
 <p><strong>Message:</strong> Qualifier_type_id for edge has unresolved qualifier_value</p>
 <p><strong>Context:</strong> edge_id, identifier, qualifier_type_id</p>
 <p><strong>Description:</strong> A ‘qualifier_value’ for the specified ‘qualifier_type_id’ of a qualifier likely could not be resolved without knowledge of the edge category!</p>
+</div>
+<div class="section" id="error-knowledge-graph-edge-qualifiers-qualifier-invalid">
+<h3>error.knowledge_graph.edge.qualifiers.qualifier.invalid<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-qualifier-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Validation of qualifier in qualifiers threw an unexpected exception!</p>
+<p><strong>Context:</strong> identifier, qualifier_type_id, qualifier_value, reason</p>
+<p><strong>Description:</strong> Validation of a specified ‘qualifier_type_id’ and ‘qualifier_value’ failed for a given exceptional reason!</p>
 </div>
 </div>
 </div>

@@ -614,6 +614,14 @@
 
 **Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
 
+### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid
+
+**Message:** Validation of qualifier in a qualifier_constraints qualifier_set threw an unexpected exception!
+
+**Context:** identifier, qualifier_type_id, qualifier_value, reason
+
+**Description:** Validation of a specified 'qualifier_type_id' and 'qualifier_value' failed for a given exceptional reason!
+
 ### error.knowledge_graph.nodes.empty
 
 **Message:** No nodes found!
@@ -937,4 +945,12 @@
 **Context:** edge_id, identifier, qualifier_type_id
 
 **Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
+
+### error.knowledge_graph.edge.qualifiers.qualifier.invalid
+
+**Message:** Validation of qualifier in qualifiers threw an unexpected exception!
+
+**Context:** identifier, qualifier_type_id, qualifier_value, reason
+
+**Description:** Validation of a specified 'qualifier_type_id' and 'qualifier_value' failed for a given exceptional reason!
 
