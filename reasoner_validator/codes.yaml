@@ -246,6 +246,7 @@ warning:
               - identifier
               - kp_source_type
             $description: "Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP."
+
 error:
   non_compliant:
     $message: "S-P-O statement is not compliant to Biolink Model release"
@@ -497,6 +498,14 @@ error:
                   - qualifier_value
                   - qualifier_type_id
                 $description: "A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!"
+            invalid:
+                $message: "Validation of qualifier in a qualifier_constraints qualifier_set threw an unexpected exception!"
+                $context:
+                  - identifier
+                  - qualifier_type_id
+                  - qualifier_value
+                  - reason
+                $description: "Validation of a specified 'qualifier_type_id' and 'qualifier_value' failed for a given exceptional reason!"
   knowledge_graph:
     nodes:
       empty:
@@ -737,3 +746,11 @@ error:
                 - identifier
                 - qualifier_type_id
               $description: "A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!"
+          invalid:
+              $message: "Validation of qualifier in qualifiers threw an unexpected exception!"
+              $context:
+                - identifier
+                - qualifier_type_id
+                - qualifier_value
+                - reason
+              $description: "Validation of a specified 'qualifier_type_id' and 'qualifier_value' failed for a given exceptional reason!"

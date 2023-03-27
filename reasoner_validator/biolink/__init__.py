@@ -527,7 +527,8 @@ class BiolinkValidator(ValidationReporter):
                     code=f"error.{context}.qualifier.invalid",
                     identifier=edge_id,
                     qualifier_type_id=qualifier_type_id,
-                    qualifier_value=qualifier_value
+                    qualifier_value=qualifier_value,
+                    reason=str(e)
                 )
 
     def validate_qualifiers(self, edge_id: str, edge: Dict):
