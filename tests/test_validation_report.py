@@ -338,7 +338,7 @@ def test_messages():
         "and compressed using 'id_rows=2', 'msg_rows=3', 'compress=True':\n",
         file=stderr
     )
-    reporter1.dump(title=None, id_rows=2, msg_rows=3, compress=True, file=stderr)
+    reporter1.dump(title=None, id_rows=2, msg_rows=3, compact_format=True, file=stderr)
 
     print(
         f"\n{'-'*80}\n" +
@@ -346,7 +346,10 @@ def test_messages():
         "and compressed using 'id_rows=1', 'msg_rows=1', 'compress=True':\n",
         file=stderr
     )
-    reporter1.dump(title="My KP Validation Report", id_rows=1, msg_rows=1, compress=True, file=stderr)
+    reporter1.dump(title="My KP Validation Report", id_rows=1, msg_rows=1, compact_format=True, file=stderr)
+
+    validation_report: str = reporter1.dumps(title=None, id_rows=2, msg_rows=3, compact_format=True)
+    assert validation_report.startswith("Validation Report for")
 
 
 def test_validator_method():
