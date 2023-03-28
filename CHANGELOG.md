@@ -7,6 +7,8 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 - added validation to explicitly detect presence of at least one concrete (non-abstract, non-mixin) category in categories list
 - refactored the codes.yaml code both to fix validation code deficiencies, distinctly record validation context, and to simplified template messages
 - finalized a first release of 'dump()',  a significantly enhanced human-readable text report formatter for validation code associated messages
+- refactored versioning.py package for simplicity and correct management of prereleases (like 1.4.0-beta)
+- preliminary refactoring of unit tests in anticipation of TRAPI 1.4.0 testing and package updates
 
 ## v3.4.11
 
