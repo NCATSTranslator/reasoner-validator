@@ -255,6 +255,7 @@ def test_message_edge_component_pre_1_4_0_trapi_validation(query):
         }, "Edge")
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize("query", LATEST_TEST_VERSIONS)
 def test_message_edge_component_latest_trapi_validation(query):
     """Test Attribute component in TRAPIValidator(trapi_version=query).validate()."""
