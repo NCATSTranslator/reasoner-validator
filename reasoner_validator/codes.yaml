@@ -12,7 +12,7 @@ info:
       - identifier
     $description: "Check the JSON KP test edge data file for specific 'exclude_tests' directives, either global to the file, or on specific edges."
   compliant:
-    $message: "Biolink Model-compliant TRAPI Message."
+    $message: "Biolink Model-compliant TRAPI Message"
     $description: "Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards."
   input_edge:
     predicate:

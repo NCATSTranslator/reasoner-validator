@@ -1,7 +1,11 @@
 # Change Log
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
- 
+
+## v3.4.13
+
+- Added the ValidationReporter.dumps() method which directly returns the string created by ValidationReporter.dump() but without the need for an explicit file device
+
 ## v3.4.12
 
 - added validation to explicitly detect presence of at least one concrete (non-abstract, non-mixin) category in categories list

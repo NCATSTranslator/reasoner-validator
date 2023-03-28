@@ -177,7 +177,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "bmt"
-version = "1.0.6"
+version = "1.0.7"
 description = "Biolink Model Toolkit: A Python API for working with the Biolink Model"
 category = "main"
 optional = false
@@ -1766,7 +1766,7 @@ SQLAlchemy-Utils = ">=0.38.2,<0.39.0"
 
 [[package]]
 name = "setuptools"
-version = "67.6.0"
+version = "67.6.1"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "main"
 optional = false
@@ -2491,8 +2491,8 @@ black = [
     {file = "black-21.6b0.tar.gz", hash = "sha256:dc132348a88d103016726fe360cb9ede02cecf99b76e3660ce6c596be132ce04"},
 ]
 bmt = [
-    {file = "bmt-1.0.6-py3-none-any.whl", hash = "sha256:091b03f21a04ebc8c485405e4777d60ef8feb83fd1434a99d4bd0ee97adc99c9"},
-    {file = "bmt-1.0.6.tar.gz", hash = "sha256:04cdcb9554f8428658a9b020d272d3305ecd3dda4110b8177b220432ed32a2f2"},
+    {file = "bmt-1.0.7-py3-none-any.whl", hash = "sha256:783bc0bc43b012d8ffbbe8f94945922d8f86d0faa2b5e1be9d194f567e37e24e"},
+    {file = "bmt-1.0.7.tar.gz", hash = "sha256:5338473d87dbb24a146fce4f8cb5588d4b6e2ebbf4021311445eade9d0c7276f"},
 ]
 cachetools = [
     {file = "cachetools-5.3.0-py3-none-any.whl", hash = "sha256:429e1a1e845c008ea6c85aa35d4b98b65d6a9763eeef3e37e92728a12d1de9d4"},
@@ -3701,8 +3701,8 @@ semsql = [
     {file = "semsql-0.3.2.tar.gz", hash = "sha256:6cfbfbb319f406102928d8c6e0ab1a2c19586eaba88881940ac88be28be623b6"},
 ]
 setuptools = [
-    {file = "setuptools-67.6.0-py3-none-any.whl", hash = "sha256:b78aaa36f6b90a074c1fa651168723acbf45d14cb1196b6f02c0fd07f17623b2"},
-    {file = "setuptools-67.6.0.tar.gz", hash = "sha256:2ee892cd5f29f3373097f5a814697e397cf3ce313616df0af11231e2ad118077"},
+    {file = "setuptools-67.6.1-py3-none-any.whl", hash = "sha256:e728ca814a823bf7bf60162daf9db95b93d532948c4c0bea762ce62f60189078"},
+    {file = "setuptools-67.6.1.tar.gz", hash = "sha256:257de92a9d50a60b8e22abfcbb771571fde0dbf3ec234463212027a4eeecbe9a"},
 ]
 shexjsg = [
     {file = "ShExJSG-0.8.2-py2.py3-none-any.whl", hash = "sha256:3b0d8432dd313bee9e1343382c5e02e9908dd941a7dd7342bf8c0200fe523766"},

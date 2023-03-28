@@ -12,7 +12,7 @@
 
 ### info.compliant
 
-**Message:** Biolink Model-compliant TRAPI Message.
+**Message:** Biolink Model-compliant TRAPI Message
 
 **Description:** Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards.
 
