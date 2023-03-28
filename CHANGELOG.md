@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.4.14
+
+- Set default of compact_format to 'True' and title=None (suppress), in dumps() output.
+
 ## v3.4.13
 
 - Added the ValidationReporter.dumps() method which directly returns the string created by ValidationReporter.dump() but without the need for an explicit file device
