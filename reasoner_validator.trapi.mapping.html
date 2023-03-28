@@ -110,8 +110,8 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_validation</span></code>(validation_method, *args, ...)</p></td>
 <td><p>Wrapper to allow validation_methods direct access to the ValidationReporter.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code>([title, id_rows, msg_rows, compress, file])</p></td>
-<td><p>Dump all available messages captured by the ValidationReporter, printed as formatted human-readable text on a specified file device.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code>([title, id_rows, msg_rows, ...])</p></td>
+<td><p>Dump all available messages captured by the ValidationReporter, printed as formatted human-readable text, on a specified file device.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_errors</span></code>([flat])</p></td>
 <td><p>Dump error messages as JSON.</p></td>
@@ -125,7 +125,10 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_warnings</span></code>([flat])</p></td>
 <td><p>Dump warning messages as JSON.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_biolink_version</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dumps</span></code>([title, id_rows, msg_rows, compact_format])</p></td>
+<td><p>Text string version of dump(): returns all available messages captured by the ValidationReporter, as a formatted human-readable text blob.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_biolink_version</span></code>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">return</dt>
 <dd class="field-odd"><p>Biolink Model version currently targeted by the ValidationReporter.</p>
@@ -133,19 +136,19 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_errors</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_errors</span></code>()</p></td>
 <td><p>Get copy of all recorded error messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_info</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_info</span></code>()</p></td>
 <td><p>Get copy of all recorded information messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_message_type</span></code>(code)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_message_type</span></code>(code)</p></td>
 <td><p>Get type of message code.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages</span></code>()</p></td>
 <td><p>Get copy of all messages as a Python data structure.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trapi_version</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trapi_version</span></code>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">return</dt>
 <dd class="field-odd"><p>str, TRAPI (SemVer) version currently targeted by the ValidationReporter.</p>
@@ -153,25 +156,25 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_warnings</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_warnings</span></code>()</p></td>
 <td><p>Get copy of all recorded warning messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_errors</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_errors</span></code>()</p></td>
 <td><p>Predicate to detect any recorded error messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_information</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_information</span></code>()</p></td>
 <td><p>Predicate to detect any recorded information messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_messages</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_messages</span></code>()</p></td>
 <td><p>Predicate to detect any recorded validation messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_validation_errors</span></code>(tag, case)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_validation_errors</span></code>(tag, case)</p></td>
 <td><p>Check if test case has validation errors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code>()</p></td>
 <td><p>Predicate to detect any recorded warning messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">return</dt>
 <dd class="field-odd"><p>bool, value of validation strictness set in the ValidationReporter.</p>
@@ -179,13 +182,13 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code>(reporter)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code>(reporter)</p></td>
 <td><p>Merge all messages and metadata from a second ValidationReporter, into the calling ValidationReporter instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>(code, **message)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>(code, **message)</p></td>
 <td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters) :param code:  :param message: named parameters representing extra (str-formatted) context for the given code message :return: None (internally record the validation message)</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
 <td><p>Export ValidationReporter contents as a Python dictionary (including TRAPI version, Biolink Model version and messages) :return: Dict</p></td>
 </tr>
 </tbody>
