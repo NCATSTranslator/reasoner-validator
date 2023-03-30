@@ -5,6 +5,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 ## v3.4.14
 
 - Set default of compact_format to 'True' and title=None (suppress), in dumps() output.
+- BMT upgraded to 1.0.8
 
 ## v3.4.13
 

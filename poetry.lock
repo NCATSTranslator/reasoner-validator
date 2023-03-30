@@ -177,7 +177,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "bmt"
-version = "1.0.7"
+version = "1.0.8"
 description = "Biolink Model Toolkit: A Python API for working with the Biolink Model"
 category = "main"
 optional = false
@@ -1572,7 +1572,7 @@ sortedcontainers = "*"
 
 [[package]]
 name = "pytz"
-version = "2023.2"
+version = "2023.3"
 description = "World timezone definitions, modern and historical"
 category = "main"
 optional = false
@@ -2347,7 +2347,7 @@ docs = ["numpydoc", "sphinx", "myst-parser"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "5d1c82f7c818667484355f44c53b29d41d57ea4e9d4f2cfcf311c3779f96e204"
+content-hash = "ab99a0a8c620c90767f87c5a9e0a689a68f07da5c225acae764edcef909d9742"
 
 [metadata.files]
 aiohttp = [
@@ -2491,8 +2491,8 @@ black = [
     {file = "black-21.6b0.tar.gz", hash = "sha256:dc132348a88d103016726fe360cb9ede02cecf99b76e3660ce6c596be132ce04"},
 ]
 bmt = [
-    {file = "bmt-1.0.7-py3-none-any.whl", hash = "sha256:783bc0bc43b012d8ffbbe8f94945922d8f86d0faa2b5e1be9d194f567e37e24e"},
-    {file = "bmt-1.0.7.tar.gz", hash = "sha256:5338473d87dbb24a146fce4f8cb5588d4b6e2ebbf4021311445eade9d0c7276f"},
+    {file = "bmt-1.0.8-py3-none-any.whl", hash = "sha256:97746cffeb3786f2c4a6d274abd9f847ecb8313b12a60da7083edf92102b67a5"},
+    {file = "bmt-1.0.8.tar.gz", hash = "sha256:40476977dbf5d84e342dfcb16ff5fe9c08880bcc7f81d6f6f7d7aa50f073a24e"},
 ]
 cachetools = [
     {file = "cachetools-5.3.0-py3-none-any.whl", hash = "sha256:429e1a1e845c008ea6c85aa35d4b98b65d6a9763eeef3e37e92728a12d1de9d4"},
@@ -3475,8 +3475,8 @@ pytrie = [
     {file = "PyTrie-0.4.0.tar.gz", hash = "sha256:8f4488f402d3465993fb6b6efa09866849ed8cda7903b50647b7d0342b805379"},
 ]
 pytz = [
-    {file = "pytz-2023.2-py2.py3-none-any.whl", hash = "sha256:8a8baaf1e237175b02f5c751eea67168043a749c843989e2b3015aa1ad9db68b"},
-    {file = "pytz-2023.2.tar.gz", hash = "sha256:a27dcf612c05d2ebde626f7d506555f10dfc815b3eddccfaadfc7d99b11c9a07"},
+    {file = "pytz-2023.3-py2.py3-none-any.whl", hash = "sha256:a151b3abb88eda1d4e34a9814df37de2a80e301e68ba0fd856fb9b46bfbbbffb"},
+    {file = "pytz-2023.3.tar.gz", hash = "sha256:1d8ce29db189191fb55338ee6d0387d82ab59f3d00eac103412d64e0ebd0c588"},
 ]
 pywin32 = [
     {file = "pywin32-306-cp310-cp310-win32.whl", hash = "sha256:06d3420a5155ba65f0b72f2699b5bacf3109f36acbe8923765c22938a69dfc8d"},
