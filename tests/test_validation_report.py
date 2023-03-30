@@ -50,7 +50,7 @@ def test_get_code_subtree_is_leaf():
     assert leaf is not None
     assert isinstance(leaf, Dict)
     assert all([key in [CodeDictionary.MESSAGE, CodeDictionary.DESCRIPTION] for key in leaf])
-    assert leaf[CodeDictionary.MESSAGE] == "Biolink Model-compliant TRAPI Message."
+    assert leaf[CodeDictionary.MESSAGE] == "Biolink Model-compliant TRAPI Message"
     assert leaf[CodeDictionary.DESCRIPTION].startswith("Specified TRAPI message completely satisfies")
 
     assert CodeDictionary.get_code_subtree("info.compliant", is_leaf=False) is None
@@ -64,7 +64,7 @@ def test_get_code_subtree_facet_message():
     assert leaf is not None
     assert isinstance(leaf, Dict)
     assert CodeDictionary.MESSAGE in leaf
-    assert leaf[CodeDictionary.MESSAGE] == "Biolink Model-compliant TRAPI Message."
+    assert leaf[CodeDictionary.MESSAGE] == "Biolink Model-compliant TRAPI Message"
     assert CodeDictionary.DESCRIPTION not in leaf
 
     result = CodeDictionary.get_code_subtree("info.input_edge.predicate", facet="message")
@@ -122,7 +122,7 @@ def test_get_entry():
     code_entry: Optional[Dict] = CodeDictionary.get_code_entry("info.compliant")
     assert code_entry is not None
     assert CodeDictionary.MESSAGE in code_entry
-    assert code_entry[CodeDictionary.MESSAGE] == "Biolink Model-compliant TRAPI Message."
+    assert code_entry[CodeDictionary.MESSAGE] == "Biolink Model-compliant TRAPI Message"
 
     # Higher level subtrees, not terminal leaf entries?
     assert CodeDictionary.get_code_entry("info") is None
@@ -137,7 +137,7 @@ def test_get_entry():
 
 def test_get_message_template():
     assert CodeDictionary.get_message_template("") is None
-    assert CodeDictionary.get_message_template("info.compliant") == "Biolink Model-compliant TRAPI Message."
+    assert CodeDictionary.get_message_template("info.compliant") == "Biolink Model-compliant TRAPI Message"
     assert CodeDictionary.get_message_template("error.trapi.request.invalid") == \
            "Test could not generate a valid TRAPI query request object"
     assert CodeDictionary.get_message_template("foo.bar") is None
@@ -155,7 +155,7 @@ def test_get_description():
 
 
 def test_message_display():
-    assert "INFO - Compliant: Biolink Model-compliant TRAPI Message." in CodeDictionary.display(
+    assert "INFO - Compliant: Biolink Model-compliant TRAPI Message" in CodeDictionary.display(
         code="info.compliant",
         add_prefix=True
     )
@@ -199,7 +199,7 @@ def test_message_report():
     messages: List[str] = list()
     for code, parameters in report['information'].items():
         messages.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "INFO - Compliant: Biolink Model-compliant TRAPI Message." in messages
+    assert "INFO - Compliant: Biolink Model-compliant TRAPI Message" in messages
     assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate" in messages
 
 
@@ -349,7 +349,7 @@ def test_messages():
     reporter1.dump(title="My KP Validation Report", id_rows=1, msg_rows=1, compact_format=True, file=stderr)
 
     validation_report: str = reporter1.dumps(id_rows=2, msg_rows=3)
-    assert validation_report.startswith("Validation Report for")
+    assert validation_report.startswith("Errors:")
 
 
 def test_validator_method():
