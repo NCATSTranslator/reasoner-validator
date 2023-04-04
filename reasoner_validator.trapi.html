@@ -316,8 +316,11 @@ If the instance is invalid.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.openapi_to_jsonschema">
-<span class="sig-prename descclassname"><span class="pre">reasoner_validator.trapi.</span></span><span class="sig-name descname"><span class="pre">openapi_to_jsonschema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.trapi.openapi_to_jsonschema" title="Permalink to this definition"></a></dt>
-<dd><p>Convert OpenAPI schema to JSON schema.</p>
+<span class="sig-prename descclassname"><span class="pre">reasoner_validator.trapi.</span></span><span class="sig-name descname"><span class="pre">openapi_to_jsonschema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.trapi.openapi_to_jsonschema" title="Permalink to this definition"></a></dt>
+<dd><p>Convert OpenAPI schema to JSON schema.
+:param schema: Dict, in-memory representation of the OpenAPI schema to be validated.
+:param version: str, TRAPI version against which the schema is currently being validated.
+:return:</p>
 </dd></dl>
 
 </div>
