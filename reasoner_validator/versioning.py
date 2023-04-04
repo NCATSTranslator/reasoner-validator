@@ -190,7 +190,7 @@ for version in versions:
     minor: Optional[int] = None
     patch: Optional[int] = None
     prerelease: Optional[str] = None
-    buildmetadata: Optional[str] = None
+    # buildmetadata: Optional[str] = None
 
     try:
         major, minor, patch, prerelease, buildmetadata = SemVer.from_string(version)

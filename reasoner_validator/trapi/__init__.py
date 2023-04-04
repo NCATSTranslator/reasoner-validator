@@ -10,7 +10,7 @@ from yaml import load, CLoader as Loader
 
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.trapi.mapping import check_node_edge_mappings
-from reasoner_validator.versioning import get_latest_version, GIT_ORG, GIT_REPO, branches
+from reasoner_validator.versioning import SemVer, get_latest_version, GIT_ORG, GIT_REPO, branches
 
 
 @lru_cache()
@@ -22,7 +22,7 @@ def _load_schema(schema_version: str):
     spec = load(result.text, Loader=Loader)
     components = spec["components"]["schemas"]
     for component, schema in components.items():
-        openapi_to_jsonschema(schema)
+        openapi_to_jsonschema(schema, version=schema_version)
     schemas = dict()
     for component in components:
         # build json schema against which we validate
@@ -66,17 +66,18 @@ def fix_nullable(schema) -> None:
     ]
 
 
-def openapi_to_jsonschema(schema) -> None:
+def openapi_to_jsonschema(schema, version: str) -> None:
     """Convert OpenAPI schema to JSON schema."""
-    if "allOf" in schema:
-        # September 1, 2022 hacky patch to rewrite 'allOf' tagged subschemata to 'oneOf'
-        # TODO: TRAPI needs to change this in release 1.4
+    if not (SemVer.from_string(version, ignore_prefix="v") >= SemVer.from_string("1.4.0-beta"))\
+            and "allOf" in schema:
+        # September 1, 2022 hacky patch to rewrite 'allOf'
+        # tagged schemata, in TRAPI 1.3.0 or earlier, to 'oneOf'
         schema["oneOf"] = schema.pop("allOf")
     if schema.get("type", None) == "object":
         for tag, prop in schema.get("properties", dict()).items():
-            openapi_to_jsonschema(prop)
+            openapi_to_jsonschema(prop, version=version)
     if schema.get("type", None) == "array":
-        openapi_to_jsonschema(schema.get("items", dict()))
+        openapi_to_jsonschema(schema.get("items", dict()), version=version)
     if schema.pop("nullable", False):
         fix_nullable(schema)
 
