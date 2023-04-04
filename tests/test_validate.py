@@ -1,19 +1,16 @@
 """Test validation."""
 from sys import stderr
 from typing import Tuple, Dict
+from copy import deepcopy
 
 import pytest
 
 from jsonschema.exceptions import ValidationError
 
-from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema
-
+from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema, load_schema
 
 PRE_1_4_0_TEST_VERSIONS = "1.2", "1.2.0", "1.3", "1.3.0"
-
-# last 'version' in the list is a branch name, i.e. master?
-LATEST_TEST_VERSIONS = "1", "1.4", "1.4.0", "1.4.0-beta", "master"
-
+LATEST_TEST_VERSIONS = "1", "1.4", "1.4.0", "1.4.0-beta"
 ALL_TEST_VERSIONS = PRE_1_4_0_TEST_VERSIONS + LATEST_TEST_VERSIONS
 
 
@@ -81,6 +78,19 @@ def test_openapi_to_jsonschema(query: Tuple[Dict, str]):
     openapi_to_jsonschema(schema=query[0], version=query[1])
     assert "oneOf" in query[0]  # the 'oneOf' creeps in one way or another
     print(f"\nExiting openapi_to_jsonschema(schema: {str(query)})", file=stderr)
+
+
+@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
+def test_load_schema(trapi_version):
+    """Test load_schema(trapi_version)."""
+    schema = load_schema(trapi_version)
+    assert schema, f"TRAPI Schema for release '{trapi_version}' is not available?"
+
+
+def test_load_master_schema():
+    """Test load_schema('master')."""
+    schema = load_schema("master")
+    assert schema, "TRAPI Schema for ('master') branch is not available?"
 
 
 @pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
@@ -374,6 +384,7 @@ def test_latest_trapi_message_results_component_validation(trapi_version):
     }
 
     validator.validate(sample_message_result, "Result")
+
     with pytest.raises(ValidationError):
         validator.validate({
             # missing required: node_bindings, edge_bindings
@@ -429,14 +440,15 @@ def test_message_attribute_component_validation(trapi_version):
 
 @pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
 def test_pre_1_4_0_trapi_message_edge_component_validation(trapi_version):
-    """Test Attribute component in TRAPIValidator(trapi_version=query).validate()."""
+    """Test 'good' Message.KnowledgeGraph.Edge component in
+       TRAPIValidator(trapi_version="PRE_1_4_0_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    sample_attribute = {
+    sample_edge = {
         "subject": "aSubject",
-        "predicate": None,
+        "predicate": None,  # the predicate could be missing in pre-1.4.0 schemata
         "object": "anObject"
     }
-    validator.validate(sample_attribute, "Edge")
+    validator.validate(sample_edge, "Edge")
     with pytest.raises(ValidationError):
         validator.validate({
             # missing required and not null: subject, predicate, object
@@ -448,30 +460,114 @@ def test_pre_1_4_0_trapi_message_edge_component_validation(trapi_version):
             # subject, object are not nullable, so...
             "subject": None,
             "object": None
+        }, "Edge")
+
+
+SAMPLE_RETRIEVAL_SOURCE = {
+                # required, infores CURIE to an Information Resource
+                "resource": "infores:molepro",
+
+                # required, string drawn from the TRAPI ResourceRoleEnum
+                # values that were formerly recorded as TRAPI attributes
+                # are now presented as first class edge annotation
+                "resource_role": "primary_knowledge_source"
+            }
+
+
+SAMPLE_LATEST_TEST_EDGE = {
+        "subject": "MONDO:0011382",   # subject must be a CURIE
+        "predicate": "biolink:related_to",  # subject must be a biolink Predicate CURIE
+        "object": "UniProtKB:P00738",   # subject must be a CURIE
+        "sources": [  # an array of RetrievalSource
+            SAMPLE_RETRIEVAL_SOURCE
+        ]
+    }
+
+
+@pytest.mark.parametrize("trapi_version", LATEST_TEST_VERSIONS)
+def test_latest_trapi_good_message_edge_component_validation(trapi_version):
+    """Test 'good' Message.KnowledgeGraph.Edge component in
+       TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
+    validator = TRAPISchemaValidator(trapi_version=trapi_version)
+    validator.validate(SAMPLE_LATEST_TEST_EDGE, "Edge")
+
+
+@pytest.mark.parametrize("trapi_version", LATEST_TEST_VERSIONS)
+def test_latest_trapi_missing_key_or_null_message_edge_component_validation(trapi_version):
+    """Test Message.KnowledgeGraph.Edge components missing
+       their required keys or having null values in
+       TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
+    validator = TRAPISchemaValidator(trapi_version=trapi_version)
+    with pytest.raises(ValidationError):
+        validator.validate({
+            # missing required 'subject', 'predicate', 'object' and 'sources'
+            "foo": {},
+            "bar": {},
+        }, "Edge")
+    with pytest.raises(ValidationError):
+        validator.validate({
+            # 'subject', 'predicate', 'object' and 'sources' are also not nullable
+            "subject": None,
+            "predicate": None,
+            "object": None,
+            "sources": None
         }, "Edge")
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_VERSIONS)
-def test_latest_trapi_message_edge_component_validation(trapi_version):
-    """Test Attribute component in TRAPIValidator(trapi_version=query).validate()."""
+def test_latest_trapi_flawed_message_edge_component_validation(trapi_version):
+    """Test invalid Message.KnowledgeGraph.Edge.predicate in
+       TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    sample_attribute = {
-        "subject": "aSubject",
-        "predicate": "biolink:related_to",
-        "object": "anObject",
-        "sources": "need-to-somehow-provide-a-retrieval-source"
-    }
-    validator.validate(sample_attribute, "Edge")
     with pytest.raises(ValidationError):
-        validator.validate({
-            # missing required and not null: subject, predicate, object
-            "foo": {},
-            "predicate": None,
-            "bar": {},
-        }, "Edge")
+        faulty_predicate = SAMPLE_LATEST_TEST_EDGE.copy()
+        # predicate is not a Biolink predicate term CURIE
+        faulty_predicate["predicate"] = "not-a-biolink-predicate-CURIE"
+        validator.validate(faulty_predicate, "Edge")
+
+
+@pytest.mark.parametrize("trapi_version", LATEST_TEST_VERSIONS)
+def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trapi_version):
+    """Test various invalid Message.KnowledgeGraph.Edge.sources values in
+       TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
+    validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
-        validator.validate({
-            # subject, object are not nullable, so...
-            "subject": None,
-            "object": None
-        }, "Edge")
+        faulty_sources = SAMPLE_LATEST_TEST_EDGE.copy()
+        # 'sources' is not an array (of RetrievalSource objects)
+        faulty_sources["sources"] = "not-an-array"
+        validator.validate(faulty_sources, "Edge")
+    with pytest.raises(ValidationError):
+        faulty_sources = SAMPLE_LATEST_TEST_EDGE.copy()
+        # items in the 'sources' array must be (RetrievalSource) objects
+        faulty_sources["sources"] = ["not-a-json-object"]
+        validator.validate(faulty_sources, "Edge")
+    with pytest.raises(ValidationError):
+        faulty_sources = SAMPLE_LATEST_TEST_EDGE.copy()
+        # items in the sources array must be RetrievalSource objects
+        faulty_sources["sources"] = [{"not-an-RetrievalSource-key": "something"}]
+        validator.validate(faulty_sources, "Edge")
+
+
+@pytest.mark.parametrize("trapi_version", LATEST_TEST_VERSIONS)
+def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trapi_version):
+    """Test various invalid Message.KnowledgeGraph.Edge.sources values in
+       TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
+    validator = TRAPISchemaValidator(trapi_version=trapi_version)
+    with pytest.raises(ValidationError):
+        faulty_rs = SAMPLE_RETRIEVAL_SOURCE.copy()
+        # items in the sources array must be
+        # RetrievalSource objects with a 'resource' key
+        faulty_rs.pop("resource")
+        validator.validate(faulty_rs, "RetrievalSource")
+    with pytest.raises(ValidationError):
+        faulty_rs = SAMPLE_RETRIEVAL_SOURCE.copy()
+        # items in the sources array must be
+        # RetrievalSource objects with a 'resource' key
+        faulty_rs.pop("resource_role")
+        validator.validate(faulty_rs, "RetrievalSource")
+    with pytest.raises(ValidationError):
+        faulty_rs = SAMPLE_RETRIEVAL_SOURCE.copy()
+        # items in the sources array must be
+        # RetrievalSource objects with a 'resource' key
+        faulty_rs["resource_role"] = "not_a_ResourceRoleEnum_enum_value"
+        validator.validate(faulty_rs, "RetrievalSource")

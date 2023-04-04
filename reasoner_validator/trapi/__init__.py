@@ -10,7 +10,17 @@ from yaml import load, CLoader as Loader
 
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.trapi.mapping import check_node_edge_mappings
-from reasoner_validator.versioning import SemVer, get_latest_version, GIT_ORG, GIT_REPO, branches
+from reasoner_validator.versioning import (
+    SemVer,
+    SemVerError,
+    get_latest_version,
+    GIT_ORG,
+    GIT_REPO,
+    branches
+)
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 @lru_cache()
@@ -45,7 +55,10 @@ def load_schema(target: str):
     elif target in branches:
         schema_version = target
     else:
-        raise ValueError(f"No TRAPI version {target}")
+        err_msg: str = f"No TRAPI version {target}"
+        logger.error(err_msg)
+        raise ValueError(err_msg)
+
     return _load_schema(schema_version)
 
 
@@ -67,17 +80,37 @@ def fix_nullable(schema) -> None:
 
 
 def openapi_to_jsonschema(schema, version: str) -> None:
-    """Convert OpenAPI schema to JSON schema."""
-    if not (SemVer.from_string(version, ignore_prefix="v") >= SemVer.from_string("1.4.0-beta"))\
+    """
+    Convert OpenAPI schema to JSON schema.
+    :param schema: Dict, in-memory representation of the OpenAPI schema to be validated.
+    :param version: str, TRAPI version against which the schema is currently being validated.
+    :return:
+    """
+
+    mapped_semver: Optional[SemVer]
+    try:
+        mapped_semver = SemVer.from_string(version, ignore_prefix="v")
+    except SemVerError as sve:
+        # if we cannot map the version, then it may simply
+        # be a non-versioned branch of the schemata
+        logger.error(str(sve))
+        mapped_semver = None
+
+    # we'll only tweak mapped schemata and
+    # such releases that are prior to TRAPI 1.4.0-beta
+    if (mapped_semver and not (mapped_semver >= SemVer.from_string("1.4.0-beta"))) \
             and "allOf" in schema:
         # September 1, 2022 hacky patch to rewrite 'allOf'
         # tagged schemata, in TRAPI 1.3.0 or earlier, to 'oneOf'
         schema["oneOf"] = schema.pop("allOf")
+
     if schema.get("type", None) == "object":
         for tag, prop in schema.get("properties", dict()).items():
             openapi_to_jsonschema(prop, version=version)
+
     if schema.get("type", None) == "array":
         openapi_to_jsonschema(schema.get("items", dict()), version=version)
+
     if schema.pop("nullable", False):
         fix_nullable(schema)
 
