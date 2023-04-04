@@ -9,10 +9,12 @@ from jsonschema.exceptions import ValidationError
 from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema
 
 
-PRE_1_4_0_TEST_VERSIONS = "1.4.0-beta",   # "1.2", "1.2.0", "1.3", "1.3.0"
+PRE_1_4_0_TEST_VERSIONS = "1.2", "1.2.0", "1.3", "1.3.0"
 
-# last 'version' is a branch name, i.e. master?
+# last 'version' in the list is a branch name, i.e. master?
 LATEST_TEST_VERSIONS = "1", "1.4", "1.4.0", "1.4.0-beta", "master"
+
+ALL_TEST_VERSIONS = PRE_1_4_0_TEST_VERSIONS + LATEST_TEST_VERSIONS
 
 
 @pytest.mark.parametrize(
@@ -81,7 +83,7 @@ def test_openapi_to_jsonschema(query: Tuple[Dict, str]):
     print(f"\nExiting openapi_to_jsonschema(schema: {str(query)})", file=stderr)
 
 
-@pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
+@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
 def test_query_and_version_completion(trapi_version):
     """Test TRAPIValidator(trapi_version=query).validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -95,7 +97,7 @@ def test_query_and_version_completion(trapi_version):
         }, "Query")
 
 
-@pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
+@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
 def test_edgebinding(trapi_version):
     """Test TRAPIValidator(trapi_version=query).validate_EdgeBinding()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -108,7 +110,7 @@ def test_edgebinding(trapi_version):
         }, "EdgeBinding")
 
 
-@pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
+@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
 def test_nullable(trapi_version):
     """Test nullable categories property."""
     qnode = {
@@ -119,7 +121,7 @@ def test_nullable(trapi_version):
     # since QNode has 'additionalProperties: true' but no 'required:' properties
 
 
-@pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
+@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
 def test_nullable_message_properties(trapi_version):
     """Test nullable message properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -135,7 +137,7 @@ def test_nullable_message_properties(trapi_version):
         }, "Message")
 
 
-@pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
+@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
 def test_nullable_query_level_properties(trapi_version):
     """Test nullable TRAPI Query level properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -155,7 +157,7 @@ def test_nullable_query_level_properties(trapi_version):
         }, "Query")
 
 
-@pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
+@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
 def test_nullable_async_query_level_properties(trapi_version):
     """Test nullable TRAPI Query level properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -176,7 +178,7 @@ def test_nullable_async_query_level_properties(trapi_version):
         }, "AsyncQuery")
 
 
-@pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
+@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
 def test_nullable_response_properties(trapi_version):
     """Test nullable TRAPI Query level properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -380,9 +382,8 @@ def test_latest_trapi_message_results_component_validation(trapi_version):
         }, "Result")
 
 
-# TODO: this test may not pass until TRAPI 1.3 query_id spec is fixed?
-@pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
-def test_trapi_pre_1_4_0_message_node_binding_component_validation(trapi_version):
+@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
+def test_message_node_binding_component_validation(trapi_version):
     """Test NodeBinding component in TRAPIValidator(trapi_version=query).validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     sample_node_binding = {
@@ -402,29 +403,7 @@ def test_trapi_pre_1_4_0_message_node_binding_component_validation(trapi_version
         }, "NodeBinding")
 
 
-# TODO: this test may not pass until TRAPI 1.3 query_id spec is fixed?
-@pytest.mark.parametrize("trapi_version", LATEST_TEST_VERSIONS)
-def test_latest_trapi_message_node_binding_component_validation(trapi_version):
-    """Test NodeBinding component in TRAPIValidator(trapi_version=query).validate()."""
-    validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    sample_node_binding = {
-        "id": "SGD:S000000065",
-        # 'qnode_id' is not formally specified in spec but it is an
-        # example of an additionalProperties: true permitted field
-        "qnode_id": "SGD:S000000065",
-        "query_id": None
-    }
-
-    validator.validate(sample_node_binding, "NodeBinding")
-    with pytest.raises(ValidationError):
-        validator.validate({
-            # missing required: id
-            "foo": {},
-            "bar": {},
-        }, "NodeBinding")
-
-
-@pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
+@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
 def test_message_attribute_component_validation(trapi_version):
     """Test Attribute component in TRAPIValidator(trapi_version=query).validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -446,30 +425,6 @@ def test_message_attribute_component_validation(trapi_version):
             "attribute_type_id": None,
             "value": None
         }, "Attribute")
-
-
-@pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
-def test_trapi_pre_1_4_0_message_edge_component_trapi_validation(trapi_version):
-    """Test Attribute component in TRAPIValidator(trapi_version=query).validate()."""
-    validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    sample_attribute = {
-        "subject": "aSubject",
-        "predicate": None,
-        "object": "anObject"
-    }
-    validator.validate(sample_attribute, "Edge")
-    with pytest.raises(ValidationError):
-        validator.validate({
-            # missing required and not null: subject, predicate, object
-            "foo": {},
-            "bar": {},
-        }, "Edge")
-    with pytest.raises(ValidationError):
-        validator.validate({
-            # subject, object are not nullable, so...
-            "subject": None,
-            "object": None
-        }, "Edge")
 
 
 @pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
