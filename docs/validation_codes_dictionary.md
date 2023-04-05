@@ -302,11 +302,11 @@
 
 ### error.trapi.request.invalid
 
-**Message:** Test could not generate a valid TRAPI query request object
+**Message:** Test could not generate a valid TRAPI query request object using identified element
 
-**Context:** identifier, reason
+**Context:** identifier, test, reason
 
-**Description:** TRAPI query message could not be prepared for the indicated reason, thus query was not attempted.
+**Description:** Specified TRAPI query unit 'test' query could not be prepared for the indicated reason, using the identified Biolink starting element.
 
 ### error.trapi.response.empty
 

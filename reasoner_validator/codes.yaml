@@ -263,11 +263,12 @@ error:
       $description: "TRAPI query attempt triggered an abnormal server exception as noted."
     request:
       invalid:
-        $message: "Test could not generate a valid TRAPI query request object"
+        $message: "Test could not generate a valid TRAPI query request object using identified element"
         $context:
           - identifier
+          - test
           - reason
-        $description: "TRAPI query message could not be prepared for the indicated reason, thus query was not attempted."
+        $description: "Specified TRAPI query unit 'test' query could not be prepared for the indicated reason, using the identified Biolink starting element."
     response:
       empty:
         $message: "TRAPI Response is missing!"
