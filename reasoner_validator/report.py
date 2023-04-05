@@ -96,7 +96,7 @@ class ValidationReporter:
         # }
         #
         self.messages: Dict[
-            str,  # message type (info/warning/error)
+            str,  # message type (errors/warnings/information)
             Dict[
                 str,  # message 'code' as indexing key
                 # Dictionary of 'identifier' indexed messages with parameters

@@ -17,7 +17,7 @@ The Reasoner Validator now requires Python 3.9 or later (some library dependenci
 
 ## Installing the Module
 
-The module may be installed directly from pypi.org.
+The module may be installed directly from pypi.org using (Python 3) `pip` or `pip3`, namely:
 
 ```bash
 pip install reasoner-validator
@@ -83,15 +83,15 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 
 ```json
 {
-  "trapi_version": "1.3.0",
-  "biolink_version": "3.2.1",
+  "trapi_version": "1.4.0-beta",
+  "biolink_version": "3.2.6",
   "sources": {
     "ara_source": "infores:aragorn",
     "kp_source": "infores:panther",
     "kp_source_type": "primary"
   },
   "strict_validation": true,
-  "message": {...}
+  "response": {<some full JSON object of a TRAPI query Response...>}
 }
 ```
 
@@ -101,7 +101,7 @@ The request body consists of JSON data structure with two top level tag:
 - An **optional** `biolink_version` tag can be given a value of the Biolink Model version against which the message knowledge graph semantic contents will be validated, expressed as a SemVer string (defaults to 'latest' Biolink Model Toolkit supported version, if omitted). 
 - An **optional** `sources` with an object dictionary (example shown) specifying the ARA and KP sources involved in the TRAPI call (specified by infores CURIE) and the expected KP provenance source type, i.e. 'primary' implies that the KP is tagged as a 'biolink:primary_knowledge_source'. Optional in that the root "sources" or any of the subsidiary tags may be omitted (default to None)
 - An **optional** `strict_validation` flag (default: None or 'false'). If 'true' then follow strict validation rules, such as treating as 'error' states the use of `category`, `predicate` and `attribute_type_id` that are of type `abstract` or `mixin`  as errors. 
-- A **mandatory** `message` tag should have as its value the complete TRAPI **Message** JSON data structure to be validated (see example below).
+- A **mandatory** `message` tag should have as its value the complete JSON TRAPI **Response** to be validated (See the example below)
 
 ### Running the Web Service Directly
 
@@ -123,7 +123,7 @@ Go to  http://localhost/docs to see the service documentation and to use the sim
 
 ### Typical Output
 
-As an example of the kind of output to expect, if one posts the following JSON message data to the **/validate** endpoint:
+As an example of the kind of output to expect, if one posts the following TRAPI Response JSON data structure to the **/validate** endpoint:
 
 ```json
 {
