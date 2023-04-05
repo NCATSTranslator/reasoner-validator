@@ -104,15 +104,51 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 <div class="section" id="basic-programmatic-usage">
 <h1>Basic Programmatic Usage<a class="headerlink" href="#basic-programmatic-usage" title="Permalink to this heading"></a></h1>
 <p>Unlike earlier release of the reasoner-validator package, the current (major release 3.*.*) wraps validation in a general Python class object, ‘ValidatorReporter’ which is subclassed into various validator types (TRAPI Schema, Biolink, etc.).</p>
-<p>Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValidator class wrapper as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">reasoner_validator</span> <span class="kn">import</span> <span class="n">TRAPIResponseValidator</span>
+<p>Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValidator class wrapper as follows (sample script):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">reasoner_validator</span> <span class="kn">import</span> <span class="n">TRAPIResponseValidator</span>
 
+<span class="n">SAMPLE_RESPONSE</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;query_graph&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type-2 diabetes&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">]},</span>
+            <span class="s2">&quot;drug&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;biolink:Drug&quot;</span><span class="p">]}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;edges&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;treats&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="s2">&quot;drug&quot;</span><span class="p">,</span> <span class="s2">&quot;predicates&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;biolink:treats&quot;</span><span class="p">],</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="s2">&quot;type-2 diabetes&quot;</span><span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;knowledge_graph&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;type-2 diabetes&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;CHEBI:6801&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;metformin&quot;</span><span class="p">,</span> <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;biolink:Drug&quot;</span><span class="p">]}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;edges&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;df87ff82&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="s2">&quot;CHEBI:6801&quot;</span><span class="p">,</span> <span class="s2">&quot;predicate&quot;</span><span class="p">:</span> <span class="s2">&quot;biolink:treats&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;node_bindings&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type-2 diabetes&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">}],</span>
+                <span class="s2">&quot;drug&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;CHEBI:6801&quot;</span><span class="p">}]</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;edge_bindings&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;treats&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;df87ff82&quot;</span><span class="p">}]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="p">}</span>
 <span class="n">validator</span> <span class="o">=</span> <span class="n">TRAPIResponseValidator</span><span class="p">(</span>
     <span class="n">trapi_version</span><span class="o">=</span><span class="s2">&quot;1.3.0&quot;</span><span class="p">,</span>
 
     <span class="c1"># If omit or set the Biolink Model version parameter to None,</span>
     <span class="c1"># then the current Biolink Model Toolkit default release applies</span>
-    <span class="n">biolink_version</span><span class="o">=</span><span class="s2">&quot;3.0.3&quot;</span><span class="p">,</span>
+    <span class="n">biolink_version</span><span class="o">=</span><span class="s2">&quot;3.2.6&quot;</span><span class="p">,</span>
 
     <span class="c1"># &#39;sources&#39; are set to trigger checking of expected edge knowledge source provenance</span>
     <span class="n">sources</span><span class="o">=</span><span class="p">{</span>
@@ -120,59 +156,87 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
             <span class="s2">&quot;kp_source&quot;</span><span class="p">:</span> <span class="s2">&quot;infores:hmdb&quot;</span><span class="p">,</span>
             <span class="s2">&quot;kp_source_type&quot;</span><span class="p">:</span> <span class="s2">&quot;primary&quot;</span>
     <span class="p">},</span>
-    <span class="c1"># Optional flag: if omitted or set to &#39;None&#39;, we let the system decide the</span>
+    <span class="c1"># Optional flag: if omitted or set to &#39;False&#39;, we let the system decide the</span>
     <span class="c1"># default validation strictness by validation context unless we override it here</span>
-    <span class="n">strict_validation</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">strict_validation</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
 
 <span class="c1"># Unlike earlier release of the package, validation methods do NOT throw an exception,</span>
 <span class="c1"># but rather, return validation outcomes as a dictionary of validation messsages</span>
 <span class="c1"># Here, the &#39;message&#39; parameter here is just the Python equivalent dictionary of the</span>
 <span class="c1"># TRAPI.Message JSON schema model component of the TRAPI Response (not the full TRAPI Response...yet)</span>
-<span class="n">validator</span><span class="o">.</span><span class="n">check_compliance_of_trapi_response</span><span class="p">(</span><span class="n">message</span><span class="o">=...</span><span class="p">)</span>
+
+<span class="c1"># this method validates a complete TRAPI Response JSON result</span>
+<span class="n">validator</span><span class="o">.</span><span class="n">check_compliance_of_trapi_response</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">SAMPLE_RESPONSE</span><span class="p">)</span>
 
 <span class="c1"># Messages are retrieved from the validator object as follows:</span>
-<span class="n">messages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">get_messages</span><span class="p">()</span>
+<span class="n">messages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
+            <span class="nb">str</span><span class="p">,</span>  <span class="c1"># message type (errors|warnings|information)</span>
+            <span class="n">Dict</span><span class="p">[</span>
+                <span class="nb">str</span><span class="p">,</span>  <span class="c1"># message &#39;code&#39; as indexing key</span>
+                <span class="c1"># Dictionary of &#39;identifier&#39; indexed messages with parameters</span>
+                <span class="c1"># (Maybe None, if code doesn&#39;t have any additional parameters)</span>
+                <span class="n">Optional</span><span class="p">[</span>
+                    <span class="n">Dict</span><span class="p">[</span>
+                        <span class="nb">str</span><span class="p">,</span>  <span class="c1"># key is the message-unique template &#39;identifier&#39; value of parameterized messages</span>
+                        <span class="n">Optional</span><span class="p">[</span>
+                            <span class="n">List</span><span class="p">[</span>
+                                <span class="c1"># Each reported message adds a dictionary of such parameters</span>
+                                <span class="c1"># to the list here; these are not guaranteed to be unique</span>
+                                <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+                            <span class="p">]</span>
+                        <span class="p">]</span>
+                    <span class="p">]</span>
+                <span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">get_messages</span><span class="p">()</span>
+
+<span class="c1"># this method dumps a human readable text report of</span>
+<span class="c1"># the validation messages (default) to stdout</span>
+<span class="c1"># See the method signature for options that</span>
+<span class="c1"># allow customization of the text format.</span>
+<span class="n">validator</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>The ‘messages’ returned are partitioned into ‘information’, ‘warning’ and ‘error’ messages
 in a dictionary looking something like the following (as an example):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;info.excluded&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>  <span class="c1"># parameters for one distinct message</span>
-                <span class="s2">&quot;edge_id&quot;</span><span class="p">:</span> <span class="s2">&quot;(ZFIN:ZDB-GENE-060825-345$biolink:Gene)--[biolink:active_in]-&gt;(GO:0042645$biolink:CellularComponent)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;info.excluded&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1"># the uniquely discriminating &#39;identifier&#39; here is the edge_id</span>
+            <span class="s2">&quot;(ZFIN:ZDB-GENE-060825-345$biolink:Gene)--[biolink:active_in]-&gt;(GO:0042645$biolink:CellularComponent)&quot;</span><span class="p">:</span> <span class="kc">None</span>
+            <span class="c1"># messages with only a contextual identifier may have no additional parameters</span>
             <span class="p">},</span>
             <span class="p">{</span><span class="o">...</span><span class="p">}</span>  <span class="c1"># another message (same code type)</span>
-        <span class="p">],</span>
-        <span class="s2">&quot;info.compliant&quot;</span><span class="p">:</span> <span class="p">[]</span>  <span class="c1"># parameterless messages don&#39;t have distinct instances</span>
+        <span class="p">,</span>
+        <span class="s2">&quot;info.compliant&quot;</span><span class="p">:</span> <span class="kc">None</span>  <span class="c1"># parameterless messages don&#39;t have distinct instances</span>
          <span class="c1"># other &#39;info&#39; code-indexed messages</span>
     <span class="p">},</span>
     <span class="s2">&quot;warnings&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;warning.edge.predicate.non_canonical&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="s2">&quot;Query Graph&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;warning.edge.predicate.non_canonical&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1"># the uniquely discriminating &#39;identifier&#39; here is the is the predicate term</span>
+            <span class="s2">&quot;biolink:participates_in&quot;</span><span class="p">:</span>
+            <span class="p">{</span>   <span class="c1"># the secondary context is the &#39;edge_id&#39;</span>
                 <span class="s2">&quot;edge_id&quot;</span><span class="p">:</span> <span class="s2">&quot;a--[&#39;biolink:participates_in&#39;]-&gt;b&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;predicate&quot;</span><span class="p">:</span> <span class="s2">&quot;biolink:participates_in&quot;</span>
             <span class="p">},</span>
-            <span class="p">{</span><span class="o">...</span><span class="p">}</span>  <span class="c1"># another message (same code type)</span>
+            <span class="p">{</span><span class="o">...</span><span class="p">}</span>  <span class="c1"># another predicate indexed message (same code type)</span>
 
-        <span class="p">],</span>
-        <span class="s2">&quot;warning.trapi.response.status.unknown&quot;</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;some status message&quot;</span><span class="p">,</span>
-            <span class="p">}</span>
-        <span class="p">],</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;warning.trapi.response.status.unknown&quot;</span> <span class="p">{</span>
+            <span class="s2">&quot;500&quot;</span><span class="p">:</span> <span class="kc">None</span>  <span class="c1"># unexpected http status code returned</span>
+        <span class="p">},</span>
         <span class="c1"># other &#39;warning&#39; code-indexed messages</span>
      <span class="p">},</span>
     <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;error.trapi.request.invalid&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;error.trapi.request.invalid&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1"># subject node descriptor is the &#39;identifier&#39;</span>
+            <span class="s2">&quot;CHEBI:37565[biolink:SmallMolecule]&quot;</span><span class="p">:</span>
             <span class="p">{</span>
-                <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="s2">&quot;raise_subject_entity() test predicate CHEBI:37565[biolink:SmallMolecule]&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;raise_subject_entity&quot;</span>
                 <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;has no &#39;is_a&#39; parent since it is either not an ontology term or does not map onto a parent ontology term.&quot;</span>
             <span class="p">},</span>
             <span class="p">{</span><span class="o">...</span><span class="p">}</span> <span class="c1"># another message (same code type)</span>
-        <span class="p">],</span>
+        <span class="p">},</span>
         <span class="c1"># other &#39;error&#39; code-indexed messages</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -243,17 +307,33 @@ named fields in the Python string templates found in the <a class="reference ext
 <div class="section" id="web-service-api">
 <h2>Web Service API<a class="headerlink" href="#web-service-api" title="Permalink to this heading"></a></h2>
 <p>The web service has a single POST endpoint <cite>/validate</cite> taking a simple JSON request body, as follows:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;trapi_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.3.0&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;biolink_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.0.3&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;ara_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;infores:aragorn&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;kp_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;infores:panther&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;kp_source_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;primary&quot;</span>
-<span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="nt">&quot;strict_validation&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;some message&quot;</span><span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
+    # If the TRAPI version is omitted or set to None, then the &#39;latest&#39; TRAPI version is used.
+
+    # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed &#39;schema_version&#39;.
+    # This modifies slightly the interpretation of this parameter, as follows:
+    # If the following trapi_version parameter is given, then it overrides the TRAPI Response &#39;schema_version&#39;;
+    # Otherwise, the TRAPI Response &#39;schema_version&#39; (not &#39;latest&#39;) becomes the default validation version.
+
+    trapi_version=&quot;1.3.0&quot;,
+
+    # If the Biolink Model version is omitted or set to None, then the current Biolink Model Toolkit is used.
+
+    # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed &#39;biolink_version&#39;.
+    # This modifies slightly the interpretation of this parameter, as follows:
+    # If the &#39;biolink_version&#39; given here is assumed, which overrides the TRAPI Response stated &#39;biolink_version&#39;;
+    # Otherwise, the TRAPI Response stated &#39;biolink_version&#39; (not BMT) becomes the default validation version.
+
+    biolink_version=&quot;3.2.6&quot;,
+
+    &quot;sources&quot;: {
+        &quot;ara_source&quot;: &quot;infores:aragorn&quot;,
+        &quot;kp_source&quot;: &quot;infores:panther&quot;,
+        &quot;kp_source_type&quot;: &quot;primary&quot;
+    },
+    &quot;strict_validation&quot;: true,
+    &quot;response&quot;: {&quot;some TRAPI Response JSON - see below&quot;}
+}
 </pre></div>
 </div>
 <p>The request body consists of JSON data structure with two top level tag:</p>
@@ -262,7 +342,7 @@ named fields in the Python string templates found in the <a class="reference ext
 <li><p>An <strong>optional</strong> <cite>biolink_version</cite> tag can be given a value of the Biolink Model version against which the message knowledge graph semantic contents will be validated, expressed as a SemVer string (defaults to ‘latest’ Biolink Model Toolkit supported version, if omitted).</p></li>
 <li><p>An <strong>optional</strong> <cite>sources</cite> with an object dictionary (example shown) specifying the ARA and KP sources involved in the TRAPI call (specified by infores CURIE) and the expected KP provenance source type, i.e. ‘primary’ implies that the KP is tagged as a ‘biolink:primary_knowledge_source’. Optional in that the root “sources” or any of the subsidiary tags may be omitted (default to None)</p></li>
 <li><p>An <strong>optional</strong> <cite>strict_validation</cite> flag (default: None or ‘false’). If ‘true’ then follow strict validation rules, such as treating as ‘error’ states the use of <cite>category</cite>, <cite>predicate</cite> and <cite>attribute_type_id</cite> that are of type <cite>abstract</cite> or <cite>mixin</cite>  as errors.</p></li>
-<li><p>A <strong>mandatory</strong> <cite>message</cite> tag should have as its value the complete TRAPI <strong>Message</strong> JSON data structure to be validated (see example below).</p></li>
+<li><p>A <strong>mandatory</strong> <cite>response</cite> tag should have as its value the complete TRAPI <strong>Response</strong> JSON data structure to be validated (see example below).</p></li>
 </ul>
 </div>
 <div class="section" id="running-the-web-service-directly">
@@ -278,48 +358,53 @@ named fields in the Python string templates found in the <a class="reference ext
 </div>
 <div class="section" id="typical-output">
 <h2>Typical Output<a class="headerlink" href="#typical-output" title="Permalink to this heading"></a></h2>
-<p>As an example of the kind of output to expect, if one posts the following JSON message data to the <strong>/validate</strong> endpoint:</p>
+<p>As an example of the kind of output to expect, if one posts the following TRAPI Response JSON data as input to the <strong>/validate</strong> endpoint:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;trapi_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.3.0&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;biolink_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.0.3&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;query_graph&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;type-2 diabetes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">]},</span>
-<span class="w">            </span><span class="nt">&quot;drug&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;biolink:Drug&quot;</span><span class="p">]}</span>
-<span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;treats&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;subject&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drug&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;predicates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;biolink:treats&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;object&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;type-2 diabetes&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;knowledge_graph&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;MONDO:0005148&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;type-2 diabetes&quot;</span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;CHEBI:6801&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;metformin&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;biolink:Drug&quot;</span><span class="p">]}</span>
-<span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;df87ff82&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;subject&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CHEBI:6801&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;predicate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biolink:treats&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;object&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;node_bindings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;type-2 diabetes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">}],</span>
-<span class="w">                </span><span class="nt">&quot;drug&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CHEBI:6801&quot;</span><span class="p">}]</span>
+<span class="w">    </span><span class="nt">&quot;schema_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.4.0&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;biolink_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.2.6&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;query_graph&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;type-2 diabetes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">]},</span>
+<span class="w">                </span><span class="nt">&quot;drug&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;biolink:Drug&quot;</span><span class="p">]}</span>
 <span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;edge_bindings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;treats&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;df87ff82&quot;</span><span class="p">}]</span>
+<span class="w">            </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;treats&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;subject&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drug&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;predicates&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;biolink:treats&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;object&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;type-2 diabetes&quot;</span><span class="p">}</span>
 <span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;knowledge_graph&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;MONDO:0005148&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;type-2 diabetes&quot;</span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;CHEBI:6801&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;metformin&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;biolink:Drug&quot;</span><span class="p">]}</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;df87ff82&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;subject&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CHEBI:6801&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;predicate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biolink:treats&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;object&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;node_bindings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;type-2 diabetes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MONDO:0005148&quot;</span><span class="p">}],</span>
+<span class="w">                    </span><span class="nt">&quot;drug&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CHEBI:6801&quot;</span><span class="p">}]</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;edge_bindings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;treats&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;df87ff82&quot;</span><span class="p">}]</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lookup&quot;</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">]</span>
-<span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>one should typically get a response body like the following JSON validation result back:</p>
+<p>then, one should typically get a response body like the following JSON validation result back:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;trapi_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.3.0&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;biolink_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.0.3&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;trapi_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.4.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;biolink_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.2.6&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;report&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;warning.node.unmapped_prefix&quot;</span><span class="p">,</span>

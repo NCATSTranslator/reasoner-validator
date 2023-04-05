@@ -34,18 +34,54 @@ Basic Programmatic Usage
 
 Unlike earlier release of the reasoner-validator package, the current (major release 3.*.*) wraps validation in a general Python class object, 'ValidatorReporter' which is subclassed into various validator types (TRAPI Schema, Biolink, etc.).
 
-Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValidator class wrapper as follows:
+Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValidator class wrapper as follows (sample script):
 
 .. code-block:: python
 
+    #!/usr/bin/env python
+    from typing import Optional, List, Dict
     from reasoner_validator import TRAPIResponseValidator
 
+    SAMPLE_RESPONSE = {
+      "message": {
+        "query_graph": {
+            "nodes": {
+                "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                "drug": {"categories": ["biolink:Drug"]}
+            },
+            "edges": {
+                "treats": {"subject": "drug", "predicates": ["biolink:treats"], "object": "type-2 diabetes"}
+            }
+        },
+        "knowledge_graph": {
+            "nodes": {
+                "MONDO:0005148": {"name": "type-2 diabetes"},
+                "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
+            },
+            "edges": {
+                "df87ff82": {"subject": "CHEBI:6801", "predicate": "biolink:treats", "object": "MONDO:0005148"}
+            }
+        },
+        "results": [
+            {
+                "node_bindings": {
+                    "type-2 diabetes": [{"id": "MONDO:0005148"}],
+                    "drug": [{"id": "CHEBI:6801"}]
+                },
+                "edge_bindings": {
+                    "treats": [{"id": "df87ff82"}]
+                }
+            }
+        ]
+    }
+
+    }
     validator = TRAPIResponseValidator(
         trapi_version="1.3.0",
 
         # If omit or set the Biolink Model version parameter to None,
         # then the current Biolink Model Toolkit default release applies
-        biolink_version="3.0.3",
+        biolink_version="3.2.6",
 
         # 'sources' are set to trigger checking of expected edge knowledge source provenance
         sources={
@@ -53,20 +89,46 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
                 "kp_source": "infores:hmdb",
                 "kp_source_type": "primary"
         },
-        # Optional flag: if omitted or set to 'None', we let the system decide the
+        # Optional flag: if omitted or set to 'False', we let the system decide the
         # default validation strictness by validation context unless we override it here
-        strict_validation=None
+        strict_validation=False
     )
 
     # Unlike earlier release of the package, validation methods do NOT throw an exception,
     # but rather, return validation outcomes as a dictionary of validation messsages
     # Here, the 'message' parameter here is just the Python equivalent dictionary of the
     # TRAPI.Message JSON schema model component of the TRAPI Response (not the full TRAPI Response...yet)
-    validator.check_compliance_of_trapi_response(message=...)
+
+    # this method validates a complete TRAPI Response JSON result
+    validator.check_compliance_of_trapi_response(response=SAMPLE_RESPONSE)
 
     # Messages are retrieved from the validator object as follows:
-    messages: Dict[str, List[Dict[str,str]]] = validator.get_messages()
+    messages: Dict[
+                str,  # message type (errors|warnings|information)
+                Dict[
+                    str,  # message 'code' as indexing key
+                    # Dictionary of 'identifier' indexed messages with parameters
+                    # (Maybe None, if code doesn't have any additional parameters)
+                    Optional[
+                        Dict[
+                            str,  # key is the message-unique template 'identifier' value of parameterized messages
+                            Optional[
+                                List[
+                                    # Each reported message adds a dictionary of such parameters
+                                    # to the list here; these are not guaranteed to be unique
+                                    Dict[str, str]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ] = validator.get_messages()
 
+    # this method dumps a human readable text report of
+    # the validation messages (default) to stdout
+    # See the method signature for options that
+    # allow customization of the text format.
+    validator.dump()
 
 The 'messages' returned are partitioned into 'information', 'warning' and 'error' messages
 in a dictionary looking something like the following (as an example):
@@ -75,40 +137,41 @@ in a dictionary looking something like the following (as an example):
 
     messages: Dict[str, List[Dict[str,str]]] = {
         "information": {
-            "info.excluded": [
-                {  # parameters for one distinct message
-                    "edge_id": "(ZFIN:ZDB-GENE-060825-345$biolink:Gene)--[biolink:active_in]->(GO:0042645$biolink:CellularComponent)",
+            "info.excluded": {
+                # the uniquely discriminating 'identifier' here is the edge_id
+                "(ZFIN:ZDB-GENE-060825-345$biolink:Gene)--[biolink:active_in]->(GO:0042645$biolink:CellularComponent)": None
+                # messages with only a contextual identifier may have no additional parameters
                 },
                 {...}  # another message (same code type)
-            ],
-            "info.compliant": []  # parameterless messages don't have distinct instances
+            ,
+            "info.compliant": None  # parameterless messages don't have distinct instances
              # other 'info' code-indexed messages
         },
         "warnings": {
-            "warning.edge.predicate.non_canonical": [
-                {
-                    "context": "Query Graph",
+            "warning.edge.predicate.non_canonical": {
+                # the uniquely discriminating 'identifier' here is the is the predicate term
+                "biolink:participates_in":
+                {   # the secondary context is the 'edge_id'
                     "edge_id": "a--['biolink:participates_in']->b",
-                    "predicate": "biolink:participates_in"
                 },
-                {...}  # another message (same code type)
+                {...}  # another predicate indexed message (same code type)
 
-            ],
-            "warning.trapi.response.status.unknown" [
-                {
-                    "status": "some status message",
-                }
-            ],
+            },
+            "warning.trapi.response.status.unknown" {
+                "500": None  # unexpected http status code returned
+            },
             # other 'warning' code-indexed messages
          },
         "errors": {
-            "error.trapi.request.invalid": [
+            "error.trapi.request.invalid": {
+                # subject node descriptor is the 'identifier'
+                "CHEBI:37565[biolink:SmallMolecule]":
                 {
-                    "context": "raise_subject_entity() test predicate CHEBI:37565[biolink:SmallMolecule]",
+                    "test": "raise_subject_entity"
                     "reason": "has no 'is_a' parent since it is either not an ontology term or does not map onto a parent ontology term."
                 },
                 {...} # another message (same code type)
-            ],
+            },
             # other 'error' code-indexed messages
         }
     }
@@ -147,15 +210,31 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 .. code-block:: json
 
     {
-      "trapi_version": "1.3.0",
-      "biolink_version": "3.0.3",
-      "sources": {
-        "ara_source": "infores:aragorn",
-        "kp_source": "infores:panther",
-        "kp_source_type": "primary"
-      },
-      "strict_validation": true,
-      "message": {"some message"}
+        # If the TRAPI version is omitted or set to None, then the 'latest' TRAPI version is used.
+
+        # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed 'schema_version'.
+        # This modifies slightly the interpretation of this parameter, as follows:
+        # If the following trapi_version parameter is given, then it overrides the TRAPI Response 'schema_version';
+        # Otherwise, the TRAPI Response 'schema_version' (not 'latest') becomes the default validation version.
+
+        trapi_version="1.3.0",
+
+        # If the Biolink Model version is omitted or set to None, then the current Biolink Model Toolkit is used.
+
+        # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed 'biolink_version'.
+        # This modifies slightly the interpretation of this parameter, as follows:
+        # If the 'biolink_version' given here is assumed, which overrides the TRAPI Response stated 'biolink_version';
+        # Otherwise, the TRAPI Response stated 'biolink_version' (not BMT) becomes the default validation version.
+
+        biolink_version="3.2.6",
+
+        "sources": {
+            "ara_source": "infores:aragorn",
+            "kp_source": "infores:panther",
+            "kp_source_type": "primary"
+        },
+        "strict_validation": true,
+        "response": {"some TRAPI Response JSON - see below"}
     }
 
 
@@ -165,7 +244,7 @@ The request body consists of JSON data structure with two top level tag:
 * An **optional** `biolink_version` tag can be given a value of the Biolink Model version against which the message knowledge graph semantic contents will be validated, expressed as a SemVer string (defaults to 'latest' Biolink Model Toolkit supported version, if omitted).
 * An **optional** `sources` with an object dictionary (example shown) specifying the ARA and KP sources involved in the TRAPI call (specified by infores CURIE) and the expected KP provenance source type, i.e. 'primary' implies that the KP is tagged as a 'biolink:primary_knowledge_source'. Optional in that the root "sources" or any of the subsidiary tags may be omitted (default to None)
 * An **optional** `strict_validation` flag (default: None or 'false'). If 'true' then follow strict validation rules, such as treating as 'error' states the use of `category`, `predicate` and `attribute_type_id` that are of type `abstract` or `mixin`  as errors.
-* A **mandatory** `message` tag should have as its value the complete TRAPI **Message** JSON data structure to be validated (see example below).
+* A **mandatory** `response` tag should have as its value the complete TRAPI **Response** JSON data structure to be validated (see example below).
 
 Running the Web Service Directly
 --------------------------------
@@ -187,53 +266,58 @@ The module may afterwards be run, as follows:
 Typical Output
 --------------
 
-As an example of the kind of output to expect, if one posts the following JSON message data to the **/validate** endpoint:
+As an example of the kind of output to expect, if one posts the following TRAPI Response JSON data as input to the **/validate** endpoint:
 
 .. code-block:: json
 
     {
-      "trapi_version": "1.3.0",
-      "biolink_version": "3.0.3",
-      "message": {
-        "query_graph": {
-            "nodes": {
-                "type-2 diabetes": {"ids": ["MONDO:0005148"]},
-                "drug": {"categories": ["biolink:Drug"]}
-            },
-            "edges": {
-                "treats": {"subject": "drug", "predicates": ["biolink:treats"], "object": "type-2 diabetes"}
-            }
-        },
-        "knowledge_graph": {
-            "nodes": {
-                "MONDO:0005148": {"name": "type-2 diabetes"},
-                "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
-            },
-            "edges": {
-                "df87ff82": {"subject": "CHEBI:6801", "predicate": "biolink:treats", "object": "MONDO:0005148"}
-            }
-        },
-        "results": [
-            {
-                "node_bindings": {
-                    "type-2 diabetes": [{"id": "MONDO:0005148"}],
-                    "drug": [{"id": "CHEBI:6801"}]
+        "schema_version": "1.4.0",
+        "biolink_version": "3.2.6",
+        "message": {
+            "query_graph": {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {"categories": ["biolink:Drug"]}
                 },
-                "edge_bindings": {
-                    "treats": [{"id": "df87ff82"}]
+                "edges": {
+                    "treats": {"subject": "drug", "predicates": ["biolink:treats"], "object": "type-2 diabetes"}
                 }
+            },
+            "knowledge_graph": {
+                "nodes": {
+                    "MONDO:0005148": {"name": "type-2 diabetes"},
+                    "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
+                },
+                "edges": {
+                    "df87ff82": {"subject": "CHEBI:6801", "predicate": "biolink:treats", "object": "MONDO:0005148"}
+                }
+            },
+            "results": [
+                {
+                    "node_bindings": {
+                        "type-2 diabetes": [{"id": "MONDO:0005148"}],
+                        "drug": [{"id": "CHEBI:6801"}]
+                    },
+                    "edge_bindings": {
+                        "treats": [{"id": "df87ff82"}]
+                    }
+                }
+            ]
+        },
+        "workflow": [
+            {
+                "id": "lookup"
             }
         ]
-      }
     }
 
-one should typically get a response body like the following JSON validation result back:
+then, one should typically get a response body like the following JSON validation result back:
 
 .. code-block:: json
 
     {
-      "trapi_version": "1.3.0",
-      "biolink_version": "3.0.3",
+      "trapi_version": "1.4.0",
+      "biolink_version": "3.2.6",
       "report": [
         {
           "code": "warning.node.unmapped_prefix",
