@@ -139,7 +139,7 @@ def test_get_message_template():
     assert CodeDictionary.get_message_template("") is None
     assert CodeDictionary.get_message_template("info.compliant") == "Biolink Model-compliant TRAPI Message"
     assert CodeDictionary.get_message_template("error.trapi.request.invalid") == \
-           "Test could not generate a valid TRAPI query request object"
+           "Test could not generate a valid TRAPI query request object using identified element"
     assert CodeDictionary.get_message_template("foo.bar") is None
 
 
