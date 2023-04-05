@@ -1,6 +1,6 @@
 """Test validation."""
 from sys import stderr
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Optional
 from copy import deepcopy
 
 import pytest
@@ -165,6 +165,127 @@ def test_nullable_query_level_properties(trapi_version):
         validator.validate({
             "foo": {},  # missing required: message
         }, "Query")
+
+
+SAMPLE_QUERY = {
+        "message": {
+            "knowledge_graph": None,
+            "query_graph": None,
+            "results": None,
+        },
+        "log_level": None
+    }
+
+
+SAMPLE_WORKFLOW_1_0_0 = [
+    {
+        "id": "sort_results_score",
+        "parameters": {
+            "ascending_or_descending": "ascending"
+        }
+    },
+    {
+        "id": "fill",
+        "parameters": {
+            "allowlist": [
+                "infores:aragorn"
+            ]
+        }
+    }
+]
+
+
+@pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
+def test_query_trapi_pre_1_4_0_workflow_properties(trapi_version):
+    """Test flawed TRAPI Query workflow properties with pre-TRAPI 1.4.0."""
+    validator = TRAPISchemaValidator(trapi_version=trapi_version)
+    query = deepcopy(SAMPLE_QUERY)
+    query["workflow"] = SAMPLE_WORKFLOW_1_0_0
+    validator.validate(query, "Query")
+    with pytest.raises(ValidationError):
+        faulty_query_wf = deepcopy(query)
+        # 'workflow' value is not an array?
+        faulty_query_wf["workflow"] = "not_an_array"
+        validator.validate(faulty_query_wf, "Query")
+    with pytest.raises(ValidationError):
+        faulty_query_wf = deepcopy(query)
+        # Items in the 'workflow' array must be workflow spec JSON objects
+        # defined in the schema https://standards.ncats.io/operation/1.3.2/schema
+        faulty_query_wf["workflow"] = [
+            "not_a_workflow_object"
+        ]
+        validator.validate(faulty_query_wf, "Query")
+    with pytest.raises(ValidationError):
+        faulty_query_wf = deepcopy(query)
+        # Items in the 'workflow' array must be well-formed workflow spec JSON objects
+        # as defined in the schema https://standards.ncats.io/operation/1.3.2/schema.
+        # To start, in a workflow object the 'id' object key is mandatory ...
+        faulty_query_wf["workflow"] = [
+            {
+                "runner_parameters": "missing-id"
+            }
+        ]
+        validator.validate(faulty_query_wf, "Query")
+
+
+SAMPLE_WORKFLOW_1_3_2 = [
+    {
+        "id": "sort_results_score",
+        "parameters": {
+            "ascending_or_descending": "ascending"
+        }
+    },
+    {
+        "id": "lookup",
+        "runner_parameters": {
+            "allowlist": [
+                "infores:aragorn"
+            ]
+        }
+    }
+]
+
+
+@pytest.mark.parametrize("trapi_version", LATEST_TEST_VERSIONS)
+def test_query_latest_trapi_workflow_properties(trapi_version):
+    """Test flawed TRAPI Query workflow properties."""
+    validator = TRAPISchemaValidator(trapi_version=trapi_version)
+    query = deepcopy(SAMPLE_QUERY)
+    query["workflow"] = SAMPLE_WORKFLOW_1_3_2
+    validator.validate(query, "Query")
+    with pytest.raises(ValidationError):
+        faulty_query_wf = deepcopy(query)
+        # ...and the 'id' object key should have a schema-defined enum as its value,...
+        faulty_query_wf["workflow"] = [
+            {
+                "id": "not-a-workflow-enum"
+            }
+        ]
+        validator.validate(faulty_query_wf, "Query")
+    with pytest.raises(ValidationError):
+        faulty_query_wf = deepcopy(query)
+        # ...and if 'runner_parameters' key is present and has a non-empty value,
+        # it needs oneOf the "allowlist" or "denylist" keys...
+        faulty_query_wf["workflow"] = [
+            {
+                "id": "sort_results_score",
+                "runner_parameters": {}
+            }
+        ]
+        validator.validate(faulty_query_wf, "Query")
+    with pytest.raises(ValidationError):
+        faulty_query_wf = deepcopy(query)
+        # ...and if 'runner_parameters' object "allowlist" or "denylist"
+        # is present, they must have a non-empty value, of at least one infores CURIE.
+        faulty_query_wf["workflow"] = [
+            {
+                "id": "lookup",
+                "runner_parameters": {
+                    "allowlist": []
+                }
+            }
+        ]
+        validator.validate(faulty_query_wf, "Query")
 
 
 @pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
@@ -493,10 +614,9 @@ def test_latest_trapi_good_message_edge_component_validation(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_VERSIONS)
-def test_latest_trapi_missing_key_or_null_message_edge_component_validation(trapi_version):
-    """Test Message.KnowledgeGraph.Edge components missing
-       their required keys or having null values in
-       TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
+def test_latest_trapi_missing_key_message_edge_component_validation(trapi_version):
+    """Test Message.KnowledgeGraph.Edge components missing their required keys
+       in TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
         validator.validate({
@@ -504,14 +624,21 @@ def test_latest_trapi_missing_key_or_null_message_edge_component_validation(trap
             "foo": {},
             "bar": {},
         }, "Edge")
+
+
+@pytest.mark.parametrize("trapi_version", LATEST_TEST_VERSIONS)
+def test_latest_trapi_null_message_edge_component_validation(trapi_version):
+    """Test Message.KnowledgeGraph.Edge components having null values in
+       TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
+    validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
-        validator.validate({
-            # 'subject', 'predicate', 'object' and 'sources' are also not nullable
-            "subject": None,
-            "predicate": None,
-            "object": None,
-            "sources": None
-        }, "Edge")
+        null_subject: Dict[str, Optional] = SAMPLE_LATEST_TEST_EDGE.copy()
+        null_subject["subject"] = None
+        validator.validate(null_subject, "Edge")
+    with pytest.raises(ValidationError):
+        null_predicate: Dict[str, Optional] = SAMPLE_LATEST_TEST_EDGE.copy()
+        null_predicate["predicate"] = None
+        validator.validate(null_predicate, "Edge")
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_VERSIONS)
@@ -543,7 +670,7 @@ def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trap
         validator.validate(faulty_sources, "Edge")
     with pytest.raises(ValidationError):
         faulty_sources = SAMPLE_LATEST_TEST_EDGE.copy()
-        # items in the sources array must be RetrievalSource objects
+        # items in the 'sources' array must be RetrievalSource objects
         faulty_sources["sources"] = [{"not-an-RetrievalSource-key": "something"}]
         validator.validate(faulty_sources, "Edge")
 
@@ -555,19 +682,19 @@ def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trap
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
         faulty_rs = SAMPLE_RETRIEVAL_SOURCE.copy()
-        # items in the sources array must be
+        # items in the 'sources' array must be
         # RetrievalSource objects with a 'resource' key
         faulty_rs.pop("resource")
         validator.validate(faulty_rs, "RetrievalSource")
     with pytest.raises(ValidationError):
         faulty_rs = SAMPLE_RETRIEVAL_SOURCE.copy()
-        # items in the sources array must be
+        # items in the 'sources' array must be
         # RetrievalSource objects with a 'resource' key
         faulty_rs.pop("resource_role")
         validator.validate(faulty_rs, "RetrievalSource")
     with pytest.raises(ValidationError):
         faulty_rs = SAMPLE_RETRIEVAL_SOURCE.copy()
-        # items in the sources array must be
+        # items in the 'sources' array must be
         # RetrievalSource objects with a 'resource' key
         faulty_rs["resource_role"] = "not_a_ResourceRoleEnum_enum_value"
         validator.validate(faulty_rs, "RetrievalSource")
