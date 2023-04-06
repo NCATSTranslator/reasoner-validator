@@ -6,7 +6,7 @@ from enum import Enum
 from functools import lru_cache
 from urllib.error import HTTPError
 from pprint import PrettyPrinter
-import logging
+
 
 from bmt import Toolkit
 from bmt.utils import parse_name
@@ -16,6 +16,7 @@ from reasoner_validator.sri.util import is_curie
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.versioning import SemVer, SemVerError
 
+import logging
 logger = logging.getLogger(__name__)
 
 pp = PrettyPrinter(indent=4)
@@ -30,6 +31,7 @@ def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional
             # Sanity check: override SemVer object to ignore prerelease and
             # buildmetadata variants of the Biolink Version given
             svm = SemVer(major=svm.major, minor=svm.minor, patch=svm.patch)
+
         except SemVerError:
             raise TypeError(
                 "The 'biolink_version' argument '"
@@ -89,6 +91,7 @@ class BiolinkValidator(ValidationReporter):
     def __init__(
         self,
         graph_type: TRAPIGraphType,
+        trapi_version: Optional[str] = None,
         biolink_version: Optional[str] = None,
         sources: Optional[Dict[str, str]] = None,
         strict_validation: bool = False
@@ -98,7 +101,9 @@ class BiolinkValidator(ValidationReporter):
 
         :param graph_type: type of graph data being validated
         :type graph_type: TRAPIGraphType
-        :param biolink_version: caller specified Biolink Model version (default: None)
+        :param trapi_version: caller specified Biolink Model version (default: None, which takes the TRAPI 'latest')
+        :type trapi_version: Optional[str] or None
+        :param biolink_version: caller specified Biolink Model version (default: None, which takes the BMT 'latest')
         :type biolink_version: Optional[str] or None
         :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
         :type sources: Optional[Dict[str,str]]
@@ -108,6 +113,7 @@ class BiolinkValidator(ValidationReporter):
         ValidationReporter.__init__(
             self,
             prefix=f"Biolink Validation of {graph_type.value}",
+            trapi_version=trapi_version,
             biolink_version=resolved_biolink_version,
             sources=sources,
             strict_validation=strict_validation
@@ -128,7 +134,7 @@ class BiolinkValidator(ValidationReporter):
             logger.error(f"minimum_required_biolink_version() error: {str(sve)}")
             return False
 
-    def get_result(self) -> Tuple[str, Optional[Dict[str, Dict[str, Optional[List[Dict[str,str]]]]]]]:
+    def get_result(self) -> Tuple[str, Optional[Dict[str, Dict[str, Optional[List[Dict[str, str]]]]]]]:
         """
         Get result of validation.
 
@@ -309,9 +315,15 @@ class BiolinkValidator(ValidationReporter):
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
         if 'attributes' not in edge:
-            self.report(code="error.knowledge_graph.edge.attribute.missing", identifier=edge_id)
+            if not self.minimum_required_trapi_version("1.4.0-beta"):
+                # we only report errors about missing or empty edge attributes
+                # if TRAPI 1.3.0 or earlier expected to have provenance
+                self.report(code="error.knowledge_graph.edge.attribute.missing", identifier=edge_id)
         elif not edge['attributes']:
-            self.report(code="error.knowledge_graph.edge.attribute.empty", identifier=edge_id)
+            if not self.minimum_required_trapi_version("1.4.0-beta"):
+                # we only report errors about empty edge attributes
+                # if TRAPI 1.3.0 or earlier expected to have provenance
+                self.report(code="error.knowledge_graph.edge.attribute.empty", identifier=edge_id)
         elif not isinstance(edge['attributes'], List):
             self.report(code="error.knowledge_graph.edge.attribute.not_array", identifier=edge_id)
         else:
@@ -876,12 +888,12 @@ def check_biolink_model_compliance_of_input_edge(
     :param edge: basic contents of a templated input edge - S-P-O including concept Biolink Model categories
     :type edge: Dict[str,str]
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
-                            validated (Default: if None, use the Biolink Model Toolkit default version.
+                            validated (Default: if None, use the Biolink Model Toolkit default version).
     :type biolink_version: Optional[str] = None
     :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
     :type strict_validation: bool = False
 
-    :returns: Biolink Model validator cataloging validation messages (may be empty)
+    :returns: Biolink Model validator cataloging validation messages (maybe empty)
     :rtype: BiolinkValidator
     """
     if strict_validation is None:
@@ -912,12 +924,12 @@ def check_biolink_model_compliance_of_query_graph(
     :param graph: query graph to be validated
     :type graph: Dict
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
-                            validated (Default: if None, use the Biolink Model Toolkit default version.
+                            validated (Default: if None, use the Biolink Model Toolkit default version).
     :type biolink_version: Optional[str] = None
     :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
     :type strict_validation: Optional[bool] = None; defaults to 'False' if not set
 
-    :returns: Biolink Model validator cataloging validation messages (may be empty)
+    :returns: Biolink Model validator cataloging validation messages (maybe empty)
     :rtype: BiolinkValidator
     """
     # One typically won't be stringent in QueryGraph validation; however,
@@ -949,14 +961,14 @@ def check_biolink_model_compliance_of_knowledge_graph(
     :param graph: knowledge graph to be validated.
     :type graph: Dict
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
-                            validated (Default: if None, use the Biolink Model Toolkit default version.
+                            validated (Default: if None, use the Biolink Model Toolkit default version).
     :type biolink_version: Optional[str] = None
     :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
     :type sources: Dict
     :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
     :type strict_validation: Optional[bool] = None; defaults to 'True' if not set
 
-    :returns: Biolink Model validator cataloging validation messages (may be empty)
+    :returns: Biolink Model validator cataloging validation messages (maybe empty)
     :rtype: BiolinkValidator
     """
     # One typically will want stringent validation for Knowledge Graphs; however,

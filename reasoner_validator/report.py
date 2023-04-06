@@ -7,7 +7,10 @@ import copy
 from json import dumps, JSONEncoder
 
 from reasoner_validator.validation_codes import CodeDictionary
-from reasoner_validator.versioning import get_latest_version
+from reasoner_validator.versioning import SemVer, SemVerError, get_latest_version
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class ReportJsonEncoder(JSONEncoder):
@@ -125,6 +128,19 @@ class ValidationReporter:
         :return: str, TRAPI (SemVer) version currently targeted by the ValidationReporter.
         """
         return self.trapi_version
+
+    def minimum_required_trapi_version(self, version: str) -> bool:
+        """
+        :param version: simple 'major.minor.patch' TRAPI schema release SemVer
+        :return: True if current version is equal to, or newer than, a targeted 'minimum_version'
+        """
+        try:
+            current: SemVer = SemVer.from_string(self.trapi_version)
+            target: SemVer = SemVer.from_string(version)
+            return current >= target
+        except SemVerError as sve:
+            logger.error(f"minimum_required_trapi_version() error: {str(sve)}")
+            return False
 
     def get_biolink_version(self) -> str:
         """
@@ -520,7 +536,7 @@ class ValidationReporter:
                                 first_message: bool = True
                                 messages_per_row: int = 0
                                 num_messages: int = len(messages)
-                                more_messages: int = num_messages - msg_rows if num_messages > msg_rows else 0
+                                more_msgs: int = num_messages - msg_rows if num_messages > msg_rows else 0
 
                                 for parameters in messages:
 
@@ -533,9 +549,9 @@ class ValidationReporter:
 
                                     messages_per_row += 1
                                     if msg_rows and messages_per_row >= msg_rows:
-                                        if more_messages:
+                                        if more_msgs:
                                             print(
-                                                f"\t{str(more_messages)} more messages for identifier '{identifier}'...",
+                                                f"\t{str(more_msgs)} more messages for identifier '{identifier}'...",
                                                 file=file
                                             )
                                         break
@@ -576,7 +592,6 @@ class ValidationReporter:
         :param msg_rows: int >= 0, if set, maximum number of parameterized code-related messages to
                                   print per identifier row (value of 0 means print all; default: 0)
         :param compact_format: bool, if True, omit blank lines inserted by default for human readability (default: True)
-        :param file: target file device for output
         :return: n/a
         """
         output_buffer: StringIO = StringIO()

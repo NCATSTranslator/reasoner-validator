@@ -26,11 +26,9 @@ logger.setLevel("DEBUG")
 
 pp = PrettyPrinter(indent=4)
 
-# TRAPI 1.4 is still a work-in-progress as of February 2023, so we stay with 1.3 for now(?)
-LATEST_TRAPI_VERSION = "1.3"
-
-# January 25, 2023 - as of reasoner-validator 3.1.0, we don't pretend to totally support Biolink Models
-# any earlier than 3.1.1.  If earlier biolink model compliance testing is desired,
+# January 25, 2023 - as of reasoner-validator 3.1.0,
+# we don't pretend to totally support Biolink Models any earlier than 3.1.1.
+# If earlier biolink model compliance testing is desired,
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
 LATEST_BIOLINK_MODEL_VERSION = "3.2.0"
 
@@ -854,8 +852,70 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             # "Edge has empty attributes!"
             "error.knowledge_graph.edge.attribute.empty"
         ),
+    ]
+)
+def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(query: Tuple):
+    validator = BiolinkValidator(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        trapi_version="1.3.0",
+        biolink_version=LATEST_BIOLINK_MODEL_VERSION,
+        sources=query[1]
+    )
+    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
+    check_messages(validator, query[2])
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        # These tests should all pass in TRAPI releases >= 1.4.0-beta
+        # (
+        #         "mock_edge",  # mock data has dumb edges: don't worry about the S-P-O, just the attributes
+        #         "mock_context",
+        #         "AssertError_message"
+        # ),   # set 3rd argument to AssertError message if test edge should 'fail'; otherwise, empty string (for pass)
         (
-            # Query 3. Empty attributes
+            # Query 0. 'attributes' key missing in edge record is None
+            {},
+            get_ara_test_case(),
+            # "Edge has no 'attributes' key!"
+            ""
+        ),
+        (
+            # Query 1. Empty attributes
+            {
+                "attributes": None
+            },
+            get_ara_test_case(),
+            # "Edge has empty attributes!"
+            ""
+        ),
+        (
+            # Query 2. Empty attributes
+            {
+                "attributes": []
+            },
+            get_ara_test_case(),
+            # "Edge has empty attributes!"
+            ""
+        ),
+    ]
+)
+def test_post_1_4_0_trapi_validate_missing_or_empty_attributes(query: Tuple):
+    validator = BiolinkValidator(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        biolink_version=LATEST_BIOLINK_MODEL_VERSION,
+        sources=query[1]
+    )
+    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
+    check_messages(validator, query[2])
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (
+            # Query 0. Attributes are not a proper array
             {
                 "attributes": {"not_a_list"}
             },
@@ -864,7 +924,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.knowledge_graph.edge.attribute.not_array"
         ),
         (
-            # Query 4. attribute missing its 'attribute_type_id' field
+            # Query 1. attribute missing its 'attribute_type_id' field
             {
                 "attributes": [
                     {"value": ""}
@@ -875,7 +935,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.knowledge_graph.edge.attribute.type_id.missing"
         ),
         (
-            # Query 5. attribute missing its 'value' field
+            # Query 2. attribute missing its 'value' field
             {
                 "attributes": [
                     {"attribute_type_id": "biolink:p_value"}
@@ -886,7 +946,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.knowledge_graph.edge.attribute.value.missing"
         ),
         (
-            # Query 6. Missing ARA knowledge source provenance?
+            # Query 3. Missing ARA knowledge source provenance?
             {
                 "attributes": [
                     {
@@ -900,7 +960,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "warning.knowledge_graph.edge.provenance.ara.missing"
         ),
         (
-            # Query 7. value is an empty list?
+            # Query 4. value is an empty list?
             {
                 "attributes": [
                     {
@@ -914,7 +974,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 8. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            # Query 5. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
             {
                 "attributes": [
                     {
@@ -936,7 +996,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.knowledge_graph.edge.attribute.type_id.not_curie"
         ),
         (
-            # Query 9. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            # Query 6. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
             {
                 "attributes": [
                     {
@@ -954,7 +1014,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.knowledge_graph.edge.provenance.infores.missing"
         ),
         (
-            # Query 10. KP provenance value is missing?
+            # Query 7. KP provenance value is missing?
             {
                 "attributes": [
                     {
@@ -987,7 +1047,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
         #     "warning.knowledge_graph.attribute.type_id.deprecated"
         # ),
         (
-            # Query 11. kp type is 'primary'. Should pass?
+            # Query 8. kp type is 'primary'. Should pass?
             {
                 "attributes": [
                     {
@@ -1004,7 +1064,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             ""
         ),
         (
-            # Query 12. Missing 'primary' nor 'original' knowledge source
+            # Query 9. Missing 'primary' nor 'original' knowledge source
             {
                 "attributes": [
                     {
@@ -1023,7 +1083,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             "error.knowledge_graph.edge.provenance.missing_primary"
         ),
         (
-            # Query 13. Is complete and should pass?
+            # Query 10. Is complete and should pass?
             {
                 "attributes": [
                     {
@@ -1057,7 +1117,7 @@ def test_validate_attributes(query: Tuple):
 
 def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str]):
     # Sanity check: does TRAPI validation catch this first?
-    trapi_validator = TRAPISchemaValidator(trapi_version=LATEST_TRAPI_VERSION)
+    trapi_validator = TRAPISchemaValidator()
     # Wrap Qualifiers inside a small mock QEdge
     mock_edge: Dict = copy.deepcopy(query[0])
     mock_edge["subject"] = "mock_subject"
