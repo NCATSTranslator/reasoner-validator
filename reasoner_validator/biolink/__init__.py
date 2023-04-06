@@ -950,16 +950,19 @@ def check_biolink_model_compliance_of_query_graph(
 
 def check_biolink_model_compliance_of_knowledge_graph(
     graph: Dict,
+    trapi_version: Optional[str] = None,
     biolink_version: Optional[str] = None,
     sources: Optional[Dict] = None,
     strict_validation: Optional[bool] = None
 ) -> BiolinkValidator:
     """
-    Strict validation of a TRAPI-schema compliant Message Knowledge Graph
-     against a designated Biolink Model release.
+    Strict validation of a TRAPI-schema compliant Message Knowledge Graph against a designated Biolink Model release.
 
     :param graph: knowledge graph to be validated.
     :type graph: Dict
+    :param trapi_version: TRAPI schema (SemVer) release against which the knowledge graph is to be
+                            validated (Default: if None, use the latest available version).
+    :type trapi_version: Optional[str] = None
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                             validated (Default: if None, use the Biolink Model Toolkit default version).
     :type biolink_version: Optional[str] = None
@@ -980,6 +983,7 @@ def check_biolink_model_compliance_of_knowledge_graph(
 
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
+        trapi_version=trapi_version,
         biolink_version=biolink_version,
         sources=sources,
         strict_validation=strict_validation

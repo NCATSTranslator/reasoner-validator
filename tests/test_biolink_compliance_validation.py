@@ -1115,9 +1115,14 @@ def test_validate_attributes(query: Tuple):
     check_messages(validator, query[2])
 
 
-def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str]):
+def qualifier_validator(
+        tested_method,
+        edge_model: str,
+        query: Tuple[Dict, str],
+        trapi_version: Optional[str] = None
+):
     # Sanity check: does TRAPI validation catch this first?
-    trapi_validator = TRAPISchemaValidator()
+    trapi_validator = TRAPISchemaValidator(trapi_version=trapi_version)
     # Wrap Qualifiers inside a small mock QEdge
     mock_edge: Dict = copy.deepcopy(query[0])
     mock_edge["subject"] = "mock_subject"
@@ -1245,22 +1250,7 @@ def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str])
             },
             "error.trapi.validation"
         ),
-        (  # Query 12 - 'qualifier_type_id' property value is not a Biolink CURIE
-            {
-                'qualifier_constraints': [
-                    {
-                        "qualifier_set": [
-                            {
-                                'qualifier_type_id': "not-a-curie",
-                                'qualifier_value': "fake-qualifier-value"
-                            }
-                        ]
-                    }
-                ]
-            },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
-        ),
-        (  # Query 13 - 'qualifier_type_id' property value is unknown
+        (  # Query 12 - 'qualifier_type_id' property value is unknown
             {
                 'qualifier_constraints': [
                     {
@@ -1275,7 +1265,7 @@ def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str])
             },
             "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
         ),
-        (  # Query 14 - 'qualifier_type_id' property value is valid but abstract
+        (  # Query 13 - 'qualifier_type_id' property value is valid but abstract
             {
                 'qualifier_constraints': [
                     {
@@ -1291,7 +1281,7 @@ def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str])
             # "info.query_graph.edge.qualifier.abstract"
             "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.unresolved"
         ),
-        (  # Query 15 - 'qualifier_type_id' property value is not a Biolink qualifier term
+        (  # Query 14 - 'qualifier_type_id' property value is not a Biolink qualifier term
             {
                 'qualifier_constraints': [
                     {
@@ -1306,7 +1296,7 @@ def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str])
             },
             "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
         ),
-        (  # Query 16 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
+        (  # Query 15 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
             {
                 'qualifier_constraints': [
                     {
@@ -1320,7 +1310,7 @@ def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str])
             },
             "error.trapi.validation"
         ),
-        (   # Query 17 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
+        (   # Query 16 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
             #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
             {
                 'qualifier_constraints': [
@@ -1353,7 +1343,7 @@ def qualifier_validator(tested_method, edge_model: str, query: Tuple[Dict, str])
         #     },
         #     ""    # this other use case should also pass
         # ),
-        (   # Query 18 - 'qualifier_type_id' is a valid Biolink qualifier type and
+        (   # Query 17 - 'qualifier_type_id' is a valid Biolink qualifier type and
             #             'UBERON:0001981' a valid corresponding 'reachable from' enum 'qualifier_value'
             {
                 'qualifier_constraints': [
@@ -1376,6 +1366,44 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
         query=query
+    )
+
+
+NOT_A_CURIE = {
+    'qualifier_constraints': [
+        {
+            "qualifier_set": [
+                {
+                    'qualifier_type_id': "not-a-curie",
+                    'qualifier_value': "fake-qualifier-value"
+                }
+            ]
+        }
+    ]
+}
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (  # Query 0 - 'qualifier_type_id' value not a Biolink CURIE - seen as 'unknown' in TRAPI < 1.4.0-beta
+            "1.3.0",
+            NOT_A_CURIE,
+            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
+        ),
+        (  # Query 1 - 'qualifier_type_id' value not a Biolink CURIE - schema validation error in TRAPI < 1.4.0-beta
+            "1.4.0-beta",
+            NOT_A_CURIE,
+            "error.trapi.validation"
+        )
+    ]
+)
+def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict, str]):
+    qualifier_validator(
+        tested_method=BiolinkValidator.validate_qualifier_constraints,
+        edge_model="QEdge",
+        query=query[1:],
+        trapi_version=query[0]
     )
 
 
@@ -2262,36 +2290,7 @@ def test_validate_qualifiers(query: Tuple):
             # TODO: Code for validating this is commented out pending a BMT repair of the test
             "warning.knowledge_graph.edge.attribute.type_id.unknown_prefix"
         ),
-        (
-            LATEST_BIOLINK_MODEL_VERSION,
-            # Query 26: has missing or empty attributes?
-            {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
-                "edges": {
-                    "edge_1": {
-                        "subject": "NCBIGene:29974",
-                        "predicate": "biolink:physically_interacts_with",
-                        "object": "PUBCHEM.COMPOUND:597",
-                        # "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
-                    }
-                }
-            },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge has no 'attributes' key!"
-            "error.knowledge_graph.edge.attribute.missing"
-        ),
-        (   # Query 27:  # An earlier Biolink Model won't recognize a category not found in its specified release
+        (   # Query 26:  # An earlier Biolink Model won't recognize a category not found in its specified release
             "1.8.2",
             {
                 # Sample nodes
@@ -2326,3 +2325,47 @@ def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
         graph=query[1], biolink_version=query[0]
     )
     check_messages(validator, query[2])
+
+
+MESSAGE_WITHOUT_ATTRIBUTES = {
+    "nodes": {
+        "NCBIGene:29974": {
+           "categories": [
+               "biolink:Gene"
+           ]
+        },
+        "PUBCHEM.COMPOUND:597": {
+            "name": "cytosine",
+            "categories": [
+                "biolink:SmallMolecule"
+            ],
+        }
+    },
+    "edges": {
+        "edge_1": {
+            "subject": "NCBIGene:29974",
+            "predicate": "biolink:physically_interacts_with",
+            "object": "PUBCHEM.COMPOUND:597",
+            # "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+        }
+    }
+}
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        ("1.3.0", "error.knowledge_graph.edge.attribute.missing"),
+
+        # no attributes strictly needed in 1.4.0-beta since now the
+        # mandatory provenance attributes are in the Edge.sources == RetrievalSource's
+        ("1.4.0-beta", "")
+    ]
+)
+def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
+    validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
+        graph=MESSAGE_WITHOUT_ATTRIBUTES,
+        trapi_version=query[0],
+        biolink_version=LATEST_BIOLINK_MODEL_VERSION
+    )
+    check_messages(validator, query[1])
