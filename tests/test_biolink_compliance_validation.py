@@ -1522,20 +1522,19 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             },
             ""    # this particular use case should pass
         ),
-        # (   #  *** Currently unsupported use case:
-        #     # Query xx - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
-        #     #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'
-        #     {
-        #         'qualifiers': [
-        #             {
-        #                 'qualifier_type_id': "biolink:object_direction_qualifier",
-        #                 'qualifier_value': "RO:0002213"   # RO 'exact match' term for 'upregulated'
-        #             }
-        #         ]
-        #     },
-        #     ""    # this other use case should also pass
-        # ),
-        (   # Query 13 - 'qualifier_type_id' is a valid Biolink qualifier type and
+        (   # Query 13 - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
+            #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:object_direction_qualifier",
+                        'qualifier_value': "RO:0002213"   # RO 'exact match' term for 'upregulated'
+                    }
+                ]
+            },
+            ""    # this other use case should also pass
+        ),
+        (   # Query 14 - 'qualifier_type_id' is a valid Biolink qualifier type and
             #             'UBERON:0001981' a valid corresponding 'reachable from' enum 'qualifier_value'
             {
                 'qualifiers': [
