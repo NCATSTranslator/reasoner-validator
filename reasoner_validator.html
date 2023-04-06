@@ -197,13 +197,21 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code>(reporter)</p></td>
 <td><p>Merge all messages and metadata from a second ValidationReporter, into the calling ValidationReporter instance.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>(code, **message)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_trapi_version</span></code>(version)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param version</dt>
+<dd class="field-odd"><p>simple 'major.minor.patch' TRAPI schema release SemVer</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>(code, **message)</p></td>
 <td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters) :param code:  :param message: named parameters representing extra (str-formatted) context for the given code message :return: None (internally record the validation message)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sample_graph" title="reasoner_validator.TRAPIResponseValidator.sample_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_graph</span></code></a>(graph[, edges_limit])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sample_graph" title="reasoner_validator.TRAPIResponseValidator.sample_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_graph</span></code></a>(graph[, edges_limit])</p></td>
 <td><p>Only process a strict subsample of the TRAPI Response Message knowledge graph.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sample_results" title="reasoner_validator.TRAPIResponseValidator.sample_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_results</span></code></a>(results)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sample_results" title="reasoner_validator.TRAPIResponseValidator.sample_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_results</span></code></a>(results)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param results</dt>
 <dd class="field-odd"><p>List, original list of Results</p>
@@ -211,7 +219,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query" title="reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sanitize_trapi_query</span></code></a>(response)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query" title="reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sanitize_trapi_query</span></code></a>(response)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param response</dt>
 <dd class="field-odd"><p>Dict full TRAPI Response JSON object</p>
@@ -219,7 +227,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
 <td><p>Export ValidationReporter contents as a Python dictionary (including TRAPI version, Biolink Model version and messages) :return: Dict</p></td>
 </tr>
 </tbody>

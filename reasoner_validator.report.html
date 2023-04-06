@@ -76,6 +76,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_warnings"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.has_warnings()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.is_strict_validation"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.is_strict_validation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.merge"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.merge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.minimum_required_trapi_version"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.minimum_required_trapi_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.report"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.report()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.to_dict"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.to_dict()</span></code></a></li>
 </ul>
@@ -254,10 +255,18 @@ this abstract level although their application is within specific pertinent subc
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.merge" title="reasoner_validator.report.ValidationReporter.merge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code></a>(reporter)</p></td>
 <td><p>Merge all messages and metadata from a second ValidationReporter, into the calling ValidationReporter instance.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.report" title="reasoner_validator.report.ValidationReporter.report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code></a>(code, **message)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.minimum_required_trapi_version" title="reasoner_validator.report.ValidationReporter.minimum_required_trapi_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_trapi_version</span></code></a>(version)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param version</dt>
+<dd class="field-odd"><p>simple 'major.minor.patch' TRAPI schema release SemVer</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.report" title="reasoner_validator.report.ValidationReporter.report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code></a>(code, **message)</p></td>
 <td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters) :param code:  :param message: named parameters representing extra (str-formatted) context for the given code message :return: None (internally record the validation message)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.to_dict" title="reasoner_validator.report.ValidationReporter.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.to_dict" title="reasoner_validator.report.ValidationReporter.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>()</p></td>
 <td><p>Export ValidationReporter contents as a Python dictionary (including TRAPI version, Biolink Model version and messages) :return: Dict</p></td>
 </tr>
 </tbody>
@@ -366,7 +375,6 @@ print per code (value of 0 means print all; default: 0)</p></li>
 <li><p><strong>msg_rows</strong> – int &gt;= 0, if set, maximum number of parameterized code-related messages to
 print per identifier row (value of 0 means print all; default: 0)</p></li>
 <li><p><strong>compact_format</strong> – bool, if True, omit blank lines inserted by default for human readability (default: True)</p></li>
-<li><p><strong>file</strong> – target file device for output</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -498,6 +506,19 @@ into the calling ValidationReporter instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>reporter</strong> – second ValidationReporter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.minimum_required_trapi_version">
+<span class="sig-name descname"><span class="pre">minimum_required_trapi_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.minimum_required_trapi_version" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>version</strong> – simple ‘major.minor.patch’ TRAPI schema release SemVer</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if current version is equal to, or newer than, a targeted ‘minimum_version’</p>
 </dd>
 </dl>
 </dd></dl>
