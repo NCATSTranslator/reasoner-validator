@@ -1526,7 +1526,9 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             ""    # this particular use case should pass
         ),
         (   # Query 12 - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
-            #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'
+            #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'.
+            #            This unit test won't pass without a modification of the Biolink Model Toolkit
+            #            method for validating qualifier values to accept mapped values.
             {
                 'qualifiers': [
                     {
