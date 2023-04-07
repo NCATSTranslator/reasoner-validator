@@ -2,6 +2,13 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.4.15
+
+- Fixes bug in TRAPI semver which could not process release **`1.4.0-beta2`** because of the missing 'v' prefix.
+- Release 1.4.0-beta validation should not now complain about missing Edge attributes
+- Significant iteration on repairing unit tests which have differential expectations pre- and post- 1.4.0-beta (incomplete)
+- Some basic refactoring to fix validation to be 1.4.0-beta (or later) compliant (incomplete)
+
 ## v3.4.14
 
 - Set default of compact_format to 'True' and title=None (suppress), in dumps() output.
