@@ -1126,6 +1126,19 @@ def qualifier_validator(
     # Wrap Qualifiers inside a small mock QEdge
     mock_edge: Dict = copy.deepcopy(query[0])
     mock_edge["subject"] = "mock_subject"
+
+    if trapi_validator.minimum_required_trapi_version("1.4.0-beta"):
+        # not testing Edge semantics here but rather, the qualifiers,
+        # but from 1.4.0-beta onwards, we also need
+        # a non-null predicate and the new 'sources' field here!
+        mock_edge["predicate"] = "biolink:related_to"
+        mock_edge["sources"] = [
+            {
+                "resource": "infores:molepro",
+                "resource_role": "primary_knowledge_source"
+            }
+        ]
+
     mock_edge["object"] = "mock_object"
     trapi_validator.is_valid_trapi_query(mock_edge, edge_model)
     if trapi_validator.has_errors():
@@ -1134,6 +1147,7 @@ def qualifier_validator(
         # if you get this far,then attempt additional Biolink Validation
         validator = BiolinkValidator(
             graph_type=TRAPIGraphType.Query_Graph,
+            trapi_version=trapi_version,
             biolink_version=LATEST_BIOLINK_MODEL_VERSION
         )
         tested_method(
@@ -1369,7 +1383,7 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
     )
 
 
-NOT_A_CURIE = {
+QC_QS_NOT_A_CURIE = {
     'qualifier_constraints': [
         {
             "qualifier_set": [
@@ -1388,12 +1402,12 @@ NOT_A_CURIE = {
     [
         (  # Query 0 - 'qualifier_type_id' value not a Biolink CURIE - seen as 'unknown' in TRAPI < 1.4.0-beta
             "1.3.0",
-            NOT_A_CURIE,
+            QC_QS_NOT_A_CURIE,
             "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
         ),
         (  # Query 1 - 'qualifier_type_id' value not a Biolink CURIE - schema validation error in TRAPI < 1.4.0-beta
             "1.4.0-beta",
-            NOT_A_CURIE,
+            QC_QS_NOT_A_CURIE,
             "error.trapi.validation"
         )
     ]
@@ -1455,18 +1469,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             },
             "error.trapi.validation"
         ),
-        (  # Query 7 - 'qualifier_type_id' property value is not a Biolink CURIE
-            {
-                'qualifiers': [
-                    {
-                        'qualifier_type_id': "not-a-curie",
-                        'qualifier_value': "fake-qualifier-value"
-                    }
-                ]
-            },
-            "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown"
-        ),
-        (  # Query 8 - 'qualifier_type_id' property value is unknown
+        (  # Query 7 - 'qualifier_type_id' property value is unknown
             {
                 'qualifiers': [
                     {
@@ -1477,7 +1480,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             },
             "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown"
         ),
-        (  # Query 9 - 'qualifier_type_id' property value is valid but abstract
+        (  # Query 8 - 'qualifier_type_id' property value is valid but abstract
             {
                 'qualifiers': [
                     {
@@ -1489,7 +1492,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             # "info.query_graph.edge.qualifier.abstract"
             "error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved"
         ),
-        (  # Query 10 - 'qualifier_type_id' property value is not a Biolink qualifier term
+        (  # Query 9 - 'qualifier_type_id' property value is not a Biolink qualifier term
             {
                 'qualifiers': [
                     {
@@ -1500,7 +1503,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             },
             "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown"
         ),
-        (  # Query 11 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
+        (  # Query 10 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
             {
                 'qualifiers': [
                     {
@@ -1510,7 +1513,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             },
             "error.trapi.validation"
         ),
-        (   # Query 12 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
+        (   # Query 11 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
             #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
             {
                 'qualifiers': [
@@ -1522,7 +1525,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             },
             ""    # this particular use case should pass
         ),
-        (   # Query 13 - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
+        (   # Query 12 - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
             #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'
             {
                 'qualifiers': [
@@ -1534,7 +1537,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             },
             ""    # this other use case should also pass
         ),
-        (   # Query 14 - 'qualifier_type_id' is a valid Biolink qualifier type and
+        (   # Query 13 - 'qualifier_type_id' is a valid Biolink qualifier type and
             #             'UBERON:0001981' a valid corresponding 'reachable from' enum 'qualifier_value'
             {
                 'qualifiers': [
@@ -1553,6 +1556,40 @@ def test_validate_qualifiers(query: Tuple):
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         query=query
+    )
+
+
+Q_NOT_A_CURIE = {
+    'qualifiers': [
+        {
+            'qualifier_type_id': "not-a-curie",
+            'qualifier_value': "fake-qualifier-value"
+        }
+    ]
+}
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (  # Query 0 - 'qualifier_type_id' value not a Biolink CURIE - seen as 'unknown' in TRAPI < 1.4.0-beta
+                "1.3.0",
+                Q_NOT_A_CURIE,
+                "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown"
+        ),
+        (  # Query 1 - 'qualifier_type_id' value not a Biolink CURIE - schema validation error in TRAPI < 1.4.0-beta
+                "1.4.0-beta",
+                Q_NOT_A_CURIE,
+                "error.trapi.validation"
+        )
+    ]
+)
+def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
+    qualifier_validator(
+        tested_method=BiolinkValidator.validate_qualifiers,
+        edge_model="Edge",
+        query=query[1:],
+        trapi_version=query[0]
     )
 
 
