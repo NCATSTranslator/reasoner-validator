@@ -51,8 +51,10 @@ def load_schema(target: str):
     """
     mapped_release = get_latest_version(target)
     if mapped_release:
-        schema_version = f"v{mapped_release}"  # version tag has 'v' prefix on the release identifier
+        schema_version = mapped_release
     elif target in branches:
+        # cases in which a branch name is
+        # given instead of a release number
         schema_version = target
     else:
         err_msg: str = f"No TRAPI version {target}"
@@ -89,7 +91,7 @@ def openapi_to_jsonschema(schema, version: str) -> None:
 
     mapped_semver: Optional[SemVer]
     try:
-        mapped_semver = SemVer.from_string(version, ignore_prefix="v")
+        mapped_semver = SemVer.from_string(version)
     except SemVerError as sve:
         # if we cannot map the version, then it may simply
         # be a non-versioned branch of the schemata

@@ -26,7 +26,7 @@ def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional
     # Get Biolink Model Schema
     if biolink_version:
         try:
-            svm = SemVer.from_string(biolink_version, ignore_prefix='v')
+            svm = SemVer.from_string(biolink_version)
 
             # Sanity check: override SemVer object to ignore prerelease and
             # buildmetadata variants of the Biolink Version given
@@ -39,11 +39,7 @@ def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional
                 + "' is not a properly formatted semantic version?"
             )
 
-        if svm >= SemVer.from_string("2.2.14"):
-            biolink_version = "v" + str(svm)
-        else:
-            biolink_version = str(svm)
-        schema = f"https://raw.githubusercontent.com/biolink/biolink-model/{biolink_version}/biolink-model.yaml"
+        schema = f"https://raw.githubusercontent.com/biolink/biolink-model/{str(svm)}/biolink-model.yaml"
         return schema
     else:
         return None
