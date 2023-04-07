@@ -1129,12 +1129,12 @@ def qualifier_validator(
 
     if trapi_validator.minimum_required_trapi_version("1.4.0-beta"):
         # not testing Edge semantics here but rather, the qualifiers,
-        # but from 1.4.0-beta onwards, we also need
+        # but from 1.4.0-beta(2) onwards, we also need
         # a non-null predicate and the new 'sources' field here!
         mock_edge["predicate"] = "biolink:related_to"
         mock_edge["sources"] = [
             {
-                "resource": "infores:molepro",
+                "resource_id": "infores:molepro",
                 "resource_role": "primary_knowledge_source"
             }
         ]
