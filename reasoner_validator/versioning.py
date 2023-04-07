@@ -3,6 +3,7 @@ import re
 from typing import NamedTuple, Optional, List
 from os import environ
 from functools import lru_cache
+from re import sub
 import requests
 try:
     from yaml import CLoader as Loader
@@ -167,18 +168,18 @@ _latest = dict()
 # Provide an accessor function for retrieving the latest version in string format
 def get_latest_version(release_tag: str) -> Optional[str]:
     global _latest
-    latest: SemVer = _latest.get(release_tag, None)
-    if latest:
-        return str(latest)
-    else:
-        return None
+    # strip any prefix from the release tag to ensure that
+    # only the SemVer part is used for the latest version lookup
+    release = sub(r'^[^0-9]+', '', release_tag)
+    latest: SemVer = _latest.get(release, None)
+    return str(latest) if latest else None
 
 
-def _set_preferred_version(release_tag: str, candidate_release: SemVer):
+def _set_preferred_version(release_tag: str, target_release: SemVer):
     global _latest
     latest_4_release_tag: Optional[SemVer] = _latest.get(release_tag, None)
-    if not latest_4_release_tag or (candidate_release >= latest_4_release_tag):
-        _latest[release_tag] = candidate_release
+    if not latest_4_release_tag or (target_release >= latest_4_release_tag):
+        _latest[release_tag] = target_release
 
 
 for version in versions:
