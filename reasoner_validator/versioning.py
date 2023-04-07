@@ -17,11 +17,7 @@ GIT_REPO = environ.setdefault('GIT_REPOSITORY', "ReasonerAPI")
 
 response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/releases")
 release_data = response.json()
-versions = [
-    release["tag_name"][1:]
-    for release in release_data
-    if release["tag_name"].startswith("v")
-]
+versions = [release["tag_name"] for release in release_data]
 
 response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/branches")
 branch_data = response.json()
@@ -29,8 +25,10 @@ branches = [
     branch["name"] for branch in branch_data
 ]
 
+# This is modified version of a standard SemVer regex which
+# takes into account the possibility of capturing a non-numeric prefix
 semver_pattern = re.compile(
-    r"^(?P<major>0|[1-9]\d*)(\.(?P<minor>0|[1-9]\d*)(\.(?P<patch>0|[1-9]\d*))?)?" +
+    r"^(?P<prefix>[a-zA-Z]*)(?P<major>0|[1-9]\d*)(\.(?P<minor>0|[1-9]\d*)(\.(?P<patch>0|[1-9]\d*))?)?" +
     r"(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][\da-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][\da-zA-Z-]*))*))?"
     r"(?:\+(?P<buildmetadata>[\da-zA-Z-]+(?:\.[\da-zA-Z-]+)*))?$"
 )
@@ -45,36 +43,39 @@ class SemVerUnderspecified(SemVerError):
 
 
 class SemVer(NamedTuple):
-    major: int
-    minor: int
-    patch: int
+
+    prefix: str = ""
+    major: int = 0
+    minor: int = 0
+    patch: int = 1
     prerelease: Optional[str] = None
     buildmetadata: Optional[str] = None
 
     @classmethod
     @lru_cache(maxsize=32)
-    def from_string(cls, string: str, ignore_prefix: Optional[str] = None):
+    def from_string(cls, string: str, ignore_prefix: bool = False):
         """
-        Initializes a SemVer from a string.
+        Initializes a SemVer from a string.  This is an 'augmented' SemVer which may also have
+        an alphabetic prefix (for example, a 'v' for 'version' designation of a Github release)
 
         :param string: str, string encoding the SemVer.
-        :param ignore_prefix: Optional[str], if set, gives a prefix of the SemVer string to be ignored before validating
-                              the SemVer string value, e.g. a Git Release 'v' character (i.e. v1.2.3); Default: None.
+        :param ignore_prefix: bool, if set, any alphabetic prefix of the SemVer string is ignored (not recorded)
+                              the SemVer string value, e.g. a Git Release 'v' character (i.e. v1.2.3); Default: False.
         :return:
         """
-        if ignore_prefix:
-            string = string.replace(ignore_prefix, "")
-
         match = semver_pattern.fullmatch(string)
 
         if match is None:
             raise SemVerError(f"'{string}' is not a valid release version")
 
         captured = match.groupdict()
+
         if not all([group in captured for group in ['major', 'minor', 'patch']]):
             raise SemVerUnderspecified(f"'{string}' is missing minor and/or patch versions")
+
         try:
             return cls(
+                captured["prefix"] if not ignore_prefix else "",
                 *[int(captured[group]) for group in ['major', 'minor', 'patch']],
                 *[captured[group] for group in ['prerelease', 'buildmetadata']],
             )
@@ -83,7 +84,7 @@ class SemVer(NamedTuple):
 
     def __str__(self):
         """Generate string."""
-        value = f"{self.major}"
+        value = f"{self.prefix}{self.major}"
         if self.minor is not None:
             value += f".{self.minor}"
         if self.patch is not None:
@@ -160,10 +161,6 @@ def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
 
 SemVer.__ge__ = _semver_ge_
 
-latest_patch = dict()
-latest_minor = dict()
-latest_prerelease = dict()
-
 _latest = dict()
 
 
@@ -186,6 +183,7 @@ def _set_preferred_version(release_tag: str, candidate_release: SemVer):
 
 for version in versions:
 
+    prefix: str = ""
     major: Optional[int] = None
     minor: Optional[int] = None
     patch: Optional[int] = None
@@ -193,16 +191,17 @@ for version in versions:
     # buildmetadata: Optional[str] = None
 
     try:
-        major, minor, patch, prerelease, buildmetadata = SemVer.from_string(version)
+        prefix, major, minor, patch, prerelease, buildmetadata = SemVer.from_string(version)
     except SemVerError as err:
         print("\nWARNING:", err)
         continue
 
     candidate_release: SemVer = SemVer(
-        major,
-        minor,
-        patch,
-        prerelease
+        prefix=prefix,
+        major=major,
+        minor=minor,
+        patch=patch,
+        prerelease=prerelease
     )
 
     if str(candidate_release) in versions:

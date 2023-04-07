@@ -32,9 +32,8 @@ def test_underspecified_string():
 
 def test_string_with_prefix():
     # test semver with (ignorable Pypi-style release) semver
-    assert str(SemVer.from_string("v1.2.4", ignore_prefix='v')) == "1.2.4"
-    with pytest.raises(SemVerError):
-        assert str(SemVer.from_string("v1.2.4"))
+    assert str(SemVer.from_string("v1.2.4", ignore_prefix=True)) == "1.2.4"
+    assert str(SemVer.from_string("v1.2.4", ignore_prefix=False)) == "v1.2.4"
 
 
 def test_semver_greater_or_equal_to():
