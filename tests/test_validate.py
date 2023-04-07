@@ -10,7 +10,7 @@ from jsonschema.exceptions import ValidationError
 from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema, load_schema
 
 PRE_1_4_0_TEST_VERSIONS = "1.2", "1.2.0", "1.3", "1.3.0"
-LATEST_TEST_VERSIONS = "1", "1.4", "1.4.0", "1.4.0-beta", "1.4.0-beta2"
+LATEST_TEST_VERSIONS = "1", "1.4", "1.4.0", "1.4.0-beta2"
 ALL_TEST_VERSIONS = PRE_1_4_0_TEST_VERSIONS + LATEST_TEST_VERSIONS
 
 
@@ -417,7 +417,7 @@ def test_latest_trapi_message_results_component_validation(trapi_version):
     #         supporting the analysis (e.g. method or data that supported
     #         generation of the score).
     #       properties:
-    #         reasoner_id:
+    #         resource_id:
     #           $ref: '#/components/schemas/CURIE'
     #           description: The id of the service generating and using this Anlysis
     #         score:
@@ -467,7 +467,7 @@ def test_latest_trapi_message_results_component_validation(trapi_version):
     #           nullable: true
     #       additionalProperties: true
     #       required:
-    #         - reasoner_id
+    #         - resource_id
     #         - edge_bindings
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     sample_message_result = {
@@ -490,7 +490,7 @@ def test_latest_trapi_message_results_component_validation(trapi_version):
         },
         "analyses": [
             {
-                "reasoner_id": "infores:arax",
+                "resource_id": "infores:arax",
                 "edge_bindings": {
                     "ab": [
                         {
@@ -586,7 +586,7 @@ def test_pre_1_4_0_trapi_message_edge_component_validation(trapi_version):
 
 SAMPLE_RETRIEVAL_SOURCE = {
                 # required, infores CURIE to an Information Resource
-                "resource": "infores:molepro",
+                "resource_id": "infores:molepro",
 
                 # required, string drawn from the TRAPI ResourceRoleEnum
                 # values that were formerly recorded as TRAPI attributes
@@ -684,7 +684,7 @@ def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trap
         faulty_rs = SAMPLE_RETRIEVAL_SOURCE.copy()
         # items in the 'sources' array must be
         # RetrievalSource objects with a 'resource' key
-        faulty_rs.pop("resource")
+        faulty_rs.pop("resource_id")
         validator.validate(faulty_rs, "RetrievalSource")
     with pytest.raises(ValidationError):
         faulty_rs = SAMPLE_RETRIEVAL_SOURCE.copy()
