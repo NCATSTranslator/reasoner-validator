@@ -1106,6 +1106,7 @@ def test_post_1_4_0_trapi_validate_missing_or_empty_attributes(query: Tuple):
     ]
 )
 def test_validate_attributes(query: Tuple):
+    # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
@@ -1121,6 +1122,7 @@ def qualifier_validator(
         query: Tuple[Dict, str],
         trapi_version: Optional[str] = None
 ):
+    # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     # Sanity check: does TRAPI validation catch this first?
     trapi_validator = TRAPISchemaValidator(trapi_version=trapi_version)
     # Wrap Qualifiers inside a small mock QEdge
@@ -1376,6 +1378,7 @@ def qualifier_validator(
     ]
 )
 def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
+    # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",

@@ -665,6 +665,11 @@ def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trap
         validator.validate(faulty_sources, "Edge")
     with pytest.raises(ValidationError):
         faulty_sources = SAMPLE_LATEST_TEST_EDGE.copy()
+        # items in the 'sources' array must be a non-empty array of (RetrievalSource) objects
+        faulty_sources["sources"] = list()
+        validator.validate(faulty_sources, "Edge")
+    with pytest.raises(ValidationError):
+        faulty_sources = SAMPLE_LATEST_TEST_EDGE.copy()
         # items in the 'sources' array must be (RetrievalSource) objects
         faulty_sources["sources"] = ["not-a-json-object"]
         validator.validate(faulty_sources, "Edge")
