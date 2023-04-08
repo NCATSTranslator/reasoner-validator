@@ -306,6 +306,8 @@ class BiolinkValidator(ValidationReporter):
 
     def validate_attributes(self, edge_id: str, edge: Dict):
         """
+        Validate Knowledge Edge Attributes.
+
         :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param edge: Dict, the edge object associated with some attributes are expected to be found
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
@@ -347,6 +349,10 @@ class BiolinkValidator(ValidationReporter):
 
             # also track primary_knowledge_source attribute cardinality now
             found_primary_knowledge_source: List[str] = list()
+
+            if self.minimum_required_trapi_version("1.4.0-beta"):
+                # Check now in Edge.sources for knowledge_source_provenance
+                pass
 
             for attribute in attributes:
 
@@ -411,38 +417,46 @@ class BiolinkValidator(ValidationReporter):
                                     # TODO: only check knowledge_source provenance here for now.
                                     #       Are there other association_slots to be validated here too?
 
-                                    # Check Edge Provenance attributes
-                                    if attribute_type_id not in \
-                                            [
-                                                "biolink:aggregator_knowledge_source",
-                                                "biolink:primary_knowledge_source",
-                                                "biolink:original_knowledge_source"
+                                    if not self.minimum_required_trapi_version("1.4.0-beta"):
 
-                                            ]:
+                                        # Edge provenance tags previously recorded
+                                        # in the Edge attributes prior to TRAPI 1.4.0-beta
+                                        if attribute_type_id not in \
+                                                [
+                                                    "biolink:aggregator_knowledge_source",
+                                                    "biolink:primary_knowledge_source",
 
-                                        # TODO: not interested in any other attribute_type_id's at this moment
-                                        continue
+                                                    # Note: deprecated since Biolink release 3.0.2
+                                                    #       but this is probably caught above in the
+                                                    #       'validate_element_status" method predicate
+                                                    "biolink:original_knowledge_source"
 
-                                    # ... now, check the infores values against various expectations
-                                    for infores in value:
-                                        if not infores.startswith("infores:"):
-                                            self.report(
-                                                code="error.knowledge_graph.edge.provenance.infores.missing",
-                                                identifier=str(infores),
-                                                edge_id=edge_id
-                                            )
-                                        else:
-                                            if attribute_type_id == "biolink:primary_knowledge_source":
-                                                found_primary_knowledge_source.append(infores)
+                                                ]:
 
-                                            if ara_source and \
-                                                    attribute_type_id == "biolink:aggregator_knowledge_source" and \
-                                                    infores == ara_source:
-                                                found_ara_knowledge_source = True
-                                            elif kp_source and \
-                                                    attribute_type_id == kp_source_type and \
-                                                    infores == kp_source:
-                                                found_kp_knowledge_source = True
+                                            # TODO: not interested here in any other
+                                            #       attribute_type_id's at this moment
+                                            continue
+
+                                        # ... now, check the infores values against various expectations
+                                        for infores in value:
+                                            if not infores.startswith("infores:"):
+                                                self.report(
+                                                    code="error.knowledge_graph.edge.provenance.infores.missing",
+                                                    identifier=str(infores),
+                                                    edge_id=edge_id
+                                                )
+                                            else:
+                                                if attribute_type_id == "biolink:primary_knowledge_source":
+                                                    found_primary_knowledge_source.append(infores)
+
+                                                if ara_source and \
+                                                        attribute_type_id == "biolink:aggregator_knowledge_source" and \
+                                                        infores == ara_source:
+                                                    found_ara_knowledge_source = True
+                                                elif kp_source and \
+                                                        attribute_type_id == kp_source_type and \
+                                                        infores == kp_source:
+                                                    found_kp_knowledge_source = True
 
                         # if not a Biolink association_slot, at least,
                         # check if it is an id prefix known to Biolink.
@@ -492,6 +506,13 @@ class BiolinkValidator(ValidationReporter):
                 )
 
     def validate_attribute_constraints(self, edge_id: str, edge: Dict):
+        """
+        Validate Query Edge Attributes.
+
+        :param edge_id: str, string identifier for the edge (for reporting purposes)
+        :param edge: Dict, the edge object associated with some attributes are expected to be found
+        :return: None (validation messages captured in the 'self' BiolinkValidator context)
+        """
         if 'attribute_constraints' not in edge or edge['attribute_constraints'] is None:
             return  # nullable: true... missing key or None value is ok?
         elif not isinstance(edge['attribute_constraints'], List):
@@ -502,7 +523,17 @@ class BiolinkValidator(ValidationReporter):
             # TODO: not yet sure what else to do here (if anything...yet)
             attribute_constraints: List = edge['attribute_constraints']
 
-    def validate_qualifier_entry(self, context: str, edge_id: str, qualifiers: List[Dict[str, str]]):
+    def  validate_qualifier_entry(self, context: str, edge_id: str, qualifiers: List[Dict[str, str]]):
+        """
+        Validate Qualifier Entry (JSON Object).
+
+        :param context: str, Validation (subcode) context:
+                        - query graph qualifier constraints ("query_graph.edge.qualifier_constraints.qualifier_set") or
+                        - knowledge graph edge qualifiers (knowledge_graph.edge.qualifiers)
+        :param edge_id: str, string identifier for the edge (for reporting purposes)
+        :param qualifiers: List[Dict[str, str]], of qualifier entries to be validated.
+        :return: None (validation messages captured in the 'self' BiolinkValidator context)
+        """
         for qualifier in qualifiers:
             qualifier_type_id: str = qualifier['qualifier_type_id']
             qualifier_value: str = qualifier['qualifier_value']
@@ -537,6 +568,13 @@ class BiolinkValidator(ValidationReporter):
                 )
 
     def validate_qualifiers(self, edge_id: str, edge: Dict):
+        """
+        Validate Knowledge Edge Qualifiers.
+
+        :param edge_id: str, string identifier for the edge (for reporting purposes)
+        :param edge: Dict, the edge object associated with some attributes are expected to be found
+        :return: None (validation messages captured in the 'self' BiolinkValidator context)
+        """
         # Edge qualifiers will only be seen in Biolink 3 data,
         # but with missing 'qualifiers', no validation is attempted
         if 'qualifiers' not in edge or edge['qualifiers'] is None:
@@ -554,6 +592,13 @@ class BiolinkValidator(ValidationReporter):
             )
 
     def validate_qualifier_constraints(self, edge_id: str, edge: Dict):
+        """
+        Validate Query Edge Qualifier Constraints.
+
+        :param edge_id: str, string identifier for the edge (for reporting purposes)
+        :param edge: Dict, the edge object associated with some attributes are expected to be found
+        :return: None (validation messages captured in the 'self' BiolinkValidator context)
+        """
         # Edge qualifiers will only be seen in Biolink 3 data,
         # but with missing 'qualifier_constraints', no validation is attempted
         if 'qualifier_constraints' not in edge or edge['qualifier_constraints'] is None:
@@ -580,6 +625,204 @@ class BiolinkValidator(ValidationReporter):
                         edge_id=edge_id,
                         qualifiers=qualifier_set
                     )
+    def validate_sources(self, edge_id: str, edge: Dict):
+        """
+        :param edge_id: str, string identifier for the edge (for reporting purposes)
+        :param edge: Dict, the edge object associated with some attributes are expected to be found
+        :return: None (validation messages captured in the 'self' BiolinkValidator context)
+        """
+        if 'attributes' not in edge:
+            if not self.minimum_required_trapi_version("1.4.0-beta"):
+                # we only report errors about missing or empty edge attributes
+                # if TRAPI 1.3.0 or earlier expected to have provenance
+                self.report(code="error.knowledge_graph.edge.attribute.missing", identifier=edge_id)
+        elif not edge['attributes']:
+            if not self.minimum_required_trapi_version("1.4.0-beta"):
+                # we only report errors about empty edge attributes
+                # if TRAPI 1.3.0 or earlier expected to have provenance
+                self.report(code="error.knowledge_graph.edge.attribute.empty", identifier=edge_id)
+        elif not isinstance(edge['attributes'], List):
+            self.report(code="error.knowledge_graph.edge.attribute.not_array", identifier=edge_id)
+        else:
+            attributes = edge['attributes']
+
+            ara_source: Optional[str] = None
+            kp_source: Optional[str] = None
+            kp_source_type: Optional[str] = None
+            if self.sources:
+                if 'ara_source' in self.sources and self.sources['ara_source']:
+                    ara_source: str = self.sources['ara_source']
+                    if not ara_source.startswith("infores:"):
+                        ara_source = f"infores:{ara_source}"
+                if 'kp_source' in self.sources and self.sources['kp_source']:
+                    kp_source: str = self.sources['kp_source']
+                    if not kp_source.startswith("infores:"):
+                        kp_source = f"infores:{kp_source}"
+                kp_source_type = self.sources['kp_source_type'] \
+                    if 'kp_source_type' in self.sources and self.sources['kp_source_type'] else 'aggregator'
+                kp_source_type = f"biolink:{kp_source_type}_knowledge_source"
+
+            # Expecting ARA and KP 'aggregator_knowledge_source' attributes?
+            found_ara_knowledge_source = False
+            found_kp_knowledge_source = False
+
+            # also track primary_knowledge_source attribute cardinality now
+            found_primary_knowledge_source: List[str] = list()
+
+            if self.minimum_required_trapi_version("1.4.0-beta"):
+                # Check now in Edge.sources for knowledge_source_provenance
+                pass
+
+            for attribute in attributes:
+
+                # Validate attribute_type_id
+                if 'attribute_type_id' not in attribute:
+                    self.report(
+                        code="error.knowledge_graph.edge.attribute.type_id.missing",
+                        identifier=edge_id
+                    )
+                elif not attribute['attribute_type_id']:
+                    self.report(
+                        code="error.knowledge_graph.edge.attribute.type_id.empty",
+                        identifier=edge_id
+                    )
+                elif 'value' not in attribute:
+                    self.report(
+                        code="error.knowledge_graph.edge.attribute.value.missing",
+                        identifier=edge_id
+                    )
+                elif not attribute['value']:
+                    self.report(
+                        code="error.knowledge_graph.edge.attribute.value.empty",
+                        identifier=edge_id
+                    )
+                else:
+                    attribute_type_id: str = attribute['attribute_type_id']
+                    value = attribute['value']
+
+                    # TODO: there seems to be non-uniformity in provenance attribute values for some KP/ARA's
+                    #       in which a value is returned as a Python list (of at least one element?) instead
+                    #       of a string. Here, to ensure full coverage of the attribute values returned,
+                    #       we'll coerce scalar values into a list, then iterate.
+                    if not isinstance(value, List):
+                        value = [value]
+
+                    if not is_curie(attribute_type_id):
+                        self.report(
+                            code="error.knowledge_graph.edge.attribute.type_id.not_curie",
+                            identifier=attribute_type_id,
+                            edge_id=edge_id
+                        )
+                    else:
+                        # 'attribute_type_id' is a CURIE, but how well does it map?
+                        prefix = attribute_type_id.split(":", 1)[0]
+                        if prefix == 'biolink':
+                            biolink_class = self.validate_element_status(
+                                context="knowledge_graph.edge.attribute.type_id",
+                                identifier=attribute_type_id,
+                                edge_id=edge_id
+                            )
+                            if biolink_class:
+                                if not self.bmt.is_association_slot(attribute_type_id):
+                                    self.report(
+                                        code="warning.knowledge_graph.edge.attribute.type_id.not_association_slot",
+                                        identifier=attribute_type_id,
+                                        edge_id=edge_id
+                                    )
+
+                                else:
+                                    # it is a Biolink 'association_slot' but now, validate what kind?
+
+                                    # TODO: only check knowledge_source provenance here for now.
+                                    #       Are there other association_slots to be validated here too?
+
+                                    if not self.minimum_required_trapi_version("1.4.0-beta"):
+
+                                        # Edge provenance tags previously recorded
+                                        # in the Edge attributes prior to TRAPI 1.4.0-beta
+                                        if attribute_type_id not in \
+                                                [
+                                                    "biolink:aggregator_knowledge_source",
+                                                    "biolink:primary_knowledge_source",
+
+                                                    # Note: deprecated since Biolink release 3.0.2
+                                                    #       but this is probably caught above in the
+                                                    #       'validate_element_status" method predicate
+                                                    "biolink:original_knowledge_source"
+
+                                                ]:
+
+                                            # TODO: not interested here in any other
+                                            #       attribute_type_id's at this moment
+                                            continue
+
+                                        # ... now, check the infores values against various expectations
+                                        for infores in value:
+                                            if not infores.startswith("infores:"):
+                                                self.report(
+                                                    code="error.knowledge_graph.edge.provenance.infores.missing",
+                                                    identifier=str(infores),
+                                                    edge_id=edge_id
+                                                )
+                                            else:
+                                                if attribute_type_id == "biolink:primary_knowledge_source":
+                                                    found_primary_knowledge_source.append(infores)
+
+                                                if ara_source and \
+                                                        attribute_type_id == "biolink:aggregator_knowledge_source" and \
+                                                        infores == ara_source:
+                                                    found_ara_knowledge_source = True
+                                                elif kp_source and \
+                                                        attribute_type_id == kp_source_type and \
+                                                        infores == kp_source:
+                                                    found_kp_knowledge_source = True
+
+                        # if not a Biolink association_slot, at least,
+                        # check if it is an id prefix known to Biolink.
+                        # We won't call it a hard error, but issue a warning
+                        elif not self.bmt.get_element_by_prefix(prefix):
+                            self.report(
+                                code="warning.knowledge_graph.edge.attribute.type_id.unknown_prefix",
+                                identifier=attribute_type_id,
+                                edge_id=edge_id
+                            )
+                        # TODO: probably need to take a closer look at validating outlier terms here
+                        #       Maybe enumerations will help
+                        else:
+                            self.report(
+                                code="info.knowledge_graph.edge.attribute.type_id.non_biolink_prefix",
+                                identifier=attribute_type_id,
+                                edge_id=edge_id
+                            )
+
+            # TODO: After all the attributes have been scanned,
+            #       check for provenance. Treat as warnings for now.
+            if ara_source and not found_ara_knowledge_source:
+                self.report(
+                    code="warning.knowledge_graph.edge.provenance.ara.missing",
+                    identifier=ara_source,
+                    edge_id=edge_id
+                )
+
+            if kp_source and not found_kp_knowledge_source:
+                self.report(
+                    code="warning.knowledge_graph.edge.provenance.kp.missing",
+                    identifier=kp_source,
+                    kp_source_type=kp_source_type,
+                    identedge_idifier=edge_id
+                )
+
+            if not found_primary_knowledge_source:
+                self.report(
+                    code="error.knowledge_graph.edge.provenance.missing_primary",
+                    identifier=edge_id
+                )
+            elif len(found_primary_knowledge_source) > 1:
+                self.report(
+                    code="warning.knowledge_graph.edge.provenance.multiple_primary",
+                    identifier=edge_id,
+                    sources=",".join(found_primary_knowledge_source)
+                )
 
     def validate_predicate(self, edge_id: str, predicate: str):
         """
@@ -690,6 +933,7 @@ class BiolinkValidator(ValidationReporter):
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             self.validate_attributes(edge_id=edge_id, edge=edge)
             self.validate_qualifiers(edge_id=edge_id, edge=edge)
+            self.validate_sources(edge_id=edge_id, edge=edge)
         else:
             self.validate_attribute_constraints(edge_id=edge_id, edge=edge)
             self.validate_qualifier_constraints(edge_id=edge_id, edge=edge)
