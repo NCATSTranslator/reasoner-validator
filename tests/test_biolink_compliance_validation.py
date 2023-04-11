@@ -3,7 +3,7 @@ Unit tests for the generic (shared) components of the SRI Testing Framework
 """
 from typing import Tuple, Optional, Dict
 from sys import stderr
-import copy
+from copy import deepcopy
 from pprint import PrettyPrinter
 import logging
 import pytest
@@ -915,6 +915,88 @@ def test_post_1_4_0_trapi_validate_missing_or_empty_attributes(query: Tuple):
     "query",
     [
         (
+            # Query 0. Missing ARA knowledge source provenance?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:sri-reference-kg"
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            # "missing ARA knowledge source provenance!"
+            "warning.knowledge_graph.edge.provenance.ara.missing"
+        ),
+        (
+            # Query 1. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:aragorn"
+                    },
+                    {
+                        "attribute_type_id": "biolink:primary_knowledge_source",
+                        "value": "panther"
+                    }
+                ]
+            },
+            get_ara_test_case(),
+            # "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
+            "error.knowledge_graph.edge.provenance.infores.missing"
+        ),
+        (
+            # Query 2. KP provenance value is missing?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:aragorn"
+                    }
+                ]
+            },
+            get_ara_test_case(),
+            # "is missing as expected knowledge source provenance!"
+            "warning.knowledge_graph.edge.provenance.kp.missing"
+        ),
+        (
+            # Query 3. Missing 'primary' nor 'original' knowledge source
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:aragorn"
+                    },
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "infores:panther"
+                    }
+                ]
+
+            },
+            get_ara_test_case({"kp_source_type": "aggregator"}),
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge has neither a 'primary' nor 'original' knowledge source?"
+            "error.knowledge_graph.edge.provenance.missing_primary"
+        )
+    ]
+)
+def test_pre_1_4_0_validate_provenance(query: Tuple):
+    """TRAPI pre-1.4.0 releases recorded provenance in attributes. This unit test checks for this"""
+    validator = BiolinkValidator(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        trapi_version="1.3.0",
+        biolink_version=LATEST_BIOLINK_MODEL_VERSION,
+        sources=query[1]
+    )
+    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
+    check_messages(validator, query[2])
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (
             # Query 0. Attributes are not a proper array
             {
                 "attributes": {"not_a_list"}
@@ -946,21 +1028,7 @@ def test_post_1_4_0_trapi_validate_missing_or_empty_attributes(query: Tuple):
             "error.knowledge_graph.edge.attribute.value.missing"
         ),
         (
-            # Query 3. Missing ARA knowledge source provenance?
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:sri-reference-kg"
-                    },
-                ]
-            },
-            get_ara_test_case(),
-            # "missing ARA knowledge source provenance!"
-            "warning.knowledge_graph.edge.provenance.ara.missing"
-        ),
-        (
-            # Query 4. value is an empty list?
+            # Query 3. value is an empty list?
             {
                 "attributes": [
                     {
@@ -974,7 +1042,7 @@ def test_post_1_4_0_trapi_validate_missing_or_empty_attributes(query: Tuple):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 5. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            # Query 4. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
             {
                 "attributes": [
                     {
@@ -996,58 +1064,7 @@ def test_post_1_4_0_trapi_validate_missing_or_empty_attributes(query: Tuple):
             "error.knowledge_graph.edge.attribute.type_id.not_curie"
         ),
         (
-            # Query 6. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:aragorn"
-                    },
-                    {
-                        "attribute_type_id": "biolink:primary_knowledge_source",
-                        "value": "panther"
-                    }
-                ]
-            },
-            get_ara_test_case(),
-            # "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
-            "error.knowledge_graph.edge.provenance.infores.missing"
-        ),
-        (
-            # Query 7. KP provenance value is missing?
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:aragorn"
-                    }
-                ]
-            },
-            get_ara_test_case(),
-            # "is missing as expected knowledge source provenance!"
-            "warning.knowledge_graph.edge.provenance.kp.missing"
-        ),
-        # (   # No longer present in Biolink 3.1.1
-        #     # Query xx. kp type is 'original'. Should draw a WARNING about deprecation
-        #     {
-        #         "attributes": [
-        #             {
-        #                 "attribute_type_id": "biolink:aggregator_knowledge_source",
-        #                 "value": "infores:aragorn"
-        #             },
-        #             {
-        #                 "attribute_type_id": "biolink:original_knowledge_source",
-        #                 "value": "infores:panther"
-        #             }
-        #         ]
-        #     },
-        #     get_ara_test_case(),
-        #     # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Attribute Type ID element " +
-        #     # "'biolink:original_knowledge_source' is deprecated?"
-        #     "warning.knowledge_graph.attribute.type_id.deprecated"
-        # ),
-        (
-            # Query 8. kp type is 'primary'. Should pass?
+            # Query 5. kp type is 'primary'. Should pass?
             {
                 "attributes": [
                     {
@@ -1064,26 +1081,7 @@ def test_post_1_4_0_trapi_validate_missing_or_empty_attributes(query: Tuple):
             ""
         ),
         (
-            # Query 9. Missing 'primary' nor 'original' knowledge source
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:aragorn"
-                    },
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:panther"
-                    }
-                ]
-
-            },
-            get_ara_test_case({"kp_source_type": "aggregator"}),
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge has neither a 'primary' nor 'original' knowledge source?"
-            "error.knowledge_graph.edge.provenance.missing_primary"
-        ),
-        (
-            # Query 10. Is complete and should pass?
+            # Query 6. Is complete and should pass?
             {
                 "attributes": [
                     {
@@ -1105,10 +1103,10 @@ def test_post_1_4_0_trapi_validate_missing_or_empty_attributes(query: Tuple):
         )
     ]
 )
-def test_validate_attributes(query: Tuple):
-    # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
+def test_latest_validate_attributes(query: Tuple):
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
+        # trapi_version="latest",
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
         sources=query[1]
     )
@@ -1126,7 +1124,7 @@ def qualifier_validator(
     # Sanity check: does TRAPI validation catch this first?
     trapi_validator = TRAPISchemaValidator(trapi_version=trapi_version)
     # Wrap Qualifiers inside a small mock QEdge
-    mock_edge: Dict = copy.deepcopy(query[0])
+    mock_edge: Dict = deepcopy(query[0])
     mock_edge["subject"] = "mock_subject"
 
     if trapi_validator.minimum_required_trapi_version("1.4.0-beta"):
@@ -2368,12 +2366,12 @@ def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
     check_messages(validator, query[2])
 
 
-MESSAGE_WITHOUT_ATTRIBUTES = {
+MESSAGE_EDGE_WITHOUT_ATTRIBUTES = {
     "nodes": {
         "NCBIGene:29974": {
-           "categories": [
-               "biolink:Gene"
-           ]
+            "categories": [
+                "biolink:Gene"
+            ]
         },
         "PUBCHEM.COMPOUND:597": {
             "name": "cytosine",
@@ -2393,20 +2391,48 @@ MESSAGE_WITHOUT_ATTRIBUTES = {
 }
 
 
-@pytest.mark.parametrize(
-    "query",
-    [
-        ("1.3.0", "error.knowledge_graph.edge.attribute.missing"),
-
-        # no attributes strictly needed in 1.4.0-beta since now the
-        # mandatory provenance attributes are in the Edge.sources == RetrievalSource's
-        ("1.4.0-beta", "")
-    ]
-)
-def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
+def test_pre_trapi_1_4_0_validate_attributes():
+    # message edges must have at least some 'provenance' attributes
+    edge_without_attributes = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
     validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
-        graph=MESSAGE_WITHOUT_ATTRIBUTES,
-        trapi_version=query[0],
+        graph=edge_without_attributes,
+        trapi_version="1.3.0",
         biolink_version=LATEST_BIOLINK_MODEL_VERSION
     )
-    check_messages(validator, query[1])
+    check_messages(validator, "error.knowledge_graph.edge.attribute.missing")
+
+
+SAMPLE_RETRIEVAL_SOURCE = {
+    # required, infores CURIE to an Information Resource
+    "resource_id": "infores:molepro",
+
+    # required, string drawn from the TRAPI ResourceRoleEnum
+    # values that were formerly recorded as TRAPI attributes
+    # are now presented as first class edge annotation
+    "resource_role": "primary_knowledge_source"
+}
+
+
+@pytest.mark.parametrize(
+    "sources,validation_code",
+    [
+        ([SAMPLE_RETRIEVAL_SOURCE], ""),  # No validation code generated?
+        (None, "error.knowledge_graph.edge.sources.missing"),
+        ([], "error.knowledge_graph.edge.sources.empty"),
+        ("not-an-array", "error.knowledge_graph.edge.sources.not_array")
+    ]
+)
+def test_latest_trapi_validate_sources(sources: bool, validation_code: str):
+    # no attributes are strictly needed in 1.4.0-beta now that (mandatory)
+    # Edge provenance is recorded in the Edge.sources list of RetrievalSource
+    # message edges must have at least some 'provenance' attributes
+    sample_message = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
+    if sources is not None:
+        edge = sample_message["edges"]["edge_1"]
+        edge["sources"] = sources
+    validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
+        graph=sample_message,
+        # trapi_version="latest",  # 1.4.0++
+        biolink_version=LATEST_BIOLINK_MODEL_VERSION
+    )
+    check_messages(validator, validation_code)

@@ -585,24 +585,24 @@ def test_pre_1_4_0_trapi_message_edge_component_validation(trapi_version):
 
 
 SAMPLE_RETRIEVAL_SOURCE = {
-                # required, infores CURIE to an Information Resource
-                "resource_id": "infores:molepro",
+    # required, infores CURIE to an Information Resource
+    "resource_id": "infores:molepro",
 
-                # required, string drawn from the TRAPI ResourceRoleEnum
-                # values that were formerly recorded as TRAPI attributes
-                # are now presented as first class edge annotation
-                "resource_role": "primary_knowledge_source"
-            }
+    # required, string drawn from the TRAPI ResourceRoleEnum
+    # values that were formerly recorded as TRAPI attributes
+    # are now presented as first class edge annotation
+    "resource_role": "primary_knowledge_source"
+}
 
 
 SAMPLE_LATEST_TEST_EDGE = {
-        "subject": "MONDO:0011382",   # subject must be a CURIE
-        "predicate": "biolink:related_to",  # subject must be a biolink Predicate CURIE
-        "object": "UniProtKB:P00738",   # subject must be a CURIE
-        "sources": [  # an array of RetrievalSource
-            SAMPLE_RETRIEVAL_SOURCE
-        ]
-    }
+    "subject": "MONDO:0011382",   # subject must be a CURIE
+    "predicate": "biolink:related_to",  # subject must be a biolink Predicate CURIE
+    "object": "UniProtKB:P00738",   # subject must be a CURIE
+    "sources": [  # an array of RetrievalSource
+        SAMPLE_RETRIEVAL_SOURCE
+    ]
+}
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_VERSIONS)

@@ -348,7 +348,7 @@
 
 ### error.trapi.response.knowledge_graph.missing_expected_edge
 
-**Message:** Knowledge Graph of TRAPI Response Message is missing expected edge
+**Message:** Knowledge Graph of TRAPI Response Message is missing expected Edge
 
 **Context:** identifier
 
@@ -472,23 +472,23 @@
 
 ### error.query_graph.node.ids.not_array
 
-**Message:** The 'ids' slot value is not an array in node
+**Message:** The 'ids' property value is not an array in node
 
 **Context:** identifier
 
-**Description:** Value of 'ids' slot in Query Graph node must be an array data type (even if empty)!
+**Description:** Value of 'ids' property in Query Graph node must be an array data type (even if empty)!
 
 ### error.query_graph.node.categories.not_array
 
-**Message:** The 'categories' slot value is not an array in node
+**Message:** The 'categories' property value is not an array in node
 
 **Context:** identifier
 
-**Description:** Value of 'categories' slot in Query Graph node must be an array data type (even if empty)!
+**Description:** Value of 'categories' property in Query Graph node must be an array data type (even if empty)!
 
 ### error.query_graph.node.is_set.not_boolean
 
-**Message:** The 'is_set' slot is not a boolean value in node
+**Message:** The 'is_set' property is not a boolean value in node
 
 **Context:** identifier
 
@@ -496,7 +496,7 @@
 
 ### error.query_graph.edge.subject.missing
 
-**Message:** The 'subject' slot value is missing or empty in edge
+**Message:** The 'subject' property value is missing or empty in Edge
 
 **Context:** identifier
 
@@ -504,7 +504,7 @@
 
 ### error.query_graph.edge.subject.missing_from_nodes
 
-**Message:** The nodes catalog of query graph for missing the subject id recorded on edge
+**Message:** The nodes catalog of query graph for missing the subject id recorded on Edge
 
 **Context:** edge_id, identifier
 
@@ -512,7 +512,7 @@
 
 ### error.query_graph.edge.object.missing
 
-**Message:** The 'object' slot value is missing or empty in edge
+**Message:** The 'object' property value is missing or empty in Edge
 
 **Context:** identifier
 
@@ -520,7 +520,7 @@
 
 ### error.query_graph.edge.object.missing_from_nodes
 
-**Message:** The nodes catalog of query graph for missing the object id recorded on edge
+**Message:** The nodes catalog of query graph for missing the object id recorded on Edge
 
 **Context:** edge_id, identifier
 
@@ -528,7 +528,7 @@
 
 ### error.query_graph.edge.predicate.missing
 
-**Message:** Predicate is missing or empty for edge
+**Message:** Predicate is missing or empty for Edge
 
 **Context:** identifier
 
@@ -544,19 +544,19 @@
 
 ### error.query_graph.edge.predicate.not_array
 
-**Message:** Predicate slot value is not an array for edge
+**Message:** Predicate property value is not an array for Edge
 
 **Context:** identifier
 
-**Description:** Value of 'predicate' slot value in Query Graph must be an array data type!
+**Description:** Value of 'predicate' property value in Query Graph must be an array data type!
 
 ### error.query_graph.edge.predicate.empty_array
 
-**Message:** Predicate slot value is an empty array for edge
+**Message:** Predicate property value is an empty array for Edge
 
 **Context:** identifier
 
-**Description:** Value of 'predicate' array slot value in Query Graph must contain one or more predicates!
+**Description:** Value of 'predicate' array property value in Query Graph must contain one or more predicates!
 
 ### error.query_graph.edge.predicate.abstract
 
@@ -584,15 +584,15 @@
 
 ### error.query_graph.edge.attribute_constraints.not_array
 
-**Message:** Attribute_constraints property value is not an array for edge
+**Message:** Attribute_constraints property value is not an array for Edge
 
 **Context:** identifier
 
-**Description:** Value of 'attribute_constraints' slot value in a Query Graph must be an array data type!
+**Description:** Value of 'attribute_constraints' property value in a Query Graph must be an array data type!
 
 ### error.query_graph.edge.qualifier_constraints.qualifier_set.empty
 
-**Message:** Qualifier_set property value is empty for edge
+**Message:** Qualifier_set property value is empty for Edge
 
 **Context:** identifier
 
@@ -676,27 +676,27 @@
 
 ### error.knowledge_graph.node.ids.not_array
 
-**Message:** The 'ids' slot value is not an array for node
+**Message:** The 'ids' property value is not an array for node
 
 **Context:** identifier
 
-**Description:** Value of 'ids' slot in Query Graph node must be an array data type!
+**Description:** Value of 'ids' property in Query Graph node must be an array data type!
 
 ### error.knowledge_graph.node.empty_ids
 
-**Message:** The 'ids' slot array is empty for node
+**Message:** The 'ids' property array is empty for node
 
 **Context:** identifier
 
-**Description:** Value of 'ids' array slot in Knowledge Graph node must contain one or more node identifiers!
+**Description:** Value of 'ids' array property in Knowledge Graph node must contain one or more node identifiers!
 
 ### error.knowledge_graph.node.categories.not_array
 
-**Message:** The categories slot value is not an array for node
+**Message:** The categories property value is not an array for node
 
 **Context:** identifier
 
-**Description:** Value of 'categories' slot in Knowledge Graph node must be an array data type!
+**Description:** Value of 'categories' property in Knowledge Graph node must be an array data type!
 
 ### error.knowledge_graph.node.categories.not_concrete
 
@@ -708,15 +708,15 @@
 
 ### error.knowledge_graph.node.empty_categories
 
-**Message:** The 'categories' slot array is empty for node
+**Message:** The 'categories' property array is empty for node
 
 **Context:** identifier
 
-**Description:** Value of 'categories' array slot in Knowledge Graph node must contain one or more node category terms!
+**Description:** Value of 'categories' array property in Knowledge Graph node must contain one or more node category terms!
 
 ### error.knowledge_graph.node.is_set.not_boolean
 
-**Message:** The 'is_set' slot is not a boolean value for node
+**Message:** The 'is_set' property is not a boolean value for node
 
 **Context:** identifier
 
@@ -724,7 +724,7 @@
 
 ### error.knowledge_graph.edge.subject.missing
 
-**Message:** The 'subject' slot value is missing or empty for edge
+**Message:** The 'subject' property value is missing or empty for Edge
 
 **Context:** identifier
 
@@ -732,7 +732,7 @@
 
 ### error.knowledge_graph.edge.subject.missing_from_nodes
 
-**Message:** The nodes catalog of query graph for missing the subject id recorded on edge
+**Message:** The nodes catalog of query graph for missing the subject id recorded on Edge
 
 **Context:** edge_id, identifier
 
@@ -740,7 +740,7 @@
 
 ### error.knowledge_graph.edge.object.missing
 
-**Message:** The 'object' slot value  is missing or empty for edge
+**Message:** The 'object' property value  is missing or empty for Edge
 
 **Context:** identifier
 
@@ -748,7 +748,7 @@
 
 ### error.knowledge_graph.edge.object.missing_from_nodes
 
-**Message:** The nodes catalog of query graph for missing the object id recorded on edge
+**Message:** The nodes catalog of query graph for missing the object id recorded on Edge
 
 **Context:** edge_id, identifier
 
@@ -756,7 +756,7 @@
 
 ### error.knowledge_graph.edge.predicate.missing
 
-**Message:** The predicate is missing or empty for edge
+**Message:** The predicate is missing or empty for Edge
 
 **Context:** identifier
 
@@ -780,19 +780,19 @@
 
 ### error.knowledge_graph.edge.predicate.not_array
 
-**Message:** The predicate slot value is not an array for edge
+**Message:** The predicate property value is not an array for Edge
 
 **Context:** identifier
 
-**Description:** Value of the 'predicate' slot in Knowledge Graph edge must be an array data type!
+**Description:** Value of the 'predicate' property in Knowledge Graph edge must be an array data type!
 
 ### error.knowledge_graph.edge.predicate.empty_array
 
-**Message:** The predicate slot value is an empty array for edge
+**Message:** The predicate property value is an empty array for Edge
 
 **Context:** identifier
 
-**Description:** Value of the 'predicate' array slot in Knowledge Graph edge must contain one or more predicates!
+**Description:** Value of the 'predicate' array property in Knowledge Graph edge must contain one or more predicates!
 
 ### error.knowledge_graph.edge.predicate.abstract
 
@@ -812,7 +812,7 @@
 
 ### error.knowledge_graph.edge.attribute.missing
 
-**Message:** Missing 'attributes' key for edge
+**Message:** Missing 'attributes' key for Edge
 
 **Context:** identifier
 
@@ -820,19 +820,19 @@
 
 ### error.knowledge_graph.edge.attribute.empty
 
-**Message:** Empty attributes in edge
+**Message:** Empty attributes in Edge
 
 **Context:** identifier
 
-**Description:** Value of 'attributes' slot in Knowledge Graph edge must contain a list of one or more attributes!
+**Description:** Value of 'attributes' property in Knowledge Graph edge must contain a list of one or more attributes!
 
 ### error.knowledge_graph.edge.attribute.not_array
 
-**Message:** The attributes are not an array in edge
+**Message:** The attributes are not an array in Edge
 
 **Context:** identifier
 
-**Description:** Value of the 'attributes' slot in Knowledge Graph edge must be an array of attributes!
+**Description:** Value of the 'attributes' property in Knowledge Graph edge must be an array of attributes!
 
 ### error.knowledge_graph.edge.attribute.type_id.unknown
 
@@ -860,7 +860,7 @@
 
 ### error.knowledge_graph.edge.attribute.type_id.missing
 
-**Message:** An attribute is missing its 'attribute_type_id' property in edge
+**Message:** An attribute is missing its 'attribute_type_id' property in Edge
 
 **Context:** identifier
 
@@ -868,7 +868,7 @@
 
 ### error.knowledge_graph.edge.attribute.type_id.empty
 
-**Message:** An attribute has empty 'attribute_type_id' property in edge
+**Message:** An attribute has empty 'attribute_type_id' property in Edge
 
 **Context:** identifier
 
@@ -884,7 +884,7 @@
 
 ### error.knowledge_graph.edge.attribute.value.missing
 
-**Message:** An attribute is missing its 'value' property in edge
+**Message:** An attribute is missing its 'value' property in Edge
 
 **Context:** identifier
 
@@ -892,7 +892,7 @@
 
 ### error.knowledge_graph.edge.attribute.value.empty
 
-**Message:** An attribute has an empty value in edge
+**Message:** An attribute has an empty value in Edge
 
 **Context:** identifier
 
@@ -908,7 +908,7 @@
 
 ### error.knowledge_graph.edge.provenance.missing_primary
 
-**Message:** A 'primary' knowledge source is missing for edge
+**Message:** A 'primary' knowledge source is missing for Edge
 
 **Context:** identifier
 
@@ -916,15 +916,15 @@
 
 ### error.knowledge_graph.edge.qualifiers.not_array
 
-**Message:** The 'qualifiers' property is not an array in edge
+**Message:** The 'qualifiers' property is not an array in Edge
 
 **Context:** identifier
 
-**Description:** Value of the 'qualifiers' slot in Knowledge Graph edge must be an array of attributes!
+**Description:** Value of the 'qualifiers' property in Knowledge Graph edge must be an array of attributes!
 
 ### error.knowledge_graph.edge.qualifiers.empty
 
-**Message:** The qualifiers property value is empty in edge
+**Message:** The qualifiers property value is empty in Edge
 
 **Context:** identifier
 
@@ -953,4 +953,28 @@
 **Context:** identifier, qualifier_type_id, qualifier_value, reason
 
 **Description:** Validation of a specified 'qualifier_type_id' and 'qualifier_value' failed for a given exceptional reason!
+
+### error.knowledge_graph.edge.sources.missing
+
+**Message:** Missing 'sources' key for Edge
+
+**Context:** identifier
+
+**Description:** Edge must have a 'sources' key with a non-empty associated value!
+
+### error.knowledge_graph.edge.sources.empty
+
+**Message:** Empty 'sources' property in Edge
+
+**Context:** identifier
+
+**Description:** Value of 'sources' property in Knowledge Graph edge must contain a list of one or more RetrievalSource entries!
+
+### error.knowledge_graph.edge.sources.not_array
+
+**Message:** The 'sources' are not an array in Edge
+
+**Context:** identifier
+
+**Description:** Value of the 'sources' property in Knowledge Graph edge must be an array of RetrievalSource entries!
 

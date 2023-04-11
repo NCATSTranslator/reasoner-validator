@@ -294,7 +294,7 @@ error:
           $message: "TRAPI Message is missing its Knowledge Graph component!"
           $description: "TRAPI response should generally have a TRAPI request message Knowledge Graph key value in its reply."
         missing_expected_edge:
-          $message: "Knowledge Graph of TRAPI Response Message is missing expected edge"
+          $message: "Knowledge Graph of TRAPI Response Message is missing expected Edge"
           $context:
             - identifier
           $description: "The given TRAPI Response is expected to return specific edge(s) relating to the original (test edge?) data used to prepare the TRAPI Request!"
@@ -389,50 +389,50 @@ error:
           $description: "Category specified in query graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!"
       ids:
         not_array:
-          $message: "The 'ids' slot value is not an array in node"
+          $message: "The 'ids' property value is not an array in node"
           $context:
             - identifier
-          $description: "Value of 'ids' slot in Query Graph node must be an array data type (even if empty)!"
+          $description: "Value of 'ids' property in Query Graph node must be an array data type (even if empty)!"
       categories:
         not_array:
-          $message: "The 'categories' slot value is not an array in node"
+          $message: "The 'categories' property value is not an array in node"
           $context:
             - identifier
-          $description: "Value of 'categories' slot in Query Graph node must be an array data type (even if empty)!"
+          $description: "Value of 'categories' property in Query Graph node must be an array data type (even if empty)!"
       is_set:
         not_boolean:
-          $message: "The 'is_set' slot is not a boolean value in node"
+          $message: "The 'is_set' property is not a boolean value in node"
           $context:
             - identifier
           $description: "The 'is_set' field in node of Query Graph, if present, must be a boolean value!"
     edge:
       subject:
         missing:
-          $message: "The 'subject' slot value is missing or empty in edge"
+          $message: "The 'subject' property value is missing or empty in Edge"
           $context:
             - identifier
           $description: "Edge must have a 'subject' key with a non-empty associated value!"
         missing_from_nodes:
-          $message: "The nodes catalog of query graph for missing the subject id recorded on edge"
+          $message: "The nodes catalog of query graph for missing the subject id recorded on Edge"
           $context:
             - edge_id
             - identifier
           $description: "Every 'subject' identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph!"
       object:
         missing:
-          $message: "The 'object' slot value is missing or empty in edge"
+          $message: "The 'object' property value is missing or empty in Edge"
           $context:
             - identifier
           $description: "Edge must have a 'object' key with a non-empty associated value!"
         missing_from_nodes:
-          $message: "The nodes catalog of query graph for missing the object id recorded on edge"
+          $message: "The nodes catalog of query graph for missing the object id recorded on Edge"
           $context:
             - edge_id
             - identifier
           $description: "Every 'object' identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph!"
       predicate:
         missing:
-          $message: "Predicate is missing or empty for edge"
+          $message: "Predicate is missing or empty for Edge"
           $context:
             - identifier
           $description: "The predicate of Query Graph edge needs to specified using a 'predicate' key with an array list of one or more predicates!"
@@ -443,15 +443,15 @@ error:
             - identifier
           $description: "Predicate specified in Query Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!"
         not_array:
-          $message: "Predicate slot value is not an array for edge"
+          $message: "Predicate property value is not an array for Edge"
           $context:
             - identifier
-          $description: "Value of 'predicate' slot value in Query Graph must be an array data type!"
+          $description: "Value of 'predicate' property value in Query Graph must be an array data type!"
         empty_array:
-          $message: "Predicate slot value is an empty array for edge"
+          $message: "Predicate property value is an empty array for Edge"
           $context:
             - identifier
-          $description: "Value of 'predicate' array slot value in Query Graph must contain one or more predicates!"
+          $description: "Value of 'predicate' array property value in Query Graph must contain one or more predicates!"
         abstract:
             $message: "Edge is not permitted to have an 'abstract' predicate"
             $context:
@@ -472,14 +472,14 @@ error:
           $description: "Predicate specified in Query Graph edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!"
       attribute_constraints:
         not_array:
-          $message: "Attribute_constraints property value is not an array for edge"
+          $message: "Attribute_constraints property value is not an array for Edge"
           $context:
             - identifier
-          $description: "Value of 'attribute_constraints' slot value in a Query Graph must be an array data type!"
+          $description: "Value of 'attribute_constraints' property value in a Query Graph must be an array data type!"
       qualifier_constraints:
         qualifier_set:
           empty:
-              $message: "Qualifier_set property value is empty for edge"
+              $message: "Qualifier_set property value is empty for Edge"
               $context:
                 - identifier
               $description: "Value of a 'qualifier_constraints.qualifier_set' property in a Query Graph must not be non-empty array!"
@@ -548,21 +548,21 @@ error:
         $description: "Knowledge graph node must have a 'categories' key with a non-empty associated value!"
       ids:
         not_array:
-          $message: "The 'ids' slot value is not an array for node"
+          $message: "The 'ids' property value is not an array for node"
           $context:
             - identifier
-          $description: "Value of 'ids' slot in Query Graph node must be an array data type!"
+          $description: "Value of 'ids' property in Query Graph node must be an array data type!"
       empty_ids:
-        $message: "The 'ids' slot array is empty for node"
+        $message: "The 'ids' property array is empty for node"
         $context:
           - identifier
-        $description: "Value of 'ids' array slot in Knowledge Graph node must contain one or more node identifiers!"
+        $description: "Value of 'ids' array property in Knowledge Graph node must contain one or more node identifiers!"
       categories:
         not_array:
-          $message: "The categories slot value is not an array for node"
+          $message: "The categories property value is not an array for node"
           $context:
             - identifier
-          $description: "Value of 'categories' slot in Knowledge Graph node must be an array data type!"
+          $description: "Value of 'categories' property in Knowledge Graph node must be an array data type!"
         not_concrete:
           $message: "None of the asserted categories are concrete for node"
           $context:
@@ -570,44 +570,44 @@ error:
             - categories
           $description: "Categories specified in knowledge graph edge node may not resolve to any (non-abstract, non-mixin) category terms in the specified version of Biolink. Add at least one 'concrete' category (as the most specific category?)!"
       empty_categories:
-        $message: "The 'categories' slot array is empty for node"
+        $message: "The 'categories' property array is empty for node"
         $context:
           - identifier
-        $description: "Value of 'categories' array slot in Knowledge Graph node must contain one or more node category terms!"
+        $description: "Value of 'categories' array property in Knowledge Graph node must contain one or more node category terms!"
       is_set:
         not_boolean:
-          $message: "The 'is_set' slot is not a boolean value for node"
+          $message: "The 'is_set' property is not a boolean value for node"
           $context:
             - identifier
           $description: "The 'is_set' field in node of Knowledge Graph, if present, must be a boolean value!"
     edge:
       subject:
         missing:
-          $message: "The 'subject' slot value is missing or empty for edge"
+          $message: "The 'subject' property value is missing or empty for Edge"
           $context:
             - identifier
           $description: "Edge must have a 'subject' key with a non-empty associated value!"
         missing_from_nodes:
-          $message: "The nodes catalog of query graph for missing the subject id recorded on edge"
+          $message: "The nodes catalog of query graph for missing the subject id recorded on Edge"
           $context:
             - edge_id
             - identifier
           $description: "Every 'subject' identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph!"
       object:
         missing:
-          $message: "The 'object' slot value  is missing or empty for edge"
+          $message: "The 'object' property value  is missing or empty for Edge"
           $context:
             - identifier
           $description: "Edge must have a 'object' key with a non-empty associated value!"
         missing_from_nodes:
-          $message: "The nodes catalog of query graph for missing the object id recorded on edge"
+          $message: "The nodes catalog of query graph for missing the object id recorded on Edge"
           $context:
             - edge_id
             - identifier
           $description: "Every 'object' identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph!"
       predicate:
         missing:
-          $message: "The predicate is missing or empty for edge"
+          $message: "The predicate is missing or empty for Edge"
           $context:
             - identifier
           $description: "Edge must have a 'predicate' key with a non-empty associated value!"
@@ -624,15 +624,15 @@ error:
             - identifier
           $description: "Predicate specified in Knowledge Graph edge is not defined as a predicate in specified version of Biolink. Replace with a defined predicate!"
         not_array:
-          $message: "The predicate slot value is not an array for edge"
+          $message: "The predicate property value is not an array for Edge"
           $context:
             - identifier
-          $description: "Value of the 'predicate' slot in Knowledge Graph edge must be an array data type!"
+          $description: "Value of the 'predicate' property in Knowledge Graph edge must be an array data type!"
         empty_array:
-          $message: "The predicate slot value is an empty array for edge"
+          $message: "The predicate property value is an empty array for Edge"
           $context:
             - identifier
-          $description: "Value of the 'predicate' array slot in Knowledge Graph edge must contain one or more predicates!"
+          $description: "Value of the 'predicate' array property in Knowledge Graph edge must contain one or more predicates!"
         abstract:
             $message: "Edge is not permitted to have an 'abstract' predicate"
             $context:
@@ -647,20 +647,20 @@ error:
           $description: "Knowledge Graph data validation is currently strict: cannot have 'mixin' predicates! Replace with a concrete predicate."
       attribute:
         missing:
-          $message: "Missing 'attributes' key for edge"
+          $message: "Missing 'attributes' key for Edge"
           $context:
             - identifier
           $description: "Edge must have a 'attributes' key with a non-empty associated value!"
         empty:
-          $message: "Empty attributes in edge"
+          $message: "Empty attributes in Edge"
           $context:
             - identifier
-          $description: "Value of 'attributes' slot in Knowledge Graph edge must contain a list of one or more attributes!"
+          $description: "Value of 'attributes' property in Knowledge Graph edge must contain a list of one or more attributes!"
         not_array:
-          $message: "The attributes are not an array in edge"
+          $message: "The attributes are not an array in Edge"
           $context:
             - identifier
-          $description: "Value of the 'attributes' slot in Knowledge Graph edge must be an array of attributes!"
+          $description: "Value of the 'attributes' property in Knowledge Graph edge must be an array of attributes!"
         type_id:
           unknown:
             $message: "Edge has unknown attribute_type_id"
@@ -681,12 +681,12 @@ error:
               - identifier
             $description: "Edge data validation is currently strict: attribute type identifiers cannot be of type 'mixin'. Replace with a concrete attribute_type_id!"
           missing:
-            $message: "An attribute is missing its 'attribute_type_id' property in edge"
+            $message: "An attribute is missing its 'attribute_type_id' property in Edge"
             $context:
               - identifier
             $description: "The attribute of a Knowledge graph edge must have a 'attribute_type_id' key with a non-empty associated value!"
           empty:
-            $message: "An attribute has empty 'attribute_type_id' property in edge"
+            $message: "An attribute has empty 'attribute_type_id' property in Edge"
             $context:
               - identifier
             $description: "The value of the 'attribute_type_id' of an attribute of a Knowledge graph edge must not be empty!"
@@ -698,12 +698,12 @@ error:
             $description: "The 'attribute_type_id' of a Knowledge graph edge attribute must be a controlled vocabulary term specified by a CURIE!"
         value:
           missing:
-            $message: "An attribute is missing its 'value' property in edge"
+            $message: "An attribute is missing its 'value' property in Edge"
             $context:
               - identifier
             $description: "An attribute of a Knowledge graph edge must have a 'value' key with a non-empty associated value!"
           empty:
-            $message: "An attribute has an empty value in edge"
+            $message: "An attribute has an empty value in Edge"
             $context:
               - identifier
             $description: "The value of an attribute of a Knowledge graph edge must not be empty!"
@@ -716,18 +716,18 @@ error:
               - identifier
             $description: "The value of an attribute specifying the provenance of a Knowledge graph edge must be the well-formed InfoRes CURIE of a knowledge source!"
         missing_primary:
-          $message: "A 'primary' knowledge source is missing for edge"
+          $message: "A 'primary' knowledge source is missing for Edge"
           $context:
             - identifier
           $description: "Edge attributes should record the 'infores' identifier of their primary knowledge source provenance with respect to KP."
       qualifiers:
         not_array:
-          $message: "The 'qualifiers' property is not an array in edge"
+          $message: "The 'qualifiers' property is not an array in Edge"
           $context:
             - identifier
-          $description: "Value of the 'qualifiers' slot in Knowledge Graph edge must be an array of attributes!"
+          $description: "Value of the 'qualifiers' property in Knowledge Graph edge must be an array of attributes!"
         empty:
-          $message: "The qualifiers property value is empty in edge"
+          $message: "The qualifiers property value is empty in Edge"
           $context:
             - identifier
           $description: "Value of a 'qualifiers' property in a Knowledge Graph must not be non-empty array!"
@@ -755,3 +755,19 @@ error:
                 - qualifier_value
                 - reason
               $description: "Validation of a specified 'qualifier_type_id' and 'qualifier_value' failed for a given exceptional reason!"
+      sources:
+        missing:
+          $message: "Missing 'sources' key for Edge"
+          $context:
+            - identifier
+          $description: "Edge must have a 'sources' key with a non-empty associated value!"
+        empty:
+          $message: "Empty 'sources' property in Edge"
+          $context:
+            - identifier
+          $description: "Value of 'sources' property in Knowledge Graph edge must contain a list of one or more RetrievalSource entries!"
+        not_array:
+          $message: "The 'sources' are not an array in Edge"
+          $context:
+            - identifier
+          $description: "Value of the 'sources' property in Knowledge Graph edge must be an array of RetrievalSource entries!"

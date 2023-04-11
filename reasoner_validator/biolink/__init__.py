@@ -689,107 +689,103 @@ class BiolinkValidator(ValidationReporter):
         :param edge: Dict, the edge object associated with some attributes are expected to be found
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
-        # we do not have to test for the absence of the 'sources' tag
-        # since the TRAPI validation will catch such missing data
-        # if 'sources' not in edge:
-        #     # we only report errors about missing or empty edge attributes
-        #     # if TRAPI 1.3.0 or earlier expected to have provenance
-        #     self.report(code="error.knowledge_graph.edge.sources.missing", identifier=edge_id)
-        # elif not edge['sources']:
-        #     if not self.minimum_required_trapi_version("1.4.0-beta"):
-        #         # we only report errors about empty edge attributes
-        #         # if TRAPI 1.3.0 or earlier expected to have provenance
-        #         self.report(code="error.knowledge_graph.edge.attribute.empty", identifier=edge_id)
-        # elif not isinstance(edge['sources'], List):
-        #     self.report(code="error.knowledge_graph.edge.attribute.not_array", identifier=edge_id)
-        # else:
+        # we ought not to have to test for the absence of the 'sources' tag
+        # if general TRAPI schema validation is run, since it will catch such missing data
+        # however, this method may be directly run on invalid TRAPI data, so...
+        if 'sources' not in edge:
+            self.report(code="error.knowledge_graph.edge.sources.missing", identifier=edge_id)
+        elif not edge['sources']:
+            # Cardinality of 'sources' array is also validated by the TRAPI schema
+            # but for the same reasons noted above, we check again here.
+            self.report(code="error.knowledge_graph.edge.sources.empty", identifier=edge_id)
+        elif not isinstance(edge['sources'], List):
+            self.report(code="error.knowledge_graph.edge.sources.not_array", identifier=edge_id)
+        else:
+            edge_sources = edge['sources']
 
-        edge_sources = edge['sources']
+            # The RetrievalSource items in the 'sources' array is also partially validated insofar as JSONSchema can
+            # validate based on the TRAPI schema; however, some kinds of validation are either not deterministic from
+            # the schema. The remainder of this method validates an initial basic 'semantic' subset of RetrievalSource
+            # content for which the validation is both easy and deemed generally useful. This includes detection of
+            # anticipated Edge provenance roles (i.e. mandatory 'primary' and tests against expected provenance tags)
 
-        # TODO: review if cardinality of 'sources' array is validated by general TRAPI schema validation (probably yes).
+            # Method caller associated Edge sources to be checked
 
-        # The RetrievalSource items in the 'sources' array are also partially validated insofar as JSONSchema can
-        # validate based on the TRAPI schema; however, some kinds of validation are either not deterministic from
-        # the schema. The remainder of this method validates an initial basic 'semantic' subset of RetrievalSource
-        # content for which the validation is both easy and deemed generally useful. This includes detection of
-        # anticipated Edge provenance roles (i.e. mandatory 'primary' and tests against expected provenance tags)
+            ara_source: Optional[str]
+            kp_source: Optional[str]
+            kp_source_type: Optional[str]
+            ara_source, kp_source, kp_source_type = self.get_target_sources()
 
-        # Method caller associated Edge sources to be checked
+            # Expecting ARA and KP 'aggregator_knowledge_source' attributes?
+            found_ara_knowledge_source = False
+            found_kp_knowledge_source = False
 
-        ara_source: Optional[str]
-        kp_source: Optional[str]
-        kp_source_type: Optional[str]
-        ara_source, kp_source, kp_source_type = self.get_target_sources()
+            # also track primary_knowledge_source attribute cardinality now
+            found_primary_knowledge_source: List[str] = list()
 
-        # Expecting ARA and KP 'aggregator_knowledge_source' attributes?
-        found_ara_knowledge_source = False
-        found_kp_knowledge_source = False
+            for retrieval_source in edge_sources:
 
-        # also track primary_knowledge_source attribute cardinality now
-        found_primary_knowledge_source: List[str] = list()
+                # TRAPI schema validation will generally validate the requisite
+                # 'RetrievalSource' entries (i.e. mandatory object keys and valid key value
+                # data types), but here, we go the last (semantic) mile, for the model:
 
-        for retrieval_source in edge_sources:
+                # 1. 'resource_id': well-formed CURIE which is an Infores
+                #    which may include one of the expected Infores entries (from target sources noted above)
+                resource_id: str = retrieval_source["resource_id"]
+                resource_role: str = retrieval_source["resource_role"]
+                if not (resource_id and resource_role):
+                    pass
 
-            # TRAPI schema validation will generally validate the requisite 'RetrievalSource' entries (i.e. mandatory
-            # object keys and valid key value data types), but here, we go the last (semantic) mile, for the model:
+                #
+                self. validate_infores(context="resource_id", edge_id=edge_id, identifier=resource_id)
+                if resource_id == ara_source:
+                    found_ara_knowledge_source = True
+                if resource_id == kp_source and resource_role == kp_source_type:
+                    found_kp_knowledge_source = True
 
-            # 1. 'resource_id': well-formed CURIE which is an Infores
-            #    which may include one of the expected Infores entries (from target sources noted above)
-            resource_id: str = retrieval_source["resource_id"]
-            resource_role: str = retrieval_source["resource_role"]
-            if not (resource_id and resource_role):
-                pass
+                # ... even if the resource_id fails aspects of validation, we'll keep going...
 
-            #
-            self. validate_infores(context="resource_id", edge_id=edge_id, identifier=resource_id)
-            if resource_id == ara_source:
-                found_ara_knowledge_source = True
-            if resource_id == kp_source and resource_role == kp_source_type:
-                found_kp_knowledge_source = True
+                # 2. 'resource_role': will have already been TRAPI validated, but is at least one
+                #    (but only one?) of 'RetrievalSource' entries the mandatory 'primary'?
+                resource_role: str = retrieval_source["resource_role"]
+                if resource_id and resource_role == "primary_knowledge_source":
+                    # the cardinality of this will be checked below...
+                    found_primary_knowledge_source.append(resource_id)
 
-            # ... even if the resource_id fails aspects of validation, we'll keep going...
+                # 3. If provided (Optional), are all 'upstream_resource_ids' well-formed Infores CURIES
+                #    and may include some expected Infores entries (from target sources noted above)?
+                if "upstream_resource_ids" in retrieval_source:
+                    upstream_resource_ids: Optional[List[str]] = retrieval_source["upstream_resource_ids"]
+                    # Note: the TRAPI schema doesn't currently tag this field as nullable, so we check
+                    if upstream_resource_ids:
+                        for identifier in upstream_resource_ids:
+                            self.validate_infores(
+                                context="upstream_resource_ids",
+                                edge_id=edge_id,
+                                identifier=identifier
+                            )
+                            if resource_id == ara_source:
+                                found_ara_knowledge_source = True
 
-            # 2. 'resource_role': will have already been TRAPI validated, but is at least one
-            #    (but only one?) of 'RetrievalSource' entries the mandatory 'primary'?
-            resource_role: str = retrieval_source["resource_role"]
-            if resource_id and resource_role == "primary_knowledge_source":
-                # the cardinality of this will be checked below...
-                found_primary_knowledge_source.append(resource_id)
+                            # we don't worry about kp_source_type here since it is
+                            # not directly annotated with the upstream_resource_ids
+                            if resource_id == kp_source:
+                                found_kp_knowledge_source = True
 
-            # 3. If provided (Optional), are all 'upstream_resource_ids' well-formed Infores CURIES
-            #    and may include some expected Infores entries (from target sources noted above)?
-            if "upstream_resource_ids" in retrieval_source:
-                upstream_resource_ids: Optional[List[str]] = retrieval_source["upstream_resource_ids"]
-                # Note: the TRAPI schema doesn't currently tag this field as nullable, so we check
-                if upstream_resource_ids:
-                    for identifier in upstream_resource_ids:
-                        self.validate_infores(
-                            context="upstream_resource_ids",
-                            edge_id=edge_id,
-                            identifier=identifier
-                        )
-                        if resource_id == ara_source:
-                            found_ara_knowledge_source = True
+                # 4. If provided (Optional), we *could* check the optional 'source_record_urls'
+                #    if they are all resolvable URLs (but maybe we do not attempt this for now...)
+                #
+                # if "source_record_urls" in retrieval_source:
+                #     source_record_urls: Optional[List[str]] = retrieval_source["source_record_urls"]
 
-                        # we don't worry about kp_source_type here since it is
-                        # not directly annotated with the upstream_resource_ids
-                        if resource_id == kp_source:
-                            found_kp_knowledge_source = True
-
-            # 4. If provided (Optional), we *could* check the optional 'source_record_urls'
-            #    if they are all resolvable URLs (but maybe we do not attempt this for now...)
-            #
-            # if "source_record_urls" in retrieval_source:
-            #     source_record_urls: Optional[List[str]] = retrieval_source["source_record_urls"]
-
-        # TODO: After all the 'sources' RetrievalSource entries have been scanned,
-        #       check for complete expected provenance.
-        self.validate_provenance(
-            edge_id,
-            ara_source, found_ara_knowledge_source,
-            kp_source, found_kp_knowledge_source, kp_source_type,
-            found_primary_knowledge_source
-        )
+            # TODO: After all the 'sources' RetrievalSource entries have been scanned, then
+            #       perform a complete validation check for complete expected provenance.
+            self.validate_provenance(
+                edge_id,
+                ara_source, found_ara_knowledge_source,
+                kp_source, found_kp_knowledge_source, kp_source_type,
+                found_primary_knowledge_source
+            )
 
     def validate_predicate(self, edge_id: str, predicate: str):
         """
