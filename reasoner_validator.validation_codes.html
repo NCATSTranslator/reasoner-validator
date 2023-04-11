@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Validation Codes Dictionary &mdash; Reasoner Validator  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -97,14 +98,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="module-reasoner_validator.validation_codes">
+  <section id="module-reasoner_validator.validation_codes">
 <span id="validation-codes-dictionary"></span><h1>Validation Codes Dictionary<a class="headerlink" href="#module-reasoner_validator.validation_codes" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.validation_codes.</span></span><span class="sig-name descname"><span class="pre">CodeDictionary</span></span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>code_dictionary</strong></dt><dd></dd>
 </dl>
@@ -112,10 +113,6 @@
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.display" title="reasoner_validator.validation_codes.CodeDictionary.display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code></a>(code[, parameters, add_prefix])</p></td>
 <td><p>Generate one or more full messages from provided Validation Reporter code and associated parameters (if applicable).</p></td>
@@ -135,10 +132,6 @@
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 71%" />
-<col style="width: 29%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>get_description</strong></p></td>
 <td></td>
@@ -188,7 +181,7 @@
 <dd><p>Generate one or more full messages from provided Validation Reporter code
 and associated parameters (if applicable).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>code</strong> – str,  valid (dot delimited YAML key path) identified code,
 which should be registered in the project codes.yaml file.</p></li>
@@ -204,7 +197,7 @@ for every distinct message).</p></li>
 (i.e. error, warning, info) to displayed messages (default: False)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List[str], list of decoded messages</p>
 </dd>
 </dl>
@@ -216,14 +209,14 @@ for every distinct message).</p></li>
 <dd><p>Copy subtree, filtering out leaf data by specified facet. Leaves are simply identified by
 the presence of the mandatory ‘$message’ tree parameter dictionary key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tree</strong> – Dict, message code dictionary tree to be copied, possibly filtered by facet</p></li>
 <li><p><strong>facet</strong> – str, constraint on code entry facet to be returned; if specified, should be either
 “message”, “context” or “description” (default: return all facets of the code entry)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dict, tree filtered by facet</p>
 </dd>
 </dl>
@@ -234,14 +227,14 @@ the presence of the mandatory ‘$message’ tree parameter dictionary key.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_code_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.get_code_entry" title="Permalink to this definition"></a></dt>
 <dd><p>Get the single code entry corresponding to the given code, if available.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>code</strong> – Optional[str], dot delimited validation message code identifier (None is ok, but returns None)</p></li>
 <li><p><strong>facet</strong> – Optional[str], constraint on code entry facet to be returned; if specified, should be either
 “message” or “description” (default: return all facets of the code entry)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dict, single terminal leaf code entry (complete with indicated or all facets); None, if not available</p>
 </dd>
 </dl>
@@ -253,7 +246,7 @@ the presence of the mandatory ‘$message’ tree parameter dictionary key.</p>
 <dd><p>Get subtree of specified dot-delimited tag name, returned with message type (i.e. info, warning, error).
 If optional ‘is_leaf’ flag is set to True, then only return the code if it is a terminal leaf in the code tree.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>code</strong> – Optional[str], dot delimited validation message code identifier (None is ok, but returns None)</p></li>
 <li><p><strong>facet</strong> – Optional[str], constraint on code entry facet to be returned; if specified, should be either
@@ -261,7 +254,7 @@ If optional ‘is_leaf’ flag is set to True, then only return the code if it i
 <li><p><strong>is_leaf</strong> – Optional[bool], only return entry if it is a ‘leaf’ of the code tree (default: False)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Optional[Tuple[str, Dict[str,str]]], 2-tuple of the code type (i.e. info, warning, error) and the
 validation message entry (dictionary); None if empty code or code unknown in the code dictionary,
 or (if the is_leaf option is ‘True’) if the code doesn’t resolve to a single leaf.</p>
@@ -294,10 +287,10 @@ or (if the is_leaf option is ‘True’) if the code doesn’t resolve to a sing
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">markdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/home/runner/work/reasoner-validator/reasoner-validator/docs/validation_codes_dictionary.md'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.markdown" title="Permalink to this definition"></a></dt>
 <dd><p>Dump the Code Dictionary into a validation_codes_dictionary.md Markdown file, for documentation purposes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>filename</strong> – str, defaults to DEFAULT_CODES_DOCUMENTATION_FILE</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool, True if successful; False otherwise</p>
 </dd>
 </dl>
@@ -310,7 +303,7 @@ or (if the is_leaf option is ‘True’) if the code doesn’t resolve to a sing
 
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SemVer Versioning Utilities &mdash; Reasoner Validator  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -91,7 +92,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="module-reasoner_validator.versioning">
+  <section id="module-reasoner_validator.versioning">
 <span id="semver-versioning-utilities"></span><h1>SemVer Versioning Utilities<a class="headerlink" href="#module-reasoner_validator.versioning" title="Permalink to this heading"></a></h1>
 <p>Utilities.</p>
 <dl class="py class">
@@ -99,7 +100,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.versioning.</span></span><span class="sig-name descname"><span class="pre">SemVer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">major</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prerelease</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buildmetadata</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.versioning.SemVer" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>buildmetadata</strong></dt><dd><p>Alias for field number 5</p>
 </dd>
@@ -118,10 +119,6 @@
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
 <td><p>Return number of occurrences of value.</p></td>
@@ -146,14 +143,14 @@
 <dd><p>Initializes a SemVer from a string.  This is an ‘augmented’ SemVer which may also have
 an alphabetic prefix (for example, a ‘v’ for ‘version’ designation of a Github release)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>string</strong> – str, string encoding the SemVer.</p></li>
 <li><p><strong>ignore_prefix</strong> – bool, if set, any alphabetic prefix of the SemVer string is ignored (not recorded)
 the SemVer string value, e.g. a Git Release ‘v’ character (i.e. v1.2.3); Default: False.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -210,7 +207,7 @@ the SemVer string value, e.g. a Git Release ‘v’ character (i.e. v1.2.3); Def
 <span class="sig-prename descclassname"><span class="pre">reasoner_validator.versioning.</span></span><span class="sig-name descname"><span class="pre">get_latest_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">release_tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.versioning.get_latest_version" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-</div>
+</section>
 
 
            </div>

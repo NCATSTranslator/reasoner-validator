@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TRAPI Response Validation &mdash; Reasoner Validator  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -89,7 +90,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="module-reasoner_validator">
+  <section id="module-reasoner_validator">
 <span id="trapi-response-validation"></span><h1>TRAPI Response Validation<a class="headerlink" href="#module-reasoner_validator" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator">
@@ -99,10 +100,6 @@
 conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_messages</span></code>(new_messages)</p></td>
 <td><p>Batch addition of a dictionary of messages to a ValidationReporter instance. :param new_messages: Dict[str, Dict], with key one of &quot;information&quot;, &quot;warnings&quot; or &quot;errors&quot;,                       with 'code' keyed dictionaries of (structured) message parameters.</p></td>
@@ -133,7 +130,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_biolink_version</span></code>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Biolink Model version currently targeted by the ValidationReporter.</p>
 </dd>
 </dl>
@@ -153,7 +150,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trapi_version</span></code>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str, TRAPI (SemVer) version currently targeted by the ValidationReporter.</p>
 </dd>
 </dl>
@@ -188,7 +185,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool, value of validation strictness set in the ValidationReporter.</p>
 </dd>
 </dl>
@@ -199,7 +196,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_trapi_version</span></code>(version)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param version</dt>
+<dt class="field-odd">param version<span class="colon">:</span></dt>
 <dd class="field-odd"><p>simple 'major.minor.patch' TRAPI schema release SemVer</p>
 </dd>
 </dl>
@@ -213,7 +210,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sample_results" title="reasoner_validator.TRAPIResponseValidator.sample_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_results</span></code></a>(results)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param results</dt>
+<dt class="field-odd">param results<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List, original list of Results</p>
 </dd>
 </dl>
@@ -221,7 +218,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query" title="reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sanitize_trapi_query</span></code></a>(response)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param response</dt>
+<dt class="field-odd">param response<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dict full TRAPI Response JSON object</p>
 </dd>
 </dl>
@@ -254,17 +251,17 @@ The high level structure of a Query.Response is described in
 </li>
 </ul>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>response</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>]</em>) – Query.Response to be validated.</p></li>
 <li><p><strong>edges_limit</strong> (<em>int</em>) – integer maximum number of edges to be validated in the knowledge graph. A value of zero
 triggers validation of all edges in the knowledge graph (could take awhile! Default: 100)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Validator cataloging “information”, “warning” and “error” messages (may be empty)</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.ValidationReporter" title="reasoner_validator.report.ValidationReporter">ValidationReporter</a></p>
 </dd>
 </dl>
@@ -275,14 +272,14 @@ triggers validation of all edges in the knowledge graph (could take awhile! Defa
 <span class="sig-name descname"><span class="pre">has_valid_knowledge_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.has_valid_knowledge_graph" title="Permalink to this definition"></a></dt>
 <dd><p>Validate a TRAPI Knowledge Graph.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>message</strong> (<em>Dict</em>) – input message expected to contain the ‘knowledge_graph’</p></li>
 <li><p><strong>edges_limit</strong> (<em>int</em>) – integer maximum number of edges to be validated in the knowledge graph. A value of zero
 triggers validation of all edges in the knowledge graph (could take awhile! Default: 100)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool, False, if validation errors</p>
 </dd>
 </dl>
@@ -309,14 +306,14 @@ triggers validation of all edges in the knowledge graph (could take awhile! Defa
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.sample_graph" title="Permalink to this definition"></a></dt>
 <dd><p>Only process a strict subsample of the TRAPI Response Message knowledge graph.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>graph</strong> (<em>Dict</em>) – original knowledge graph</p></li>
 <li><p><strong>edges_limit</strong> (<em>int</em>) – integer maximum number of edges to be validated in the knowledge graph. A value of zero
 triggers validation of all edges in the knowledge graph (could take awhile! Default: 100)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dict, ‘edges_limit’ sized subset of knowledge graph</p>
 </dd>
 </dl>
@@ -326,10 +323,10 @@ triggers validation of all edges in the knowledge graph (could take awhile! Defa
 <dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.sample_results">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.sample_results" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>results</strong> – List, original list of Results</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List, RESULT_TEST_DATA_SAMPLE_SIZE sized subset of Results</p>
 </dd>
 </dl>
@@ -339,10 +336,10 @@ triggers validation of all edges in the knowledge graph (could take awhile! Defa
 <dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query">
 <span class="sig-name descname"><span class="pre">sanitize_trapi_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>response</strong> – Dict full TRAPI Response JSON object</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dict, response with discretionary removal of content which
 triggers (temporarily) unwarranted TRAPI validation failures</p>
 </dd>
@@ -351,7 +348,7 @@ triggers (temporarily) unwarranted TRAPI validation failures</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>

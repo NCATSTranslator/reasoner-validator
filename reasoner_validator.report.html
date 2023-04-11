@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Validator Reporter &mdash; Reasoner Validator  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -112,7 +113,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="module-reasoner_validator.report">
+  <section id="module-reasoner_validator.report">
 <span id="validator-reporter"></span><h1>Validator Reporter<a class="headerlink" href="#module-reasoner_validator.report" title="Permalink to this heading"></a></h1>
 <p>Error and Warning Reporting Module</p>
 <dl class="py class">
@@ -121,10 +122,6 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONEncoder</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ReportJsonEncoder.default" title="reasoner_validator.report.ReportJsonEncoder.default"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code></a>(o)</p></td>
 <td><p>Implement this method in a subclass such that it returns a serializable object for <code class="docutils literal notranslate"><span class="pre">o</span></code>, or calls the base implementation (to raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>).</p></td>
@@ -169,10 +166,6 @@ The TRAPI version and Biolink Model versions are also tracked for convenience at
 this abstract level although their application is within specific pertinent subclasses.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.add_messages" title="reasoner_validator.report.ValidationReporter.add_messages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_messages</span></code></a>(new_messages)</p></td>
 <td><p>Batch addition of a dictionary of messages to a ValidationReporter instance. :param new_messages: Dict[str, Dict], with key one of &quot;information&quot;, &quot;warnings&quot; or &quot;errors&quot;,                       with 'code' keyed dictionaries of (structured) message parameters.</p></td>
@@ -200,7 +193,7 @@ this abstract level although their application is within specific pertinent subc
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_biolink_version" title="reasoner_validator.report.ValidationReporter.get_biolink_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_biolink_version</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Biolink Model version currently targeted by the ValidationReporter.</p>
 </dd>
 </dl>
@@ -220,7 +213,7 @@ this abstract level although their application is within specific pertinent subc
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_trapi_version" title="reasoner_validator.report.ValidationReporter.get_trapi_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trapi_version</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str, TRAPI (SemVer) version currently targeted by the ValidationReporter.</p>
 </dd>
 </dl>
@@ -246,7 +239,7 @@ this abstract level although their application is within specific pertinent subc
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.is_strict_validation" title="reasoner_validator.report.ValidationReporter.is_strict_validation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool, value of validation strictness set in the ValidationReporter.</p>
 </dd>
 </dl>
@@ -257,7 +250,7 @@ this abstract level although their application is within specific pertinent subc
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.minimum_required_trapi_version" title="reasoner_validator.report.ValidationReporter.minimum_required_trapi_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_trapi_version</span></code></a>(version)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param version</dt>
+<dt class="field-odd">param version<span class="colon">:</span></dt>
 <dd class="field-odd"><p>simple 'major.minor.patch' TRAPI schema release SemVer</p>
 </dd>
 </dl>
@@ -291,7 +284,7 @@ this abstract level although their application is within specific pertinent subc
 <span class="sig-name descname"><span class="pre">apply_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">validation_method</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.apply_validation" title="Permalink to this definition"></a></dt>
 <dd><p>Wrapper to allow validation_methods direct access to the ValidationReporter.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>validation_method</strong> – function which accepts this instance of the
 ValidationReporter as its first argument, for use in reporting validation errors.</p></li>
@@ -299,7 +292,7 @@ ValidationReporter as its first argument, for use in reporting validation errors
 <li><p><strong>kwargs</strong> – any (optional, additional) keyword arguments to the validation_method, after positional arguments</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool, returns ‘False’ if validation method documented errors; True otherwise</p>
 </dd>
 </dl>
@@ -311,7 +304,7 @@ ValidationReporter as its first argument, for use in reporting validation errors
 <dd><p>Dump all available messages captured by the ValidationReporter,
 printed as formatted human-readable text, on a specified file device.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>title</strong> – Optional[str], user supplied report title (default: autogenerated if not set or empty string;
 suppressed if an explicit argument of None is given); default: “” -&gt; default title</p></li>
@@ -324,7 +317,7 @@ also, suppress character escapes (i.e. underlining of titles) (default: False)</
 <li><p><strong>file</strong> – target file device for output</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>n/a</p>
 </dd>
 </dl>
@@ -368,7 +361,7 @@ also, suppress character escapes (i.e. underlining of titles) (default: False)</
 <dd><p>Text string version of dump(): returns all available messages captured by the
 ValidationReporter, as a formatted human-readable text blob.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>id_rows</strong> – int &gt;= 0, if set, maximum number of code-related identifiers to
 print per code (value of 0 means print all; default: 0)</p></li>
@@ -377,7 +370,7 @@ print per identifier row (value of 0 means print all; default: 0)</p></li>
 <li><p><strong>compact_format</strong> – bool, if True, omit blank lines inserted by default for human readability (default: True)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>n/a</p>
 </dd>
 </dl>
@@ -387,10 +380,10 @@ print per identifier row (value of 0 means print all; default: 0)</p></li>
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_biolink_version">
 <span class="sig-name descname"><span class="pre">get_biolink_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_biolink_version" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Biolink Model version currently targeted by the ValidationReporter.</p>
 </dd>
-<dt class="field-even">Rtype biolink_version</dt>
+<dt class="field-even">Rtype biolink_version<span class="colon">:</span></dt>
 <dd class="field-even"><p>str</p>
 </dd>
 </dl>
@@ -429,7 +422,7 @@ print per identifier row (value of 0 means print all; default: 0)</p></li>
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_trapi_version">
 <span class="sig-name descname"><span class="pre">get_trapi_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_trapi_version" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str, TRAPI (SemVer) version currently targeted by the ValidationReporter.</p>
 </dd>
 </dl>
@@ -468,14 +461,14 @@ print per identifier row (value of 0 means print all; default: 0)</p></li>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_validation_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.has_validation_errors" title="Permalink to this definition"></a></dt>
 <dd><p>Check if test case has validation errors.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tag</strong> – str, top level string key in the ‘case’ whose value is the validation messages ‘dictionary’</p></li>
 <li><p><strong>case</strong> – Dict, containing error messages in a structurally similar
 format to what is returned by the to_dict() method in this class.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the case contains validation messages</p>
 </dd>
 </dl>
@@ -492,7 +485,7 @@ format to what is returned by the to_dict() method in this class.</p></li>
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.is_strict_validation">
 <span class="sig-name descname"><span class="pre">is_strict_validation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.is_strict_validation" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool, value of validation strictness set in the ValidationReporter.</p>
 </dd>
 </dl>
@@ -504,7 +497,7 @@ format to what is returned by the to_dict() method in this class.</p></li>
 <dd><p>Merge all messages and metadata from a second ValidationReporter,
 into the calling ValidationReporter instance.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>reporter</strong> – second ValidationReporter</p>
 </dd>
 </dl>
@@ -514,10 +507,10 @@ into the calling ValidationReporter instance.</p>
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.minimum_required_trapi_version">
 <span class="sig-name descname"><span class="pre">minimum_required_trapi_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.minimum_required_trapi_version" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>version</strong> – simple ‘major.minor.patch’ TRAPI schema release SemVer</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if current version is equal to, or newer than, a targeted ‘minimum_version’</p>
 </dd>
 </dl>
@@ -542,7 +535,7 @@ into the calling ValidationReporter instance.</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>

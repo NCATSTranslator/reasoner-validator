@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TRAPI Schema Validation &mdash; Reasoner Validator  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -92,7 +93,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="module-reasoner_validator.trapi">
+  <section id="module-reasoner_validator.trapi">
 <span id="trapi-schema-validation"></span><h1>TRAPI Schema Validation<a class="headerlink" href="#module-reasoner_validator.trapi" title="Permalink to this heading"></a></h1>
 <p>TRAPI Validation Functions.</p>
 <dl class="py class">
@@ -103,10 +104,6 @@
 conformance of JSON messages to the Translator Reasoner API.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_messages</span></code>(new_messages)</p></td>
 <td><p>Batch addition of a dictionary of messages to a ValidationReporter instance. :param new_messages: Dict[str, Dict], with key one of &quot;information&quot;, &quot;warnings&quot; or &quot;errors&quot;,                       with 'code' keyed dictionaries of (structured) message parameters.</p></td>
@@ -134,7 +131,7 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_biolink_version</span></code>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Biolink Model version currently targeted by the ValidationReporter.</p>
 </dd>
 </dl>
@@ -154,7 +151,7 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trapi_version</span></code>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str, TRAPI (SemVer) version currently targeted by the ValidationReporter.</p>
 </dd>
 </dl>
@@ -180,7 +177,7 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool, value of validation strictness set in the ValidationReporter.</p>
 </dd>
 </dl>
@@ -194,7 +191,7 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_trapi_version</span></code>(version)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param version</dt>
+<dt class="field-odd">param version<span class="colon">:</span></dt>
 <dd class="field-odd"><p>simple 'major.minor.patch' TRAPI schema release SemVer</p>
 </dd>
 </dl>
@@ -216,7 +213,7 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 <span class="sig-name descname"><span class="pre">is_valid_trapi_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Query'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.is_valid_trapi_query" title="Permalink to this definition"></a></dt>
 <dd><p>Make sure that the Message is a syntactically valid TRAPI Query JSON object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>instance:</strong></dt><dd><p>Dict, instance to validate</p>
 </dd>
@@ -224,7 +221,7 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>Validation (“information”, “warning” and “error”) messages are returned within the host TRAPIValidator instance.</dt><dd></dd>
 </dl>
@@ -261,7 +258,7 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 <span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.validate" title="Permalink to this definition"></a></dt>
 <dd><p>Validate instance against schema.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>instance</strong></dt><dd><p>dict, instance to validate</p>
 </dd>
@@ -269,7 +266,7 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><a href="#id1"><span class="problematic" id="id2">`</span></a>ValidationError</dt><dd><p>&lt;<a class="reference external" href="https://python-jsonschema.readthedocs.io/en/latest/errors/#jsonschema.exceptions.ValidationError">https://python-jsonschema.readthedocs.io/en/latest/errors/#jsonschema.exceptions.ValidationError</a>&gt;`_
 If the instance is invalid.</p>
@@ -290,7 +287,7 @@ If the instance is invalid.</p>
 <span class="sig-prename descclassname"><span class="pre">reasoner_validator.trapi.</span></span><span class="sig-name descname"><span class="pre">check_trapi_validity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trapi_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Query'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator" title="reasoner_validator.trapi.TRAPISchemaValidator"><span class="pre">TRAPISchemaValidator</span></a></span></span><a class="headerlink" href="#reasoner_validator.trapi.check_trapi_validity" title="Permalink to this definition"></a></dt>
 <dd><p>Checks schema compliance of a Query component against a given TRAPI version.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>instance:</strong></dt><dd><p>Dict, of format {“message”: {}}</p>
 </dd>
@@ -300,7 +297,7 @@ If the instance is invalid.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>ValidationReporter catalog of “information”, “warnings” or “errors” indexed messages (maybe empty)</dt><dd></dd>
 </dl>
@@ -331,7 +328,7 @@ If the instance is invalid.</p>
 :return:</p>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>

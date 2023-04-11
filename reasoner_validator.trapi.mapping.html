@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TRAPI Result Mapping &mdash; Reasoner Validator  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -88,7 +89,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="module-reasoner_validator.trapi.mapping">
+  <section id="module-reasoner_validator.trapi.mapping">
 <span id="trapi-result-mapping"></span><h1>TRAPI Result Mapping<a class="headerlink" href="#module-reasoner_validator.trapi.mapping" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.mapping.MappingValidator">
@@ -99,10 +100,6 @@ dangling references between nodes and edges of a graph.
 This is more of a TRAPI expectation (that all nodes and edges identifiers refer to one another)</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_messages</span></code>(new_messages)</p></td>
 <td><p>Batch addition of a dictionary of messages to a ValidationReporter instance. :param new_messages: Dict[str, Dict], with key one of &quot;information&quot;, &quot;warnings&quot; or &quot;errors&quot;,                       with 'code' keyed dictionaries of (structured) message parameters.</p></td>
@@ -130,7 +127,7 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_biolink_version</span></code>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Biolink Model version currently targeted by the ValidationReporter.</p>
 </dd>
 </dl>
@@ -150,7 +147,7 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trapi_version</span></code>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str, TRAPI (SemVer) version currently targeted by the ValidationReporter.</p>
 </dd>
 </dl>
@@ -176,7 +173,7 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool, value of validation strictness set in the ValidationReporter.</p>
 </dd>
 </dl>
@@ -187,7 +184,7 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_trapi_version</span></code>(version)</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param version</dt>
+<dt class="field-odd">param version<span class="colon">:</span></dt>
 <dd class="field-odd"><p>simple 'major.minor.patch' TRAPI schema release SemVer</p>
 </dd>
 </dl>
@@ -202,10 +199,6 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 74%" />
-<col style="width: 26%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>check_dangling_references</strong></p></td>
 <td></td>
@@ -244,7 +237,7 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <span class="sig-prename descclassname"><span class="pre">reasoner_validator.trapi.mapping.</span></span><span class="sig-name descname"><span class="pre">check_node_edge_mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#reasoner_validator.trapi.mapping.MappingValidator" title="reasoner_validator.trapi.mapping.MappingValidator"><span class="pre">MappingValidator</span></a></span></span><a class="headerlink" href="#reasoner_validator.trapi.mapping.check_node_edge_mappings" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-</div>
+</section>
 
 
            </div>
