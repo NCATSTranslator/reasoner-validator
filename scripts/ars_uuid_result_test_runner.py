@@ -58,7 +58,7 @@ def main():
              'are to be reported (default: 0, display all identifiers; ignored when "--json" flag is given)'
     )
     arg_parser.add_argument(
-        '-c', '--compress', action='store_true',
+        '-c', '--compact_format', action='store_true',
         help='If given, compress human readable text output by suppressing blank lines '
              '(default: False; ignored when "--json" flag is given).'
     )
@@ -185,7 +185,7 @@ def main():
                     title=params.title,
                     id_rows=params.number_of_identifiers,
                     msg_rows=params.number_of_messages,
-                    compress=params.compress
+                    compact_format=params.compact_format
                 )
 
 

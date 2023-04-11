@@ -10,7 +10,7 @@ from jsonschema.exceptions import ValidationError
 from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema, load_schema
 
 PRE_1_4_0_TEST_VERSIONS = "1.2", "1.2.0", "1.3", "1.3.0"
-LATEST_TEST_VERSIONS = "1", "1.4", "1.4.0", "1.4.0-beta2"
+LATEST_TEST_VERSIONS = "1", "1.4", "1.4.0", "1.4.0-beta3"
 ALL_TEST_VERSIONS = PRE_1_4_0_TEST_VERSIONS + LATEST_TEST_VERSIONS
 
 

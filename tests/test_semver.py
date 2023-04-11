@@ -50,7 +50,7 @@ def test_semver_greater_or_equal_to():
     one_four_zero = SemVer.from_string("1.4.0")
     one_four_zero_beta = SemVer.from_string("1.4.0-beta")
     one_four_zero_beta_one = SemVer.from_string("1.4.0-beta1")
-    one_four_zero_beta_two = SemVer.from_string("1.4.0-beta2")
+    one_four_zero_beta_three = SemVer.from_string("1.4.0-beta3")
 
     # Major release diff
     assert one_zero_zero >= zero_zero_one
@@ -89,5 +89,5 @@ def test_semver_greater_or_equal_to():
     assert not one_four_zero_beta >= one_four_zero
     assert one_four_zero_beta_one >= one_four_zero_beta
     assert one_four_zero_beta_one >= one_four_zero_beta_one
-    assert one_four_zero_beta_two >= one_four_zero_beta
-    assert one_four_zero_beta_two >= one_four_zero_beta_one
+    assert one_four_zero_beta_three >= one_four_zero_beta
+    assert one_four_zero_beta_three >= one_four_zero_beta_one

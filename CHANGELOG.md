@@ -9,6 +9,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 - Significant iteration on repairing unit tests which have differential expectations pre- and post- 1.4.0-beta2 (incomplete?)
 - Some basic refactoring starting to fix validation to be 1.4.0-beta (or later) compliant (incomplete)
 - TRAPI 'workflow' validation is currently broken due to a [bug in the 1.3.2 Operations Schema]https://github.com/NCATSTranslator/OperationsAndWorkflows/issues/78].
+- ValidationReporter.dump(s) 'compress' parameter renamed to 'compact_format' boolean flag
 
 ## v3.4.14
 
