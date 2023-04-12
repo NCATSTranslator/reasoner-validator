@@ -180,6 +180,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-type-id-unknown">error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-value-unresolved">error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-invalid">error.knowledge_graph.edge.qualifiers.qualifier.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-missing">error.knowledge_graph.edge.sources.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-empty">error.knowledge_graph.edge.sources.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-not-array">error.knowledge_graph.edge.sources.not_array</a></li>
 </ul>
 </li>
 </ul>
@@ -483,7 +486,7 @@
 </section>
 <section id="error-trapi-response-knowledge-graph-missing-expected-edge">
 <h3>error.trapi.response.knowledge_graph.missing_expected_edge<a class="headerlink" href="#error-trapi-response-knowledge-graph-missing-expected-edge" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge Graph of TRAPI Response Message is missing expected edge</p>
+<p><strong>Message:</strong> Knowledge Graph of TRAPI Response Message is missing expected Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> The given TRAPI Response is expected to return specific edge(s) relating to the original (test edge?) data used to prepare the TRAPI Request!</p>
 </section>
@@ -577,49 +580,49 @@
 </section>
 <section id="error-query-graph-node-ids-not-array">
 <h3>error.query_graph.node.ids.not_array<a class="headerlink" href="#error-query-graph-node-ids-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘ids’ slot value is not an array in node</p>
+<p><strong>Message:</strong> The ‘ids’ property value is not an array in node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘ids’ slot in Query Graph node must be an array data type (even if empty)!</p>
+<p><strong>Description:</strong> Value of ‘ids’ property in Query Graph node must be an array data type (even if empty)!</p>
 </section>
 <section id="error-query-graph-node-categories-not-array">
 <h3>error.query_graph.node.categories.not_array<a class="headerlink" href="#error-query-graph-node-categories-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘categories’ slot value is not an array in node</p>
+<p><strong>Message:</strong> The ‘categories’ property value is not an array in node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘categories’ slot in Query Graph node must be an array data type (even if empty)!</p>
+<p><strong>Description:</strong> Value of ‘categories’ property in Query Graph node must be an array data type (even if empty)!</p>
 </section>
 <section id="error-query-graph-node-is-set-not-boolean">
 <h3>error.query_graph.node.is_set.not_boolean<a class="headerlink" href="#error-query-graph-node-is-set-not-boolean" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘is_set’ slot is not a boolean value in node</p>
+<p><strong>Message:</strong> The ‘is_set’ property is not a boolean value in node</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> The ‘is_set’ field in node of Query Graph, if present, must be a boolean value!</p>
 </section>
 <section id="error-query-graph-edge-subject-missing">
 <h3>error.query_graph.edge.subject.missing<a class="headerlink" href="#error-query-graph-edge-subject-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘subject’ slot value is missing or empty in edge</p>
+<p><strong>Message:</strong> The ‘subject’ property value is missing or empty in Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Edge must have a ‘subject’ key with a non-empty associated value!</p>
 </section>
 <section id="error-query-graph-edge-subject-missing-from-nodes">
 <h3>error.query_graph.edge.subject.missing_from_nodes<a class="headerlink" href="#error-query-graph-edge-subject-missing-from-nodes" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The nodes catalog of query graph for missing the subject id recorded on edge</p>
+<p><strong>Message:</strong> The nodes catalog of query graph for missing the subject id recorded on Edge</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> Every ‘subject’ identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph!</p>
 </section>
 <section id="error-query-graph-edge-object-missing">
 <h3>error.query_graph.edge.object.missing<a class="headerlink" href="#error-query-graph-edge-object-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘object’ slot value is missing or empty in edge</p>
+<p><strong>Message:</strong> The ‘object’ property value is missing or empty in Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Edge must have a ‘object’ key with a non-empty associated value!</p>
 </section>
 <section id="error-query-graph-edge-object-missing-from-nodes">
 <h3>error.query_graph.edge.object.missing_from_nodes<a class="headerlink" href="#error-query-graph-edge-object-missing-from-nodes" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The nodes catalog of query graph for missing the object id recorded on edge</p>
+<p><strong>Message:</strong> The nodes catalog of query graph for missing the object id recorded on Edge</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> Every ‘object’ identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph!</p>
 </section>
 <section id="error-query-graph-edge-predicate-missing">
 <h3>error.query_graph.edge.predicate.missing<a class="headerlink" href="#error-query-graph-edge-predicate-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Predicate is missing or empty for edge</p>
+<p><strong>Message:</strong> Predicate is missing or empty for Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> The predicate of Query Graph edge needs to specified using a ‘predicate’ key with an array list of one or more predicates!</p>
 </section>
@@ -631,15 +634,15 @@
 </section>
 <section id="error-query-graph-edge-predicate-not-array">
 <h3>error.query_graph.edge.predicate.not_array<a class="headerlink" href="#error-query-graph-edge-predicate-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Predicate slot value is not an array for edge</p>
+<p><strong>Message:</strong> Predicate property value is not an array for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘predicate’ slot value in Query Graph must be an array data type!</p>
+<p><strong>Description:</strong> Value of ‘predicate’ property value in Query Graph must be an array data type!</p>
 </section>
 <section id="error-query-graph-edge-predicate-empty-array">
 <h3>error.query_graph.edge.predicate.empty_array<a class="headerlink" href="#error-query-graph-edge-predicate-empty-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Predicate slot value is an empty array for edge</p>
+<p><strong>Message:</strong> Predicate property value is an empty array for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘predicate’ array slot value in Query Graph must contain one or more predicates!</p>
+<p><strong>Description:</strong> Value of ‘predicate’ array property value in Query Graph must contain one or more predicates!</p>
 </section>
 <section id="error-query-graph-edge-predicate-abstract">
 <h3>error.query_graph.edge.predicate.abstract<a class="headerlink" href="#error-query-graph-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
@@ -661,13 +664,13 @@
 </section>
 <section id="error-query-graph-edge-attribute-constraints-not-array">
 <h3>error.query_graph.edge.attribute_constraints.not_array<a class="headerlink" href="#error-query-graph-edge-attribute-constraints-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Attribute_constraints property value is not an array for edge</p>
+<p><strong>Message:</strong> Attribute_constraints property value is not an array for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘attribute_constraints’ slot value in a Query Graph must be an array data type!</p>
+<p><strong>Description:</strong> Value of ‘attribute_constraints’ property value in a Query Graph must be an array data type!</p>
 </section>
 <section id="error-query-graph-edge-qualifier-constraints-qualifier-set-empty">
 <h3>error.query_graph.edge.qualifier_constraints.qualifier_set.empty<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Qualifier_set property value is empty for edge</p>
+<p><strong>Message:</strong> Qualifier_set property value is empty for Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Value of a ‘qualifier_constraints.qualifier_set’ property in a Query Graph must not be non-empty array!</p>
 </section>
@@ -731,21 +734,21 @@
 </section>
 <section id="error-knowledge-graph-node-ids-not-array">
 <h3>error.knowledge_graph.node.ids.not_array<a class="headerlink" href="#error-knowledge-graph-node-ids-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘ids’ slot value is not an array for node</p>
+<p><strong>Message:</strong> The ‘ids’ property value is not an array for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘ids’ slot in Query Graph node must be an array data type!</p>
+<p><strong>Description:</strong> Value of ‘ids’ property in Query Graph node must be an array data type!</p>
 </section>
 <section id="error-knowledge-graph-node-empty-ids">
 <h3>error.knowledge_graph.node.empty_ids<a class="headerlink" href="#error-knowledge-graph-node-empty-ids" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘ids’ slot array is empty for node</p>
+<p><strong>Message:</strong> The ‘ids’ property array is empty for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘ids’ array slot in Knowledge Graph node must contain one or more node identifiers!</p>
+<p><strong>Description:</strong> Value of ‘ids’ array property in Knowledge Graph node must contain one or more node identifiers!</p>
 </section>
 <section id="error-knowledge-graph-node-categories-not-array">
 <h3>error.knowledge_graph.node.categories.not_array<a class="headerlink" href="#error-knowledge-graph-node-categories-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The categories slot value is not an array for node</p>
+<p><strong>Message:</strong> The categories property value is not an array for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘categories’ slot in Knowledge Graph node must be an array data type!</p>
+<p><strong>Description:</strong> Value of ‘categories’ property in Knowledge Graph node must be an array data type!</p>
 </section>
 <section id="error-knowledge-graph-node-categories-not-concrete">
 <h3>error.knowledge_graph.node.categories.not_concrete<a class="headerlink" href="#error-knowledge-graph-node-categories-not-concrete" title="Permalink to this heading"></a></h3>
@@ -755,43 +758,43 @@
 </section>
 <section id="error-knowledge-graph-node-empty-categories">
 <h3>error.knowledge_graph.node.empty_categories<a class="headerlink" href="#error-knowledge-graph-node-empty-categories" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘categories’ slot array is empty for node</p>
+<p><strong>Message:</strong> The ‘categories’ property array is empty for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘categories’ array slot in Knowledge Graph node must contain one or more node category terms!</p>
+<p><strong>Description:</strong> Value of ‘categories’ array property in Knowledge Graph node must contain one or more node category terms!</p>
 </section>
 <section id="error-knowledge-graph-node-is-set-not-boolean">
 <h3>error.knowledge_graph.node.is_set.not_boolean<a class="headerlink" href="#error-knowledge-graph-node-is-set-not-boolean" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘is_set’ slot is not a boolean value for node</p>
+<p><strong>Message:</strong> The ‘is_set’ property is not a boolean value for node</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> The ‘is_set’ field in node of Knowledge Graph, if present, must be a boolean value!</p>
 </section>
 <section id="error-knowledge-graph-edge-subject-missing">
 <h3>error.knowledge_graph.edge.subject.missing<a class="headerlink" href="#error-knowledge-graph-edge-subject-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘subject’ slot value is missing or empty for edge</p>
+<p><strong>Message:</strong> The ‘subject’ property value is missing or empty for Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Edge must have a ‘subject’ key with a non-empty associated value!</p>
 </section>
 <section id="error-knowledge-graph-edge-subject-missing-from-nodes">
 <h3>error.knowledge_graph.edge.subject.missing_from_nodes<a class="headerlink" href="#error-knowledge-graph-edge-subject-missing-from-nodes" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The nodes catalog of query graph for missing the subject id recorded on edge</p>
+<p><strong>Message:</strong> The nodes catalog of query graph for missing the subject id recorded on Edge</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> Every ‘subject’ identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph!</p>
 </section>
 <section id="error-knowledge-graph-edge-object-missing">
 <h3>error.knowledge_graph.edge.object.missing<a class="headerlink" href="#error-knowledge-graph-edge-object-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘object’ slot value  is missing or empty for edge</p>
+<p><strong>Message:</strong> The ‘object’ property value  is missing or empty for Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Edge must have a ‘object’ key with a non-empty associated value!</p>
 </section>
 <section id="error-knowledge-graph-edge-object-missing-from-nodes">
 <h3>error.knowledge_graph.edge.object.missing_from_nodes<a class="headerlink" href="#error-knowledge-graph-edge-object-missing-from-nodes" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The nodes catalog of query graph for missing the object id recorded on edge</p>
+<p><strong>Message:</strong> The nodes catalog of query graph for missing the object id recorded on Edge</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> Every ‘object’ identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph!</p>
 </section>
 <section id="error-knowledge-graph-edge-predicate-missing">
 <h3>error.knowledge_graph.edge.predicate.missing<a class="headerlink" href="#error-knowledge-graph-edge-predicate-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The predicate is missing or empty for edge</p>
+<p><strong>Message:</strong> The predicate is missing or empty for Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Edge must have a ‘predicate’ key with a non-empty associated value!</p>
 </section>
@@ -809,15 +812,15 @@
 </section>
 <section id="error-knowledge-graph-edge-predicate-not-array">
 <h3>error.knowledge_graph.edge.predicate.not_array<a class="headerlink" href="#error-knowledge-graph-edge-predicate-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The predicate slot value is not an array for edge</p>
+<p><strong>Message:</strong> The predicate property value is not an array for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of the ‘predicate’ slot in Knowledge Graph edge must be an array data type!</p>
+<p><strong>Description:</strong> Value of the ‘predicate’ property in Knowledge Graph edge must be an array data type!</p>
 </section>
 <section id="error-knowledge-graph-edge-predicate-empty-array">
 <h3>error.knowledge_graph.edge.predicate.empty_array<a class="headerlink" href="#error-knowledge-graph-edge-predicate-empty-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The predicate slot value is an empty array for edge</p>
+<p><strong>Message:</strong> The predicate property value is an empty array for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of the ‘predicate’ array slot in Knowledge Graph edge must contain one or more predicates!</p>
+<p><strong>Description:</strong> Value of the ‘predicate’ array property in Knowledge Graph edge must contain one or more predicates!</p>
 </section>
 <section id="error-knowledge-graph-edge-predicate-abstract">
 <h3>error.knowledge_graph.edge.predicate.abstract<a class="headerlink" href="#error-knowledge-graph-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
@@ -833,21 +836,21 @@
 </section>
 <section id="error-knowledge-graph-edge-attribute-missing">
 <h3>error.knowledge_graph.edge.attribute.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Missing ‘attributes’ key for edge</p>
+<p><strong>Message:</strong> Missing ‘attributes’ key for Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Edge must have a ‘attributes’ key with a non-empty associated value!</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-empty">
 <h3>error.knowledge_graph.edge.attribute.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Empty attributes in edge</p>
+<p><strong>Message:</strong> Empty attributes in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘attributes’ slot in Knowledge Graph edge must contain a list of one or more attributes!</p>
+<p><strong>Description:</strong> Value of ‘attributes’ property in Knowledge Graph edge must contain a list of one or more attributes!</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-not-array">
 <h3>error.knowledge_graph.edge.attribute.not_array<a class="headerlink" href="#error-knowledge-graph-edge-attribute-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The attributes are not an array in edge</p>
+<p><strong>Message:</strong> The attributes are not an array in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of the ‘attributes’ slot in Knowledge Graph edge must be an array of attributes!</p>
+<p><strong>Description:</strong> Value of the ‘attributes’ property in Knowledge Graph edge must be an array of attributes!</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-type-id-unknown">
 <h3>error.knowledge_graph.edge.attribute.type_id.unknown<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-unknown" title="Permalink to this heading"></a></h3>
@@ -869,13 +872,13 @@
 </section>
 <section id="error-knowledge-graph-edge-attribute-type-id-missing">
 <h3>error.knowledge_graph.edge.attribute.type_id.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> An attribute is missing its ‘attribute_type_id’ property in edge</p>
+<p><strong>Message:</strong> An attribute is missing its ‘attribute_type_id’ property in Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> The attribute of a Knowledge graph edge must have a ‘attribute_type_id’ key with a non-empty associated value!</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-type-id-empty">
 <h3>error.knowledge_graph.edge.attribute.type_id.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> An attribute has empty ‘attribute_type_id’ property in edge</p>
+<p><strong>Message:</strong> An attribute has empty ‘attribute_type_id’ property in Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> The value of the ‘attribute_type_id’ of an attribute of a Knowledge graph edge must not be empty!</p>
 </section>
@@ -887,13 +890,13 @@
 </section>
 <section id="error-knowledge-graph-edge-attribute-value-missing">
 <h3>error.knowledge_graph.edge.attribute.value.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-value-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> An attribute is missing its ‘value’ property in edge</p>
+<p><strong>Message:</strong> An attribute is missing its ‘value’ property in Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> An attribute of a Knowledge graph edge must have a ‘value’ key with a non-empty associated value!</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-value-empty">
 <h3>error.knowledge_graph.edge.attribute.value.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-value-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> An attribute has an empty value in edge</p>
+<p><strong>Message:</strong> An attribute has an empty value in Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> The value of an attribute of a Knowledge graph edge must not be empty!</p>
 </section>
@@ -905,19 +908,19 @@
 </section>
 <section id="error-knowledge-graph-edge-provenance-missing-primary">
 <h3>error.knowledge_graph.edge.provenance.missing_primary<a class="headerlink" href="#error-knowledge-graph-edge-provenance-missing-primary" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> A ‘primary’ knowledge source is missing for edge</p>
+<p><strong>Message:</strong> A ‘primary’ knowledge source is missing for Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Edge attributes should record the ‘infores’ identifier of their primary knowledge source provenance with respect to KP.</p>
 </section>
 <section id="error-knowledge-graph-edge-qualifiers-not-array">
 <h3>error.knowledge_graph.edge.qualifiers.not_array<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘qualifiers’ property is not an array in edge</p>
+<p><strong>Message:</strong> The ‘qualifiers’ property is not an array in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of the ‘qualifiers’ slot in Knowledge Graph edge must be an array of attributes!</p>
+<p><strong>Description:</strong> Value of the ‘qualifiers’ property in Knowledge Graph edge must be an array of attributes!</p>
 </section>
 <section id="error-knowledge-graph-edge-qualifiers-empty">
 <h3>error.knowledge_graph.edge.qualifiers.empty<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The qualifiers property value is empty in edge</p>
+<p><strong>Message:</strong> The qualifiers property value is empty in Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Value of a ‘qualifiers’ property in a Knowledge Graph must not be non-empty array!</p>
 </section>
@@ -938,6 +941,24 @@
 <p><strong>Message:</strong> Validation of qualifier in qualifiers threw an unexpected exception!</p>
 <p><strong>Context:</strong> identifier, qualifier_type_id, qualifier_value, reason</p>
 <p><strong>Description:</strong> Validation of a specified ‘qualifier_type_id’ and ‘qualifier_value’ failed for a given exceptional reason!</p>
+</section>
+<section id="error-knowledge-graph-edge-sources-missing">
+<h3>error.knowledge_graph.edge.sources.missing<a class="headerlink" href="#error-knowledge-graph-edge-sources-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Missing ‘sources’ key for Edge</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> Edge must have a ‘sources’ key with a non-empty associated value!</p>
+</section>
+<section id="error-knowledge-graph-edge-sources-empty">
+<h3>error.knowledge_graph.edge.sources.empty<a class="headerlink" href="#error-knowledge-graph-edge-sources-empty" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Empty ‘sources’ property in Edge</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> Value of ‘sources’ property in Knowledge Graph edge must contain a list of one or more RetrievalSource entries!</p>
+</section>
+<section id="error-knowledge-graph-edge-sources-not-array">
+<h3>error.knowledge_graph.edge.sources.not_array<a class="headerlink" href="#error-knowledge-graph-edge-sources-not-array" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> The ‘sources’ are not an array in Edge</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> Value of the ‘sources’ property in Knowledge Graph edge must be an array of RetrievalSource entries!</p>
 </section>
 </section>
 </section>
