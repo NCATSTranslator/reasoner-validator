@@ -1526,21 +1526,24 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             },
             ""    # this particular use case should pass
         ),
-        (   # Query 12 - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
-            #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'.
-            #            This unit test won't pass without a modification of the Biolink Model Toolkit
-            #            method for validating qualifier values to accept mapped values.
-            {
-                'qualifiers': [
-                    {
-                        'qualifier_type_id': "biolink:object_direction_qualifier",
-                        'qualifier_value': "RO:0002213"   # RO 'exact match' term for 'upregulated'
-                    }
-                ]
-            },
-            ""    # this other use case should also pass
-        ),
-        (   # Query 13 - 'qualifier_type_id' is a valid Biolink qualifier type and
+        # (   # This use case was discussed with Sierra on 11 April 2023 and
+        #     # decided to be out-of-scope of enum values for is_permissible_value_of_enum()
+        #
+        #     # Query ## - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
+        #     #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'.
+        #     #            This unit test won't pass without a modification of the Biolink Model Toolkit
+        #     #            method for validating qualifier values to accept mapped values.
+        #     {
+        #         'qualifiers': [
+        #             {
+        #                 'qualifier_type_id': "biolink:object_direction_qualifier",
+        #                 'qualifier_value': "RO:0002213"   # RO 'exact match' term for 'upregulated'
+        #             }
+        #         ]
+        #     },
+        #     ""
+        # ),
+        (   # Query 12 - 'qualifier_type_id' is a valid Biolink qualifier type and
             #             'UBERON:0001981' a valid corresponding 'reachable from' enum 'qualifier_value'
             {
                 'qualifiers': [
@@ -1656,7 +1659,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                                "value": "infores:molepro",
                                "value_type_id": "biolink:InformationResource"
                            }
-                        ]
+                        ],
+                       "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                       ]
                     }
                 }
             },
@@ -1721,7 +1730,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -1742,7 +1757,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -1768,7 +1789,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "UniProtKB:Q14191",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "CHEBI:18420",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -1791,7 +1818,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -1822,6 +1855,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                                 "attribute_type_id": "biolink:primary_knowledge_source",
                                 "value": "infores:my-kp"
                             }
+                        ],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
                         ]
                     }
                 }
@@ -1851,6 +1890,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                             {
                                 "attribute_type_id": "biolink:primary_knowledge_source",
                                 "value": "infores:my-kp"
+                            }
+                        ],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
                             }
                         ]
                     }
@@ -1913,6 +1958,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                                 "attribute_type_id": "biolink:primary_knowledge_source",
                                 "value": "infores:my-kp"
                             }
+                        ],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
                         ]
                     }
                 }
@@ -1937,7 +1988,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         # "subject": "",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -1968,7 +2025,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:12345",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -1997,7 +2060,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:unknown_predicate",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -2026,7 +2095,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:has_unit",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -2055,7 +2130,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "HGNC:3059",
                         "predicate": "biolink:increases_amount_or_activity_of",
                         "object": "HGNC:391",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -2084,7 +2165,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "PMID:1234",
                         "predicate": "biolink:contributor",
                         "object": "ORCID:56789",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -2113,7 +2200,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:affected_by",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -2142,7 +2235,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:678",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -2172,7 +2271,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"value": "some value"}]
+                        "attributes": [{"value": "some value"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -2201,7 +2306,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -2230,7 +2341,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "not_a_curie", "value": "some value"}]
+                        "attributes": [{"attribute_type_id": "not_a_curie", "value": "some value"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -2259,7 +2376,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:synonym", "value": "some synonym"}]
+                        "attributes": [{"attribute_type_id": "biolink:synonym", "value": "some synonym"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
@@ -2292,6 +2415,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "attributes": [
                             {"attribute_type_id": "biolink:negated", "value": "some value"},
                             {"attribute_type_id": "biolink:primary_knowledge_source", "value": "infores:hmdb"}
+                        ],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
                         ]
                     }
                 }
@@ -2320,7 +2449,13 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "foo:bar", "value": "some value"}]
+                        "attributes": [{"attribute_type_id": "foo:bar", "value": "some value"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
                     }
                 }
             },
