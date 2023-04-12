@@ -79,7 +79,7 @@ _TEST_EDGES_1 = {
                    "value": "infores:molepro",
                    "value_type_id": "biolink:InformationResource"
                }
-            ]
+            ],
         }
     }
 
@@ -116,7 +116,7 @@ _TEST_EDGES_2 = {
                    "value": "infores:molepro",
                    "value_type_id": "biolink:InformationResource"
                }
-            ]
+           ],
         }
     }
 
@@ -165,11 +165,11 @@ _TEST_EDGES_3 = {
            "predicate": "biolink:contributor",
            "object": "ORCID:0000-0002-4447-5978",
            "attributes": [
-                {
-                    "attribute_type_id": "biolink:primary_knowledge_source",
-                    "value": "infores:automat-text-mining-provider"
-                }
-            ]
+               {
+                   "attribute_type_id": "biolink:primary_knowledge_source",
+                   "value": "infores:automat-text-mining-provider"
+               }
+           ],
         }
     }
 
@@ -210,7 +210,7 @@ _TEST_EDGES_4 = {
                    "attribute_type_id": "biolink:primary_knowledge_source",
                    "value": "infores:hmdb"
                }
-           ]
+           ],
         }
     }
 
@@ -324,351 +324,353 @@ def test_sample_graph(query: Tuple[int, int, int]):
     "query",
     [
         (   # Query 0 - Completely empty Response.Message
-                {
+            {
                 "message": {
 
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                None,
-                # "Validate TRAPI Response: ERROR - Response returned an empty Message Query Graph!"
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            None,
+            # "Validate TRAPI Response: ERROR - Response returned an empty Message Query Graph!"
             "error.trapi.response.message.empty"
         ),
         (   # Query 1 - Response.Message also devoid of content, missing QGraph trapped first....
-                {
+            {
                 "message": {
                     "knowledge_graph": None,
                     "results": None
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                None,
-                # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Query Graph!"
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            None,
+            # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Query Graph!"
             "error.trapi.response.query_graph.missing"
         ),
         (   # Query 2 - Response.Message also devoid of content, null QGraph trapped first....
-                {
+            {
                 "message": {
                     "query_graph": None,
                     "knowledge_graph": None,
                     "results": None
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                None,
-                # "Validate TRAPI Response: ERROR - Response returned an null or empty Message Query Graph!"
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            None,
+            # "Validate TRAPI Response: ERROR - Response returned an null or empty Message Query Graph!"
             "error.trapi.response.query_graph.empty"
         ),
         (
             # Query 3 - Partly empty Response.Message with a modest but
             #           workable query graph? Missing KG trapped next?
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     # "knowledge_graph": None,
                     "results": None
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                None,
-                # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Knowledge Graph component?"
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            None,
+            # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Knowledge Graph component?"
             "error.trapi.response.knowledge_graph.missing"
         ),
         (
             # Query 4 - Partly empty Response.Message with a modest
             #           but workable query graph? Empty KG trapped next?
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": None,
                     "results": None
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                None,
-                # "Validate TRAPI Response: WARNING - Response returned an empty Message Knowledge Graph?"
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            None,
+            # "Validate TRAPI Response: WARNING - Response returned an empty Message Knowledge Graph?"
             "warning.response.knowledge_graph.empty"
         ),
         (
             # Query 5 - Partly empty Response.Message with a modest but workable
             #           query and knowledge graphs? Missing Results detected next?
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
                     # "results": None
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                None,
-                # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Results component!"
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            None,
+            # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Results component!"
             "error.trapi.response.results.missing"
         ),
         (
             # Query 6 - Partly empty Response.Message with a modest but workable query and
             #           knowledge graphs? Null valued Results detected next - just issue a warning?
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
                     "results": None
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                None,
-                # "Validate TRAPI Response: WARNING -Response returned empty Message.results?"
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            None,
+            # "Validate TRAPI Response: WARNING -Response returned empty Message.results?"
             "warning.response.results.empty"
         ),
         (
             # Query 7 - Partly empty Response.Message with a modest but workable
             #           query and knowledge graphs? Non-array Results detected next?
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
                     "results": {"invalid results"}
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                None,
-                # "Validate TRAPI Response: ERROR - the 'Response.Message.Results' field
-                # is not TRAPI schema validated since it has the wrong format!"
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            None,
+            # "Validate TRAPI Response: ERROR - the 'Response.Message.Results' field
+            # is not TRAPI schema validated since it has the wrong format!"
             "error.trapi.validation"
         ),
         (
             # Query 8 - Partly empty Response.Message with a modest but workable query and
             #           knowledge graphs? Empty Results detected next - just issue a warning?
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
                     "results": []
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                None,
-                # "Validate TRAPI Response: ERROR - Response returned empty Message.results?"
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            None,
+            # "Validate TRAPI Response: ERROR - Response returned empty Message.results?"
             "warning.response.results.empty"
         ),
         (
             # Query 9 - Full Message, without 'sources' and 'strict_validation': False - should pass?
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
                     "results": _TEST_RESULTS_1
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                None,
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            None,
             ""
         ),
         (
             # Query 10 - Full Message, with strict validation - still passes
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
                     "results": _TEST_RESULTS_1
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                True,
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            True,
             ""
         ),
         (
             # Query 11 - Full Message, with strict validation and non-null sources that match
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
                     "results": _TEST_RESULTS_1
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                {
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            {
                 "ara_source": None,
                 "kp_source": "infores:hmdb",
                 "kp_source_type": "primary"
             },
-                True,
+            True,
             ""
         ),
         (
             # Query 12 - Full Message, with strict validation and a non-null kp_source_type that doesn't match
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
                     "results": _TEST_RESULTS_1
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                {
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            {
                 "ara_source": None,
                 "kp_source": "infores:molepro",
                 "kp_source_type": "primary"
             },
-                True,
+            True,
             "warning.knowledge_graph.edge.provenance.kp.missing"
         ),
         (
             # Query 13 - Full Message, with strict validation and a non-null ara_source that doesn't match
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
                     "results": _TEST_RESULTS_1
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                {
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            {
                 "ara_source": "infores:aragorn",
                 "kp_source": "infores:hmdb",
                 "kp_source_type": "primary"
             },
-                True,
+            True,
             "warning.knowledge_graph.edge.provenance.ara.missing"
         ),
         (
             # Query 14 - Full Message, with strict validation and a non-null sources data that matches
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
                     "results": _TEST_RESULTS_1
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                {
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            {
                 "ara_source": "infores:molepro",
                 "kp_source": "infores:hmdb",
                 "kp_source_type": "primary"
             },
-                True,
+            True,
             ""
         ),
         (
             # Query 15 - Full Message, with strict validation and a non-null sources KP that matches
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
                     "results": _TEST_RESULTS_1
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                {
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            {
                 "ara_source": None,
                 "kp_source": "infores:molepro",
                 "kp_source_type": "aggregator"
             },
-                True,
+            True,
             ""
         ),
         (
             # Query 16 - Full Message, with strict validation and
             #            a non-null kp_source_type results in missing primary
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_2,
                     "results": _TEST_RESULTS_1
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                {
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            {
                 "ara_source": None,
                 "kp_source": "infores:molepro",
                 "kp_source_type": "aggregator"
             },
-                True,
+            True,
             "error.knowledge_graph.edge.provenance.missing_primary"
         ),
         (
             # Query 17 - Full Message, with strict validation and
             #            non-null kp_source_type results, has multiple primary knowledge sources
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_4,
                     "results": _TEST_RESULTS_1
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                {
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            {
                 "ara_source": None,
                 "kp_source": "infores:molepro",
                 "kp_source_type": "aggregator"
             },
-                True,
+            True,
             "warning.knowledge_graph.edge.provenance.multiple_primary"
         ),
         (
             # Query 18 - Full Message, with non-strict validation.
-            #            Both knowledge graph nodes have 'mixin' categories   , the list of categories for knowledge graphs
-            #            must have at least one concrete category, hence, a validation error is now reported:
-                {
+            #            Both knowledge graph nodes have 'mixin' categories,
+            #            the list of categories for knowledge graphs
+            #            must have at least one concrete category,
+            #            hence, a validation error is now reported:
+            {
                 "message": {
                     "query_graph": _TEST_QG_2,
                     "knowledge_graph": _TEST_KG_3,
                     "results": _TEST_RESULTS_2
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                False,
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            False,
             "error.knowledge_graph.node.categories.not_concrete"
         ),
         (
             # Query 19 - Full Message, WITH strict validation - abstract predicate?
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_2,
                     "knowledge_graph": _TEST_KG_3,
                     "results": _TEST_RESULTS_2
                 }
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                True,
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            True,
             "error.query_graph.edge.predicate.abstract"
         ),
         (
             # Query 20 - Valid full Message, under strict validation.
             #            Message is valid, but the 'workflow' field is not an array?
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
@@ -676,18 +678,18 @@ def test_sample_graph(query: Tuple[int, int, int]):
                 },
                 "workflow": "workflows-not-an-array"
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                True,
-                # "Validate TRAPI Response: ERROR - TRAPI schena error: the 'workflow' field must be an array"
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            True,
+            # "Validate TRAPI Response: ERROR - TRAPI schena error: the 'workflow' field must be an array"
             "error.trapi.validation"
         ),
         (
             # Query 21 - Valid full Message, under strict validation.
             #            Message is valid, the 'workflow' field is an array,
             #            but the single list entry is an invalid workflow spec?
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
@@ -695,12 +697,12 @@ def test_sample_graph(query: Tuple[int, int, int]):
                 },
                 "workflow": ["not-a-valid-workflow-spec"]
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                True,
-                # "Validate TRAPI Response: ERROR - TRAPI schena error: the 'workflow' field must be an array of
-                # a 'workflow' JSON objects, with contents as defined by the workflow schema.
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            True,
+            # "Validate TRAPI Response: ERROR - TRAPI schena error: the 'workflow' field must be an array of
+            # a 'workflow' JSON objects, with contents as defined by the workflow schema.
             "error.trapi.validation"
         ),
         (
@@ -708,7 +710,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             #            Message is valid, the 'workflow' field is an array,
             #            but the single list entry is in the workflow schema
             #            and has at least the one required field 'id'
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
@@ -716,17 +718,17 @@ def test_sample_graph(query: Tuple[int, int, int]):
                 },
                 "workflow": [{"id": "annotate"}]
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                True,
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            True,
             ""   # this simple workflow spec should pass?
         ),
         (
             # Query 23 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
             #            but the single list entry is an elaborated 'real world' workflow spec,
             #            but one entry overlay_compute_ngd is incomplete - doesn't fully validate!
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
@@ -758,18 +760,18 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     }
                 ]
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                True,
-                # "Validate TRAPI Response: ERROR - TRAPI schema validation error: the 'workflow'
-                # field entry overlay_compute_ngd is missing a required parameter 'qnodes_keys'
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            True,
+            # "Validate TRAPI Response: ERROR - TRAPI schema validation error: the 'workflow'
+            # field entry overlay_compute_ngd is missing a required parameter 'qnodes_keys'
             "error.trapi.validation"
         ),
         (
             # Query 24 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
             #            but the single list entry is an elaborated 'real world' workflow spec
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
@@ -802,17 +804,17 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     }
                 ]
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                True,
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            True,
             ""   # this simple workflow spec should pass?
         ),
         (
             # Query 25 - Valid full Message, under strict validation. Message is valid,
             #            the 'workflow' field is an array, but runner_parameters is None.
             #            This is technically invalid, but we have a code patch which should filter it out (for now)
-                {
+            {
                 "message": {
                     "query_graph": _TEST_QG_1,
                     "knowledge_graph": _TEST_KG_1,
@@ -826,10 +828,10 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     }
                 ]
             },
-                PRE_TRAPI_1_4_0,  # trapi_version
-                None,
-                None,
-                True,
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            True,
             ""   # this filtered workflow spec should pass
         )
     ]

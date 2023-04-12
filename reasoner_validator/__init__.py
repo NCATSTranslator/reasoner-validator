@@ -279,6 +279,7 @@ class TRAPIResponseValidator(ValidationReporter):
                 biolink_validator: BiolinkValidator = \
                     check_biolink_model_compliance_of_knowledge_graph(
                         graph=kg_sample,
+                        trapi_version=self.trapi_version,
                         biolink_version=self.biolink_version,
                         sources=self.sources,
                         # the ValidationReporter calling this function *might*
