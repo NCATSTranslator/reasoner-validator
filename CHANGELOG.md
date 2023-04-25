@@ -2,6 +2,12 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.4.16
+
+- bug fix relating to incomplete propagation of TRAPI test version to lower code levels where some 1.4.0 features are tested.
+- Modest enhancement of Edge.sources validation
+- update to BMT 1.0.10
+
 ## v3.4.15
 
 - Fixes bug in TRAPI semver which could not process release **`1.4.0-beta2`** because of the missing 'v' prefix.
