@@ -33,7 +33,7 @@ Checkout then setup dependencies and the standard virtual environment using poet
     cd reasoner-validator
     poetry install
 
-You can optionally, use a tool like 'pyenv' to set your local shell Python version to 3.9.*.
+You can optionally, `use a tool like pyenv to set your local shell Python version to a 3.9 release <https://python-poetry.org/docs/managing-environments/>`_  prior to the poetry installation.
 
 Basic Programmatic Usage
 ========================
@@ -184,7 +184,7 @@ in a dictionary looking something like the following (as an example):
 
 
 Every message has a 'code' and optional context-specific parameters which correspond to
-named fields in the Python string templates found in the `reasoner_validator package 'codes.yaml' file <https://github.com/NCATSTranslator/reasoner-validator/blob/master/reasoner_validator/codes.yaml>`_ file.
+named fields in the Python string templates found in the `reasoner_validator package 'codes.yaml' file <https://github.com/NCATSTranslator/reasoner-validator/blob/master/reasoner_validator/codes.yaml>`_.
 
 Python API
 ----------
@@ -255,7 +255,7 @@ The request body consists of JSON data structure with two top level tag:
 Running the Web Service Directly
 --------------------------------
 
-The service may be run directly as a python module. It is suggested that a virtual environment first be created (using virtualenv, conda, within your IDE, or equivalent).  Then, certain Python dependencies need to be installed, as follows:
+The service may be run directly as a Python module after certain dependencies are installed using poetry, as follows:
 
 .. code-block:: bash
 
