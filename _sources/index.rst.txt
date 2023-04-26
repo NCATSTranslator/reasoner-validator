@@ -20,14 +20,20 @@ As Pypi Package
 
   pip install reasoner-validator
 
+will install the package from Pypi.org.
+
 From Github
 -----------
+
+Checkout then setup dependencies and the standard virtual environment using poetry, as follows:
 
 .. code-block:: bash
 
     git checkout https://github.com/NCATSTranslator/reasoner-validator.git
     cd reasoner-validator
-    pip install -e .
+    poetry install
+
+You can optionally, use a tool like 'pyenv' to set your local shell Python version to 3.9.*.
 
 Basic Programmatic Usage
 ========================
@@ -253,8 +259,7 @@ The service may be run directly as a python module. It is suggested that a virtu
 
 .. code-block:: bash
 
-    pip install -r requirements-service.txt
-
+    poetry install
 
 The module may afterwards be run, as follows:
 
@@ -262,6 +267,7 @@ The module may afterwards be run, as follows:
 
     python -m api.main
 
+Run on your local machine, an OpenAPI web service form may now be viewed at http://localhost/docs/
 
 Typical Output
 --------------
@@ -289,7 +295,21 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
                     "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
                 },
                 "edges": {
-                    "df87ff82": {"subject": "CHEBI:6801", "predicate": "biolink:treats", "object": "MONDO:0005148"}
+                    "df87ff82": {
+                        "subject": "CHEBI:6801",
+                        "predicate": "biolink:treats",
+                        "object": "MONDO:0005148",
+                        "sources": [
+                           {
+                               "resource_id": "infores:aragorn",
+                               "resource_role": "primary_knowledge_source"
+                           },
+                           {
+                               "resource_id": "infores:chebi",
+                               "resource_role": "primary_knowledge_source"
+                           }
+                        ]
+                    }
                 }
             },
             "results": [
@@ -298,9 +318,14 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
                         "type-2 diabetes": [{"id": "MONDO:0005148"}],
                         "drug": [{"id": "CHEBI:6801"}]
                     },
-                    "edge_bindings": {
-                        "treats": [{"id": "df87ff82"}]
-                    }
+                    "analyses": [
+                        {
+                            "resource_id": "infores:aragorn",
+                            "edge_bindings": {
+                                    "treats": [{"id": "df87ff82"}]
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -316,22 +341,37 @@ then, one should typically get a response body like the following JSON validatio
 .. code-block:: json
 
     {
-      "trapi_version": "1.4.0",
+      "trapi_version": "v1.4.0-beta3",
       "biolink_version": "3.2.6",
-      "report": [
-        {
-          "code": "warning.node.unmapped_prefix",
-          "node_id": "CHEBI:6801",
-          "categories": "['biolink:Drug']"
+      "messages": {
+        "errors": {
+          "error.knowledge_graph.node.category.missing": {
+            "MONDO:0005148": [
+              {
+                "context": "Knowledge Graph"
+              }
+            ]
+          }
         },
-        {
-          "code": "error.node.missing_categories",
-          "node_id": "MONDO:0005148"
+        "warnings": {
+          "warning.knowledge_graph.node.id.unmapped_prefix": {
+            "CHEBI:6801": [
+              {
+                "categories": "['biolink:Drug']"
+              }
+            ]
+          },
+          "warning.knowledge_graph.edge.provenance.kp.missing": {
+            "infores:panther": [
+              {
+                "kp_source_type": "biolink:primary_knowledge_source",
+                "identedge_idifier": "CHEBI:6801--biolink:treats->MONDO:0005148"
+              }
+            ]
+          }
         },
-        {
-          "code": "error.edge.attribute.missing"
-        }
-      ]
+        "information": {}
+      }
     }
 
 Validation Code Definitions
