@@ -301,6 +301,10 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
                         "object": "MONDO:0005148",
                         "sources": [
                            {
+                               "resource_id": "infores:aragorn",
+                               "resource_role": "primary_knowledge_source"
+                           },
+                           {
                                "resource_id": "infores:chebi",
                                "resource_role": "primary_knowledge_source"
                            }
@@ -316,7 +320,7 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
                     },
                     "analyses": [
                         {
-                            "resource_id": "infores:arax",
+                            "resource_id": "infores:aragorn",
                             "edge_bindings": {
                                     "treats": [{"id": "df87ff82"}]
                             }
@@ -354,13 +358,6 @@ then, one should typically get a response body like the following JSON validatio
             "CHEBI:6801": [
               {
                 "categories": "['biolink:Drug']"
-              }
-            ]
-          },
-          "warning.knowledge_graph.edge.provenance.ara.missing": {
-            "infores:aragorn": [
-              {
-                "edge_id": "CHEBI:6801--biolink:treats->MONDO:0005148"
               }
             ]
           },
