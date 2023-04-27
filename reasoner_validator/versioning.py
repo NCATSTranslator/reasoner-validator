@@ -118,12 +118,10 @@ def _semver_eq_(obj: SemVer, other: SemVer) -> bool:
     # obj.patch == other.patch
 
     # Check 'prerelease' tagging
-    elif (obj.prerelease and not other.prerelease) or \
-            (not obj.prerelease and not other.prerelease) or \
-            obj.prerelease != other.prerelease:
-        return False
+    elif (obj.prerelease is None and other.prerelease is None) or obj.prerelease == other.prerelease:
+        return True
 
-    return True
+    return False
 
 
 SemVer.__eq__ = _semver_eq_

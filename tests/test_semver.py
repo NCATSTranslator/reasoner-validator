@@ -36,22 +36,22 @@ def test_string_with_prefix():
     assert str(SemVer.from_string("v1.2.4", ignore_prefix=False)) == "v1.2.4"
 
 
-def test_semver_greater_or_equal_to():
-    zero_zero_one = SemVer.from_string("0.0.1")
-    one_zero_zero = SemVer.from_string("1.0.0")
-    one_one_zero = SemVer.from_string("1.1.0")
-    one_one_one = SemVer.from_string("1.1.1")
-    one_one_zero_r = SemVer.from_string("1.1.0-R1")
-    one_one_one_r = SemVer.from_string("1.1.1-R1")
-    one_one_zero_r_b = SemVer.from_string("1.1.0-R1+build123")
-    one_one_one_r_b = SemVer.from_string("1.1.1-R2+build456")
-    one_three_zero = SemVer.from_string("1.3.0")
-    one_three_zero_beta = SemVer.from_string("1.3.0-beta")
-    one_four_zero = SemVer.from_string("1.4.0")
-    one_four_zero_beta = SemVer.from_string("1.4.0-beta")
-    one_four_zero_beta_one = SemVer.from_string("1.4.0-beta1")
-    one_four_zero_beta_three = SemVer.from_string("1.4.0-beta3")
+zero_zero_one = SemVer.from_string("0.0.1")
+one_zero_zero = SemVer.from_string("1.0.0")
+one_one_zero = SemVer.from_string("1.1.0")
+one_one_one = SemVer.from_string("1.1.1")
+one_one_zero_r = SemVer.from_string("1.1.0-R1")
+one_one_one_r = SemVer.from_string("1.1.1-R1")
+one_one_zero_r_b = SemVer.from_string("1.1.0-R1+build123")
+one_one_one_r_b = SemVer.from_string("1.1.1-R2+build456")
+one_three_zero = SemVer.from_string("1.3.0")
+one_three_zero_beta = SemVer.from_string("1.3.0-beta")
+one_four_zero = SemVer.from_string("1.4.0")
+one_four_zero_beta = SemVer.from_string("1.4.0-beta")
+one_four_zero_beta_one = SemVer.from_string("1.4.0-beta1")
+one_four_zero_beta_three = SemVer.from_string("1.4.0-beta3")
 
+def test_semver_greater_or_equal_to():
     # Major release diff
     assert one_zero_zero >= zero_zero_one
     assert not zero_zero_one >= one_zero_zero
@@ -91,3 +91,22 @@ def test_semver_greater_or_equal_to():
     assert one_four_zero_beta_one >= one_four_zero_beta_one
     assert one_four_zero_beta_three >= one_four_zero_beta
     assert one_four_zero_beta_three >= one_four_zero_beta_one
+
+
+def test_semver_equal_to():
+    assert one_four_zero == one_four_zero
+    assert one_four_zero_beta_one == one_four_zero_beta_one
+
+    # Major release diff
+    assert not zero_zero_one == one_three_zero
+
+    # Minor release diff
+    assert not one_zero_zero >= one_one_zero
+
+    # Patch release diff
+    assert not one_one_zero == one_one_one
+
+    # Prerelease release diff
+    assert not one_four_zero == one_four_zero_beta_one
+    assert not one_four_zero_beta_one == one_four_zero
+    assert not one_four_zero_beta_one == one_four_zero_beta_three
