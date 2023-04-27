@@ -1,6 +1,6 @@
 """Utilities."""
 import re
-from typing import NamedTuple, Optional, List
+from typing import NamedTuple, Optional
 from os import environ
 from functools import lru_cache
 from re import sub
@@ -57,7 +57,7 @@ class SemVer(NamedTuple):
     def from_string(cls, string: str, ignore_prefix: bool = False):
         """
         Initializes a SemVer from a string.  This is an 'augmented' SemVer which may also have
-        an alphabetic prefix (for example, a 'v' for 'version' designation of a Github release)
+        an alphabetic prefix (for example, a 'v' for 'version' designation of a GitHub release)
 
         :param string: str, string encoding the SemVer.
         :param ignore_prefix: bool, if set, any alphabetic prefix of the SemVer string is ignored (not recorded)
@@ -101,6 +101,34 @@ class SemVer(NamedTuple):
 # Deferred SemVer method creation to work #
 # around SemVer forward definitions issue #
 ###########################################
+def _semver_eq_(obj: SemVer, other: SemVer) -> bool:
+    # Clearcut cases of 'major' release ordering
+    if obj.major != other.major:
+        return False
+    # obj.major == other.major
+
+    # Check 'minor' level
+    elif obj.minor != other.minor:
+        return False
+    # obj.minor == other.minor
+
+    # Check 'patch' level
+    elif obj.patch != other.patch:
+        return False
+    # obj.patch == other.patch
+
+    # Check 'prerelease' tagging
+    elif (obj.prerelease and not other.prerelease) or \
+            (not obj.prerelease and not other.prerelease) or \
+            obj.prerelease != other.prerelease:
+        return False
+
+    return True
+
+
+SemVer.__eq__ = _semver_eq_
+
+
 def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
     # Clearcut cases of 'major' release ordering
     if obj.major > other.major:
