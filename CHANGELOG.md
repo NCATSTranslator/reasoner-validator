@@ -2,6 +2,12 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.4.17
+
+- Update docs RST to more recent 1.4.0 example code.
+- 'suppress_empty_data_warnings' predicate flag added to TRAPIResponseValidator
+- Add a SemVer "equal" method override
+
 ## v3.4.16
 
 - bug fix relating to incomplete propagation of TRAPI test version to lower code levels where some 1.4.0 features are tested.
