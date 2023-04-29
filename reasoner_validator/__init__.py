@@ -107,8 +107,12 @@ class TRAPIResponseValidator(ValidationReporter):
         :returns: Validator cataloging "information", "warning" and "error" messages (could be empty)
         :rtype: ValidationReporter
         """
-        if not (response and 'message' in response):
-            self.report("error.trapi.response.empty")
+        if not (response and "message" in response and response["message"]):
+            if not self.suppress_empty_data_warnings:
+                self.report("error.trapi.response.empty")
+
+            # nothing more to validate?
+            return
 
         response = self.sanitize_trapi_query(response)
 
@@ -332,7 +336,8 @@ class TRAPIResponseValidator(ValidationReporter):
 
         # The Message.Results key should not be missing?
         if 'results' not in message:
-            self.report(code="error.trapi.response.results.missing")
+            if not self.suppress_empty_data_warnings:
+                self.report(code="error.trapi.response.results.missing")
         else:
             results = message['results']
 
@@ -365,6 +370,7 @@ class TRAPIResponseValidator(ValidationReporter):
 
                     # Maybe some additional TRAPI-release specific non-schematic validation here?
                     if trapi_1_4_0:
+                        # TODO: implement me!
                         pass
                     else:
                         pass

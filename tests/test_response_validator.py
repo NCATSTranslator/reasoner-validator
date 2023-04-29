@@ -332,7 +332,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             PRE_TRAPI_1_4_0,  # trapi_version
             None,
             None,
-            None,
+            False,
             # "Validate TRAPI Response: ERROR - Response returned an empty Message Query Graph!"
             "error.trapi.response.message.empty"
         ),
@@ -346,7 +346,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             PRE_TRAPI_1_4_0,  # trapi_version
             None,
             None,
-            None,
+            False,
             # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Query Graph!"
             "error.trapi.response.query_graph.missing"
         ),
@@ -361,7 +361,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             PRE_TRAPI_1_4_0,  # trapi_version
             None,
             None,
-            None,
+            False,
             # "Validate TRAPI Response: ERROR - Response returned an null or empty Message Query Graph!"
             "error.trapi.response.query_graph.empty"
         ),
@@ -378,7 +378,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             PRE_TRAPI_1_4_0,  # trapi_version
             None,
             None,
-            None,
+            False,
             # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Knowledge Graph component?"
             "error.trapi.response.knowledge_graph.missing"
         ),
@@ -395,7 +395,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             PRE_TRAPI_1_4_0,  # trapi_version
             None,
             None,
-            None,
+            False,
             # "Validate TRAPI Response: WARNING - Response returned an empty Message Knowledge Graph?"
             "warning.response.knowledge_graph.empty"
         ),
@@ -412,7 +412,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             PRE_TRAPI_1_4_0,  # trapi_version
             None,
             None,
-            None,
+            False,
             # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Results component!"
             "error.trapi.response.results.missing"
         ),
@@ -429,7 +429,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             PRE_TRAPI_1_4_0,  # trapi_version
             None,
             None,
-            None,
+            False,
             # "Validate TRAPI Response: WARNING -Response returned empty Message.results?"
             "warning.response.results.empty"
         ),
@@ -446,7 +446,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             PRE_TRAPI_1_4_0,  # trapi_version
             None,
             None,
-            None,
+            False,
             # "Validate TRAPI Response: ERROR - the 'Response.Message.Results' field
             # is not TRAPI schema validated since it has the wrong format!"
             "error.trapi.validation"
@@ -464,7 +464,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             PRE_TRAPI_1_4_0,  # trapi_version
             None,
             None,
-            None,
+            False,
             # "Validate TRAPI Response: ERROR - Response returned empty Message.results?"
             "warning.response.results.empty"
         ),
@@ -480,7 +480,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             PRE_TRAPI_1_4_0,  # trapi_version
             None,
             None,
-            None,
+            False,
             ""
         ),
         (
@@ -845,3 +845,125 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
     )
     validator.check_compliance_of_trapi_response(response=query[0])
     check_messages(validator, query[5], no_errors=True)
+
+
+@pytest.mark.parametrize(
+    "response,trapi_version,biolink_version,sources,strict_validation,code",
+    [
+        (   # Query 0 - Completely empty Response.Message
+            {
+                "message": {
+
+                }
+            },
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            False,
+            ""
+        ),
+        (   # Query 1 - Response.Message also devoid of content, missing QGraph trapped first....
+            {
+                "message": {
+                    "knowledge_graph": None,
+                    "results": None
+                }
+            },
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            False,
+            ""
+        ),
+        (   # Query 2 - Response.Message also devoid of content, null QGraph trapped first....
+            {
+                "message": {
+                    "query_graph": None,
+                    "knowledge_graph": None,
+                    "results": None
+                }
+            },
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            False,
+            ""
+        ),
+        (
+            # Query 3 - Partly empty Response.Message with a modest but
+            #           workable query graph? Missing KG trapped next?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    # "knowledge_graph": None,
+                    "results": None
+                }
+            },
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            False,
+            ""
+        ),
+        (
+            # Query 4 - Partly empty Response.Message with a modest
+            #           but workable query graph? Empty KG trapped next?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": None,
+                    "results": None
+                }
+            },
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            False,
+            ""
+        ),
+        (
+            # Query 5 - Partly empty Response.Message with a modest but workable
+            #           query and knowledge graphs? Missing Results detected next?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    # "results": None
+                }
+            },
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            False,
+            ""
+        ),
+        (
+            # Query 6 - Partly empty Response.Message with a modest but workable query and
+            #           knowledge graphs? Null valued Results detected next - just issue a warning?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": None
+                }
+            },
+            PRE_TRAPI_1_4_0,  # trapi_version
+            None,
+            None,
+            False,
+            ""
+        )
+    ]
+)
+def test_check_biolink_model_compliance_of_trapi_response_suppressing_empty_data_warnings(
+        response, trapi_version, biolink_version, sources, strict_validation, code
+):
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(
+        trapi_version=trapi_version,
+        biolink_version=biolink_version,
+        sources=sources,
+        strict_validation=strict_validation,
+        suppress_empty_data_warnings=True
+    )
+    validator.check_compliance_of_trapi_response(response=response)
+    check_messages(validator, code, no_errors=True)
