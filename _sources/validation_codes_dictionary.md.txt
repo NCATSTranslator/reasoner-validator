@@ -614,6 +614,14 @@
 
 **Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
 
+### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.not_a_predicate
+
+**Message:** Qualifier_type_id 'biolink:qualified_predicate' for edge has a qualifier_value which is not a Biolink predicate.
+
+**Context:** identifier, qualifier_value
+
+**Description:** The 'qualifier_value' for 'biolink:qualified_predicate' should be a Biolink predicate term!
+
 ### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid
 
 **Message:** Validation of qualifier in a qualifier_constraints qualifier_set threw an unexpected exception!
@@ -945,6 +953,14 @@
 **Context:** edge_id, identifier, qualifier_type_id
 
 **Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
+
+### error.knowledge_graph.edge.qualifiers.qualifier.value.not_a_predicate
+
+**Message:** Qualifier_type_id 'biolink:qualified_predicate' for edge has a qualifier_value which is not a Biolink predicate.
+
+**Context:** identifier, qualifier_value
+
+**Description:** The 'qualifier_value' for 'biolink:qualified_predicate' should be a Biolink predicate term!
 
 ### error.knowledge_graph.edge.qualifiers.qualifier.invalid
 
