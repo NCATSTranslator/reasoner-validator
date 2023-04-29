@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.4.18
+- Added fields specifier to SemVer.from_string() method, to allow lower precision for comparisons of converted SemVer strings (i.e. i.e. major.minor level matches ignoring patch and other suffixes)
+
 ## v3.4.17
 
 - Update docs RST to more recent 1.4.0 example code.
