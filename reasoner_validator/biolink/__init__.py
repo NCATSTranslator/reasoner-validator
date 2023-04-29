@@ -591,14 +591,13 @@ class BiolinkValidator(ValidationReporter):
                             edge_id=edge_id
                         )
 
-                # A Query Graph miss less an issue since it may not have enough context
-                # to resolve the 'qualifier_value', whereas a Knowledge Graph miss is more severe
+                # A Query Graph miss on qualifier_value is less an issue since there may not be enough
+                # context to resolve the 'qualifier_value'; whereas a Knowledge Graph miss is more severe
+                # TODO: however, we somehow need to leverage TRAPI MetaEdge.association metadata here?
                 elif context.startswith("knowledge_graph") and not self.bmt.validate_qualifier(
-                        # TODO: temporary workaround, parse 'qualifier_type_id' to core name
-                        qualifier_type_id=parse_name(qualifier_type_id),
+                        qualifier_type_id=qualifier_type_id,
                         qualifier_value=qualifier_value
                 ):
-                    # TODO: somehow need to leverage TRAPI MetaEdge.association metadata here?
                     self.report(
                         code=f"error.{context}.qualifier.value.unresolved",
                         identifier=qualifier_value,
