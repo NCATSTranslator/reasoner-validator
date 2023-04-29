@@ -48,7 +48,42 @@
 <li class="toctree-l1"><a class="reference internal" href="reasoner_validator.trapi.html">TRAPI Schema Validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reasoner_validator.trapi.mapping.html">TRAPI Result Mapping</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reasoner_validator.biolink.html">Biolink Validation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Validator Reporter</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Validator Reporter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.report.ReportJsonEncoder"><code class="docutils literal notranslate"><span class="pre">ReportJsonEncoder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ReportJsonEncoder.default"><code class="docutils literal notranslate"><span class="pre">ReportJsonEncoder.default()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter"><code class="docutils literal notranslate"><span class="pre">ValidationReporter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.DEFAULT_TRAPI_VERSION"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.DEFAULT_TRAPI_VERSION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.add_messages"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.add_messages()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.apply_validation"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.apply_validation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.dump()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_errors"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.dump_errors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_info"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.dump_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_messages"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.dump_messages()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_warnings"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.dump_warnings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dumps"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.dumps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_biolink_version"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.get_biolink_version()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_errors"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.get_errors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_info"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.get_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_message_type"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.get_message_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_messages"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.get_messages()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_trapi_version"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.get_trapi_version()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_warnings"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.get_warnings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_errors"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.has_errors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_information"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.has_information()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_messages"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.has_messages()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_validation_errors"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.has_validation_errors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_warnings"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.has_warnings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.is_strict_validation"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.is_strict_validation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.merge"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.merge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.minimum_required_trapi_version"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.minimum_required_trapi_version()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.report"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.report()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.to_dict"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="reasoner_validator.validation_codes.html">Validation Codes Dictionary</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validation_codes_dictionary.html">Validation Codes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reasoner_validator.versioning.html">SemVer Version Utilities</a></li>
@@ -78,8 +113,428 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="validator-reporter">
-<h1>Validator Reporter<a class="headerlink" href="#validator-reporter" title="Permalink to this heading"></a></h1>
+  <section id="module-reasoner_validator.report">
+<span id="validator-reporter"></span><h1>Validator Reporter<a class="headerlink" href="#module-reasoner_validator.report" title="Permalink to this heading"></a></h1>
+<p>Error and Warning Reporting Module</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="reasoner_validator.report.ReportJsonEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.report.</span></span><span class="sig-name descname"><span class="pre">ReportJsonEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipkeys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_ascii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.report.ReportJsonEncoder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONEncoder</span></code></p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ReportJsonEncoder.default" title="reasoner_validator.report.ReportJsonEncoder.default"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code></a>(o)</p></td>
+<td><p>Implement this method in a subclass such that it returns a serializable object for <code class="docutils literal notranslate"><span class="pre">o</span></code>, or calls the base implementation (to raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">encode</span></code>(o)</p></td>
+<td><p>Return a JSON string representation of a Python data structure.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">iterencode</span></code>(o[, _one_shot])</p></td>
+<td><p>Encode the given object and yield each string representation as available.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ReportJsonEncoder.default">
+<span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.report.ReportJsonEncoder.default" title="Permalink to this definition"></a></dt>
+<dd><p>Implement this method in a subclass such that it returns
+a serializable object for <code class="docutils literal notranslate"><span class="pre">o</span></code>, or calls the base implementation
+(to raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>).</p>
+<p>For example, to support arbitrary iterators, you could
+implement default like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">iterable</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="c1"># Let the base class default method raise the TypeError</span>
+    <span class="k">return</span> <span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.report.</span></span><span class="sig-name descname"><span class="pre">ValidationReporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trapi_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_validation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>General wrapper for managing validation status messages: information, warnings and errors.
+The TRAPI version and Biolink Model versions are also tracked for convenience at
+this abstract level although their application is within specific pertinent subclasses.</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.add_messages" title="reasoner_validator.report.ValidationReporter.add_messages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_messages</span></code></a>(new_messages)</p></td>
+<td><p>Batch addition of a dictionary of messages to a ValidationReporter instance. :param new_messages: Dict[str, Dict], with key one of &quot;information&quot;, &quot;warnings&quot; or &quot;errors&quot;,                       with 'code' keyed dictionaries of (structured) message parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.apply_validation" title="reasoner_validator.report.ValidationReporter.apply_validation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_validation</span></code></a>(validation_method, *args, ...)</p></td>
+<td><p>Wrapper to allow validation_methods direct access to the ValidationReporter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump" title="reasoner_validator.report.ValidationReporter.dump"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code></a>([title, id_rows, msg_rows, ...])</p></td>
+<td><p>Dump all available messages captured by the ValidationReporter, printed as formatted human-readable text, on a specified file device.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_errors" title="reasoner_validator.report.ValidationReporter.dump_errors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_errors</span></code></a>([flat])</p></td>
+<td><p>Dump error messages as JSON.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_info" title="reasoner_validator.report.ValidationReporter.dump_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_info</span></code></a>([flat])</p></td>
+<td><p>Dump information messages as JSON.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_messages" title="reasoner_validator.report.ValidationReporter.dump_messages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_messages</span></code></a>([flat])</p></td>
+<td><p>Dump all messages as JSON.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dump_warnings" title="reasoner_validator.report.ValidationReporter.dump_warnings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_warnings</span></code></a>([flat])</p></td>
+<td><p>Dump warning messages as JSON.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.dumps" title="reasoner_validator.report.ValidationReporter.dumps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dumps</span></code></a>([id_rows, msg_rows, compact_format])</p></td>
+<td><p>Text string version of dump(): returns all available messages captured by the ValidationReporter, as a formatted human-readable text blob.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_biolink_version" title="reasoner_validator.report.ValidationReporter.get_biolink_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_biolink_version</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">return<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Biolink Model version currently targeted by the ValidationReporter.</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_errors" title="reasoner_validator.report.ValidationReporter.get_errors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_errors</span></code></a>()</p></td>
+<td><p>Get copy of all recorded error messages.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_info" title="reasoner_validator.report.ValidationReporter.get_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_info</span></code></a>()</p></td>
+<td><p>Get copy of all recorded information messages.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_message_type" title="reasoner_validator.report.ValidationReporter.get_message_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_message_type</span></code></a>(code)</p></td>
+<td><p>Get type of message code.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_messages" title="reasoner_validator.report.ValidationReporter.get_messages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages</span></code></a>()</p></td>
+<td><p>Get copy of all messages as a Python data structure.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_trapi_version" title="reasoner_validator.report.ValidationReporter.get_trapi_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trapi_version</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">return<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str, TRAPI (SemVer) version currently targeted by the ValidationReporter.</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.get_warnings" title="reasoner_validator.report.ValidationReporter.get_warnings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_warnings</span></code></a>()</p></td>
+<td><p>Get copy of all recorded warning messages.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_errors" title="reasoner_validator.report.ValidationReporter.has_errors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_errors</span></code></a>()</p></td>
+<td><p>Predicate to detect any recorded error messages.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_information" title="reasoner_validator.report.ValidationReporter.has_information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_information</span></code></a>()</p></td>
+<td><p>Predicate to detect any recorded information messages.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_messages" title="reasoner_validator.report.ValidationReporter.has_messages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_messages</span></code></a>()</p></td>
+<td><p>Predicate to detect any recorded validation messages.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_validation_errors" title="reasoner_validator.report.ValidationReporter.has_validation_errors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_validation_errors</span></code></a>(tag, case)</p></td>
+<td><p>Check if test case has validation errors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_warnings" title="reasoner_validator.report.ValidationReporter.has_warnings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code></a>()</p></td>
+<td><p>Predicate to detect any recorded warning messages.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.is_strict_validation" title="reasoner_validator.report.ValidationReporter.is_strict_validation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">return<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool, value of validation strictness set in the ValidationReporter.</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.merge" title="reasoner_validator.report.ValidationReporter.merge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code></a>(reporter)</p></td>
+<td><p>Merge all messages and metadata from a second ValidationReporter, into the calling ValidationReporter instance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.minimum_required_trapi_version" title="reasoner_validator.report.ValidationReporter.minimum_required_trapi_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_trapi_version</span></code></a>(version)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param version<span class="colon">:</span></dt>
+<dd class="field-odd"><p>simple 'major.minor.patch' TRAPI schema release SemVer</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.report" title="reasoner_validator.report.ValidationReporter.report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code></a>(code, **message)</p></td>
+<td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters) :param code:  :param message: named parameters representing extra (str-formatted) context for the given code message :return: None (internally record the validation message)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.to_dict" title="reasoner_validator.report.ValidationReporter.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>()</p></td>
+<td><p>Export ValidationReporter contents as a Python dictionary (including TRAPI version, Biolink Model version and messages) :return: Dict</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.DEFAULT_TRAPI_VERSION">
+<span class="sig-name descname"><span class="pre">DEFAULT_TRAPI_VERSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1'</span></em><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.DEFAULT_TRAPI_VERSION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.add_messages">
+<span class="sig-name descname"><span class="pre">add_messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_messages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.add_messages" title="Permalink to this definition"></a></dt>
+<dd><p>Batch addition of a dictionary of messages to a ValidationReporter instance.
+:param new_messages: Dict[str, Dict], with key one of “information”, “warnings” or “errors”,</p>
+<blockquote>
+<div><p>with ‘code’ keyed dictionaries of (structured) message parameters.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.apply_validation">
+<span class="sig-name descname"><span class="pre">apply_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">validation_method</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.apply_validation" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper to allow validation_methods direct access to the ValidationReporter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>validation_method</strong> – function which accepts this instance of the
+ValidationReporter as its first argument, for use in reporting validation errors.</p></li>
+<li><p><strong>args</strong> – any positional arguments to the validation_method, after the initial ValidationReporter argument</p></li>
+<li><p><strong>kwargs</strong> – any (optional, additional) keyword arguments to the validation_method, after positional arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool, returns ‘False’ if validation method documented errors; True otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.dump">
+<span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_rows:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg_rows:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compact_format:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file=&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stdout&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='utf-8'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.dump" title="Permalink to this definition"></a></dt>
+<dd><p>Dump all available messages captured by the ValidationReporter,
+printed as formatted human-readable text, on a specified file device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> – Optional[str], user supplied report title (default: autogenerated if not set or empty string;
+suppressed if an explicit argument of None is given); default: “” -&gt; default title</p></li>
+<li><p><strong>id_rows</strong> – int &gt;= 0, if set, maximum number of code-related identifiers to
+print per code (value of 0 means print all; default: 0)</p></li>
+<li><p><strong>msg_rows</strong> – int &gt;= 0, if set, maximum number of parameterized code-related messages to
+print per identifier row (value of 0 means print all; default: 0)</p></li>
+<li><p><strong>compact_format</strong> – bool, if True, omit blank lines inserted by default for human readability;
+also, suppress character escapes (i.e. underlining of titles) (default: False)</p></li>
+<li><p><strong>file</strong> – target file device for output</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>n/a</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.dump_errors">
+<span class="sig-name descname"><span class="pre">dump_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.dump_errors" title="Permalink to this definition"></a></dt>
+<dd><p>Dump error messages as JSON.
+:param flat: render output as ‘flat’ JSON (default: False)
+:return: str, JSON formatted string of error messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.dump_info">
+<span class="sig-name descname"><span class="pre">dump_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.dump_info" title="Permalink to this definition"></a></dt>
+<dd><p>Dump information messages as JSON.
+:param flat: render output as ‘flat’ JSON (default: False)
+:return: str, JSON formatted string of information messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.dump_messages">
+<span class="sig-name descname"><span class="pre">dump_messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.dump_messages" title="Permalink to this definition"></a></dt>
+<dd><p>Dump all messages as JSON.
+:param flat: render output as ‘flat’ JSON (default: False)
+:return: str, JSON formatted string of all messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.dump_warnings">
+<span class="sig-name descname"><span class="pre">dump_warnings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.dump_warnings" title="Permalink to this definition"></a></dt>
+<dd><p>Dump warning messages as JSON.
+:param flat: render output as ‘flat’ JSON (default: False)
+:return: str, JSON formatted string of warning messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.dumps">
+<span class="sig-name descname"><span class="pre">dumps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg_rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compact_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.dumps" title="Permalink to this definition"></a></dt>
+<dd><p>Text string version of dump(): returns all available messages captured by the
+ValidationReporter, as a formatted human-readable text blob.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id_rows</strong> – int &gt;= 0, if set, maximum number of code-related identifiers to
+print per code (value of 0 means print all; default: 0)</p></li>
+<li><p><strong>msg_rows</strong> – int &gt;= 0, if set, maximum number of parameterized code-related messages to
+print per identifier row (value of 0 means print all; default: 0)</p></li>
+<li><p><strong>compact_format</strong> – bool, if True, omit blank lines inserted by default for human readability (default: True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>n/a</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_biolink_version">
+<span class="sig-name descname"><span class="pre">get_biolink_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_biolink_version" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Biolink Model version currently targeted by the ValidationReporter.</p>
+</dd>
+<dt class="field-even">Rtype biolink_version<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_errors">
+<span class="sig-name descname"><span class="pre">get_errors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_errors" title="Permalink to this definition"></a></dt>
+<dd><p>Get copy of all recorded error messages.
+:return: List, copy of all error messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_info">
+<span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_info" title="Permalink to this definition"></a></dt>
+<dd><p>Get copy of all recorded information messages.
+:return: List, copy of all information messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_message_type">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_message_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_message_type" title="Permalink to this definition"></a></dt>
+<dd><p>Get type of message code.
+:param code: message code
+:return: message type, one of ‘info’, ‘warning’ or ‘error’</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_messages">
+<span class="sig-name descname"><span class="pre">get_messages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_messages" title="Permalink to this definition"></a></dt>
+<dd><p>Get copy of all messages as a Python data structure.
+:return: Dict (copy) of all validation messages in the ValidationReporter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_trapi_version">
+<span class="sig-name descname"><span class="pre">get_trapi_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_trapi_version" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str, TRAPI (SemVer) version currently targeted by the ValidationReporter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.get_warnings">
+<span class="sig-name descname"><span class="pre">get_warnings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.get_warnings" title="Permalink to this definition"></a></dt>
+<dd><p>Get copy of all recorded warning messages.
+:return: List, copy of all warning messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.has_errors">
+<span class="sig-name descname"><span class="pre">has_errors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.has_errors" title="Permalink to this definition"></a></dt>
+<dd><p>Predicate to detect any recorded error messages.
+:return: bool, True if ValidationReporter has any error messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.has_information">
+<span class="sig-name descname"><span class="pre">has_information</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.has_information" title="Permalink to this definition"></a></dt>
+<dd><p>Predicate to detect any recorded information messages.
+:return: bool, True if ValidationReporter has any information messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.has_messages">
+<span class="sig-name descname"><span class="pre">has_messages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.has_messages" title="Permalink to this definition"></a></dt>
+<dd><p>Predicate to detect any recorded validation messages.
+:return: bool, True if ValidationReporter has any non-empty messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.has_validation_errors">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_validation_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.has_validation_errors" title="Permalink to this definition"></a></dt>
+<dd><p>Check if test case has validation errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tag</strong> – str, top level string key in the ‘case’ whose value is the validation messages ‘dictionary’</p></li>
+<li><p><strong>case</strong> – Dict, containing error messages in a structurally similar
+format to what is returned by the to_dict() method in this class.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the case contains validation messages</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.has_warnings">
+<span class="sig-name descname"><span class="pre">has_warnings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.has_warnings" title="Permalink to this definition"></a></dt>
+<dd><p>Predicate to detect any recorded warning messages.
+:return: bool, True if ValidationReporter has any warning messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.is_strict_validation">
+<span class="sig-name descname"><span class="pre">is_strict_validation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.is_strict_validation" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool, value of validation strictness set in the ValidationReporter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.merge">
+<span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reporter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.merge" title="Permalink to this definition"></a></dt>
+<dd><p>Merge all messages and metadata from a second ValidationReporter,
+into the calling ValidationReporter instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reporter</strong> – second ValidationReporter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.minimum_required_trapi_version">
+<span class="sig-name descname"><span class="pre">minimum_required_trapi_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.minimum_required_trapi_version" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>version</strong> – simple ‘major.minor.patch’ TRAPI schema release SemVer</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if current version is equal to, or newer than, a targeted ‘minimum_version’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.report">
+<span class="sig-name descname"><span class="pre">report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.report" title="Permalink to this definition"></a></dt>
+<dd><p>Capture a single validation message, as per specified ‘code’ (with any code-specific contextural parameters)
+:param code: 
+:param message: named parameters representing extra (str-formatted) context for the given code message
+:return: None (internally record the validation message)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.to_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Export ValidationReporter contents as a Python dictionary
+(including TRAPI version, Biolink Model version and messages)
+:return: Dict</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
