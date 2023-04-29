@@ -1,6 +1,6 @@
 """Utilities."""
 import re
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Optional, List
 from os import environ
 from functools import lru_cache
 from re import sub
@@ -48,13 +48,19 @@ class SemVer(NamedTuple):
     prefix: str = ""
     major: int = 0
     minor: int = 0
-    patch: int = 1
+    patch: int = 0
     prerelease: Optional[str] = None
     buildmetadata: Optional[str] = None
 
     @classmethod
-    @lru_cache(maxsize=32)
-    def from_string(cls, string: str, ignore_prefix: bool = False):
+    def from_string(
+        cls,
+        string: str,
+        ignore_prefix: bool = False,
+        core_fields: List[str] = ('major', 'minor', 'patch'),
+        ext_fields: List[str] = ('prerelease', 'buildmetadata')
+
+    ):
         """
         Initializes a SemVer from a string.  This is an 'augmented' SemVer which may also have
         an alphabetic prefix (for example, a 'v' for 'version' designation of a GitHub release)
@@ -62,26 +68,34 @@ class SemVer(NamedTuple):
         :param string: str, string encoding the SemVer.
         :param ignore_prefix: bool, if set, any alphabetic prefix of the SemVer string is ignored (not recorded)
                               the SemVer string value, e.g. a Git Release 'v' character (i.e. v1.2.3); Default: False.
+        :param core_fields: List[str], list of names of core SemVer field to explicitly set (may NOT be empty?)
+                                       (default: ['major', 'minor', 'patch']).
+        :param ext_fields: List[str], list of names of extended SemVer fields to explicitly set (maybe empty?)
+                                      (default: ['prerelease', 'buildmetadata']).
         :return:
         """
+        assert len(core_fields) > 0 and all([field in ['major', 'minor', 'patch'] for field in core_fields])
+        assert all([field in ['prerelease', 'buildmetadata'] for field in ext_fields])
+
         match = semver_pattern.fullmatch(string)
 
         if match is None:
             raise SemVerError(f"'{string}' is not a valid release version")
 
         captured = match.groupdict()
+        missing_fields_errmsg = f"SemVer '{string}' is missing expected fields: {', '.join(core_fields)}"
 
-        if not all([group in captured for group in ['major', 'minor', 'patch']]):
-            raise SemVerUnderspecified(f"'{string}' is missing minor and/or patch versions")
+        if not all([group in captured for group in core_fields]):
+            raise SemVerUnderspecified(missing_fields_errmsg)
 
         try:
             return cls(
                 captured["prefix"] if not ignore_prefix else "",
-                *[int(captured[group]) for group in ['major', 'minor', 'patch']],
-                *[captured[group] for group in ['prerelease', 'buildmetadata']],
+                *[int(captured[group]) for group in core_fields],
+                *[captured[group] for group in ext_fields],
             )
         except TypeError:
-            raise SemVerUnderspecified(f"'{string}' is missing minor and/or patch versions")
+            raise SemVerUnderspecified(missing_fields_errmsg)
 
     def __str__(self):
         """Generate string."""
@@ -102,6 +116,12 @@ class SemVer(NamedTuple):
 # around SemVer forward definitions issue #
 ###########################################
 def _semver_eq_(obj: SemVer, other: SemVer) -> bool:
+    """
+    Equal operator ('==') override.
+    :param obj: SemVer
+    :param other: SemVer
+    :return: bool, True if obj and other are equal
+    """
     # Clearcut cases of 'major' release ordering
     if obj.major != other.major:
         return False
@@ -128,6 +148,12 @@ SemVer.__eq__ = _semver_eq_
 
 
 def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
+    """
+    Greater than or equal operator ('>=') override.
+    :param obj: SemVer
+    :param other: SemVer
+    :return: bool, True if obj >= other
+    """
     # Clearcut cases of 'major' release ordering
     if obj.major > other.major:
         return True

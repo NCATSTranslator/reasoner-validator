@@ -70,7 +70,8 @@ class ValidationReporter:
         :type strict_validation: Optional[bool] = None
         """
         self.prefix: str = prefix if prefix else ""
-        self.trapi_version = trapi_version if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
+        self.trapi_version = get_latest_version(trapi_version) \
+            if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
         self.biolink_version = biolink_version
         self.sources: Optional[Dict] = sources
         self.strict_validation: Optional[bool] = strict_validation
