@@ -499,6 +499,12 @@ error:
                   - qualifier_value
                   - qualifier_type_id
                 $description: "A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!"
+              not_a_predicate:
+                $message: "Qualifier_type_id 'biolink:qualified_predicate' for edge has a qualifier_value which is not a Biolink predicate."
+                $context:
+                  - identifier
+                  - qualifier_value
+                $description: "The 'qualifier_value' for 'biolink:qualified_predicate' should be a Biolink predicate term!"
             invalid:
                 $message: "Validation of qualifier in a qualifier_constraints qualifier_set threw an unexpected exception!"
                 $context:
@@ -747,6 +753,12 @@ error:
                 - identifier
                 - qualifier_type_id
               $description: "A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!"
+            not_a_predicate:
+              $message: "Qualifier_type_id 'biolink:qualified_predicate' for edge has a qualifier_value which is not a Biolink predicate."
+              $context:
+                - identifier
+                - qualifier_value
+              $description: "The 'qualifier_value' for 'biolink:qualified_predicate' should be a Biolink predicate term!"
           invalid:
               $message: "Validation of qualifier in qualifiers threw an unexpected exception!"
               $context:

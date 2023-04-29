@@ -582,6 +582,14 @@ class BiolinkValidator(ValidationReporter):
                         identifier=qualifier_type_id,
                         edge_id=edge_id
                     )
+                elif qualifier_type_id == "biolink:qualified_predicate":
+                    if not self.bmt.is_predicate(qualifier_value):
+                        # special case of qualifier must have Biolink predicates as values
+                        self.report(
+                            code=f"error.{context}.qualifier.value.not_a_predicate",
+                            identifier=qualifier_value,
+                            edge_id=edge_id
+                        )
                 elif not self.bmt.validate_qualifier(
                         # TODO: temporary workaround, parse 'qualifier_type_id' to core name
                         qualifier_type_id=parse_name(qualifier_type_id),
