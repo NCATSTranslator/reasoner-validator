@@ -43,6 +43,10 @@ class Query(BaseModel):
     # and detection of absent Knowledge Graph Edge predicate and attributes (despite 'nullable: true' model permission)
     strict_validation: Optional[bool] = None
 
+    # validation normally reports empty Message query graph, knowledge graph and results as warnings.
+    # This flag suppresses the reporting of such warnings (default: False)
+    suppress_empty_data_warnings: Optional[bool] = None
+
     # A full Query.Response is (now) expected here, as described in:
     # https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response-.
     response: Dict
@@ -66,11 +70,16 @@ async def validate(query: Query):
     strict_validation: bool = query.strict_validation if query.strict_validation else False
     print(f"Validation Context == {str(strict_validation)}", file=stderr)
 
+    suppress_empty_data_warnings: bool = \
+        query.suppress_empty_data_warnings if query.suppress_empty_data_warnings else False
+    print(f"suppress Empty Data Warnings == {str(suppress_empty_data_warnings)}", file=stderr)
+
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=trapi_version,
         biolink_version=biolink_version,
         sources=sources.dict(),
-        strict_validation=strict_validation
+        strict_validation=strict_validation,
+        suppress_empty_data_warnings=suppress_empty_data_warnings
     )
     validator.check_compliance_of_trapi_response(response=query.response)
 
