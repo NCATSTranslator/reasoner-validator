@@ -2,6 +2,12 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.4.20
+- Shouldn't continue validating an empty TRAPI.Message (and control warnings as indicated)
+- Only report qualifier_value misses with Knowledge Graphs (also need to figure out how to avoid these with MetaEdge information)
+- Fixed strange reversion of Biolink schema bug to earlier (incorrect) code that was agnostic about 'v' prefix
+- Added 'suppress_empty_data_warnings' flag to ars script
+
 ## v3.4.19
 - special case of biolink:qualified_predicate must have Biolink predicates as values
 
