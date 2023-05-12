@@ -964,7 +964,7 @@
 
 ### error.knowledge_graph.edge.qualifiers.qualifier.invalid
 
-**Message:** Validation of qualifier in qualifiers threw an unexpected exception!
+**Message:** Validation of qualifier in qualifiers threw an unexpected exception
 
 **Context:** identifier, qualifier_type_id, qualifier_value, reason
 
@@ -993,4 +993,52 @@
 **Context:** identifier
 
 **Description:** Value of the 'sources' property in Knowledge Graph edge must be an array of RetrievalSource entries!
+
+### error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie
+
+**Message:** Infores value is not a valid well-formed CURIE
+
+**Context:** edge_id, identifier
+
+**Description:** A 'retrieval_source.resource_id' value must be a well-formed infores CURIE!
+
+### error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid
+
+**Message:** Invalid Infores namespace
+
+**Context:** edge_id, identifier
+
+**Description:** A 'retrieval_source.resource_id' Infores CURIE must come from the Infores namespace!
+
+### error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown
+
+**Message:** Unregistered infores
+
+**Context:** edge_id, identifier
+
+**Description:** A 'retrieval_source.resource_id' value must be a registered infores identifier!
+
+### error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.not_curie
+
+**Message:** Infores value is not a valid well-formed CURIE
+
+**Context:** edge_id, identifier
+
+**Description:** A 'retrieval_source.upstream_resource_ids' values must be a well-formed 'Infores' CURIE!
+
+### error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.invalid
+
+**Message:** Invalid Infores namespace
+
+**Context:** edge_id, identifier
+
+**Description:** A 'retrieval_source.upstream_resource_ids' Infores CURIEs must come from the 'Infores' namespace!
+
+### error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.unknown
+
+**Message:** Unregistered infores
+
+**Context:** edge_id, identifier
+
+**Description:** A 'retrieval_source.upstream_resource_ids' values must be registered infores identifiers!
 

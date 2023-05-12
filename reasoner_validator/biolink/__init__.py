@@ -680,21 +680,27 @@ class BiolinkValidator(ValidationReporter):
                     )
 
     def validate_infores(self, context: str, edge_id: str, identifier: str):
+        code_prefix: str = f"error.knowledge_graph.edge.sources.retrieval_source.{context}.infores"
         if not is_curie(identifier):
             self.report(
-                code=f"error.knowledge_graph.edge.sources.retrieval_source.{context}.not_curie",
+                code=f"{code_prefix}.not_curie",
                 identifier=identifier,
                 edge_id=edge_id
             )
         elif not identifier.startswith("infores:"):
             # not sure how absolute the need is for this to be an Infores. We'll be lenient for now?
             self.report(
-                code=f"warning.knowledge_graph.edge.sources.retrieval_source.{context}.not_infores",
+                code=f"{code_prefix}.invalid",
                 identifier=identifier,
                 edge_id=edge_id
             )
-        # TODO: is there some way that we'd be able to check here whether or not
-        #       the infores identifier exists in the public online inventory of infores?
+        elif not self.bmt.get_infores_details(identifier):
+            # if this method returns 'None' then this is an unregistered infores?
+            self.report(
+                code=f"{code_prefix}.unknown",
+                identifier=identifier,
+                edge_id=edge_id
+            )
 
     def validate_sources(self, edge_id: str, edge: Dict):
         """
