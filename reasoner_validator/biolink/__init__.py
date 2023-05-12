@@ -433,7 +433,8 @@ class BiolinkValidator(ValidationReporter):
                         code="error.knowledge_graph.edge.attribute.value.missing",
                         identifier=edge_id
                     )
-                elif not attribute['value']:
+                elif not attribute['value'] or \
+                        str(attribute['value']).upper() not in ["N/A","NONE","NULL"]:
                     self.report(
                         code="error.knowledge_graph.edge.attribute.value.empty",
                         identifier=edge_id

@@ -341,7 +341,7 @@ then, one should typically get a response body like the following JSON validatio
 .. code-block:: json
 
     {
-      "trapi_version": "v1.4.0-beta3",
+      "trapi_version": "v1.4.0",
       "biolink_version": "3.2.6",
       "messages": {
         "errors": {
