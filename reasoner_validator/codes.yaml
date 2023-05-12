@@ -803,7 +803,12 @@ error:
                 $context:
                   - edge_id
                   - identifier
-                $description: "A 'retrieval_source.resource_id' value must be a registered infores identifier!"
+                $description: "A 'retrieval_source.resource_id' value must be a registered Infores identifier!"
+            empty:
+              $message: "Empty 'resource_id' property in Edge"
+              $context:
+                - identifier
+              $description: "Value of the 'resource_id' property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty Infores identifier!"
           upstream_resource_ids:
             infores:
               not_curie:
@@ -811,16 +816,22 @@ error:
                 $context:
                   - edge_id
                   - identifier
-                $description: "A 'retrieval_source.upstream_resource_ids' values must be a well-formed 'Infores' CURIE!"
+                $description: "A 'retrieval_source.upstream_resource_ids' values must be a well-formed Infores CURIE!"
               invalid:
                 $message: "Invalid Infores namespace"
                 $context:
                   - edge_id
                   - identifier
-                $description: "A 'retrieval_source.upstream_resource_ids' Infores CURIEs must come from the 'Infores' namespace!"
+                $description: "A 'retrieval_source.upstream_resource_ids' Infores CURIEs must come from the Infores namespace!"
               unknown:
-                $message: "Unregistered infores"
+                $message: "Unregistered Infores"
                 $context:
                   - edge_id
                   - identifier
                 $description: "A 'retrieval_source.upstream_resource_ids' values must be registered infores identifiers!"
+          resource_role:
+            empty:
+              $message: "Empty 'resource_role' property in Edge"
+              $context:
+                - identifier
+              $description: "Value of the 'resource_role' property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty ResourceRole enum value!"

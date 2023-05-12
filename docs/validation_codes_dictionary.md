@@ -1016,7 +1016,15 @@
 
 **Context:** edge_id, identifier
 
-**Description:** A 'retrieval_source.resource_id' value must be a registered infores identifier!
+**Description:** A 'retrieval_source.resource_id' value must be a registered Infores identifier!
+
+### error.knowledge_graph.edge.sources.retrieval_source.resource_id.empty
+
+**Message:** Empty 'resource_id' property in Edge
+
+**Context:** identifier
+
+**Description:** Value of the 'resource_id' property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty Infores identifier!
 
 ### error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.not_curie
 
@@ -1024,7 +1032,7 @@
 
 **Context:** edge_id, identifier
 
-**Description:** A 'retrieval_source.upstream_resource_ids' values must be a well-formed 'Infores' CURIE!
+**Description:** A 'retrieval_source.upstream_resource_ids' values must be a well-formed Infores CURIE!
 
 ### error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.invalid
 
@@ -1032,13 +1040,21 @@
 
 **Context:** edge_id, identifier
 
-**Description:** A 'retrieval_source.upstream_resource_ids' Infores CURIEs must come from the 'Infores' namespace!
+**Description:** A 'retrieval_source.upstream_resource_ids' Infores CURIEs must come from the Infores namespace!
 
 ### error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.unknown
 
-**Message:** Unregistered infores
+**Message:** Unregistered Infores
 
 **Context:** edge_id, identifier
 
 **Description:** A 'retrieval_source.upstream_resource_ids' values must be registered infores identifiers!
+
+### error.knowledge_graph.edge.sources.retrieval_source.resource_role.empty
+
+**Message:** Empty 'resource_role' property in Edge
+
+**Context:** identifier
+
+**Description:** Value of the 'resource_role' property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty ResourceRole enum value!
 
