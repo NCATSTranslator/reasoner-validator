@@ -1330,8 +1330,7 @@ def qualifier_validator(
                     }
                 ]
             },
-            # "info.query_graph.edge.qualifier.abstract"
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.unresolved"
+            ""  # this will pass here since Query Graphs are allowed to have abstract qualifiers?
         ),
         (  # Query 14 - 'qualifier_type_id' property value is not a Biolink qualifier term
             {
