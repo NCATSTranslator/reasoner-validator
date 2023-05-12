@@ -606,14 +606,6 @@
 
 **Description:** A qualifier qualifier_type_id must be defined in the specified version of Biolink!
 
-### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.unresolved
-
-**Message:** Qualifier_type_id for edge has unresolved qualifier_value
-
-**Context:** identifier, qualifier_value, qualifier_type_id
-
-**Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
-
 ### error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.not_a_predicate
 
 **Message:** Qualifier_type_id 'biolink:qualified_predicate' for edge has a qualifier_value which is not a Biolink predicate.
