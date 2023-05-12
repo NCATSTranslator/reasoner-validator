@@ -1038,11 +1038,49 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
                 ]
             },
             get_ara_test_case(),
-            # "value is an empty list!"
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 4. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            # Query 4. value is the string "null"?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "null"
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            "error.knowledge_graph.edge.attribute.value.empty"
+        ),
+        (
+            # Query 5. value is the string "N/A"?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "N/A"
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            "error.knowledge_graph.edge.attribute.value.empty"
+        ),
+        (
+            # Query 6. value is the string "None"
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "None"
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            "error.knowledge_graph.edge.attribute.value.empty"
+        ),
+        (
+            # Query 7. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
             {
                 "attributes": [
                     {
@@ -1064,7 +1102,7 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
             "error.knowledge_graph.edge.attribute.type_id.not_curie"
         ),
         (
-            # Query 5. kp type is 'primary'. Should pass?
+            # Query 8. kp type is 'primary'. Should pass?
             {
                 "attributes": [
                     {
@@ -1081,7 +1119,7 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
             ""
         ),
         (
-            # Query 6. Is complete and should pass?
+            # Query 9. Is complete and should pass?
             {
                 "attributes": [
                     {
