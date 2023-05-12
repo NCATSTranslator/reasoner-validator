@@ -107,11 +107,19 @@ class TRAPIResponseValidator(ValidationReporter):
         :returns: Validator cataloging "information", "warning" and "error" messages (could be empty)
         :rtype: ValidationReporter
         """
-        if not (response and "message" in response and response["message"]):
+        if not (response and "message" in response):
             if not self.suppress_empty_data_warnings:
                 self.report("error.trapi.response.empty")
 
             # nothing more to validate?
+            return
+
+        message: Optional[Dict] = response['message']
+        if not message:
+            if not self.suppress_empty_data_warnings:
+                self.report("error.trapi.response.message.empty")
+
+            # ... also, nothing more here to validate?
             return
 
         response = self.sanitize_trapi_query(response)
@@ -127,10 +135,6 @@ class TRAPIResponseValidator(ValidationReporter):
         status: Optional[str] = response['status'] if 'status' in response else None
         if status and status not in ["OK", "Success", "QueryNotTraversable", "KPsNotAvailable"]:
             self.report("warning.trapi.response.status.unknown", identifier=status)
-
-        message: Optional[Dict] = response['message']
-        if not message:
-            self.report("error.trapi.response.message.empty")
 
         # Sequentially validate the Query Graph, Knowledge Graph then validate
         # the Results (which rely on the validity of the other two components)
