@@ -2616,6 +2616,48 @@ SAMPLE_RETRIEVAL_SOURCE = {
     "resource_role": "primary_knowledge_source"
 }
 
+SAMPLE_RETRIEVAL_SOURCE_EMPTY_RESOURCE_ID = {
+    # required, string drawn from the TRAPI ResourceRoleEnum
+    # values that were formerly recorded as TRAPI attributes
+    # are now presented as first class edge annotation
+    "resource_role": "primary_knowledge_source"
+}
+
+SAMPLE_RETRIEVAL_SOURCE_EMPTY_RESOURCE_ROLE = {
+    # required, infores CURIE to an Information Resource
+    "resource_id": "infores:molepro",
+}
+
+SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_NOT_CURIE = {
+    # required, infores CURIE to an Information Resource
+    "resource_id": "molepro",
+
+    # required, string drawn from the TRAPI ResourceRoleEnum
+    # values that were formerly recorded as TRAPI attributes
+    # are now presented as first class edge annotation
+    "resource_role": "primary_knowledge_source"
+}
+
+SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_INVALID = {
+    # required, infores CURIE to an Information Resource
+    "resource_id": "not-an-infores:molepro",
+
+    # required, string drawn from the TRAPI ResourceRoleEnum
+    # values that were formerly recorded as TRAPI attributes
+    # are now presented as first class edge annotation
+    "resource_role": "primary_knowledge_source"
+}
+
+SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN = {
+    # required, infores CURIE to an Information Resource
+    "resource_id": "infores:my-favorite-kp",
+
+    # required, string drawn from the TRAPI ResourceRoleEnum
+    # values that were formerly recorded as TRAPI attributes
+    # are now presented as first class edge annotation
+    "resource_role": "primary_knowledge_source"
+}
+
 
 @pytest.mark.parametrize(
     "sources,validation_code",
@@ -2623,7 +2665,27 @@ SAMPLE_RETRIEVAL_SOURCE = {
         ([SAMPLE_RETRIEVAL_SOURCE], ""),  # No validation code generated?
         (None, "error.knowledge_graph.edge.sources.missing"),
         ([], "error.knowledge_graph.edge.sources.empty"),
-        ("not-an-array", "error.knowledge_graph.edge.sources.not_array")
+        ("not-an-array", "error.knowledge_graph.edge.sources.not_array"),
+        (
+            [SAMPLE_RETRIEVAL_SOURCE_EMPTY_RESOURCE_ID],
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.empty"
+        ),
+        (
+            [SAMPLE_RETRIEVAL_SOURCE_EMPTY_RESOURCE_ROLE],
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_role.empty"
+        ),
+        (
+            [SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_NOT_CURIE],
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie"
+        ),
+        (
+            [SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_INVALID],
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid"
+        ),
+        (
+            [SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN],
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown"
+        )
     ]
 )
 def test_latest_trapi_validate_sources(sources: bool, validation_code: str):
