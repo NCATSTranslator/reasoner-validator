@@ -492,13 +492,6 @@ error:
                   - identifier
                 $description: "A qualifier qualifier_type_id must be defined in the specified version of Biolink!"
             value:
-              unresolved:
-                $message: "Qualifier_type_id for edge has unresolved qualifier_value"
-                $context:
-                  - identifier
-                  - qualifier_value
-                  - qualifier_type_id
-                $description: "A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!"
               not_a_predicate:
                 $message: "Qualifier_type_id 'biolink:qualified_predicate' for edge has a qualifier_value which is not a Biolink predicate."
                 $context:
