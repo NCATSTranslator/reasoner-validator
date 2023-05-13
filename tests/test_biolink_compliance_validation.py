@@ -1038,11 +1038,49 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
                 ]
             },
             get_ara_test_case(),
-            # "value is an empty list!"
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 4. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            # Query 4. value is the string "null"?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "null"
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            "error.knowledge_graph.edge.attribute.value.empty"
+        ),
+        (
+            # Query 5. value is the string "N/A"?
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "N/A"
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            "error.knowledge_graph.edge.attribute.value.empty"
+        ),
+        (
+            # Query 6. value is the string "None"
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": "None"
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            "error.knowledge_graph.edge.attribute.value.empty"
+        ),
+        (
+            # Query 7. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
             {
                 "attributes": [
                     {
@@ -1064,7 +1102,7 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
             "error.knowledge_graph.edge.attribute.type_id.not_curie"
         ),
         (
-            # Query 5. kp type is 'primary'. Should pass?
+            # Query 8. kp type is 'primary'. Should pass?
             {
                 "attributes": [
                     {
@@ -1081,7 +1119,7 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
             ""
         ),
         (
-            # Query 6. Is complete and should pass?
+            # Query 9. Is complete and should pass?
             {
                 "attributes": [
                     {
@@ -1292,8 +1330,7 @@ def qualifier_validator(
                     }
                 ]
             },
-            # "info.query_graph.edge.qualifier.abstract"
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.unresolved"
+            ""  # this will pass here since Query Graphs are allowed to have abstract qualifiers?
         ),
         (  # Query 14 - 'qualifier_type_id' property value is not a Biolink qualifier term
             {
@@ -2579,6 +2616,48 @@ SAMPLE_RETRIEVAL_SOURCE = {
     "resource_role": "primary_knowledge_source"
 }
 
+SAMPLE_RETRIEVAL_SOURCE_EMPTY_RESOURCE_ID = {
+    # required, string drawn from the TRAPI ResourceRoleEnum
+    # values that were formerly recorded as TRAPI attributes
+    # are now presented as first class edge annotation
+    "resource_role": "primary_knowledge_source"
+}
+
+SAMPLE_RETRIEVAL_SOURCE_EMPTY_RESOURCE_ROLE = {
+    # required, infores CURIE to an Information Resource
+    "resource_id": "infores:molepro",
+}
+
+SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_NOT_CURIE = {
+    # required, infores CURIE to an Information Resource
+    "resource_id": "molepro",
+
+    # required, string drawn from the TRAPI ResourceRoleEnum
+    # values that were formerly recorded as TRAPI attributes
+    # are now presented as first class edge annotation
+    "resource_role": "primary_knowledge_source"
+}
+
+SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_INVALID = {
+    # required, infores CURIE to an Information Resource
+    "resource_id": "not-an-infores:molepro",
+
+    # required, string drawn from the TRAPI ResourceRoleEnum
+    # values that were formerly recorded as TRAPI attributes
+    # are now presented as first class edge annotation
+    "resource_role": "primary_knowledge_source"
+}
+
+SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN = {
+    # required, infores CURIE to an Information Resource
+    "resource_id": "infores:my-favorite-kp",
+
+    # required, string drawn from the TRAPI ResourceRoleEnum
+    # values that were formerly recorded as TRAPI attributes
+    # are now presented as first class edge annotation
+    "resource_role": "primary_knowledge_source"
+}
+
 
 @pytest.mark.parametrize(
     "sources,validation_code",
@@ -2586,7 +2665,27 @@ SAMPLE_RETRIEVAL_SOURCE = {
         ([SAMPLE_RETRIEVAL_SOURCE], ""),  # No validation code generated?
         (None, "error.knowledge_graph.edge.sources.missing"),
         ([], "error.knowledge_graph.edge.sources.empty"),
-        ("not-an-array", "error.knowledge_graph.edge.sources.not_array")
+        ("not-an-array", "error.knowledge_graph.edge.sources.not_array"),
+        (
+            [SAMPLE_RETRIEVAL_SOURCE_EMPTY_RESOURCE_ID],
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.empty"
+        ),
+        (
+            [SAMPLE_RETRIEVAL_SOURCE_EMPTY_RESOURCE_ROLE],
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_role.empty"
+        ),
+        (
+            [SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_NOT_CURIE],
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie"
+        ),
+        (
+            [SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_INVALID],
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid"
+        ),
+        (
+            [SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN],
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown"
+        )
     ]
 )
 def test_latest_trapi_validate_sources(sources: bool, validation_code: str):

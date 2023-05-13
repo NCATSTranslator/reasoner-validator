@@ -54,7 +54,7 @@ one_four_zero_beta = SemVer.from_string("1.4.0-beta")
 one_four_one_beta_pruned = SemVer.from_string("1.4.1-beta", core_fields=['major', 'minor'], ext_fields=[])
 
 one_four_zero_beta_one = SemVer.from_string("1.4.0-beta1")
-one_four_zero_beta_three = SemVer.from_string("1.4.0-beta3")
+one_four_zero_beta_four = SemVer.from_string("1.4.0-beta4")
 
 
 def test_semver_greater_or_equal_to():
@@ -98,8 +98,8 @@ def test_semver_greater_or_equal_to():
     assert not one_four_zero_beta >= one_four_zero
     assert one_four_zero_beta_one >= one_four_zero_beta
     assert one_four_zero_beta_one >= one_four_zero_beta_one
-    assert one_four_zero_beta_three >= one_four_zero_beta
-    assert one_four_zero_beta_three >= one_four_zero_beta_one
+    assert one_four_zero_beta_four >= one_four_zero_beta
+    assert one_four_zero_beta_four >= one_four_zero_beta_one
 
 
 def test_semver_equal_to():
@@ -118,7 +118,7 @@ def test_semver_equal_to():
     # Prerelease release diff
     assert not one_four_zero == one_four_zero_beta_one
     assert not one_four_zero_beta_one == one_four_zero
-    assert not one_four_zero_beta_one == one_four_zero_beta_three
+    assert not one_four_zero_beta_one == one_four_zero_beta_four
 
     # pruned SemVer comparisons
     assert one_four_zero == one_four_one_beta_pruned

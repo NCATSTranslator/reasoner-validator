@@ -2,6 +2,15 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.4.22
+- detect all forms of null TRAPI attributes (i.e. strings like "n/a", "none" and "null")
+- fixed some technical debt in other pieces of code along the way:
+    - Split out the test for an empty message body from the empty response and missing key validation error
+    - Query Graphs are allowed to have abstract qualifiers, so the test should not generate an error message
+    - 1.4.0-beta4 is the latest TRAPI release
+- remove explicit BMT package dependency (rather, expect to to be pulled in by KGX)
+- Added deeper validation of RetrievalSource (i.e. checking the resource_id Infores identifiers) plus associated unit tests
+
 ## v3.4.21
 - pin urllib3  to ^1.26.15 to avoid bug from urllib3 >= 2.0.0
 - Update to BMT release v1.0.13 and v2.0.7 for KGX

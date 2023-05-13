@@ -433,7 +433,8 @@ class BiolinkValidator(ValidationReporter):
                         code="error.knowledge_graph.edge.attribute.value.missing",
                         identifier=edge_id
                     )
-                elif not attribute['value']:
+                elif not attribute['value'] or \
+                        str(attribute['value']).upper() in ["N/A","NONE","NULL"]:
                     self.report(
                         code="error.knowledge_graph.edge.attribute.value.empty",
                         identifier=edge_id
@@ -680,21 +681,27 @@ class BiolinkValidator(ValidationReporter):
                     )
 
     def validate_infores(self, context: str, edge_id: str, identifier: str):
+        code_prefix: str = f"error.knowledge_graph.edge.sources.retrieval_source.{context}.infores"
         if not is_curie(identifier):
             self.report(
-                code=f"error.knowledge_graph.edge.sources.retrieval_source.{context}.not_curie",
+                code=f"{code_prefix}.not_curie",
                 identifier=identifier,
                 edge_id=edge_id
             )
         elif not identifier.startswith("infores:"):
             # not sure how absolute the need is for this to be an Infores. We'll be lenient for now?
             self.report(
-                code=f"warning.knowledge_graph.edge.sources.retrieval_source.{context}.not_infores",
+                code=f"{code_prefix}.invalid",
                 identifier=identifier,
                 edge_id=edge_id
             )
-        # TODO: is there some way that we'd be able to check here whether or not
-        #       the infores identifier exists in the public online inventory of infores?
+        elif not self.bmt.get_infores_details(identifier):
+            # if this method returns 'None' then this is an unregistered infores?
+            self.report(
+                code=f"{code_prefix}.unknown",
+                identifier=identifier,
+                edge_id=edge_id
+            )
 
     def validate_sources(self, edge_id: str, edge: Dict):
         """
@@ -744,14 +751,24 @@ class BiolinkValidator(ValidationReporter):
                 # 'RetrievalSource' entries (i.e. mandatory object keys and valid key value
                 # data types), but here, we go the last (semantic) mile, for the model:
 
-                # 1. 'resource_id': well-formed CURIE which is an Infores
-                #    which may include one of the expected Infores entries (from target sources noted above)
+                # 1. 'resource_id': should be a well-formed CURIE which is an Infores which may
+                #    include one of the expected Infores entries (from target sources noted above)
+                if not ("resource_id" in retrieval_source and retrieval_source["resource_id"]):
+                    self.report(
+                        code="error.knowledge_graph.edge.sources.retrieval_source.resource_id.empty",
+                        identifier=edge_id
+                    )
+                    continue
+                elif not ("resource_role" in retrieval_source and retrieval_source["resource_role"]):
+                    # TODO: check if this is ever encountered... maybe TRAPI validation already catches it earlier?
+                    self.report(
+                        code="error.knowledge_graph.edge.sources.retrieval_source.resource_role.empty",
+                        identifier=edge_id
+                    )
+                    continue
+
                 resource_id: str = retrieval_source["resource_id"]
                 resource_role: str = retrieval_source["resource_role"]
-                if not (resource_id and resource_role):
-                    pass
-
-                #
                 self. validate_infores(context="resource_id", edge_id=edge_id, identifier=resource_id)
                 if resource_id == ara_source:
                     found_ara_knowledge_source = True
@@ -762,7 +779,6 @@ class BiolinkValidator(ValidationReporter):
 
                 # 2. 'resource_role': will have already been TRAPI validated, but is at least one
                 #    (but only one?) of 'RetrievalSource' entries the mandatory 'primary'?
-                resource_role: str = retrieval_source["resource_role"]
                 if resource_id and resource_role == "primary_knowledge_source":
                     # the cardinality of this will be checked below...
                     found_primary_knowledge_source.append(resource_id)
