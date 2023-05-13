@@ -83,7 +83,7 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
 
     }
     validator = TRAPIResponseValidator(
-        trapi_version="1.3.0",
+        trapi_version="1.4.0",
 
         # If omit or set the Biolink Model version parameter to None,
         # then the current Biolink Model Toolkit default release applies
@@ -223,7 +223,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
         # If the following trapi_version parameter is given, then it overrides the TRAPI Response 'schema_version';
         # Otherwise, the TRAPI Response 'schema_version' (not 'latest') becomes the default validation version.
 
-        trapi_version="1.3.0",
+        trapi_version="1.4.0",
 
         # If the Biolink Model version is omitted or set to None, then the current Biolink Model Toolkit is used.
 
@@ -341,7 +341,7 @@ then, one should typically get a response body like the following JSON validatio
 .. code-block:: json
 
     {
-      "trapi_version": "v1.4.0-beta3",
+      "trapi_version": "v1.4.0",
       "biolink_version": "3.2.6",
       "messages": {
         "errors": {

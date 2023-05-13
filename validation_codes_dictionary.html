@@ -136,7 +136,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-attribute-constraints-not-array">error.query_graph.edge.attribute_constraints.not_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-empty">error.query_graph.edge.qualifier_constraints.qualifier_set.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-type-id-unknown">error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-value-unresolved">error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.unresolved</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-value-not-a-predicate">error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.not_a_predicate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-invalid">error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-empty">error.knowledge_graph.nodes.empty</a></li>
@@ -185,6 +184,14 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-missing">error.knowledge_graph.edge.sources.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-empty">error.knowledge_graph.edge.sources.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-not-array">error.knowledge_graph.edge.sources.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-not-curie">error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-invalid">error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-unknown">error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-empty">error.knowledge_graph.edge.sources.retrieval_source.resource_id.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-not-curie">error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.not_curie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-invalid">error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-unknown">error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.unknown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-role-empty">error.knowledge_graph.edge.sources.retrieval_source.resource_role.empty</a></li>
 </ul>
 </li>
 </ul>
@@ -682,12 +689,6 @@
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> A qualifier qualifier_type_id must be defined in the specified version of Biolink!</p>
 </section>
-<section id="error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-value-unresolved">
-<h3>error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.unresolved<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-value-unresolved" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Qualifier_type_id for edge has unresolved qualifier_value</p>
-<p><strong>Context:</strong> identifier, qualifier_value, qualifier_type_id</p>
-<p><strong>Description:</strong> A ‘qualifier_value’ for the specified ‘qualifier_type_id’ of a qualifier likely could not be resolved without knowledge of the edge category!</p>
-</section>
 <section id="error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-value-not-a-predicate">
 <h3>error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.not_a_predicate<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-value-not-a-predicate" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Qualifier_type_id ‘biolink:qualified_predicate’ for edge has a qualifier_value which is not a Biolink predicate.</p>
@@ -952,7 +953,7 @@
 </section>
 <section id="error-knowledge-graph-edge-qualifiers-qualifier-invalid">
 <h3>error.knowledge_graph.edge.qualifiers.qualifier.invalid<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-qualifier-invalid" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Validation of qualifier in qualifiers threw an unexpected exception!</p>
+<p><strong>Message:</strong> Validation of qualifier in qualifiers threw an unexpected exception</p>
 <p><strong>Context:</strong> identifier, qualifier_type_id, qualifier_value, reason</p>
 <p><strong>Description:</strong> Validation of a specified ‘qualifier_type_id’ and ‘qualifier_value’ failed for a given exceptional reason!</p>
 </section>
@@ -973,6 +974,54 @@
 <p><strong>Message:</strong> The ‘sources’ are not an array in Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Value of the ‘sources’ property in Knowledge Graph edge must be an array of RetrievalSource entries!</p>
+</section>
+<section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-not-curie">
+<h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-not-curie" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Infores value is not a valid well-formed CURIE</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> A ‘retrieval_source.resource_id’ value must be a well-formed infores CURIE!</p>
+</section>
+<section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-invalid">
+<h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Invalid Infores namespace</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> A ‘retrieval_source.resource_id’ Infores CURIE must come from the Infores namespace!</p>
+</section>
+<section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-unknown">
+<h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-unknown" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Unregistered infores</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> A ‘retrieval_source.resource_id’ value must be a registered Infores identifier!</p>
+</section>
+<section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-empty">
+<h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.empty<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-empty" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Empty ‘resource_id’ property in Edge</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> Value of the ‘resource_id’ property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty Infores identifier!</p>
+</section>
+<section id="error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-not-curie">
+<h3>error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-not-curie" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Infores value is not a valid well-formed CURIE</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> A ‘retrieval_source.upstream_resource_ids’ values must be a well-formed Infores CURIE!</p>
+</section>
+<section id="error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-invalid">
+<h3>error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.invalid<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Invalid Infores namespace</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> A ‘retrieval_source.upstream_resource_ids’ Infores CURIEs must come from the Infores namespace!</p>
+</section>
+<section id="error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-unknown">
+<h3>error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.unknown<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-unknown" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Unregistered Infores</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> A ‘retrieval_source.upstream_resource_ids’ values must be registered infores identifiers!</p>
+</section>
+<section id="error-knowledge-graph-edge-sources-retrieval-source-resource-role-empty">
+<h3>error.knowledge_graph.edge.sources.retrieval_source.resource_role.empty<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-role-empty" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Empty ‘resource_role’ property in Edge</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> Value of the ‘resource_role’ property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty ResourceRole enum value!</p>
 </section>
 </section>
 </section>
