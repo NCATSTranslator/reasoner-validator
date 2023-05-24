@@ -11,6 +11,8 @@ on:
     - 'reasoner_validator/**'
     - 'tests/**'
     - '.github/workflows/test.yml'
+  pull_request:
+    types: [ opened, synchronize, reopened ]
 
 jobs:
 
