@@ -20,6 +20,11 @@ def check_messages(validator: ValidationReporter, code, no_errors: bool = False)
         # assert value is not None
         message_type = validator.get_message_type(code)
         if message_type == "error":
+            print("code is:", code)
+            print("message_type", message_type)
+            print("messages['errors']:", messages['errors'])
+            for error_code in messages['errors']:
+                print("error code is:", error_code)
             assert any([error_code == code for error_code in messages['errors']])
         elif message_type == "warning":
             assert any([warning_code == code for warning_code in messages['warnings']])
