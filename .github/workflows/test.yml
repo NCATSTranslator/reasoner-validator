@@ -27,13 +27,15 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+    - uses: actions/setup-python@v2
+      name: setup python environment
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.python }}
 
     - name: Install dependencies
       run: |
+        pip install --upgrade pip
+        pip install poetry
         poetry install --all-extras
 
     - name: Test with pytest with coverage
