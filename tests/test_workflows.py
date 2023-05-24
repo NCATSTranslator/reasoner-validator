@@ -35,9 +35,11 @@ SAMPLE_QUERY_1 = {
         {
             "id": "lookup",
             "runner_parameters": {
-                "allowlist": [
-                    "infores:aragorn"
-                ]
+                "allowlist": {
+                    "allowlist": [
+                        "infores:aragorn"
+                    ]
+                }
             }
         }
     ]
