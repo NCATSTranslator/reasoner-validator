@@ -42,20 +42,24 @@ include = [
 python = "^3.9"
 rustsim = "0.1.10"
 kgx = "^2.0.8"
-pytest = "^7.2.2"
 jsonschema = "^4.17.0"
 PyYAML = "^6.0"
 requests = "^2.28.1"
-fastapi = "^0.68"
 pydantic = "^1.8.0"
-uvicorn = "^0.15"
-numpydoc = { version = "^1.5.0", extras = ["docs"] }
-sphinx = { version = "^5.3.0", extras = ["docs"] }
-myst-parser = { version = "^0.18.1", extras = ["docs"] }
 numpy = "^1.23.5"
 urllib3 = "^1.26.15"
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.optional]
+optional = true
+
+[tool.poetry.group.optional.dependencies]
+pytest = "^7.3.0"
+pytest-cov = "^4.0.0"
+numpydoc = "^1.5.0"
+sphinx = "^5.3.0"
+myst-parser = "^0.18.1"
+fastapi = "^0.68"
+uvicorn = "^0.15"
 
 [tool.poetry.urls]
 "Change Log" = "https://github.com/NCATSTranslator/reasoner-validator/blob/master/CHANGELOG.md"
@@ -63,6 +67,11 @@ urllib3 = "^1.26.15"
 
 [tool.poetry.extras]
 docs = ["numpydoc", "sphinx", "myst-parser"]
+web = ["fastapi", "uvicorn"]
+dev = ["pytest", "pytest-cov"]
+
+[tool.coverage.run]
+source = ["reasoner_validator"]
 
 [build-system]
 requires = ["poetry-core"]

@@ -695,13 +695,14 @@ class BiolinkValidator(ValidationReporter):
                 identifier=identifier,
                 edge_id=edge_id
             )
-        elif not self.bmt.get_infores_details(identifier):
-            # if this method returns 'None' then this is an unregistered infores?
-            self.report(
-                code=f"{code_prefix}.unknown",
-                identifier=identifier,
-                edge_id=edge_id
-            )
+        # TODO: replace with another function to validate the infores in registered?
+        # elif not self.bmt.get_infores_details(identifier):
+        #     # if this method returns 'None' then this is an unregistered infores?
+        #     self.report(
+        #         code=f"{code_prefix}.unknown",
+        #         identifier=identifier,
+        #         edge_id=edge_id
+        #     )
 
     def validate_sources(self, edge_id: str, edge: Dict):
         """
@@ -1063,7 +1064,7 @@ class BiolinkValidator(ValidationReporter):
         """
         Validate a TRAPI-schema compliant Message graph-like data structure
         against the currently active Biolink Model Toolkit model version.
-    
+
         :param graph: knowledge graph to be validated
         :type graph: Dict
         """

@@ -10,6 +10,6 @@ COPY ./docs ./docs
 COPY ./README.md ./README.md
 COPY ./CHANGELOG.md ./CHANGELOG.md
 COPY api ./api
-RUN python -m poetry install
+RUN python -m poetry install -E web
 EXPOSE 80
 CMD ["poetry", "run", "uvicorn", "api.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]
