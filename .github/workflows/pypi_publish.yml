@@ -5,8 +5,13 @@ on:
     types: [created]
 
 jobs:
+
+  test:
+    uses: NCATSTranslator/reasoner-validator/.github/workflows/test.yml@master
+
   build-n-publish:
     name: Build and publish Python 🐍 distributions 📦 to PyPI
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +30,7 @@ jobs:
       - name: Build source and wheel archives
         run: |
           poetry build
-          
+
       - name: Publish distribution 📦 to Test PyPI
         uses: pypa/gh-action-pypi-publish@v1.5.0
         with:
@@ -33,7 +38,7 @@ jobs:
           repository_url: https://test.pypi.org/legacy/
           skip_existing: true
           verbose: true
-          
+
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@v1.5.0
         with:

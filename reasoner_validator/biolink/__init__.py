@@ -1065,7 +1065,7 @@ class BiolinkValidator(ValidationReporter):
         """
         Validate a TRAPI-schema compliant Message graph-like data structure
         against the currently active Biolink Model Toolkit model version.
-    
+
         :param graph: knowledge graph to be validated
         :type graph: Dict
         """

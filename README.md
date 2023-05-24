@@ -1,7 +1,9 @@
 # Reasoner Validator
 
 [![Pyversions](https://img.shields.io/pypi/pyversions/reasoner-validator)](https://pypi.python.org/pypi/reasoner-validator)
-[![pypi](https://github.com/NCATSTranslator/reasoner-validator/workflows/pypi/badge.svg)](https://pypi.org/project/reasoner-validator/)
+[![Publish Python Package](https://github.com/NCATSTranslator/reasoner-validator/actions/workflows/pypi_publish.yml/badge.svg)](https://pypi.org/project/reasoner-validator/)
+[![Sphinx Documentation](https://github.com/NCATSTranslator/reasoner-validator/actions/workflows/doc_pages.yml/badge.svg)](https://github.com/NCATSTranslator/reasoner-validator/actions/workflows/doc_pages.yml)
+[![Run tests](https://github.com/NCATSTranslator/reasoner-validator/actions/workflows/test.yml/badge.svg)](https://github.com/NCATSTranslator/reasoner-validator/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 This package provides software methods to Translator components (e.g. Knowledge Providers and Autonomous Relay Agents) using *any version* of the
@@ -23,6 +25,12 @@ The module may be installed directly from pypi.org using (Python 3) `pip` or `pi
 pip install reasoner-validator
 ```
 
+If you want to install it with the extra dependencies for using it as a web service, you can use:
+
+```bash
+pip install "reasoner-validator[web]"
+```
+
 ## Installing and working with the module locally from source
 
 As of release 3.1.6, this project uses the [poetry dependency management](https://python-poetry.org) tool to orchestrate its installation and dependencies.
@@ -33,6 +41,12 @@ After [installing poetry](https://python-poetry.org/docs/#installation) and clon
 git clone https://github.com/NCATSTranslator/reasoner-validator.git
 cd reasoner-validator
 poetry install
+```
+
+You can also install for development with all extras dependencies using:
+
+```bash
+poetry install --all-extras
 ```
 
 ## Running Validation against an ARS UUID Result(*)
@@ -46,6 +60,32 @@ For usage, type:
 ```
 
 (*) Thank you Eric Deutsch for the prototype of this script
+
+## Running tests
+
+To run the test locally install with the `dev` dependencies group if not already done:
+
+```bash
+poetry install --extras dev
+```
+
+Run the tests with coverage report:
+
+```bash
+poetry run pytest --cov
+```
+
+Run the tests with detailed coverage report in a HTML page:
+
+```bash
+poetry run pytest --cov --cov-report html
+```
+
+Serve the report on http://localhost:3000:
+
+```bash
+python -m http.server 3000 --directory ./htmlcov
+```
 
 ## Building the Documentation Locally
 
@@ -104,6 +144,12 @@ The request body consists of JSON data structure with two top level tag:
 - A **mandatory** `message` tag should have as its value the complete JSON TRAPI **Response** to be validated (See the example below)
 
 ### Running the Web Service Directly
+
+First install the web-specific dependencies.
+
+```bash
+poetry install --extras web
+```
 
 The service may be run directly as a Python module. The web services module may be directly run, as follows. 
 
