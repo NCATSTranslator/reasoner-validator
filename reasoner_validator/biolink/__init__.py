@@ -695,13 +695,15 @@ class BiolinkValidator(ValidationReporter):
                 identifier=identifier,
                 edge_id=edge_id
             )
-        elif not self.bmt.get_infores_details(identifier):
-            # if this method returns 'None' then this is an unregistered infores?
-            self.report(
-                code=f"{code_prefix}.unknown",
-                identifier=identifier,
-                edge_id=edge_id
-            )
+        # TODO: infores is causing too much instability for now so support has been removed from BMT
+        # TODO: reimplement using YAML version of infores catalog
+        # elif not self.bmt.get_infores_details(identifier):
+        #     # if this method returns 'None' then this is an unregistered infores?
+        #     self.report(
+        #         code=f"{code_prefix}.unknown",
+        #         identifier=identifier,
+        #         edge_id=edge_id
+        #     )
 
     def validate_sources(self, edge_id: str, edge: Dict):
         """
