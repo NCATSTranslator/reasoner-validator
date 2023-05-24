@@ -162,6 +162,7 @@ class TRAPISchemaValidator(ValidationReporter):
 
         """
         schema = load_schema(self.trapi_version)[component]
+        print("instance", instance)
         jsonschema.validate(instance, schema)
 
     def is_valid_trapi_query(self, instance, component: str = "Query"):
