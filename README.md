@@ -43,7 +43,7 @@ cd reasoner-validator
 poetry install
 ```
 
-You can also install for development with all extras dependencies using:
+To develop this package, install with all extras dependencies using:
 
 ```bash
 poetry install --all-extras
@@ -51,7 +51,8 @@ poetry install --all-extras
 
 ## Running Validation against an ARS UUID Result(*)
 
-A local script **`ars_uuid_result_test_runner.py`** is available to run TRAPI Response validation against a UUID indexed query result of the Biomedical Knowledge Translator "Autonomous Relay System" (ARS).
+A local script **`ars_uuid_result_test_runner.py`** is available to run TRAPI Response validation against a 
+UUID indexed query result of the Biomedical Knowledge Translator "Autonomous Relay System" (ARS).
 
 For usage, type:
 

@@ -1552,11 +1552,11 @@ docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "rst.linker
 testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)"]
 
 [extras]
-dev = ["pytest"]
+dev = []
 docs = []
 web = []
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "1ea19130011136b2f4ec6fc58c389fcc38ae88c89ddd5a8ce93de37cf47a6800"
+content-hash = "66397531346f30c92ba76ddf63f1a1d1f172166472d454173290f5e6ac846fd0"
