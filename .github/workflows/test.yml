@@ -1,5 +1,5 @@
 name: Run tests
-# Run tests at each push to master
+# Run tests at each push to master, or through manual trigger for any branch
 on:
   workflow_call:
   workflow_dispatch:

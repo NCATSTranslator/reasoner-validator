@@ -8,7 +8,6 @@ jobs:
 
   test:
     uses: NCATSTranslator/reasoner-validator/.github/workflows/test.yml@master
-    secrets: inherit
 
   build-n-publish:
     name: Build and publish Python 🐍 distributions 📦 to PyPI

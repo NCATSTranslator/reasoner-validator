@@ -75,6 +75,18 @@ Run the tests with coverage report:
 poetry run pytest --cov
 ```
 
+Run the tests with detailed coverage report in a HTML page:
+
+```bash
+poetry run pytest --cov --cov-report html
+```
+
+Serve the report on http://localhost:3000:
+
+```bash
+python -m http.server 3000 --directory ./htmlcov
+```
+
 ## Building the Documentation Locally
 
 All paths here are relative to the root project directory.
