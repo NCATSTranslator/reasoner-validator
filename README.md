@@ -1,7 +1,9 @@
 # Reasoner Validator
 
 [![Pyversions](https://img.shields.io/pypi/pyversions/reasoner-validator)](https://pypi.python.org/pypi/reasoner-validator)
-[![pypi](https://github.com/NCATSTranslator/reasoner-validator/workflows/pypi/badge.svg)](https://pypi.org/project/reasoner-validator/)
+[![Publish Python Package](https://github.com/NCATSTranslator/reasoner-validator/actions/workflows/pypi_publish.yml/badge.svg)](https://pypi.org/project/reasoner-validator/)
+[![Sphinx Documentation](https://github.com/NCATSTranslator/reasoner-validator/actions/workflows/doc_pages.yml/badge.svg)](https://github.com/NCATSTranslator/reasoner-validator/actions/workflows/doc_pages.yml)
+[![Run tests](https://github.com/NCATSTranslator/reasoner-validator/actions/workflows/test.yml/badge.svg)](https://github.com/NCATSTranslator/reasoner-validator/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 This package provides software methods to Translator components (e.g. Knowledge Providers and Autonomous Relay Agents) using *any version* of the
@@ -44,7 +46,7 @@ poetry install
 You can also install for development with all extras dependencies using:
 
 ```bash
-poetry install --all-extras --with dev 
+poetry install --all-extras
 ```
 
 ## Running Validation against an ARS UUID Result(*)
@@ -64,7 +66,7 @@ For usage, type:
 To run the test locally install with the `dev` dependencies group if not already done:
 
 ```bash
-poetry install --with dev
+poetry install --extras dev
 ```
 
 Run the tests with coverage report:

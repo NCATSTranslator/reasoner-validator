@@ -32,8 +32,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        poetry install -E web
+        poetry install --all-extras
 
     - name: Test with pytest with coverage
       run: |
-        pytest --cov
+        poetry run pytest --cov

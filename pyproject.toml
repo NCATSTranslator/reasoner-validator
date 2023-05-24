@@ -49,25 +49,15 @@ pydantic = "^1.8.0"
 numpy = "^1.23.5"
 urllib3 = "^1.26.15"
 
-[tool.poetry.group.dev]
+[tool.poetry.group.optional]
 optional = true
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.optional.dependencies]
 pytest = "^7.3.0"
 pytest-cov = "^4.0.0"
-
-[tool.poetry.group.docs]
-optional = true
-
-[tool.poetry.group.docs.dependencies]
 numpydoc = "^1.5.0"
 sphinx = "^5.3.0"
 myst-parser = "^0.18.1"
-
-[tool.poetry.group.web]
-optional = true
-
-[tool.poetry.group.web.dependencies]
 fastapi = "^0.68"
 uvicorn = "^0.15"
 
@@ -78,6 +68,7 @@ uvicorn = "^0.15"
 [tool.poetry.extras]
 docs = ["numpydoc", "sphinx", "myst-parser"]
 web = ["fastapi", "uvicorn"]
+dev = ["pytest", "pytest-cov"]
 
 [tool.coverage.run]
 source = ["reasoner_validator"]
