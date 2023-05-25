@@ -36,7 +36,7 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install poetry
-        poetry install --all-extras
+        poetry install --with dev
 
     - name: Test with pytest with coverage
       run: |

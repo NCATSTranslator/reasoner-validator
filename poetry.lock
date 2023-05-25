@@ -206,7 +206,7 @@ files = [
 name = "coverage"
 version = "7.2.6"
 description = "Code coverage measurement for Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1021,7 +1021,7 @@ testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "no
 name = "pytest-cov"
 version = "4.0.0"
 description = "Pytest plugin for measuring coverage."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -1514,11 +1514,11 @@ docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "rst.linker
 testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)"]
 
 [extras]
-dev = ["pytest", "pytest-cov"]
+dev = []
 docs = []
 web = []
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "ce5ce580e43b5dbc6121573b54e78f8b19d94b87d0c5f20dd259d560e39aa339"
+content-hash = "6704ceac8fb2fbd64b2fdbb9a787e3a75ceb0ec61494a051e7172b2f2ab107b8"
