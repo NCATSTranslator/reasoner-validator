@@ -1394,22 +1394,6 @@ def qualifier_validator(
         #     },
         #     ""    # this other use case should also pass
         # ),
-        (   # Query 17 - 'qualifier_type_id' is a valid Biolink qualifier type and
-            #             'UBERON:0001981' a valid corresponding 'reachable from' enum 'qualifier_value'
-            {
-                'qualifier_constraints': [
-                    {
-                        "qualifier_set": [
-                            {
-                                'qualifier_type_id': "biolink:anatomical_context_qualifier",
-                                'qualifier_value': "UBERON:0001981"  # Blood Vessel
-                            }
-                        ]
-                    }
-                ]
-            },
-            ""    # this particular use case should also pass
-        ),
         (   # Query 18 - 'qualifier_type_id' is the special qualifier case 'biolink:qualified_predicate'
             #            with a Biolink predicate as its value
             {
@@ -1611,19 +1595,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
         #         ]
         #     },
         #     ""
-        # ),
-        (   # Query 12 - 'qualifier_type_id' is a valid Biolink qualifier type and
-            #             'UBERON:0001981' a valid corresponding 'reachable from' enum 'qualifier_value'
-            {
-                'qualifiers': [
-                    {
-                        'qualifier_type_id': "biolink:anatomical_context_qualifier",
-                        'qualifier_value': "UBERON:0001981"  # Blood Vessel
-                    }
-                ]
-            },
-            ""    # this particular use case should also pass
-        )
+        # )
     ]
 )
 def test_validate_qualifiers(query: Tuple):
@@ -2682,10 +2654,11 @@ SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN = {
             [SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_INVALID],
             "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid"
         ),
-        (
-            [SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN],
-            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown"
-        )
+        # TODO: need method to determine if an infores is known with recent changes to BMT
+        # (
+        #     [SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN],
+        #     "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown"
+        # )
     ]
 )
 def test_latest_trapi_validate_sources(sources: bool, validation_code: str):

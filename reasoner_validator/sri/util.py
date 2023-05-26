@@ -8,12 +8,35 @@ from json import JSONDecodeError
 from typing import Dict, List, Optional
 
 import requests
-from kgx.prefix_manager import PrefixManager
 
 logger = logging.getLogger(__name__)
 
 # Endpoint for the Translator Normalizer service
 NODE_NORMALIZER_URL = 'https://nodenormalization-sri.renci.org/get_normalized_nodes'
+
+
+@lru_cache()
+def is_curie(s: str) -> bool:
+    """
+    Check if a given string is a CURIE.
+
+    Parameters
+    ----------
+    s: str
+        A string
+
+    Returns
+    -------
+    bool
+        Whether or not the given string is a CURIE
+
+    """
+    if isinstance(s, str):
+        m = re.match(r"^[^ <()>:]*:[^/ :]+$", s)
+        return bool(m)
+    else:
+        return False
+
 
 
 # TODO: not sure to what maxsize for LRU cache
@@ -34,7 +57,7 @@ def get_aliases(identifier: str):
 
     # We won't raise a RuntimeError for other various
     # erroneous runtime conditions but simply report warnings
-    if not PrefixManager.is_curie(identifier):
+    if not is_curie(identifier):
 
         logging.warning(f"get_aliases(): identifier '{identifier}' is not a CURIE thus cannot resolve its aliases?")
         return list()

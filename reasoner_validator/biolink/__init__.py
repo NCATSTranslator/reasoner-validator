@@ -695,7 +695,8 @@ class BiolinkValidator(ValidationReporter):
                 identifier=identifier,
                 edge_id=edge_id
             )
-        # TODO: replace with another function to validate the infores in registered?
+        # TODO: infores is causing too much instability for now so support has been removed from BMT
+        # TODO: reimplement using YAML version of infores catalog
         # elif not self.bmt.get_infores_details(identifier):
         #     # if this method returns 'None' then this is an unregistered infores?
         #     self.report(
@@ -1187,7 +1188,7 @@ def check_biolink_model_compliance_of_query_graph(
     return validator
 
 
-def check_biolink_model_compliance_of_knowledge_graph(
+def  check_biolink_model_compliance_of_knowledge_graph(
     graph: Dict,
     trapi_version: Optional[str] = None,
     biolink_version: Optional[str] = None,

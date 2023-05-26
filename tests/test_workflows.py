@@ -25,17 +25,21 @@ SAMPLE_QUERY_1 = {
                 "ascending_or_descending": "ascending"
             },
             "runner_parameters": {
-                "allowlist": [
-                    "infores:aragorn"
-                ]
+                "allowlist": {
+                    "allowlist": [
+                        "infores:aragorn"
+                    ]
+                }
             }
         },
         {
             "id": "lookup",
             "runner_parameters": {
-                "allowlist": [
-                    "infores:aragorn"
-                ]
+                "allowlist": {
+                    "allowlist": [
+                        "infores:aragorn"
+                    ]
+                }
             }
         }
     ]
