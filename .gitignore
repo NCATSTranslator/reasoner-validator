@@ -17,5 +17,3 @@ gh-pages/
 venv/
 ubuntu/
 py*/
-
-poetry.lock
