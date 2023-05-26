@@ -1188,7 +1188,7 @@ def check_biolink_model_compliance_of_query_graph(
     return validator
 
 
-def check_biolink_model_compliance_of_knowledge_graph(
+def  check_biolink_model_compliance_of_knowledge_graph(
     graph: Dict,
     trapi_version: Optional[str] = None,
     biolink_version: Optional[str] = None,

@@ -8,7 +8,7 @@ import pytest
 from jsonschema.exceptions import ValidationError
 
 from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema, load_schema
-
+from pprint import pprint
 PRE_1_4_0_TEST_VERSIONS = "1.2", "1.2.0", "1.3", "1.3.0"
 LATEST_TEST_VERSIONS = "1", "1.4", "1.4.0", "1.4.0-beta4"
 ALL_TEST_VERSIONS = PRE_1_4_0_TEST_VERSIONS + LATEST_TEST_VERSIONS
@@ -157,7 +157,7 @@ def test_nullable_query_level_properties(trapi_version):
             "query_graph": None,
             "results": None,
         },
-        "log_level": None,
+        "log_level": "INFO",
         "workflow": None
     }
     validator.validate(trapi_query, "Query")
@@ -169,11 +169,8 @@ def test_nullable_query_level_properties(trapi_version):
 
 SAMPLE_QUERY = {
         "message": {
-            "knowledge_graph": None,
-            "query_graph": None,
-            "results": None,
         },
-        "log_level": None
+        "log_level": "INFO"
     }
 
 
@@ -228,7 +225,7 @@ def test_query_trapi_pre_1_4_0_workflow_properties(trapi_version):
         validator.validate(faulty_query_wf, "Query")
 
 
-SAMPLE_WORKFLOW_1_3_2 = [
+SAMPLE_WORKFLOW_1_3_4 = [
     {
         "id": "sort_results_score",
         "parameters": {
@@ -238,9 +235,9 @@ SAMPLE_WORKFLOW_1_3_2 = [
     {
         "id": "lookup",
         "runner_parameters": {
-            "allowlist": [
-                "infores:aragorn"
-            ]
+            "allowlist": {
+                "allowlist": ["infores:aragorn"]
+            }
         }
     }
 ]
@@ -251,7 +248,7 @@ def test_query_latest_trapi_workflow_properties(trapi_version):
     """Test flawed TRAPI Query workflow properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     query = deepcopy(SAMPLE_QUERY)
-    query["workflow"] = SAMPLE_WORKFLOW_1_3_2
+    query["workflow"] = SAMPLE_WORKFLOW_1_3_4
     validator.validate(query, "Query")
     with pytest.raises(ValidationError):
         faulty_query_wf = deepcopy(query)
@@ -299,7 +296,7 @@ def test_nullable_async_query_level_properties(trapi_version):
             "query_graph": None,
             "results": None,
         },
-        "log_level": None,
+        "log_level": "INFO",
         "workflow": None
     }
     validator.validate(async_trapi_query, "AsyncQuery")

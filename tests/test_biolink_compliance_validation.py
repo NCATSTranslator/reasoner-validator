@@ -2654,10 +2654,11 @@ SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN = {
             [SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_INVALID],
             "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid"
         ),
-        (
-            [SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN],
-            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown"
-        )
+        # TODO: need method to determine if an infores is known with recent changes to BMT
+        # (
+        #     [SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN],
+        #     "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown"
+        # )
     ]
 )
 def test_latest_trapi_validate_sources(sources: bool, validation_code: str):
