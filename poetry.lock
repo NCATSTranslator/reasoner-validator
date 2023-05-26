@@ -330,14 +330,14 @@ packaging = "*"
 
 [[package]]
 name = "docutils"
-version = "0.19"
+version = "0.18.1"
 description = "Docutils -- Python Documentation Utilities"
 category = "main"
 optional = true
-python-versions = ">=3.7"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
-    {file = "docutils-0.19-py3-none-any.whl", hash = "sha256:5e1de4d849fee02c63b040a4a3fd567f4ab104defd8a5511fbbc24a8a017efbc"},
-    {file = "docutils-0.19.tar.gz", hash = "sha256:33995a6753c30b7f577febfc2c50411fec6aac7f7ffeb7c4cfe5991072dcf9e6"},
+    {file = "docutils-0.18.1-py2.py3-none-any.whl", hash = "sha256:23010f129180089fbcd3bc08cfefccb3b890b0050e1ca00c867036e9d161b98c"},
+    {file = "docutils-0.18.1.tar.gz", hash = "sha256:679987caf361a7539d76e584cbeddc311e3aee937877c87346f31debc63e9d06"},
 ]
 
 [[package]]
@@ -1231,6 +1231,26 @@ lint = ["docutils-stubs", "flake8 (>=3.5.0)", "flake8-bugbear", "flake8-comprehe
 test = ["cython", "html5lib", "pytest (>=4.6)", "typed_ast"]
 
 [[package]]
+name = "sphinx-rtd-theme"
+version = "1.2.1"
+description = "Read the Docs theme for Sphinx"
+category = "main"
+optional = true
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7"
+files = [
+    {file = "sphinx_rtd_theme-1.2.1-py2.py3-none-any.whl", hash = "sha256:2cc9351176cbf91944ce44cefd4fab6c3b76ac53aa9e15d6db45a3229ad7f866"},
+    {file = "sphinx_rtd_theme-1.2.1.tar.gz", hash = "sha256:cf9a7dc0352cf179c538891cb28d6fad6391117d4e21c891776ab41dd6c8ff70"},
+]
+
+[package.dependencies]
+docutils = "<0.19"
+sphinx = ">=1.6,<7"
+sphinxcontrib-jquery = {version = ">=2.0.0,<3.0.0 || >3.0.0", markers = "python_version > \"3\""}
+
+[package.extras]
+dev = ["bump2version", "sphinxcontrib-httpdomain", "transifex-client", "wheel"]
+
+[[package]]
 name = "sphinxcontrib-applehelp"
 version = "1.0.4"
 description = "sphinxcontrib-applehelp is a Sphinx extension which outputs Apple help books"
@@ -1277,6 +1297,21 @@ files = [
 [package.extras]
 lint = ["docutils-stubs", "flake8", "mypy"]
 test = ["html5lib", "pytest"]
+
+[[package]]
+name = "sphinxcontrib-jquery"
+version = "4.1"
+description = "Extension to include jQuery on newer Sphinx releases"
+category = "main"
+optional = true
+python-versions = ">=2.7"
+files = [
+    {file = "sphinxcontrib-jquery-4.1.tar.gz", hash = "sha256:1620739f04e36a2c779f1a131a2dfd49b2fd07351bf1968ced074365933abc7a"},
+    {file = "sphinxcontrib_jquery-4.1-py2.py3-none-any.whl", hash = "sha256:f936030d7d0147dd026a4f2b5a57343d233f1fc7b363f68b3d4f1cb0993878ae"},
+]
+
+[package.dependencies]
+Sphinx = ">=1.8"
 
 [[package]]
 name = "sphinxcontrib-jsmath"
@@ -1515,10 +1550,10 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 
 [extras]
 dev = ["pytest", "pytest-cov"]
-docs = ["myst-parser", "numpydoc", "sphinx"]
+docs = ["myst-parser", "numpydoc", "sphinx", "sphinx-rtd-theme"]
 web = ["fastapi", "uvicorn"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "f2422cd452841ce95f82420f83511ac4a1e9dd6b98652fb066522a2eb2cecd1f"
+content-hash = "70049215ca3673bc384ddb556395dbb5aaf2ab914ac40d6e2fc568f2548060a3"
