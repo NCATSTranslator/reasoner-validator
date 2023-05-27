@@ -2,8 +2,8 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
-## v3.4.22
-- BMT and related dependencies rehabilitated and simplified?
+## v3.5.0
+- BMT and related dependencies rehabilitated and simplified? Some BMT functionality removed along the way (hence Minor rather than patch release)
 
 ## v3.4.22
 - detect all forms of null TRAPI attributes (i.e. strings like "n/a", "none" and "null")
