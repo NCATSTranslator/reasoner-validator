@@ -8,7 +8,8 @@ authors = [
 ]
 maintainers = [
     "Richard Bruskiewich <richard.bruskiewich@delphinai.com>",
-    "Kenneth Morton <kenneth kenny@covar.com>"
+    "Kenneth Morton <kenneth kenny@covar.com>",
+    "Sierra Moxon <smoxon@lbl.gov>"
 ]
 license = "MIT"
 readme = "README.md"
