@@ -1,7 +1,7 @@
 """Test semantic version handling."""
 import pytest
 
-from reasoner_validator.versioning import semver_pattern, SemVer, SemVerError, SemVerUnderspecified
+from reasoner_validator.versioning import semver_pattern, SemVer, SemVerUnderspecified
 
 
 def test_regex_pattern():

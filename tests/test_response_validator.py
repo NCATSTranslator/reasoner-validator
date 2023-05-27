@@ -1,7 +1,7 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import Tuple,  Dict, Union
+from typing import Tuple,  Dict
 import logging
 import pytest
 
