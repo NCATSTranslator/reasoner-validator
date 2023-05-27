@@ -302,7 +302,7 @@ def test_messages():
     errors: List[str] = list()
     for code, parameters in messages['errors'].items():
         errors.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "ERROR - Trapi: Schema validation exception" in errors
+    assert "ERROR - Trapi: Schema validation error" in errors
     
     obj = reporter1.to_dict()
     assert obj["trapi_version"] == TEST_TRAPI_VERSION
