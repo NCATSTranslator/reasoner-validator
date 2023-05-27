@@ -162,7 +162,7 @@ class TRAPISchemaValidator(ValidationReporter):
 
         """
         schema = load_schema(self.trapi_version)[component]
-        print("instance", instance)
+        # print("instance", instance)
         jsonschema.validate(instance, schema)
 
     def is_valid_trapi_query(self, instance, component: str = "Query"):
@@ -189,7 +189,11 @@ class TRAPISchemaValidator(ValidationReporter):
                 component=component
             )
         except jsonschema.ValidationError as e:
-            self.report(code="error.trapi.validation", identifier=self.trapi_version, reason=e.message)
+            if len(e.message) <= 160:
+                reason = e.message
+            else:
+                reason = e.message[0:49] + " "*5 + "... " + " "*5 + e.message[-100:-1]
+            self.report(code="error.trapi.validation", identifier=self.trapi_version, component=component, reason=reason)
 
 
 def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPISchemaValidator:

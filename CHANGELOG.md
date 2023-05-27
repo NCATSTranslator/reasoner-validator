@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+
+## v3.5.1
+- error.trapi.validation 'reason' message text shortened by pruning to use only the start and end of the JSON Schema generated ValidationError message, to a maximum of 160 characters
+
+
 ## v3.5.0
 - BMT and related dependencies rehabilitated and simplified? Some BMT functionality removed along the way (hence Minor rather than patch release)
 

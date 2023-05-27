@@ -256,11 +256,12 @@ error:
     $description: "This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause!"
   trapi:
     validation:
-      $message: "Schema validation exception"
+      $message: "Schema validation error"
       $context:
         - identifier
+        - component
         - reason
-      $description: "TRAPI query attempt triggered an abnormal server exception as noted."
+      $description: "JSON Schema validation error reported for specified TRAPI query component."
     request:
       invalid:
         $message: "Test could not generate a valid TRAPI query request object using identified element"

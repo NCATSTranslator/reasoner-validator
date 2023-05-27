@@ -294,11 +294,11 @@
 
 ### error.trapi.validation
 
-**Message:** Schema validation exception
+**Message:** Schema validation error
 
-**Context:** identifier, reason
+**Context:** identifier, component, reason
 
-**Description:** TRAPI query attempt triggered an abnormal server exception as noted.
+**Description:** JSON Schema validation error reported for specified TRAPI query component.
 
 ### error.trapi.request.invalid
 
