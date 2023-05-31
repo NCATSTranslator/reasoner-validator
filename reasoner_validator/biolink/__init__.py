@@ -203,7 +203,8 @@ class BiolinkValidator(ValidationReporter):
                     context=self.graph_type.value, identifier=node_id
                 )
 
-            # TODO: Do we need to (or can we) validate here, any other Knowledge Graph node fields? Perhaps not yet?
+            # TODO: Do we need to (or can we) validate here, any other
+            #       Knowledge Graph node fields? Perhaps not yet?
 
         else:  # Query Graph node validation
 
@@ -212,10 +213,14 @@ class BiolinkValidator(ValidationReporter):
                 has_node_ids = True
                 node_ids = slots["ids"]
                 if not isinstance(node_ids, List):
+                    # because the validation below is destructive
+                    # to node_ids, we copy the original list
+                    node_ids = node_ids.copy()
+                else:
                     self.report(code="error.query_graph.node.ids.not_array", identifier=node_id)
                     # we'll pretend that the ids were mistakenly
                     # just a scalar string, then continue validating
-                    node_ids = [node_ids]
+                    node_ids = [str(node_ids)]
             else:
                 has_node_ids = False
                 node_ids = list()  # a null "ids" value is permitted in QNodes
