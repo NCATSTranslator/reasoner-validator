@@ -212,7 +212,7 @@ class BiolinkValidator(ValidationReporter):
             if "ids" in slots and slots["ids"]:
                 has_node_ids = True
                 node_ids = slots["ids"]
-                if not isinstance(node_ids, List):
+                if isinstance(node_ids, List):
                     # because the validation below is destructive
                     # to node_ids, we copy the original list
                     node_ids = node_ids.copy()
