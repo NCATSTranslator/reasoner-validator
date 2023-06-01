@@ -46,6 +46,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="reasoner_validator.html">TRAPI Response Validation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">TRAPI Schema Validation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.trapi.TRAPIAccessError"><code class="docutils literal notranslate"><span class="pre">TRAPIAccessError</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.is_valid_trapi_query"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.is_valid_trapi_query()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.messages"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.messages</span></code></a></li>
@@ -96,6 +97,12 @@
   <section id="module-reasoner_validator.trapi">
 <span id="trapi-schema-validation"></span><h1>TRAPI Schema Validation<a class="headerlink" href="#module-reasoner_validator.trapi" title="Permalink to this heading"></a></h1>
 <p>TRAPI Validation Functions.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPIAccessError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.trapi.</span></span><span class="sig-name descname"><span class="pre">TRAPIAccessError</span></span><a class="headerlink" href="#reasoner_validator.trapi.TRAPIAccessError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPISchemaValidator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.trapi.</span></span><span class="sig-name descname"><span class="pre">TRAPISchemaValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trapi_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator" title="Permalink to this definition"></a></dt>
@@ -314,9 +321,16 @@ If the instance is invalid.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.load_schema">
 <span class="sig-prename descclassname"><span class="pre">reasoner_validator.trapi.</span></span><span class="sig-name descname"><span class="pre">load_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.trapi.load_schema" title="Permalink to this definition"></a></dt>
-<dd><p>Load schema from GitHub.
-:param target: release semver or git branch name containing the target TRAPI schema.
-:return: loaded TRAPI schema</p>
+<dd><p>Load schema from GitHub release or branch, or from a locally specified YAML schema file.
+:param target: release semver, schema file path (with ‘.yaml’ file extension)</p>
+<blockquote>
+<div><p>or a git branch name, all referencing a target TRAPI schema.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>loaded TRAPI schema</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
