@@ -349,6 +349,81 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 0: Sample small valid TRAPI Query Graph
             {
+                "edges": {
+                    "t_edge": {
+                        "attribute_constraints": [],
+                        "exclude": None,
+                        "knowledge_type": "inferred",
+                        "object": "on",
+                        "option_group_id": None,
+                        "predicates": [
+                            "biolink:treats"
+                        ],
+                        "qualifier_constraints": [],
+                        "subject": "sn"
+                    }
+                },
+                "nodes": {
+                    "on": {
+                        "categories": [
+                            "biolink:Disease"
+                        ],
+                        "constraints": [],
+                        "ids": [
+                            "MONDO:0015564"
+                        ],
+                        "is_set": False,
+                        "option_group_id": None
+                    },
+                    "sn": {
+                        "categories": [
+                            "biolink:ChemicalEntity"
+                        ],
+                        "constraints": [],
+                        "ids": None,
+                        "is_set": False,
+                        "option_group_id": None
+                    }
+                }
+            }
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 1: Simpler small valid TRAPI Query Graph
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            }
+        )
+    ]
+)
+def test_conservation_of_query_graph(query: Tuple):
+    """
+    This test checks for internal glitch where the query graph is somehow deleted
+    """
+    original_graph: Dict = deepcopy(query[1])
+    check_biolink_model_compliance_of_query_graph(graph=query[1], biolink_version=query[0])
+    assert query[1] == original_graph
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 0: Sample small valid TRAPI Query Graph
+            {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
                     "drug": {
