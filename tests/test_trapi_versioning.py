@@ -20,7 +20,7 @@ def test_unknown_semver_spec_trapi_version():
 
 
 def test_schema_spec_trapi_version():
-    trapi_version = get_latest_version("./sample_trapi_schema.yaml")
+    trapi_version = get_latest_version("./test_data/sample_trapi_schema.yaml")
     assert trapi_version is not None
     assert trapi_version.endswith(".yaml")
 
@@ -40,7 +40,7 @@ def test_load_schema_with_branch_name_as_trapi_version():
 
 
 def test_load_schema_with_schema_trapi_version():
-    trapi_version: str = get_latest_version("./sample_trapi_schema.yaml")
+    trapi_version: str = get_latest_version("./test_data/sample_trapi_schema.yaml")
     assert trapi_version is not None
     schema: Dict = load_schema(trapi_version)
     assert schema
