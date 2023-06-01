@@ -1,5 +1,6 @@
 """TRAPI Validation Functions."""
-from typing import Optional
+from typing import Optional, Dict
+from os.path import isfile
 import copy
 from functools import lru_cache
 
@@ -23,13 +24,34 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class TRAPIAccessError(RuntimeError):
+    pass
+
+
 @lru_cache()
-def _load_schema(schema_version: str):
-    """Load schema from GitHub."""
-    result = requests.get(
-        f"https://raw.githubusercontent.com/{GIT_ORG}/{GIT_REPO}/{schema_version}/TranslatorReasonerAPI.yaml"
-    )
-    spec = load(result.text, Loader=Loader)
+def _load_schema(schema_version: str) -> Dict:
+    """
+    Load schema from GitHub version or directly from a local schema file.
+    :param schema_version: either a Github 'v' prefixed SemVer version of a
+           TRAPI schema or a file name (path) from which the TRAPI schema may be read in.
+    :return: Dict, schema components
+    """
+    spec: Dict
+    if schema_version.lower().endswith(".yaml"):
+        # treat as a candidate TRAPI schema file path or name (the latter, assumed local)
+        if not isfile(schema_version):
+            raise TRAPIAccessError(f"Candidate TRAPI schema file '{schema_version}' does not exist!")
+        with open(schema_version, "r") as schema_file:
+            spec = load(schema_file, Loader=Loader)
+        if spec is None:
+            raise TRAPIAccessError(f"Candidate TRAPI schema file '{schema_version}' could not be retrieved!")
+    else:
+        result = requests.get(
+            f"https://raw.githubusercontent.com/{GIT_ORG}/{GIT_REPO}/{schema_version}/TranslatorReasonerAPI.yaml"
+        )
+        schema_text: str = result.text
+        spec = load(schema_text, Loader=Loader)
+
     components = spec["components"]["schemas"]
     for component, schema in components.items():
         openapi_to_jsonschema(schema, version=schema_version)
@@ -45,17 +67,14 @@ def _load_schema(schema_version: str):
 
 def load_schema(target: str):
     """
-    Load schema from GitHub.
-    :param target: release semver or git branch name containing the target TRAPI schema.
+    Load schema from GitHub release or branch, or from a locally specified YAML schema file.
+    :param target: release semver, schema file path (with '.yaml' file extension)
+                    or a git branch name, all referencing a target TRAPI schema.
     :return: loaded TRAPI schema
     """
     mapped_release = get_latest_version(target)
     if mapped_release:
         schema_version = mapped_release
-    elif target in branches:
-        # cases in which a branch name is
-        # given instead of a release number
-        schema_version = target
     else:
         err_msg: str = f"No TRAPI version {target}"
         logger.error(err_msg)
