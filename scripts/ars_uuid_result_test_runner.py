@@ -37,8 +37,10 @@ def main():
     )
     arg_parser.add_argument(
         '--trapi_version', type=Optional[str], nargs='?', default=None,
-        help='TRAPI Version for validation (if omitted or None, defaults to the '
-             'current default version the package; ignored when "--json" flag is given)'
+        help='TRAPI Version for validation (if omitted or None, defaults to the ' +
+             'current default version the package; ignored when "--json" flag is given)' +
+             'Note that the version may be a SemVer release, a Git branch name (e.g. master) or even'
+             'a file path (with file extension .yaml) specifying or referencing the target TRAPI schema file.'
     )
     arg_parser.add_argument(
         '--title', type=Optional[str], nargs='?', default=None,

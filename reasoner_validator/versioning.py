@@ -2,7 +2,6 @@
 import re
 from typing import NamedTuple, Optional, List
 from os import environ
-from functools import lru_cache
 from re import sub
 import requests
 try:
@@ -219,12 +218,30 @@ _latest = dict()
 
 # Provide an accessor function for retrieving the latest version in string format
 def get_latest_version(release_tag: str) -> Optional[str]:
+    """
+    Return the latest TRAPI version corresponding to the release tag given.
+    Note that if the release tag looks like a YAML file, then it is assumed
+    to be a direct schema specification. If a Git branch name in the schema
+    repository, the branch name is also passed on.
+
+    :param release_tag: (possibly partial) SemVer string, Git branch name,
+                        or YAML schema file name identifying a release.
+    :return: 'best' latest release of SemVer specification or the YAML file directly returned.
+    """
     global _latest
-    # strip any prefix from the release tag to ensure that
-    # only the SemVer part is used for the latest version lookup
-    release = sub(r'^[^0-9]+', '', release_tag)
-    latest: SemVer = _latest.get(release, None)
-    return str(latest) if latest else None
+
+    if release_tag.lower().endswith(".yaml"):
+        return release_tag
+    elif release_tag in branches:
+        # cases in which a branch name is
+        # given instead of a release number
+        return release_tag
+    else:
+        # strip any prefix from the release tag to ensure that
+        # only the SemVer part is used for the latest version lookup
+        release = sub(r'^[^0-9]+', '', release_tag)
+        latest: SemVer = _latest.get(release, None)
+        return str(latest) if latest else None
 
 
 def _set_preferred_version(release_tag: str, target_release: SemVer):

@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.5.4
+- Use of a local file path to a TRAPI schema implemented, with code validation using unit tests
+
+## v3.5.3
+- fixed query graph validation that was deleting node identifiers in the input query graphs
 
 ## v3.5.2 - patched unit test in v3.5.1
 - error.trapi.validation 'reason' message text shortened by pruning to use only the start and end of the JSON Schema generated ValidationError message, to a maximum of 160 characters
