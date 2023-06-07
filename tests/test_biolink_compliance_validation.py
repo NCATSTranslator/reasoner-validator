@@ -32,6 +32,9 @@ pp = PrettyPrinter(indent=4)
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
 LATEST_BIOLINK_MODEL_VERSION = "3.2.0"
 
+# special case of signalling suppression of validation
+SUPPRESS_BIOLINK_MODEL_VALIDATION = "suppress"
+
 
 def test_set_default_biolink_versioned_global_environment():
     validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
@@ -849,6 +852,51 @@ def test_conservation_of_query_graph(query: Tuple):
             },
             # f"{QUERY_GRAPH_PREFIX}: INFO - Predicate element 'biolink:increases_amount_or_activity_of' is a mixin."
             "info.query_graph.edge.predicate.mixin"
+        ),
+        (
+            SUPPRESS_BIOLINK_MODEL_VALIDATION,
+            # Query 24: ... but if present, predicates must be valid
+            #           for the specified Biolink Model version, but...
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:has_unit"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            # ...since Biolink Model validation is tagged as 'suppress',
+            # we  don't expect any validation output here?
+            ""
+        ),
+        (
+            SUPPRESS_BIOLINK_MODEL_VALIDATION,
+            # Query 25: Query edge predicate is a mixin...but...
+            {
+                "nodes": {
+                    "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:increases_amount_or_activity_of"],
+                        "object": "IRS1"
+                    }
+                }
+            },
+            # ...since Biolink Model validation is tagged as 'suppress',
+            # we  don't expect any validation output here?
+            ""
         )
     ]
 )
@@ -1231,7 +1279,8 @@ def qualifier_validator(
         tested_method,
         edge_model: str,
         query: Tuple[Dict, str],
-        trapi_version: Optional[str] = None
+        trapi_version: Optional[str] = None,
+        biolink_version: Optional[str] = LATEST_BIOLINK_MODEL_VERSION
 ):
     # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     # Sanity check: does TRAPI validation catch this first?
@@ -1261,7 +1310,7 @@ def qualifier_validator(
         validator = BiolinkValidator(
             graph_type=TRAPIGraphType.Query_Graph,
             trapi_version=trapi_version,
-            biolink_version=LATEST_BIOLINK_MODEL_VERSION
+            biolink_version=biolink_version
         )
         tested_method(
             validator,
@@ -1510,6 +1559,56 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
         edge_model="QEdge",
         query=query
     )
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (   # Query 0 - 'qualifier_type_id' is the special qualifier case 'biolink:qualified_predicate'
+            #            an incorrect value, which is not a Biolink predicate,  but...
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:qualified_predicate",
+                                'qualifier_value': "biolink:Association"
+                            }
+                        ]
+                    }
+                ]
+            },
+            # ...since Biolink Model validation is tagged as 'suppress',
+            #    then we don't expect any validation output here?
+            ""
+        ),
+        (  # Query 14 - 'qualifier_type_id' property value is not a Biolink qualifier term, but...
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:related_to",
+                                'qualifier_value': "fake-qualifier-value"
+                            }
+                        ]
+                    }
+                ]
+            },
+            # ...since Biolink Model validation is tagged as 'suppress',
+            #    then we don't expect any validation output here?
+            ""
+        )
+    ]
+)
+def test_biolink_validation_suppressed_validate_qualifier_constraints(query: Tuple[Dict, str]):
+    qualifier_validator(
+        tested_method=BiolinkValidator.validate_qualifier_constraints,
+        edge_model="QEdge",
+        query=query,
+        biolink_version="suppress"
+    )
+
 
 
 QC_QS_NOT_A_CURIE = {
@@ -2607,6 +2706,78 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                 }
             },
             "error.knowledge_graph.node.category.unknown"
+        ),
+        (   # Query 27:  #'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
+            SUPPRESS_BIOLINK_MODEL_VALIDATION,
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:Gene"
+                       ]
+                    },
+                    "PUBCHEM.COMPOUND:597": {
+                        "name": "cytosine",
+                        "categories": [
+                            "biolink:SmallMolecule"
+                        ],
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:physically_interacts_with",
+                        "object": "PUBCHEM.COMPOUND:597",
+                        "attributes": [{"attribute_type_id": "foo:bar", "value": "some value"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
+                    }
+                }
+            },
+            # ...since Biolink Model validation is tagged as 'suppress',
+            # we  don't expect any validation output here?
+            ""
+        ),
+        (
+            SUPPRESS_BIOLINK_MODEL_VALIDATION,
+            # Query 28: 'attribute_type_id' is not a 'biolink:association_slot'
+            #           (biolink:synonym is a node property) but...
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:Gene"
+                       ]
+                    },
+                    "PUBCHEM.COMPOUND:597": {
+                        "name": "cytosine",
+                        "categories": [
+                            "biolink:SmallMolecule"
+                        ],
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:physically_interacts_with",
+                        "object": "PUBCHEM.COMPOUND:597",
+                        "attributes": [{"attribute_type_id": "biolink:synonym", "value": "some synonym"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
+                    }
+                }
+            },
+            # ...since Biolink Model validation is tagged as 'suppress',
+            # we  don't expect any validation output here?
+            ""
         )
     ]
 )
@@ -2651,6 +2822,17 @@ def test_pre_trapi_1_4_0_validate_attributes():
         biolink_version=LATEST_BIOLINK_MODEL_VERSION
     )
     check_messages(validator, "error.knowledge_graph.edge.attribute.missing")
+
+
+def test_suppress_biolink_validation_pre_trapi_1_4_0_validate_attributes():
+    # message edges must have at least some 'provenance' attributes
+    edge_without_attributes = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
+    validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
+        graph=edge_without_attributes,
+        trapi_version="1.3.0",
+        biolink_version=SUPPRESS_BIOLINK_MODEL_VALIDATION
+    )
+    check_messages(validator, "")
 
 
 SAMPLE_RETRIEVAL_SOURCE = {

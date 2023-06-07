@@ -150,6 +150,16 @@ class ValidationReporter:
         """
         return self.biolink_version
 
+    def validate_biolink(self) -> bool:
+        """
+        Predicate to check if the Biolink (version) is
+        tagged to 'suppress" compliance validation.
+
+        :return: returns 'True' if Biolink Validation is expected.
+        :rtype bool
+        """
+        return self.biolink_version is None or self.biolink_version.lower() != "suppress"
+
     def is_strict_validation(self) -> bool:
         """
         :return: bool, value of validation strictness set in the ValidationReporter.

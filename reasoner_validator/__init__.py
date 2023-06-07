@@ -233,18 +233,20 @@ class TRAPIResponseValidator(ValidationReporter):
                 if trapi_validator.has_messages():
                     self.merge(trapi_validator)
 
-                # Validate the Biolink Model compliance of the Query Graph
-                biolink_validator = check_biolink_model_compliance_of_query_graph(
-                    graph=query_graph,
-                    biolink_version=self.biolink_version,
-                    # the ValidationReporter calling this function *might*
-                    # have an explicit strict_validation override (if not None)
-                    strict_validation=self.strict_validation
-                )
-                if biolink_validator.has_messages():
-                    self.merge(biolink_validator)
-                    # 'info' and 'warning' messages do
-                    # not fully invalidate the query_graph
+                if self.validate_biolink():
+                    # Conduct validation of Biolink Model compliance
+                    # of the Query Graph, if not suppressed...
+                    biolink_validator = check_biolink_model_compliance_of_query_graph(
+                        graph=query_graph,
+                        biolink_version=self.biolink_version,
+                        # the ValidationReporter calling this function *might*
+                        # have an explicit strict_validation override (if not None)
+                        strict_validation=self.strict_validation
+                    )
+                    if biolink_validator.has_messages():
+                        self.merge(biolink_validator)
+                        # 'info' and 'warning' messages do
+                        # not fully invalidate the query_graph
 
         # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
         return False if self.has_errors() else True
@@ -299,20 +301,21 @@ class TRAPIResponseValidator(ValidationReporter):
                 if trapi_validator.has_messages():
                     self.merge(trapi_validator)
 
-                # Verify that the sample of the knowledge graph is
-                # compliant to the currently applicable Biolink Model release
-                biolink_validator: BiolinkValidator = \
-                    check_biolink_model_compliance_of_knowledge_graph(
-                        graph=kg_sample,
-                        trapi_version=self.trapi_version,
-                        biolink_version=self.biolink_version,
-                        sources=self.sources,
-                        # the ValidationReporter calling this function *might*
-                        # have an explicit strict_validation override (if not None)
-                        strict_validation=self.strict_validation
-                    )
-                if biolink_validator.has_messages():
-                    self.merge(biolink_validator)
+                if self.validate_biolink():
+                    # Conduct validation of Biolink Model compliance of the
+                    # Knowledge Graph, if Biolink validation not suppressed...
+                    biolink_validator: BiolinkValidator = \
+                        check_biolink_model_compliance_of_knowledge_graph(
+                            graph=kg_sample,
+                            trapi_version=self.trapi_version,
+                            biolink_version=self.biolink_version,
+                            sources=self.sources,
+                            # the ValidationReporter calling this function *might*
+                            # have an explicit strict_validation override (if not None)
+                            strict_validation=self.strict_validation
+                        )
+                    if biolink_validator.has_messages():
+                        self.merge(biolink_validator)
 
         # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
         return False if self.has_errors() else True
