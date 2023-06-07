@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.5.5
+- Added option to specify 'suppress' as a Biolink Model version string, which triggers suppression of Biolink Model-specific validation of TRAPI JSON messages
+
 ## v3.5.4
 - Use of a local file path to a TRAPI schema implemented, with code validation using unit tests
 
