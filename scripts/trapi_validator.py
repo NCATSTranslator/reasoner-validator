@@ -43,7 +43,7 @@ ARS_HOSTS = [
 def get_cli_arguments():
 
     # Parse command line options
-    arg_parser = argparse.ArgumentParser(description='CLI validation of ARS UUID indexed TRAPI Responses.')
+    arg_parser = argparse.ArgumentParser(description='TRAPI/Biolink validation of TRAPI Request/Responses.')
     arg_parser.add_argument(
         '-v', '--verbose', action='store_true',
         help='If given, show detailed information about ongoing processing, including validation results ' +
