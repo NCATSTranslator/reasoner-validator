@@ -32,6 +32,9 @@ Checkout then setup dependencies and the standard virtual environment using poet
     git checkout https://github.com/NCATSTranslator/reasoner-validator.git
     cd reasoner-validator
     poetry install
+    poetry shell
+
+These operations install the software and creates a virtual operation for running the software in a simple fashion.
 
 You can optionally, `use a tool like pyenv to set your local shell Python version to a 3.9 release <https://python-poetry.org/docs/managing-environments/>`_  prior to the poetry installation.
 
@@ -203,6 +206,23 @@ Python API
 Refer to the `reasoner_validator package unit tests <https://github
 .com/NCATSTranslator/reasoner-validator/blob/master/tests>`_ for additional guidance on how to use the Python API.
 
+
+Running Validation against an ARS UUID Result(*) or using a Local TRAPI Request Query
+=====================================================================================
+
+A local script trapi_validator.py is available to run TRAPI Response validation against either a PK (UUID)
+indexed query result of the Biomedical Knowledge Translator "Autonomous Relay System" (ARS), a local JSON Response
+text file or a locally triggered _ad hoc_ query Request against an directly specified TRAPI endpoint.
+
+Note that it is best run within a **`poetry shell`** created by **`poetry install`**.
+
+For script usage, type:
+
+.. code-block:: bash
+
+    ./trapi_validator.py --help
+
+
 Validation Run as a Web Service
 ===============================
 
@@ -260,6 +280,7 @@ The service may be run directly as a Python module after certain dependencies ar
 .. code-block:: bash
 
     poetry install
+    poetry shell
 
 The module may afterwards be run, as follows:
 

@@ -63,8 +63,6 @@ For script usage, type:
 ./trapi_validator.py --help
 ```
 
-The script allows
-
 (*) Thank you Eric Deutsch for the prototype code for this script
 
 ## Running tests
@@ -81,10 +79,25 @@ Run the tests with coverage report:
 poetry run pytest --cov
 ```
 
+Note that [poetry automatically uses any existing virtual environment](https://python-poetry.org/docs/basic-usage/#using-your-virtual-environment), but you can otherwise also enter the one that is created by poetry by default:
+
+```shell
+poetry shell
+# run your commands, e.g. the web service module
+exit  # exit the poetry shell
+```
+
+The use of the Poetry shell command allows for running of the tests without the `poetry run` prefix. We will continue in this manner.
+
+```bash
+% poetry shell
+(reasoner-validator-py3.9) % pytest --cov
+```
+
 Run the tests with detailed coverage report in a HTML page:
 
 ```bash
-poetry run pytest --cov --cov-report html
+pytest --cov --cov-report html
 ```
 
 Serve the report on http://localhost:3000:
@@ -161,14 +174,6 @@ The service may be run directly as a Python module. The web services module may 
 
 ```shell
 python -m api.main
-```
-
-Note that [poetry automatically uses any existing virtual environment](https://python-poetry.org/docs/basic-usage/#using-your-virtual-environment), but you can otherwise also enter the one that is created by poetry by default:
-
-```shell
-poetry shell
-# run your commands, e.g. the web service module
-exit  # exit the poetry shell
 ```
 
 Go to  http://localhost/docs to see the service documentation and to use the simple UI to input TRAPI messages for validation.
