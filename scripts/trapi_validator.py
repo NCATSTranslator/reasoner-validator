@@ -128,8 +128,8 @@ async def direct_trapi_request(
                 trapi_request = json.load(infile)
         except IOError as e:
             print(e, file=stderr)
-        except JSONDecodeError as jde:
-            print(f"TRAPI Request JSON file loading reported an error: {jde}", file=stderr)
+        except (JSONDecodeError, TypeError) as e:
+            print(f"TRAPI Request JSON file loading reported an error: {e}", file=stderr)
             trapi_request = None
 
         if trapi_request is not None:
@@ -192,8 +192,8 @@ def retrieve_ars_result(query_key: str, verbose: bool) -> Optional[Dict]:
     # Unpack the response content into a dict
     try:
         response_dict = response_content.json()
-    except JSONDecodeError:
-        print("Cannot decode ARS UUID "+query_key+" to a Translator Response")
+    except Exception as e:
+        print(f"Cannot decode ARS PK '{query_key}' to a Translator Response, exception: {e}")
         return
 
     if 'fields' in response_dict:
