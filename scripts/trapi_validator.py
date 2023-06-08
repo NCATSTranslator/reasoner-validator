@@ -69,7 +69,8 @@ def get_cli_arguments():
     )
     arg_parser.add_argument(
         '-e', '--endpoint', type=str, nargs='?', default=None,
-        help='Target TRAPI service endpoint to be directly used for query. Overrides the --response_id CLI argument.'
+        help="Target TRAPI service endpoint to be directly used for query. Note: the endpoint is the root URL, " +
+             "without any path (like /query). This argument overrides the --response_id CLI argument."
     )
     arg_parser.add_argument(
         '-l', '--local_request', type=str, nargs='?', default=None,
