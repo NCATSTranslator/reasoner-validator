@@ -135,8 +135,10 @@ async def direct_trapi_request(
 
         if trapi_request is not None:
             validator.merge(check_trapi_validity(trapi_request, trapi_version=validator.get_trapi_version()))
-            if validator.has_messages():
-                print(f"Request JSON is not compliant with TRAPI release {trapi_request}?")
+            if validator.has_errors():
+                print(
+                    f"Request JSON is not strictly compliant with TRAPI release " +
+                    f"{trapi_request}? TRAPI query will not be attempted!")
             else:
                 # Submit the candidate JSON file to the endpoint
                 if verbose:
