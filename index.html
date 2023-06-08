@@ -100,8 +100,10 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>https://github.com/NCATSTranslator/reasoner-validator.git
 <span class="nb">cd</span><span class="w"> </span>reasoner-validator
 poetry<span class="w"> </span>install
+poetry<span class="w"> </span>shell
 </pre></div>
 </div>
+<p>These operations install the software and creates a virtual operation for running the software in a simple fashion.</p>
 <p>You can optionally, <a class="reference external" href="https://python-poetry.org/docs/managing-environments/">use a tool like pyenv to set your local shell Python version to a 3.9 release</a>  prior to the poetry installation.</p>
 </section>
 </section>
@@ -307,6 +309,17 @@ named fields in the Python string templates found in the <a class="reference ext
 <p>Refer to the <a class="reference external" href="https://github.com/NCATSTranslator/reasoner-validator/blob/master/tests">reasoner_validator package unit tests</a> for additional guidance on how to use the Python API.</p>
 </section>
 </section>
+<section id="running-validation-against-an-ars-uuid-result-or-using-a-local-trapi-request-query">
+<h1>Running Validation against an ARS UUID Result(*) or using a Local TRAPI Request Query<a class="headerlink" href="#running-validation-against-an-ars-uuid-result-or-using-a-local-trapi-request-query" title="Permalink to this heading"></a></h1>
+<p>A local script trapi_validator.py is available to run TRAPI Response validation against either a PK (UUID)
+indexed query result of the Biomedical Knowledge Translator “Autonomous Relay System” (ARS), a local JSON Response
+text file or a locally triggered _ad <a href="#id1"><span class="problematic" id="id2">hoc_</span></a> query Request against an directly specified TRAPI endpoint.</p>
+<p>Note that it is best run within a <strong>`poetry shell`</strong> created by <strong>`poetry install`</strong>.</p>
+<p>For script usage, type:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./trapi_validator.py<span class="w"> </span>--help
+</pre></div>
+</div>
+</section>
 <section id="validation-run-as-a-web-service">
 <h1>Validation Run as a Web Service<a class="headerlink" href="#validation-run-as-a-web-service" title="Permalink to this heading"></a></h1>
 <p>The Reasoner Validator is available wrapped as a simple web service.  The service may be run directly or as a Docker container.</p>
@@ -355,6 +368,7 @@ named fields in the Python string templates found in the <a class="reference ext
 <h2>Running the Web Service Directly<a class="headerlink" href="#running-the-web-service-directly" title="Permalink to this heading"></a></h2>
 <p>The service may be run directly as a Python module after certain dependencies are installed using poetry, as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install
+poetry<span class="w"> </span>shell
 </pre></div>
 </div>
 <p>The module may afterwards be run, as follows:</p>
@@ -531,7 +545,7 @@ named fields in the Python string templates found in the <a class="reference ext
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Richard Bruskiewich;  2020-21, Patrick Wang.</p>
+    <p>&#169; Copyright 2022-23, Richard Bruskiewich;  2020-21, Patrick Wang.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
