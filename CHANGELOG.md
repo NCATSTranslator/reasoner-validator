@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.5.6
+- **ars_uuid_result_test_runner.py**  renamed to **trapi_response_validator.py** and generalized to accept a local endpoint and TRAPI Request JSON query whose response is then validated.
+
 ## v3.5.5
 - Added option to specify 'suppress' as a Biolink Model version string, which triggers suppression of Biolink Model-specific validation of TRAPI JSON messages
 

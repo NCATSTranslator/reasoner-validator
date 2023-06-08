@@ -83,6 +83,47 @@ def load_schema(target: str):
     return _load_schema(schema_version)
 
 
+async def call_trapi(url: str, trapi_message):
+    """
+    Given an url and a TRAPI message, post the message
+    to the url and return the status and json response.
+
+    :param url:
+    :param trapi_message:
+    :return:
+    """
+    query_url = f'{url}/query'
+
+    # print(f"\ncall_trapi({query_url}):\n\t{dumps(trapi_message, sort_keys=False, indent=4)}", file=stderr, flush=True)
+
+    try:
+        response = requests.post(query_url, json=trapi_message, timeout=DEFAULT_TRAPI_POST_TIMEOUT)
+    except requests.Timeout:
+        # fake response object
+        logger.error(
+            f"call_trapi(\n\turl: '{url}',\n\ttrapi_message: '{_output(trapi_message)}') - Request POST TimeOut?"
+        )
+        response = requests.Response()
+        response.status_code = 408
+    except requests.RequestException as re:
+        # perhaps another unexpected Request failure?
+        logger.error(
+            f"call_trapi(\n\turl: '{url}',\n\ttrapi_message: '{_output(trapi_message)}') - "
+            f"Request POST exception: {str(re)}"
+        )
+        response = requests.Response()
+        response.status_code = 408
+
+    response_json = None
+    if response.status_code == 200:
+        try:
+            response_json = response.json()
+        except Exception as exc:
+            logger.error(f"call_trapi({query_url}) JSON access error: {str(exc)}")
+
+    return {'status_code': response.status_code, 'response_json': response_json}
+
+
 def fix_nullable(schema) -> None:
     """Fix nullable schema."""
     if "oneOf" in schema:

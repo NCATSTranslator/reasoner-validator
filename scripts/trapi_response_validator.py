@@ -3,8 +3,11 @@
 # Thanks to Eric Deutsch (Expander Agent) for this
 # validator of ARS UUID specified TRAPI Responses
 ##################################################
-
+import asyncio
 from typing import Dict, List, Optional
+from sys import stderr
+from os.path import isfile
+from json import JSONDecodeError
 
 import requests
 from requests.exceptions import JSONDecodeError
@@ -12,7 +15,8 @@ import json
 import argparse
 
 from bmt import Toolkit
-from reasoner_validator import TRAPIResponseValidator
+from reasoner_validator import TRAPIResponseValidator, check_trapi_validity
+from reasoner_validator.trapi import call_trapi
 from reasoner_validator.versioning import get_latest_version
 from reasoner_validator.biolink import get_biolink_model_toolkit
 from reasoner_validator.report import ValidationReporter
@@ -91,8 +95,52 @@ def get_cli_arguments():
     return arg_parser.parse_args()
 
 
-def direct_trapi_request(endpoint: str, trapi_request, verbose: bool) -> Optional[Dict]:
-    return dict()
+# Global variable for TRAPI Response targeted for validation
+trapi_response: Optional[Dict] = None
+
+
+async def direct_trapi_request(
+        endpoint: str,
+        trapi_request_filepath: str,
+        validator: TRAPIResponseValidator,
+        verbose: bool
+):
+    global trapi_response
+
+    # Attempt loading of the candidate TRAPI Request JSON file
+    if verbose:
+        print(f"Loading TRAPI Request JSON file from '{trapi_request_filepath}'")
+
+    if isfile(trapi_request_filepath):
+        trapi_request: Optional[Dict] = None
+        try:
+            with open(trapi_request_filepath) as infile:
+                trapi_request = json.load(infile)
+        except IOError as e:
+            print(e, file=stderr)
+        except JSONDecodeError as jde:
+            print(f"TRAPI Request JSON file loading reported an error: {jde}", file=stderr)
+            trapi_request = None
+
+        if trapi_request is not None:
+            validator.merge(check_trapi_validity(trapi_request, trapi_version=validator.get_trapi_version()))
+            if validator.has_messages():
+                print(f"Request JSON is not compliant with TRAPI release {trapi_request}?")
+            else:
+                # Submit the candidate JSON file to the endpoint
+                if verbose:
+                    print(f"Submitting TRAPI Response file to endpoint '{endpoint}'")
+
+            # Make the TRAPI call to the Case targeted
+            # endpoint with specified TRAPI request
+            result = await call_trapi(endpoint, trapi_request)
+
+            # Was the web service (HTTP) call successful?
+            status_code: int = result['status_code']
+            if status_code != 200:
+                validator.report("error.trapi.response.unexpected_http_code", identifier=status_code)
+            else:
+                trapi_response = result['response_json']
 
 
 def retrieve_ars_result(query_key: str, verbose: bool) -> Optional[Dict]:
@@ -179,24 +227,9 @@ def validation_report(validator: TRAPIResponseValidator, args):
 
 def main():
 
+    global trapi_response
+
     args = get_cli_arguments()
-
-    # Query and print some rows from the reference tables
-    if args.endpoint:
-        if args.local_request:
-            trapi_response = direct_trapi_request(args.endpoint, args.request, args.verbose)
-        else:
-            print("Need to specific a --local_request JSON input text file (path) argument for your TRAPI endpoint!")
-            return
-    elif args.query_key:
-        trapi_response = retrieve_ars_result(args.query_key, args.verbose)
-    else:
-        print("Need to specify either an --endpoint/--local_request or a --query_key input argument to proceed!")
-        return
-
-    if not trapi_response:
-        print("Need to specify either an --endpoint/--local_request or a --query_key input argument to proceed!")
-        return
 
     # Explicitly resolve the TRAPI release to be used
     inferred_trapi_version: str = args.trapi_version \
@@ -218,9 +251,40 @@ def main():
         biolink_version=resolved_biolink_version
     )
 
-    # the heavy lifting ...
-    validator.check_compliance_of_trapi_response(trapi_response)
+    # Retrieve the TRAPI JSON Response result to be validated
+    if args.endpoint:
+        if args.local_request:
+            # The internal TRAPI call is a coroutine
+            # from which the results in a global variable
+            asyncio.run(
+                direct_trapi_request(
+                    endpoint=args.endpoint,
+                    trapi_request_filepath=args.local_request,
+                    validator=validator,
+                    verbose=args.verbose
+                )
+            )
+            if validator.has_messages():
+                # Report detected TRAPI Request JSON problems
+                validation_report(validator, args)
 
+        else:
+            print("Need to specific a --local_request JSON input text file (path) argument for your TRAPI endpoint!")
+
+    elif args.query_key:
+        trapi_response = retrieve_ars_result(query_key=args.query_key, verbose=args.verbose)
+
+    else:
+        print("Need to specify either an --endpoint/--local_request or a --query_key input argument to proceed!")
+
+    if not trapi_response:
+        print("TRAPI Response JSON is unavailable for validation?")
+        return
+
+    # OK, we have something to validate here...
+    validator.check_compliance_of_trapi_response(response=trapi_response)
+
+    # Print out the outcome of the main validation of the TRAPI Response
     validation_report(validator, args)
 
 

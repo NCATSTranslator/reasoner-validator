@@ -51,16 +51,17 @@ poetry install --all-extras
 
 ## Running Validation against an ARS UUID Result(*)
 
-A local script **`ars_uuid_result_test_runner.py`** is available to run TRAPI Response validation against a 
-UUID indexed query result of the Biomedical Knowledge Translator "Autonomous Relay System" (ARS).
+A local script **`trapi_response_validator.py`** is available to run TRAPI Response validation against either a 
+PK (UUID) indexed query result of the Biomedical Knowledge Translator "Autonomous Relay System" (ARS), 
+or a locally triggered query Request against an _ad hoc_ TRAPI endpoint.
 
 For usage, type:
 
 ```bash
-./ars_uuid_result_test_runner.py --help
+./trapi_response_validator.py --help
 ```
 
-(*) Thank you Eric Deutsch for the prototype of this script
+(*) Thank you Eric Deutsch for the prototype code for this script
 
 ## Running tests
 
