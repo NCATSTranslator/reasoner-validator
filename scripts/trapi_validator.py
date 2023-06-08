@@ -2,12 +2,22 @@
 ##################################################
 # Thanks to Eric Deutsch (Expander Agent) for this
 # validator of ARS UUID specified TRAPI Responses
+#
+# Note: the latest version of the code is best
+#       run within a poetry shell, i.e.
+#
+# Usage:
+#     poetry install
+#     poetry shell
+#     cd scripts
+#     ./trapi_validator.py --help
+#
 ##################################################
 import asyncio
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 from sys import stderr
 from os.path import isfile
-from json import JSONDecodeError
+from json.decoder import JSONDecodeError
 
 import requests
 from requests.exceptions import JSONDecodeError
@@ -144,6 +154,9 @@ async def direct_trapi_request(
 
 
 def retrieve_ars_result(query_key: str, verbose: bool) -> Optional[Dict]:
+
+    global trapi_response
+
     if verbose:
         print(f"Trying to retrieve ARS Response UUID '{query_key}'...")
         
@@ -174,27 +187,25 @@ def retrieve_ars_result(query_key: str, verbose: bool) -> Optional[Dict]:
 
     if status_code != 200:
         print(f"Unsuccessful HTTP status code '{status_code}' reported for ARS PK '{query_key}'?")
-        return None
+        return
 
     # Unpack the response content into a dict
     try:
         response_dict = response_content.json()
     except JSONDecodeError:
         print("Cannot decode ARS UUID "+query_key+" to a Translator Response")
-        return None
+        return
 
     if 'fields' in response_dict:
         if 'actor' in response_dict['fields'] and str(response_dict['fields']['actor']) == '9':
             print("The supplied response id is a collection id. Please supply the UUID for a response")
         elif 'data' in response_dict['fields']:
             print(f"Validating ARS PK '{query_key}' TRAPI Response result...")
-            return response_dict['fields']['data']
+            trapi_response = response_dict['fields']['data']
         else:
             print("ARS response dictionary is missing 'fields.data'?")
     else:
         print("ARS response dictionary is missing 'fields'?")
-
-    return None
 
 
 def validation_report(validator: TRAPIResponseValidator, args):
@@ -272,7 +283,7 @@ def main():
             print("Need to specific a --local_request JSON input text file (path) argument for your TRAPI endpoint!")
 
     elif args.query_key:
-        trapi_response = retrieve_ars_result(query_key=args.query_key, verbose=args.verbose)
+        retrieve_ars_result(query_key=args.query_key, verbose=args.verbose)
 
     else:
         print("Need to specify either an --endpoint/--local_request or a --query_key input argument to proceed!")
