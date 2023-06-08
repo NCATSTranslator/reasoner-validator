@@ -1,4 +1,5 @@
 """TRAPI Validation Functions."""
+from json import dumps
 from typing import Optional, Dict
 from os.path import isfile
 import copy
@@ -16,12 +17,15 @@ from reasoner_validator.versioning import (
     SemVerError,
     get_latest_version,
     GIT_ORG,
-    GIT_REPO,
-    branches
+    GIT_REPO
 )
 
 import logging
 logger = logging.getLogger(__name__)
+
+
+# For testing, set TRAPI API query POST timeouts to 10 minutes == 600 seconds
+DEFAULT_TRAPI_POST_TIMEOUT = 600.0
 
 
 class TRAPIAccessError(RuntimeError):
@@ -32,7 +36,7 @@ class TRAPIAccessError(RuntimeError):
 def _load_schema(schema_version: str) -> Dict:
     """
     Load schema from GitHub version or directly from a local schema file.
-    :param schema_version: either a Github 'v' prefixed SemVer version of a
+    :param schema_version: either a GitHub 'v' prefixed SemVer version of a
            TRAPI schema or a file name (path) from which the TRAPI schema may be read in.
     :return: Dict, schema components
     """
@@ -81,6 +85,10 @@ def load_schema(target: str):
         raise ValueError(err_msg)
 
     return _load_schema(schema_version)
+
+
+def _output(json, flat=False):
+    return dumps(json, sort_keys=False, indent=None if flat else 4)
 
 
 async def call_trapi(url: str, trapi_message):
@@ -253,7 +261,12 @@ class TRAPISchemaValidator(ValidationReporter):
                 reason = e.message
             else:
                 reason = e.message[0:49] + " "*5 + "... " + " "*5 + e.message[-100:-1]
-            self.report(code="error.trapi.validation", identifier=self.trapi_version, component=component, reason=reason)
+            self.report(
+                code="error.trapi.validation",
+                identifier=self.trapi_version,
+                component=component,
+                reason=reason
+            )
 
 
 def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPISchemaValidator:

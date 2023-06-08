@@ -63,12 +63,13 @@ def get_cli_arguments():
              'a file path (with file extension .yaml) specifying or referencing the target TRAPI schema file.'
     )
     arg_parser.add_argument(
-        '-q', '--query_key', type=str, nargs='?', default=None,
-        help='ARS query PK identifier of a previously run query. Ignored when an --endpoint is given.'
+        '-r', '--response_id', type=str, nargs='?', default=None,
+        help='The value of this argument can either be an ARS query PK identifier or '
+             'a file name to JSON file with a previously run query.  Ignored when an --endpoint is given.'
     )
     arg_parser.add_argument(
         '-e', '--endpoint', type=str, nargs='?', default=None,
-        help='Target TRAPI service endpoint to be directly used for query. Overrides the --query_key CLI argument.'
+        help='Target TRAPI service endpoint to be directly used for query. Overrides the --response_id CLI argument.'
     )
     arg_parser.add_argument(
         '-l', '--local_request', type=str, nargs='?', default=None,
@@ -153,12 +154,12 @@ async def direct_trapi_request(
                 trapi_response = result['response_json']
 
 
-def retrieve_ars_result(query_key: str, verbose: bool) -> Optional[Dict]:
+def retrieve_ars_result(response_id: str, verbose: bool) -> Optional[Dict]:
 
     global trapi_response
 
     if verbose:
-        print(f"Trying to retrieve ARS Response UUID '{query_key}'...")
+        print(f"Trying to retrieve ARS Response UUID '{response_id}'...")
         
     response_content: Optional = None
     status_code: int = 404
@@ -168,7 +169,7 @@ def retrieve_ars_result(query_key: str, verbose: bool) -> Optional[Dict]:
             print(f"\n...from {ars_host}", end=None)
         try:
             response_content = requests.get(
-                f"https://{ars_host}/ars/api/messages/"+query_key,
+                f"https://{ars_host}/ars/api/messages/"+response_id,
                 headers={'accept': 'application/json'}
             )
             if response_content:
@@ -186,21 +187,21 @@ def retrieve_ars_result(query_key: str, verbose: bool) -> Optional[Dict]:
             continue
 
     if status_code != 200:
-        print(f"Unsuccessful HTTP status code '{status_code}' reported for ARS PK '{query_key}'?")
+        print(f"Unsuccessful HTTP status code '{status_code}' reported for ARS PK '{response_id}'?")
         return
 
     # Unpack the response content into a dict
     try:
         response_dict = response_content.json()
     except Exception as e:
-        print(f"Cannot decode ARS PK '{query_key}' to a Translator Response, exception: {e}")
+        print(f"Cannot decode ARS PK '{response_id}' to a Translator Response, exception: {e}")
         return
 
     if 'fields' in response_dict:
         if 'actor' in response_dict['fields'] and str(response_dict['fields']['actor']) == '9':
             print("The supplied response id is a collection id. Please supply the UUID for a response")
         elif 'data' in response_dict['fields']:
-            print(f"Validating ARS PK '{query_key}' TRAPI Response result...")
+            print(f"Validating ARS PK '{response_id}' TRAPI Response result...")
             trapi_response = response_dict['fields']['data']
         else:
             print("ARS response dictionary is missing 'fields.data'?")
@@ -282,11 +283,17 @@ def main():
         else:
             print("Need to specific a --local_request JSON input text file (path) argument for your TRAPI endpoint!")
 
-    elif args.query_key:
-        retrieve_ars_result(query_key=args.query_key, verbose=args.verbose)
+    elif args.response_id:
+        if isfile(args.response_id):
+            # The response identifier can just be a local file...
+            with open(args.response_id) as infile:
+                trapi_response = json.load(infile)
+        else:
+            # ... unless, it is an ARS PK
+            retrieve_ars_result(response_id=args.response_id, verbose=args.verbose)
 
     else:
-        print("Need to specify either an --endpoint/--local_request or a --query_key input argument to proceed!")
+        print("Need to specify either an --endpoint/--local_request or a --response_id input argument to proceed!")
 
     if not trapi_response:
         print("TRAPI Response JSON is unavailable for validation?")
