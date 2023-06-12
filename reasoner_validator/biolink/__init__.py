@@ -1056,8 +1056,20 @@ class BiolinkValidator(ValidationReporter):
         subject_category_curie = edge['subject_category'] if 'subject_category' in edge else None
         object_category_curie = edge['object_category'] if 'object_category' in edge else None
         predicate = edge['predicate'] if 'predicate' in edge else None
-        subject_curie = edge['subject'] if 'subject' in edge else None
-        object_curie = edge['object'] if 'object' in edge else None
+
+        if 'subject_id' in edge:
+            subject_curie = edge['subject_id']
+        elif 'subject' in edge:
+            subject_curie = edge['subject']
+        else:
+            subject_curie = None
+
+        if 'object_id' in edge:
+            object_curie = edge['object_id']
+        elif 'object' in edge:
+            object_curie = edge['object']
+        else:
+            object_curie = None
 
         edge_id = f"{str(subject_curie)}--{predicate}->{str(object_curie)}"
 

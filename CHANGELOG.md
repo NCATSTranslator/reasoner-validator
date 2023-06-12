@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.5.7
+- patch to fix a previously unnoticed bug in SRI Testing related 'input edge' validation method (wouldn't affect non-SRI Testing related code usage of reasoner-validator)
+
 ## v3.5.6
 - **ars_uuid_result_test_runner.py**  renamed to **trapi_response_validator.py** and generalized to accept a local TRAPI Response or possibly, an explicit endpoint URL and the TRAPI Request JSON with which to query, whose TRAPI Response is then validated.
 

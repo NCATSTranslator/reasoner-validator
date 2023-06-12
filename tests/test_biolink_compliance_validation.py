@@ -98,209 +98,220 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             ""
         ),
-        (   # Query 1 - Missing subject category
-            LATEST_BIOLINK_MODEL_VERSION,
+        (   # Query 1 - Valid edge object, using original 'subject' and 'object' JSON tags
+            LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
             {
+                'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
+            ""  # should still no generate an error message
+        ),
+        (   # Query 2 - Missing subject category
+            LATEST_BIOLINK_MODEL_VERSION,
+            {
+                'object_category': 'biolink:AnatomicalEntity',
+                'predicate': 'biolink:subclass_of',
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
+            },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Subject has a missing Biolink category!"
             "error.input_edge.node.category.missing"
         ),
-        (   # Query 2 - Invalid subject category
+        (   # Query 3 - Invalid subject category
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:NotACategory',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Subject element 'biolink:NotACategory' is unknown!"
             "error.input_edge.node.category.unknown"
         ),
-        (   # Query 3 - Missing object category
+        (   # Query 4 - Missing object category
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Object has a missing Biolink category!"
             "error.input_edge.node.category.missing"
         ),
-        (   # Query 4 - Invalid object category
+        (   # Query 5 - Invalid object category
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:NotACategory',
                 'predicate': 'biolink:subclass_of',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Object element 'biolink:NotACategory' is unknown!"
             "error.input_edge.node.category.unknown"
         ),
-        (   # Query 5 - Missing predicate
+        (   # Query 6 - Missing predicate
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate is missing or empty!"
             "error.input_edge.predicate.missing"
         ),
-        (   # Query 6 - Empty predicate
+        (   # Query 7- Empty predicate
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': '',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate is missing or empty!"
             "error.input_edge.predicate.missing"
         ),
-        (   # Query 7 - Predicate is deprecated
+        (   # Query 8 - Predicate is deprecated
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:Drug',
                 'object_category': 'biolink:Protein',
                 'predicate': 'biolink:increases_amount_or_activity_of',
-                'subject': 'NDC:0002-8215-01',  # a form of insulin
-                'object': 'MONDO:0005148'  # type 2 diabetes?
+                'subject_id': 'NDC:0002-8215-01',  # a form of insulin
+                'object_id': 'MONDO:0005148'  # type 2 diabetes?
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate element " +
             # "'binds' is deprecated?"  # in Biolink 3.1.1
             "warning.input_edge.predicate.deprecated"
         ),
-        (   # Query 8 - Predicate is abstract
+        (   # Query 9 - Predicate is abstract
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:InformationContentEntity',
                 'object_category': 'biolink:Agent',
                 'predicate': 'biolink:contributor',
-                'subject': 'PMID:1234',
-                'object': 'ORCID:56789'
+                'subject_id': 'PMID:1234',
+                'object_id': 'ORCID:56789'
             },
             # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:contributor' is abstract."
             "info.input_edge.predicate.abstract"
         ),
-        (   # Query 9 - Predicate is a mixin
+        (   # Query 10 - Predicate is a mixin
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:Drug',
                 'object_category': 'biolink:BiologicalProcess',
                 'predicate': 'biolink:decreases_amount_or_activity_of',
-                'subject': 'NDC:50090‑0766',  # Metformin
-                'object': 'GO:0006094'  # Gluconeogenesis
+                'subject_id': 'NDC:50090‑0766',  # Metformin
+                'object_id': 'GO:0006094'  # Gluconeogenesis
             },
             # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:decreases_amount_or_activity_of' is a mixin."
             "info.input_edge.predicate.mixin"
         ),
-        (   # Query 10 - Unknown predicate element
+        (   # Query 11 - Unknown predicate element
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:not_a_predicate',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:not_a_predicate' is unknown!"
             "error.input_edge.predicate.unknown"
         ),
-        (   # Query 11 - Invalid or unknown predicate
+        (   # Query 12 - Invalid or unknown predicate
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:has_unit',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:has_unit' is invalid!"
             "error.input_edge.predicate.invalid"
         ),
-        (   # Query 12 - Non-canonical directed predicate
+        (   # Query 13 - Non-canonical directed predicate
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:SmallMolecule',
                 'object_category': 'biolink:Disease',
                 'predicate': 'biolink:affected_by',
-                'subject': 'DRUGBANK:DB00331',
-                'object': 'MONDO:0005148'
+                'subject_id': 'DRUGBANK:DB00331',
+                'object_id': 'MONDO:0005148'
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Edge predicate 'biolink:affected_by' is non-canonical?"
             "warning.input_edge.predicate.non_canonical"
         ),
-        (   # Query 13 - Missing subject
+        (   # Query 14 - Missing subject
             LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'object': 'UBERON:0035769'
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Subject node identifier is missing!"
             "error.input_edge.node.id.missing"
         ),
-        (   # Query 14 - Unmappable subject namespace
+        (   # Query 15 - Unmappable subject namespace
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'subject': 'FOO:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'FOO:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Subject node identifier 'FOO:0005453' " +
             # "is unmapped to 'biolink:AnatomicalEntity'?"
             "warning.input_edge.node.id.unmapped_to_category"
         ),
-        (   # Query 15 - missing object
+        (   # Query 16 - missing object
             LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'subject': "UBERON:0005453"
+                'subject_id': "UBERON:0005453"
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Object node identifier is missing!"
             "error.input_edge.node.id.missing"
         ),
-        (   # Query 16 - Unmappable object namespace
+        (   # Query 17 - Unmappable object namespace
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'subject': 'UBERON:0005453',
-                'object': 'BAR:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'BAR:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Object node identifier 'BAR:0035769' " +
             # "is unmapped to 'biolink:AnatomicalEntity'?"
             "warning.input_edge.node.id.unmapped_to_category"
         ),
-        (   # Query 17 - Valid other model
+        (   # Query 18 - Valid other model
             "1.8.2",
             {
                 'subject_category': 'biolink:ChemicalSubstance',
                 'object_category': 'biolink:Protein',
                 'predicate': 'biolink:entity_negatively_regulates_entity',
-                'subject': 'DRUGBANK:DB00945',
-                'object': 'UniProtKB:P23219'
+                'subject_id': 'DRUGBANK:DB00945',
+                'object_id': 'UniProtKB:P23219'
             },
             ""
         ),
@@ -316,25 +327,25 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         #     # f"{INPUT_EDGE_PREFIX}: WARNING - Subject 'biolink:Nutrient' is deprecated?"
         #     "warning.input_edge.node.category.deprecated"
         # ),
-        (   # Query 18 - Issue a warning for input_edge data with a category that is a mixin?
+        (   # Query 19 - Issue a warning for input_edge data with a category that is a mixin?
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:GeneOrGeneProduct',
                 'object_category': 'biolink:Protein',
                 'predicate': 'biolink:related_to',
-                'subject': 'HGNC:9604',
-                'object': 'UniProtKB:P23219'
+                'subject_id': 'HGNC:9604',
+                'object_id': 'UniProtKB:P23219'
             },
             "warning.input_edge.node.category.not_concrete"
         ),
-        (   # Query 19 - Issue a warning for input_edge data with a category that is abstract?
+        (   # Query 20 - Issue a warning for input_edge data with a category that is abstract?
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AdministrativeEntity',
                 'object_category': 'biolink:Agent',
                 'predicate': 'biolink:related_to',
-                'subject': 'isbn:1234',
-                'object': 'ORCID:1234'
+                'subject_id': 'isbn:1234',
+                'object_id': 'ORCID:1234'
             },
             "warning.input_edge.node.category.not_concrete"
         )
