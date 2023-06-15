@@ -24,6 +24,7 @@ app = FastAPI()
 # Dictionary of validation context identifying the  ARA and KP
 # sources subject to edge provenance attribute validation
 # (key-value examples as given here)
+# Example: Sources(ara_source="aragorn", kp_source="panther", kp_source_type="primary")
 class Sources(BaseModel):
     ara_source: Optional[str] = None,
     kp_source: Optional[str] = None,
@@ -37,7 +38,7 @@ class Query(BaseModel):
     biolink_version: Optional[str] = None
 
     # See Sources above
-    sources: Optional[Sources] = Sources(ara_source="aragorn", kp_source="panther", kp_source_type="primary")
+    sources: Optional[Sources] = None
 
     # Apply strict validation of element abstract or mixin status of category, attribute_type_id and predicate elements
     # and detection of absent Knowledge Graph Edge predicate and attributes (despite 'nullable: true' model permission)
@@ -77,7 +78,7 @@ async def validate(query: Query):
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=trapi_version,
         biolink_version=biolink_version,
-        sources=sources.dict(),
+        sources=sources.dict() if sources is not None else None,
         strict_validation=strict_validation,
         suppress_empty_data_warnings=suppress_empty_data_warnings
     )
