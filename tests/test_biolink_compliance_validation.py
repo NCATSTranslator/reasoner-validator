@@ -2977,7 +2977,7 @@ def test_is_symmetric(predicate, result):
         ("biolink:has_active_component", "biolink:active_in")
     ]
 )
-def test_get_inverse_predicate(bmt, predicate, inverse):
+def test_get_inverse_predicate(predicate, inverse):
     # we assume the default is a late version which has proper inverse
     validator: BiolinkValidator = BiolinkValidator(TRAPIGraphType.Knowledge_Graph, biolink_version=None)
     assert validator.get_inverse_predicate(predicate) == inverse
