@@ -242,14 +242,6 @@
 
 **Description:** Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes.
 
-### warning.knowledge_graph.edge.attribute.type_id.unknown_prefix
-
-**Message:** Edge has an attribute_type_id that has a CURIE prefix namespace unknown to Biolink
-
-**Context:** edge_id, identifier
-
-**Description:** The namespaces of 'attribute_type_id' terms may be incomplete with respect to Biolink Model version being used in the knowledge graph.
-
 ### warning.knowledge_graph.edge.attribute.type_id.deprecated
 
 **Message:** Edge has a deprecated attribute_type_id

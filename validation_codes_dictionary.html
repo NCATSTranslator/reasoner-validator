@@ -86,7 +86,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-predicate-non-canonical">warning.knowledge_graph.edge.predicate.non_canonical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot">warning.knowledge_graph.edge.attribute.type_id.not_association_slot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix">warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-unknown-prefix">warning.knowledge_graph.edge.attribute.type_id.unknown_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated">warning.knowledge_graph.edge.attribute.type_id.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-multiple-primary">warning.knowledge_graph.edge.provenance.multiple_primary</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-ara-missing">warning.knowledge_graph.edge.provenance.ara.missing</a></li>
@@ -410,12 +409,6 @@
 <p><strong>Message:</strong> Edge has an attribute_type_id that has a non-Biolink CURIE prefix mapped to Biolink</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes.</p>
-</section>
-<section id="warning-knowledge-graph-edge-attribute-type-id-unknown-prefix">
-<h3>warning.knowledge_graph.edge.attribute.type_id.unknown_prefix<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-unknown-prefix" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge has an attribute_type_id that has a CURIE prefix namespace unknown to Biolink</p>
-<p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> The namespaces of ‘attribute_type_id’ terms may be incomplete with respect to Biolink Model version being used in the knowledge graph.</p>
 </section>
 <section id="warning-knowledge-graph-edge-attribute-type-id-deprecated">
 <h3>warning.knowledge_graph.edge.attribute.type_id.deprecated<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated" title="Permalink to this heading"></a></h3>
