@@ -213,12 +213,6 @@ warning:
               - edge_id
               - identifier
             $description: "Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes."
-          unknown_prefix:
-            $message: "Edge has an attribute_type_id that has a CURIE prefix namespace unknown to Biolink"
-            $context:
-              - edge_id
-              - identifier
-            $description: "The namespaces of 'attribute_type_id' terms may be incomplete with respect to Biolink Model version being used in the knowledge graph."
           deprecated:
             $message: "Edge has a deprecated attribute_type_id"
             $context:

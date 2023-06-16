@@ -1030,12 +1030,27 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(query: Tuple):
                 "attributes": []
             },
             get_ara_test_case(),
-            # "Edge has empty attributes!"
+            # "Edge has empty attributes!" Allowed
             ""
         ),
+        (
+            # Query 3. EDAM-DATA:2526 ought to have an acceptable namespace
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "EDAM-DATA:2526",
+                        "value": "some-value"
+                    }
+                ]
+            },
+            get_ara_test_case(),
+            # "Edge has an acceptable namespace prefix
+            ""
+        )
+        # CHEMBL.COMPOUND:CHEMBL112--biolink:occurs_together_in_literature_with->NCBIGene:762
     ]
 )
-def test_post_1_4_0_trapi_validate_missing_or_empty_attributes(query: Tuple):
+def test_post_1_4_0_trapi_validate_attributes(query: Tuple):
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
@@ -2686,8 +2701,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge attribute_type_id 'foo:bar' " +
             # f"has a CURIE prefix namespace unknown to Biolink!"
-            # TODO: Code for validating this is commented out pending a BMT repair of the test
-            "warning.knowledge_graph.edge.attribute.type_id.unknown_prefix"
+            "warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix"
         ),
         (   # Query 26:  # An earlier Biolink Model won't recognize a category not found in its specified release
             "1.8.2",
