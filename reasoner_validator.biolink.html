@@ -51,8 +51,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.check_biolink_model_compliance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.check_biolink_model_compliance_of_input_edge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_inverse_predicate"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_inverse_predicate()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_result"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_result()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_target_sources"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_target_sources()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.is_symmetric"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.is_symmetric()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.minimum_required_biolink_version"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.minimum_required_biolink_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.set_nodes"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.set_nodes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_attribute_constraints"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_attribute_constraints()</span></code></a></li>
@@ -168,19 +170,22 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_info</span></code>()</p></td>
 <td><p>Get copy of all recorded information messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_message_type</span></code>(code)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_inverse_predicate" title="reasoner_validator.biolink.BiolinkValidator.get_inverse_predicate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inverse_predicate</span></code></a>(predicate)</p></td>
+<td><p>Utility wrapper of logic to robustly test if a predicate exists and has an inverse.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_message_type</span></code>(code)</p></td>
 <td><p>Get type of message code.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages</span></code>()</p></td>
 <td><p>Get copy of all messages as a Python data structure.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_result" title="reasoner_validator.biolink.BiolinkValidator.get_result"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_result</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_result" title="reasoner_validator.biolink.BiolinkValidator.get_result"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_result</span></code></a>()</p></td>
 <td><p>Get result of validation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_target_sources" title="reasoner_validator.biolink.BiolinkValidator.get_target_sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_target_sources</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_target_sources" title="reasoner_validator.biolink.BiolinkValidator.get_target_sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_target_sources</span></code></a>()</p></td>
 <td><p>Returns infores prefix normalized validation caller provided tTarget provenance sources metadata.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trapi_version</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trapi_version</span></code>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str, TRAPI (SemVer) version currently targeted by the ValidationReporter.</p>
@@ -188,31 +193,34 @@
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_warnings</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_warnings</span></code>()</p></td>
 <td><p>Get copy of all recorded warning messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_errors</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_errors</span></code>()</p></td>
 <td><p>Predicate to detect any recorded error messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_information</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_information</span></code>()</p></td>
 <td><p>Predicate to detect any recorded information messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_messages</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_messages</span></code>()</p></td>
 <td><p>Predicate to detect any recorded validation messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_validation_errors</span></code>(tag, case)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_validation_errors</span></code>(tag, case)</p></td>
 <td><p>Check if test case has validation errors.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code>()</p></td>
 <td><p>Predicate to detect any recorded warning messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool, value of validation strictness set in the ValidationReporter.</p>
 </dd>
 </dl>
 </p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.is_symmetric" title="reasoner_validator.biolink.BiolinkValidator.is_symmetric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_symmetric</span></code></a>(name)</p></td>
+<td><p>Checks if a given element identified by name, is a symmetric (predicate) slot.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code>(reporter)</p></td>
 <td><p>Merge all messages and metadata from a second ValidationReporter, into the calling ValidationReporter instance.</p></td>
@@ -332,6 +340,14 @@ against the currently active Biolink Model Toolkit model version.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.get_inverse_predicate">
+<span class="sig-name descname"><span class="pre">get_inverse_predicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_inverse_predicate" title="Permalink to this definition"></a></dt>
+<dd><p>Utility wrapper of logic to robustly test if a predicate exists and has an inverse.
+:param predicate: CURIE or string name of predicate for which the inverse is sought.
+:return: CURIE string of inverse predicate, if it exists; None otherwise</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.get_result">
 <span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_result" title="Permalink to this definition"></a></dt>
 <dd><p>Get result of validation.</p>
@@ -348,6 +364,14 @@ against the currently active Biolink Model Toolkit model version.</p>
 <span class="sig-name descname"><span class="pre">get_target_sources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_target_sources" title="Permalink to this definition"></a></dt>
 <dd><p>Returns infores prefix normalized validation caller provided tTarget provenance sources metadata.
 :return: Tuple[Optional[str], Optional[str], Optional[str]] of ara_source, kp_source, kp_source_type</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.is_symmetric">
+<span class="sig-name descname"><span class="pre">is_symmetric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.is_symmetric" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if a given element identified by name, is a symmetric (predicate) slot.
+:param name: name of the element
+:return: True if element is a symmetric (predicate) slot.</p>
 </dd></dl>
 
 <dl class="py method">

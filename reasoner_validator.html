@@ -46,6 +46,10 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">TRAPI Response Validation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.case_edge_bindings"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.case_edge_bindings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.case_input_found_in_response"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.case_input_found_in_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.case_node_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.case_node_found()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.case_result_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.case_result_found()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.check_compliance_of_trapi_response()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.has_valid_knowledge_graph"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.has_valid_knowledge_graph()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.has_valid_query_graph"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.has_valid_query_graph()</span></code></a></li>
@@ -106,6 +110,18 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_validation</span></code>(validation_method, *args, ...)</p></td>
 <td><p>Wrapper to allow validation_methods direct access to the ValidationReporter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.case_edge_bindings" title="reasoner_validator.TRAPIResponseValidator.case_edge_bindings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">case_edge_bindings</span></code></a>(target_edge_id, data)</p></td>
+<td><p>Check if target query edge id and knowledge graph edge id are in specified edge_bindings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.case_input_found_in_response" title="reasoner_validator.TRAPIResponseValidator.case_input_found_in_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">case_input_found_in_response</span></code></a>(case, response, ...)</p></td>
+<td><p>Predicate to validate if test data test case specified edge is returned in the Knowledge Graph of the TRAPI Response Message.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.case_node_found" title="reasoner_validator.TRAPIResponseValidator.case_node_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">case_node_found</span></code></a>(target, identifier, case, nodes)</p></td>
+<td><p>Check for presence of the target identifier, with expected categories, in the &quot;nodes&quot; catalog.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.case_result_found" title="reasoner_validator.TRAPIResponseValidator.case_result_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">case_result_found</span></code></a>(subject_id, object_id, ...)</p></td>
+<td><p>Validate that test case S--P-&gt;O edge is found bound to the Results? :param subject_id: str, subject node (CURIE) identifier :param object_id:  str, subject node (CURIE) identifier :param edge_id:  str, subject node (CURIE) identifier :param results: List of (TRAPI-version specific) Result objects :param trapi_version: str, target TRAPI version of the Response being validated :return: bool, True if case S-P-O edge was found in the results</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_compliance_of_trapi_response</span></code></a>(response)</p></td>
 <td><p>One stop validation of all components of a TRAPI-schema compliant Query.Response, including its Message against a designated Biolink Model release.</p></td>
@@ -233,6 +249,67 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </tbody>
 </table>
 <dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.case_edge_bindings">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">case_edge_bindings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.case_edge_bindings" title="Permalink to this definition"></a></dt>
+<dd><p>Check if target query edge id and knowledge graph edge id are in specified edge_bindings.
+:param target_edge_id:  str, expected knowledge edge identifier in a matching result
+:param data: TRAPI version-specific Response context from which the ‘edge_bindings’ may be retrieved
+:return: True, if found</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.case_input_found_in_response">
+<span class="sig-name descname"><span class="pre">case_input_found_in_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trapi_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.case_input_found_in_response" title="Permalink to this definition"></a></dt>
+<dd><p>Predicate to validate if test data test case specified edge is returned
+in the Knowledge Graph of the TRAPI Response Message. This method assumes
+that the TRAPI response is already generally validated as well-formed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>case</strong> – Dict, input data test case</p></li>
+<li><p><strong>response</strong> – Dict, TRAPI Response whose message ought to contain the test case edge</p></li>
+<li><p><strong>trapi_version</strong> – str, TRAPI version of response being tested</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if test case edge found; False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.case_node_found">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">case_node_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.case_node_found" title="Permalink to this definition"></a></dt>
+<dd><p>Check for presence of the target identifier,
+with expected categories, in the “nodes” catalog.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – ‘subject’ or ‘object’</p></li>
+<li><p><strong>identifier</strong> – (CURIE) identifier of the node</p></li>
+<li><p><strong>case</strong> – Dict, full test case (to access the target node ‘category’)</p></li>
+<li><p><strong>nodes</strong> – Dict, nodes category indexed by node identifiers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.case_result_found">
+<span class="sig-name descname"><span class="pre">case_result_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trapi_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.case_result_found" title="Permalink to this definition"></a></dt>
+<dd><p>Validate that test case S–P-&gt;O edge is found bound to the Results?
+:param subject_id: str, subject node (CURIE) identifier
+:param object_id:  str, subject node (CURIE) identifier
+:param edge_id:  str, subject node (CURIE) identifier
+:param results: List of (TRAPI-version specific) Result objects
+:param trapi_version: str, target TRAPI version of the Response being validated
+:return: bool, True if case S-P-O edge was found in the results</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response">
 <span class="sig-name descname"><span class="pre">check_compliance_of_trapi_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="Permalink to this definition"></a></dt>
 <dd><p>One stop validation of all components of a TRAPI-schema compliant
@@ -279,7 +356,7 @@ triggers validation of all edges in the knowledge graph (Default: 100)</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>message</strong> (<em>Dict</em>) – input message expected to contain the ‘knowledge_graph’</p></li>
 <li><p><strong>edges_limit</strong> (<em>int</em>) – integer maximum number of edges to be validated in the knowledge graph. A value of zero
-triggers validation of all edges in the knowledge graph (could take awhile! Default: 100)</p></li>
+triggers validation of all edges in the knowledge graph (could take a while! Default: 100)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -313,7 +390,7 @@ triggers validation of all edges in the knowledge graph (could take awhile! Defa
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>graph</strong> (<em>Dict</em>) – original knowledge graph</p></li>
 <li><p><strong>edges_limit</strong> (<em>int</em>) – integer maximum number of edges to be validated in the knowledge graph. A value of zero
-triggers validation of all edges in the knowledge graph (could take awhile! Default: 100)</p></li>
+triggers validation of all edges in the knowledge graph (could take a while! Default: 100)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
