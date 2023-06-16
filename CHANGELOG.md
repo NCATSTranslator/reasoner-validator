@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.5.8
+- implemented get_inverse_predicate() wrapper for returning (CURIE of) valid inverses of predicates (including symmetric predicates?)
+- implemented is_symmetric() method to detect symmetric (predicate) elements
+
 ## v3.5.7
 - patch to fix a previously unnoticed bug in SRI Testing related 'input edge' validation method (wouldn't affect non-SRI Testing related code usage of reasoner-validator)
 

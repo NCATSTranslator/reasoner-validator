@@ -8,7 +8,7 @@ from urllib.error import HTTPError
 from pprint import PrettyPrinter
 
 
-from bmt import Toolkit
+from bmt import Toolkit, utils
 from linkml_runtime.linkml_model import ClassDefinition, Element
 
 from reasoner_validator.sri.util import is_curie
@@ -137,6 +137,42 @@ class BiolinkValidator(ValidationReporter):
         except SemVerError as sve:
             logger.error(f"minimum_required_biolink_version() error: {str(sve)}")
             return False
+
+    def is_symmetric(self, name: str) -> bool:
+        """
+        Checks if a given element identified by name, is a symmetric (predicate) slot.
+        :param name: name of the element
+        :return: True if element is a symmetric (predicate) slot.
+        """
+        # TODO: perhaps this method ought to be in the Biolink Model Toolkit?
+        if not name:
+            return False
+        element: Optional[Element] = self.bmt.get_element(name)
+        if element['symmetric']:
+            return True
+        else:
+            return False
+
+    def get_inverse_predicate(self, predicate: Optional[str]) -> Optional[str]:
+        """
+        Utility wrapper of logic to robustly test if a predicate exists and has an inverse.
+        :param predicate: CURIE or string name of predicate for which the inverse is sought.
+        :return: CURIE string of inverse predicate, if it exists; None otherwise
+        """
+        # TODO: perhaps this method ought to be in the Biolink Model Toolkit?
+        if predicate and self.bmt.is_predicate(predicate):
+            predicate_name = utils.parse_name(predicate)
+            inverse_predicate_name = self.bmt.get_inverse(predicate_name)
+            if not inverse_predicate_name:
+                if self.is_symmetric(predicate_name):
+                    inverse_predicate_name = predicate_name
+                else:
+                    inverse_predicate_name = None
+
+            if inverse_predicate_name:
+                ip = self.bmt.get_element(inverse_predicate_name)
+                return utils.format_element(ip)
+        return None
 
     def get_result(self) -> Tuple[str, Optional[Dict[str, Dict[str, Optional[List[Dict[str, str]]]]]]]:
         """

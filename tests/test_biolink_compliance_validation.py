@@ -1621,7 +1621,6 @@ def test_biolink_validation_suppressed_validate_qualifier_constraints(query: Tup
     )
 
 
-
 QC_QS_NOT_A_CURIE = {
     'qualifier_constraints': [
         {
@@ -2943,3 +2942,42 @@ def test_latest_trapi_validate_sources(sources: bool, validation_code: str):
         biolink_version=LATEST_BIOLINK_MODEL_VERSION
     )
     check_messages(validator, validation_code)
+
+
+@pytest.mark.parametrize(
+    "predicate,result",
+    [
+        (None, False),
+        ("biolink:related_to", True),
+        ("related_to", True),
+        ("related to", True),
+        ("biolink:active_in", False),
+        ("active_in", False),
+        ("active in", False),
+        ("biolink:has_active_component", False)
+    ]
+)
+def test_is_symmetric(predicate, result):
+    # we assume the default is a late version which has proper inverse
+    validator: BiolinkValidator = BiolinkValidator(TRAPIGraphType.Knowledge_Graph, biolink_version=None)
+    assert validator.is_symmetric(predicate) == result
+
+
+@pytest.mark.parametrize(
+    "predicate,inverse",
+    [
+        (None, None),
+        ("", None),
+        ("biolink:related_to", "biolink:related_to"),
+        ("related_to", "biolink:related_to"),
+        ("related to", "biolink:related_to"),
+        ("biolink:active_in", "biolink:has_active_component"),
+        ("active_in", "biolink:has_active_component"),
+        ("active in", "biolink:has_active_component"),
+        ("biolink:has_active_component", "biolink:active_in")
+    ]
+)
+def test_get_inverse_predicate(bmt, predicate, inverse):
+    # we assume the default is a late version which has proper inverse
+    validator: BiolinkValidator = BiolinkValidator(TRAPIGraphType.Knowledge_Graph, biolink_version=None)
+    assert validator.get_inverse_predicate(predicate) == inverse
