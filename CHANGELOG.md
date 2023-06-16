@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.5.9
+- Fixed bug in attribute_type_id detection of attribute_type_id namespaces
+
 ## v3.5.8
 - implemented get_inverse_predicate() wrapper for returning (CURIE of) valid inverses of predicates (including symmetric predicates?)
 - implemented is_symmetric() method to detect symmetric (predicate) elements
