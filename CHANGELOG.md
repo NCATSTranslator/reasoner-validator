@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.5.10
+- Extend TRAPI Response sanitization (following Eric Deutsch guidance)
+
 ## v3.5.9
 - Fixed bug in attribute_type_id detection of attribute_type_id namespaces
 

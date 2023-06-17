@@ -31,6 +31,7 @@ class TRAPIResponseValidator(ValidationReporter):
 
     TRAPI_1_3_0 = SemVer.from_string("1.3.0")
     TRAPI_1_4_0 = SemVer.from_string("1.4.0")
+    TRAPI_1_4_0_BETA3 = SemVer.from_string("1.4.0-beta3")
     TRAPI_1_4_0_BETA4 = SemVer.from_string("1.4.0-beta4")
 
     def __init__(
@@ -90,8 +91,10 @@ class TRAPIResponseValidator(ValidationReporter):
                     if 'upstream_resource_ids' not in source or source['upstream_resource_ids'] is None:
                         source['upstream_resource_ids'] = []
 
-        # 'auxiliary_graphs' ought to be nullable, however... not specified that way (yet)
-        if 'auxiliary_graphs' not in response['message'] or response['message']['auxiliary_graphs'] is None:
+        # 'auxiliary_graphs' (from TRAPI 1.4.0-beta2 onwards)
+        # ought to be nullable, however... not specified that way (yet)
+        if current_version >= self.TRAPI_1_4_0_BETA3 and \
+                ('auxiliary_graphs' not in response['message'] or response['message']['auxiliary_graphs'] is None):
             response['message']['auxiliary_graphs'] = []
 
         if 'workflow' in response and response['workflow']:
