@@ -110,7 +110,7 @@ def test_semver_equal_to():
     assert not zero_zero_one == one_three_zero
 
     # Minor release diff
-    assert not one_zero_zero >= one_one_zero
+    assert not one_zero_zero == one_one_zero
 
     # Patch release diff
     assert not one_one_zero == one_one_one
@@ -122,3 +122,25 @@ def test_semver_equal_to():
 
     # pruned SemVer comparisons
     assert one_four_zero == one_four_one_beta_pruned
+
+
+def test_semver_not_equal_to():
+    assert not one_four_zero != one_four_zero
+    assert not one_four_zero_beta_one != one_four_zero_beta_one
+
+    # Major release diff
+    assert zero_zero_one != one_three_zero
+
+    # Minor release diff
+    assert one_zero_zero != one_one_zero
+
+    # Patch release diff
+    assert one_one_zero != one_one_one
+
+    # Prerelease release diff
+    assert one_four_zero != one_four_zero_beta_one
+    assert one_four_zero_beta_one != one_four_zero
+    assert one_four_zero_beta_one != one_four_zero_beta_four
+
+    # pruned SemVer comparisons
+    assert not one_four_zero != one_four_one_beta_pruned

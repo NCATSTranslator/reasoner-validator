@@ -146,6 +146,19 @@ def _semver_eq_(obj: SemVer, other: SemVer) -> bool:
 SemVer.__eq__ = _semver_eq_
 
 
+def _semver_ne_(obj: SemVer, other: SemVer) -> bool:
+    """
+    Equal operator ('!=') override.
+    :param obj: SemVer
+    :param other: SemVer
+    :return: bool, True if obj and other are NOT equal
+    """
+    return not _semver_eq_(obj, other)
+
+
+SemVer.__ne__ = _semver_ne_
+
+
 def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
     """
     Greater than or equal operator ('>=') override.
