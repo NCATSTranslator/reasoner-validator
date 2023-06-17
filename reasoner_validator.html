@@ -46,6 +46,10 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">TRAPI Response Validation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.TRAPI_1_3_0"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.TRAPI_1_3_0</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.TRAPI_1_4_0"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.TRAPI_1_4_0</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.TRAPI_1_4_0_BETA3"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.TRAPI_1_4_0_BETA3</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.TRAPI_1_4_0_BETA4"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.TRAPI_1_4_0_BETA4</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.case_edge_bindings"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.case_edge_bindings()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.case_input_found_in_response"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.case_input_found_in_response()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.case_node_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.case_node_found()</span></code></a></li>
@@ -56,7 +60,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.has_valid_results"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.has_valid_results()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sample_graph"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sample_graph()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sample_results"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sample_results()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sanitize_trapi_query()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_response"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sanitize_trapi_response()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -232,13 +236,8 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query" title="reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sanitize_trapi_query</span></code></a>(response)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">param response<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict full TRAPI Response JSON object</p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_response" title="reasoner_validator.TRAPIResponseValidator.sanitize_trapi_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sanitize_trapi_response</span></code></a>(response)</p></td>
+<td><p>Some component TRAPI Responses cannot be validated further due to missing tags and None values.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
 <td><p>Export ValidationReporter contents as a Python dictionary (including TRAPI version, Biolink Model version and messages) :return: Dict</p></td>
@@ -248,6 +247,26 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </tr>
 </tbody>
 </table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.TRAPI_1_3_0">
+<span class="sig-name descname"><span class="pre">TRAPI_1_3_0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">SemVer(prefix='',</span> <span class="pre">major=1,</span> <span class="pre">minor=3,</span> <span class="pre">patch=0,</span> <span class="pre">prerelease=None,</span> <span class="pre">buildmetadata=None)</span></em><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.TRAPI_1_3_0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.TRAPI_1_4_0">
+<span class="sig-name descname"><span class="pre">TRAPI_1_4_0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">SemVer(prefix='',</span> <span class="pre">major=1,</span> <span class="pre">minor=4,</span> <span class="pre">patch=0,</span> <span class="pre">prerelease=None,</span> <span class="pre">buildmetadata=None)</span></em><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.TRAPI_1_4_0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.TRAPI_1_4_0_BETA3">
+<span class="sig-name descname"><span class="pre">TRAPI_1_4_0_BETA3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">SemVer(prefix='',</span> <span class="pre">major=1,</span> <span class="pre">minor=4,</span> <span class="pre">patch=0,</span> <span class="pre">prerelease='beta3',</span> <span class="pre">buildmetadata=None)</span></em><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.TRAPI_1_4_0_BETA3" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.TRAPI_1_4_0_BETA4">
+<span class="sig-name descname"><span class="pre">TRAPI_1_4_0_BETA4</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">SemVer(prefix='',</span> <span class="pre">major=1,</span> <span class="pre">minor=4,</span> <span class="pre">patch=0,</span> <span class="pre">prerelease='beta4',</span> <span class="pre">buildmetadata=None)</span></em><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.TRAPI_1_4_0_BETA4" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.case_edge_bindings">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">case_edge_bindings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.case_edge_bindings" title="Permalink to this definition"></a></dt>
@@ -413,9 +432,11 @@ triggers validation of all edges in the knowledge graph (could take a while! Def
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query">
-<span class="sig-name descname"><span class="pre">sanitize_trapi_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_query" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.sanitize_trapi_response">
+<span class="sig-name descname"><span class="pre">sanitize_trapi_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_response" title="Permalink to this definition"></a></dt>
+<dd><p>Some component TRAPI Responses cannot be validated further due to missing tags and None values.
+This method is a temporary workaround to sanitize the query for additional validation.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>response</strong> – Dict full TRAPI Response JSON object</p>
 </dd>
