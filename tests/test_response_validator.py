@@ -2,7 +2,12 @@
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
 from typing import Tuple,  Dict
+from sys import stderr
+
 import logging
+
+from json import dump
+
 import pytest
 
 from reasoner_validator import TRAPIResponseValidator
@@ -224,21 +229,26 @@ _TEST_KG_4 = {
 @pytest.mark.parametrize(
     "query",
     [
-        (   # Query 0 - No 'workflow' key
-            {},
+        (   # Query 0 - No 'workflow' key in TRAPI Response
+            {
+                'message': {}
+            },
         ),
         (   # Query 1 - Null 'workflow' key value
             {
+                'message': {},
                 'workflow': None
             },
         ),
         (  # Query 2 - Null 'workflow' key list
             {
+                'message': {},
                 'workflow': []
             },
         ),
         (  # Query 3 - 'runner_parameters' is Null
             {
+                'message': {},
                 'workflow': [
                     {
                         'runner_parameters': None,
@@ -250,6 +260,7 @@ _TEST_KG_4 = {
         ),
         (  # Query 4 - 'parameters' is Null
             {
+                'message': {},
                 'workflow': [
                     {'runner_parameters': {'allowlist': ["infores:aragorn"]}, 'id': 'lookup', 'parameters': None}
                 ]
@@ -257,17 +268,74 @@ _TEST_KG_4 = {
         ),
         (  # Query 5 - both 'parameters' and 'runner_parameters' are Null
             {
+                'message': {},
                 'workflow': [
                     {'runner_parameters': None, 'id': 'lookup', 'parameters': None}
                 ]
+            },
+        ),
+        (   # Query 6 - Now, we patch the Message itself when it is not empty - knowledge graph is nullable
+            {
+                'message': {
+                    'knowledge_graph': None
+                }
+            },
+        ),
+        (   # Query 7 - Now, we patch the Message itself when it is not empty
+            {
+                'message': {
+                    'knowledge_graph': {
+                        'nodes': {},
+                        'edges': {}
+                    }
+                }
+            },
+        ),
+        (   # Query 8 - Now, we patch the Message itself when it is not empty
+            {
+                'message': {
+                    'knowledge_graph': {
+                        'nodes': {},
+                        'edges': {}
+                    }
+                }
+            },
+        ),
+        (   # Query 9 - Now, we patch the Message.knowledge_edge.sources itself when it is not empty
+            {
+                'message': {
+                    'knowledge_graph': {
+                        'nodes': {},
+                        'edges': {
+                            "alice-in-wonderland": {
+                                 'subject': "tweedle-dee",
+                                 'predicate': "and",
+                                 'object': "tweedle-dum",
+                                 'sources': [
+                                     {
+                                         'resource_id': "infores:rabbit-hole",
+                                         'resource_role': "primary_knowledge_source"
+                                     }
+                                 ]
+                            }
+                        }
+                    }
+                }
+            },
+        ),
+        (   # Query 10 - Now, we patch the Message itself when it is not empty
+            {
+                'message': {
+                    'auxiliary_graphs': None
+                }
             },
         )
     ]
 )
 def test_sanitize_trapi_query(query: Tuple):
     validator: TRAPIResponseValidator = TRAPIResponseValidator()
-    response: Dict = validator.sanitize_trapi_query(response=query[0])
-    # assert response == query[1]
+    response: Dict = validator.sanitize_trapi_response(response=query[0])
+    dump(response, stderr, indent=4)
 
 
 NUM_SAMPLE_NODES = 5
@@ -362,7 +430,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             None,
             None,
             False,
-            # "Validate TRAPI Response: ERROR - Response returned an null or empty Message Query Graph!"
+            # "Validate TRAPI Response: ERROR - Response returned a null or empty Message Query Graph!"
             "error.trapi.response.query_graph.empty"
         ),
         (
@@ -701,7 +769,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             None,
             None,
             True,
-            # "Validate TRAPI Response: ERROR - TRAPI schena error: the 'workflow' field must be an array of
+            # Validate TRAPI Response: ERROR - TRAPI schema error: the 'workflow' field must be an array of
             # a 'workflow' JSON objects, with contents as defined by the workflow schema.
             "error.trapi.validation"
         ),

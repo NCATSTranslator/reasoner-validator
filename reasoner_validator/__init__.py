@@ -29,6 +29,10 @@ class TRAPIResponseValidator(ValidationReporter):
     conformance of TRAPI Responses to TRAPI and the Biolink Model.
     """
 
+    TRAPI_1_3_0 = SemVer.from_string("1.3.0")
+    TRAPI_1_4_0 = SemVer.from_string("1.4.0")
+    TRAPI_1_4_0_BETA4 = SemVer.from_string("1.4.0-beta4")
+
     def __init__(
             self,
             trapi_version: Optional[str] = None,
@@ -61,13 +65,35 @@ class TRAPIResponseValidator(ValidationReporter):
         )
         self.suppress_empty_data_warnings = suppress_empty_data_warnings
 
-    def sanitize_trapi_query(self, response: Dict) -> Dict:
+    def sanitize_trapi_response(self, response: Dict) -> Dict:
         """
+        Some component TRAPI Responses cannot be validated further due to missing tags and None values.
+        This method is a temporary workaround to sanitize the query for additional validation.
 
         :param response: Dict full TRAPI Response JSON object
         :return: Dict, response with discretionary removal of content which
                        triggers (temporarily) unwarranted TRAPI validation failures
         """
+        # Temporary workaround for "1.4.0-beta4" schema bugs
+        current_version: SemVer = SemVer.from_string(self.trapi_version)
+        # the message is not empty
+        if 'knowledge_graph' in response['message'] and response['message']['knowledge_graph'] is not None and \
+                self.TRAPI_1_4_0_BETA4 >= current_version != self.TRAPI_1_3_0:
+            for key, edge in response['message']['knowledge_graph']['edges'].items():
+                edge_id = f"{str(edge['subject'])}--{str(edge['predicate'])}->{str(str(edge['object']))}"
+                if 'sources' not in edge or not edge['sources']:
+                    self.report("error.knowledge_graph.edge.sources.missing", identifier=edge_id)
+                    continue
+                for source in edge['sources']:
+                    if 'source_record_urls' not in source or source['source_record_urls'] is None:
+                        source['source_record_urls'] = []
+                    if 'upstream_resource_ids' not in source or source['upstream_resource_ids'] is None:
+                        source['upstream_resource_ids'] = []
+
+        # 'auxiliary_graphs' ought to be nullable, however... not specified that way (yet)
+        if 'auxiliary_graphs' not in response['message'] or response['message']['auxiliary_graphs'] is None:
+            response['message']['auxiliary_graphs'] = []
+
         if 'workflow' in response and response['workflow']:
             # a 'workflow' is a list of steps, which are JSON object specifications
             workflow_steps: List[Dict] = response['workflow']
@@ -125,7 +151,7 @@ class TRAPIResponseValidator(ValidationReporter):
             # ... also, nothing more here to validate?
             return
 
-        response = self.sanitize_trapi_query(response)
+        response = self.sanitize_trapi_response(response)
 
         trapi_validator: TRAPISchemaValidator = check_trapi_validity(
             instance=response,
