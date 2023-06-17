@@ -87,15 +87,15 @@ class TRAPIResponseValidator(ValidationReporter):
                     continue
                 for source in edge['sources']:
                     if 'source_record_urls' not in source or source['source_record_urls'] is None:
-                        source['source_record_urls'] = []
+                        source['source_record_urls'] = list()
                     if 'upstream_resource_ids' not in source or source['upstream_resource_ids'] is None:
-                        source['upstream_resource_ids'] = []
+                        source['upstream_resource_ids'] = list()
 
         # 'auxiliary_graphs' (from TRAPI 1.4.0-beta3 onwards)
         # ought to be nullable, however... not specified that way (yet)
         if current_version >= self.TRAPI_1_4_0_BETA3 and \
                 ('auxiliary_graphs' not in response['message'] or response['message']['auxiliary_graphs'] is None):
-            response['message']['auxiliary_graphs'] = []
+            response['message']['auxiliary_graphs'] = dict()
 
         if 'workflow' in response and response['workflow']:
             # a 'workflow' is a list of steps, which are JSON object specifications
