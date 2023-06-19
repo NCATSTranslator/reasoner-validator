@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.6.1
+- Reversed order of codes in codes.yaml resulting in new documentation order: Critical at top, Information at the bottom
+
 ## v3.6.0
 - Introduced 'critical' category of validation messages (only a handful of messages to start, to be reviewed further)
 
