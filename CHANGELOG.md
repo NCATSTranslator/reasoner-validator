@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.6.0
+- Introduced 'critical' category of validation messages (only a handful of messages to start, to be reviewed further)
+
 ## v3.5.11
 - Bug fix for TRAPI Response sanitization
 
