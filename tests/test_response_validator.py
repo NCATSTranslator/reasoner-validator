@@ -517,7 +517,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             False,
             # "Validate TRAPI Response: ERROR - the 'Response.Message.Results' field
             # is not TRAPI schema validated since it has the wrong format!"
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (
             # Query 8 - Partly empty Response.Message with a modest but workable query and
@@ -751,7 +751,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             None,
             True,
             # "Validate TRAPI Response: ERROR - TRAPI schena error: the 'workflow' field must be an array"
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (
             # Query 21 - Valid full Message, under strict validation.
@@ -771,7 +771,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             True,
             # Validate TRAPI Response: ERROR - TRAPI schema error: the 'workflow' field must be an array of
             # a 'workflow' JSON objects, with contents as defined by the workflow schema.
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (
             # Query 22 - Valid full Message, under strict validation.
@@ -834,7 +834,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             True,
             # "Validate TRAPI Response: ERROR - TRAPI schema validation error: the 'workflow'
             # field entry overlay_compute_ngd is missing a required parameter 'qnodes_keys'
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (
             # Query 24 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
