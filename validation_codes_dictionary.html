@@ -93,11 +93,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#error">Error</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#error-non-compliant">error.non_compliant</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-validation">error.trapi.validation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-request-invalid">error.trapi.request.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-biolink-model-noncompliance">error.biolink.model.noncompliance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-empty">error.trapi.response.empty</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-unexpected-http-code">error.trapi.response.unexpected_http_code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-empty">error.trapi.response.message.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-query-graph-missing">error.trapi.response.query_graph.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-query-graph-empty">error.trapi.response.query_graph.empty</a></li>
@@ -191,6 +188,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-invalid">error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-unknown">error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-role-empty">error.knowledge_graph.edge.sources.retrieval_source.resource_role.empty</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#critical">Critical</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#critical-trapi-validation">critical.trapi.validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#critical-trapi-request-invalid">critical.trapi.request.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#critical-trapi-response-unexpected-http-code">critical.trapi.response.unexpected_http_code</a></li>
 </ul>
 </li>
 </ul>
@@ -437,34 +440,16 @@
 </section>
 <section id="error">
 <h2>Error<a class="headerlink" href="#error" title="Permalink to this heading"></a></h2>
-<section id="error-non-compliant">
-<h3>error.non_compliant<a class="headerlink" href="#error-non-compliant" title="Permalink to this heading"></a></h3>
+<section id="error-biolink-model-noncompliance">
+<h3>error.biolink.model.noncompliance<a class="headerlink" href="#error-biolink-model-noncompliance" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> S-P-O statement is not compliant to Biolink Model release</p>
 <p><strong>Context:</strong> identifier, biolink_release</p>
 <p><strong>Description:</strong> This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause!</p>
-</section>
-<section id="error-trapi-validation">
-<h3>error.trapi.validation<a class="headerlink" href="#error-trapi-validation" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Schema validation error</p>
-<p><strong>Context:</strong> identifier, component, reason</p>
-<p><strong>Description:</strong> JSON Schema validation error reported for specified TRAPI query component.</p>
-</section>
-<section id="error-trapi-request-invalid">
-<h3>error.trapi.request.invalid<a class="headerlink" href="#error-trapi-request-invalid" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Test could not generate a valid TRAPI query request object using identified element</p>
-<p><strong>Context:</strong> identifier, test, reason</p>
-<p><strong>Description:</strong> Specified TRAPI query unit ‘test’ query could not be prepared for the indicated reason, using the identified Biolink starting element.</p>
 </section>
 <section id="error-trapi-response-empty">
 <h3>error.trapi.response.empty<a class="headerlink" href="#error-trapi-response-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> TRAPI Response is missing!</p>
 <p><strong>Description:</strong> TRAPI Response to be validated should not be totally empty but should have a Message body.</p>
-</section>
-<section id="error-trapi-response-unexpected-http-code">
-<h3>error.trapi.response.unexpected_http_code<a class="headerlink" href="#error-trapi-response-unexpected-http-code" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> TRAPI Response has an unexpected HTTP status code</p>
-<p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted.</p>
 </section>
 <section id="error-trapi-response-message-empty">
 <h3>error.trapi.response.message.empty<a class="headerlink" href="#error-trapi-response-message-empty" title="Permalink to this heading"></a></h3>
@@ -1015,6 +1000,27 @@
 <p><strong>Message:</strong> Empty ‘resource_role’ property in Edge</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Value of the ‘resource_role’ property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty ResourceRole enum value!</p>
+</section>
+</section>
+<section id="critical">
+<h2>Critical<a class="headerlink" href="#critical" title="Permalink to this heading"></a></h2>
+<section id="critical-trapi-validation">
+<h3>critical.trapi.validation<a class="headerlink" href="#critical-trapi-validation" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Schema validation error</p>
+<p><strong>Context:</strong> identifier, component, reason</p>
+<p><strong>Description:</strong> Critical JSON Schema validation error reported for specified TRAPI query component.</p>
+</section>
+<section id="critical-trapi-request-invalid">
+<h3>critical.trapi.request.invalid<a class="headerlink" href="#critical-trapi-request-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Test could not generate a valid TRAPI query request object using identified element</p>
+<p><strong>Context:</strong> identifier, test, reason</p>
+<p><strong>Description:</strong> Specified TRAPI query unit ‘test’ query could not be prepared for the indicated reason, using the identified Biolink starting element.</p>
+</section>
+<section id="critical-trapi-response-unexpected-http-code">
+<h3>critical.trapi.response.unexpected_http_code<a class="headerlink" href="#critical-trapi-response-unexpected-http-code" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Unexpected HTTP status code</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted.</p>
 </section>
 </section>
 </section>

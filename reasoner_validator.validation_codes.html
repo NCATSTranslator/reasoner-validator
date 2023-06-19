@@ -124,7 +124,7 @@
 <td><p>Get the single code entry corresponding to the given code, if available.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.get_code_subtree" title="reasoner_validator.validation_codes.CodeDictionary.get_code_subtree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_code_subtree</span></code></a>(code[, facet, is_leaf])</p></td>
-<td><p>Get subtree of specified dot-delimited tag name, returned with message type (i.e.</p></td>
+<td><p>Get subtree of specified dot-delimited tag name, returning message type (i.e.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validation_codes.CodeDictionary.markdown" title="reasoner_validator.validation_codes.CodeDictionary.markdown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">markdown</span></code></a>([filename])</p></td>
 <td><p>Dump the Code Dictionary into a validation_codes_dictionary.md Markdown file, for documentation purposes.</p></td>
@@ -194,7 +194,7 @@ keys are either ‘None’ if the identifier is the only template parameter, or 
 a list of dictionaries containing all the other expected parameters keys and their values
 for every distinct message).</p></li>
 <li><p><strong>add_prefix</strong> – bool, flag to prepend a prefix for the message type
-(i.e. error, warning, info) to displayed messages (default: False)</p></li>
+(i.e. critical, error, warning, info) to displayed messages (default: False)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -243,7 +243,7 @@ the presence of the mandatory ‘$message’ tree parameter dictionary key.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.validation_codes.CodeDictionary.get_code_subtree">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_code_subtree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_leaf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.validation_codes.CodeDictionary.get_code_subtree" title="Permalink to this definition"></a></dt>
-<dd><p>Get subtree of specified dot-delimited tag name, returned with message type (i.e. info, warning, error).
+<dd><p>Get subtree of specified dot-delimited tag name, returning message type (i.e. info, warning, error, critical).
 If optional ‘is_leaf’ flag is set to True, then only return the code if it is a terminal leaf in the code tree.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -255,9 +255,9 @@ If optional ‘is_leaf’ flag is set to True, then only return the code if it i
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Optional[Tuple[str, Dict[str,str]]], 2-tuple of the code type (i.e. info, warning, error) and the
-validation message entry (dictionary); None if empty code or code unknown in the code dictionary,
-or (if the is_leaf option is ‘True’) if the code doesn’t resolve to a single leaf.</p>
+<dd class="field-even"><p>Optional[Tuple[str, Dict[str,str]]], 2-tuple of the code type (i.e. info, warning, error, critical)
+and the validation message entry (dictionary); None if empty code or code unknown in the
+code dictionary, or (if the is_leaf option is ‘True’) if the code doesn’t resolve to a single leaf.</p>
 </dd>
 </dl>
 </dd></dl>
