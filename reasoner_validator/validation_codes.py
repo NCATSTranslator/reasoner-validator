@@ -280,8 +280,16 @@ class CodeDictionary:
             with open(filename, mode='w') as markdown_file:
                 print("# Validation Codes Dictionary\n", file=markdown_file)
                 top_level_tag: str
+
                 for top_level_tag in code_dictionary.keys():
-                    top_level_name = "Information" if top_level_tag == "info" else top_level_tag.capitalize()
+
+                    if top_level_tag == "info":
+                        top_level_name = "Information"
+                    elif top_level_tag == "critical":
+                        top_level_name = "Critical Error"
+                    else:
+                        top_level_name = top_level_tag.capitalize()
+
                     print(f"## {top_level_name}\n", file=markdown_file)
                     cls._dump_code_markdown_entries(
                         top_level_tag,
