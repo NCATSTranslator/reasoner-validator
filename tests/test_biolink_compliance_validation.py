@@ -1329,7 +1329,9 @@ def qualifier_validator(
 
     mock_edge["object"] = "mock_object"
     trapi_validator.is_valid_trapi_query(mock_edge, edge_model)
-    if trapi_validator.has_errors():
+    # TODO: not sure if simple errors should be fully displaced
+    #       by 'critical' errors or rather, just complement them
+    if trapi_validator.has_critical():
         validator = trapi_validator
     else:
         # if you get this far,then attempt additional Biolink Validation
@@ -1357,13 +1359,13 @@ def qualifier_validator(
             {
                 'qualifier_constraints': None
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 2 - 'qualifier_constraints' value is not an array - invalidated by TRAPI schema
             {
                 'qualifier_constraints': {}
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 3 - empty 'qualifier_constraints' array value - since nullable: true, this should pass
             {
@@ -1377,7 +1379,7 @@ def qualifier_validator(
                     {}
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 5 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
             {
@@ -1385,7 +1387,7 @@ def qualifier_validator(
                     []
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 6 - 'qualifier_set' entry is missing the 'qualifier_set' key - invalidated by TRAPI schema
             {
@@ -1393,7 +1395,7 @@ def qualifier_validator(
                     {"not_qualifier_set": []}
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 7 - 'qualifier_set' entry is empty
             {
@@ -1411,7 +1413,7 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 9 - 'qualifier' entry in the qualifier_set is empty - invalidated by TRAPI schema
             {
@@ -1423,7 +1425,7 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 10 - 'qualifier' entry is not a JSON object (dictionary) - invalidated by TRAPI schema
             {
@@ -1435,7 +1437,7 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 11 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
             {
@@ -1450,7 +1452,7 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 12 - 'qualifier_type_id' property value is unknown
             {
@@ -1509,7 +1511,7 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (   # Query 16 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
             #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
@@ -1661,7 +1663,7 @@ QC_QS_NOT_A_CURIE = {
         (  # Query 1 - 'qualifier_type_id' value not a Biolink CURIE - schema validation error in TRAPI < 1.4.0-beta
             "1.4.0-beta",
             QC_QS_NOT_A_CURIE,
-            "error.trapi.validation"
+            "critical.trapi.validation"
         )
     ]
 )
@@ -1691,7 +1693,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             {
                 'qualifiers': {}
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 3 - empty 'qualifiers' array value - since nullable: true, this should pass
             {
@@ -1703,13 +1705,13 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             {
                 'qualifiers': [{}]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 5 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
             {
                 'qualifiers': [[]]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 6 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
             {
@@ -1720,7 +1722,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 7 - 'qualifier_type_id' property value is unknown
             {
@@ -1764,7 +1766,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (   # Query 11 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
             #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
@@ -1826,7 +1828,7 @@ Q_NOT_A_CURIE = {
         (  # Query 1 - 'qualifier_type_id' value not a Biolink CURIE - schema validation error in TRAPI < 1.4.0-beta
                 "1.4.0-beta",
                 Q_NOT_A_CURIE,
-                "error.trapi.validation"
+                "critical.trapi.validation"
         )
     ]
 )
