@@ -276,7 +276,7 @@
 
 ## Error
 
-### error.non_compliant
+### error.biolink.model.noncompliance
 
 **Message:** S-P-O statement is not compliant to Biolink Model release
 
@@ -284,35 +284,11 @@
 
 **Description:** This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause!
 
-### error.trapi.validation
-
-**Message:** Schema validation error
-
-**Context:** identifier, component, reason
-
-**Description:** JSON Schema validation error reported for specified TRAPI query component.
-
-### error.trapi.request.invalid
-
-**Message:** Test could not generate a valid TRAPI query request object using identified element
-
-**Context:** identifier, test, reason
-
-**Description:** Specified TRAPI query unit 'test' query could not be prepared for the indicated reason, using the identified Biolink starting element.
-
 ### error.trapi.response.empty
 
 **Message:** TRAPI Response is missing!
 
 **Description:** TRAPI Response to be validated should not be totally empty but should have a Message body.
-
-### error.trapi.response.unexpected_http_code
-
-**Message:** TRAPI Response has an unexpected HTTP status code
-
-**Context:** identifier
-
-**Description:** TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted.
 
 ### error.trapi.response.message.empty
 
@@ -1041,4 +1017,30 @@
 **Context:** identifier
 
 **Description:** Value of the 'resource_role' property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty ResourceRole enum value!
+
+## Critical
+
+### critical.trapi.validation
+
+**Message:** Schema validation error
+
+**Context:** identifier, component, reason
+
+**Description:** Critical JSON Schema validation error reported for specified TRAPI query component.
+
+### critical.trapi.request.invalid
+
+**Message:** Test could not generate a valid TRAPI query request object using identified element
+
+**Context:** identifier, test, reason
+
+**Description:** Specified TRAPI query unit 'test' query could not be prepared for the indicated reason, using the identified Biolink starting element.
+
+### critical.trapi.response.unexpected_http_code
+
+**Message:** Unexpected HTTP status code
+
+**Context:** identifier
+
+**Description:** TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted.
 
