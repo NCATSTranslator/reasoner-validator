@@ -262,7 +262,7 @@ class TRAPISchemaValidator(ValidationReporter):
             else:
                 reason = e.message[0:49] + " "*5 + "... " + " "*5 + e.message[-100:-1]
             self.report(
-                code="error.trapi.validation",
+                code="critical.trapi.validation",
                 identifier=self.trapi_version,
                 component=component,
                 reason=reason

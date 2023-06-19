@@ -242,37 +242,19 @@ warning:
             $description: "Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP."
 
 error:
-  non_compliant:
-    $message: "S-P-O statement is not compliant to Biolink Model release"
-    $context:
-      - identifier
-      - biolink_release
-    $description: "This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause!"
-  trapi:
-    validation:
-      $message: "Schema validation error"
-      $context:
-        - identifier
-        - component
-        - reason
-      $description: "JSON Schema validation error reported for specified TRAPI query component."
-    request:
-      invalid:
-        $message: "Test could not generate a valid TRAPI query request object using identified element"
+  biolink:
+    model:
+      noncompliance:
+        $message: "S-P-O statement is not compliant to Biolink Model release"
         $context:
           - identifier
-          - test
-          - reason
-        $description: "Specified TRAPI query unit 'test' query could not be prepared for the indicated reason, using the identified Biolink starting element."
+          - biolink_release
+        $description: "This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause!"
+  trapi:
     response:
       empty:
         $message: "TRAPI Response is missing!"
         $description: "TRAPI Response to be validated should not be totally empty but should have a Message body."
-      unexpected_http_code:
-        $message: "TRAPI Response has an unexpected HTTP status code"
-        $context:
-          - identifier
-        $description: "TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted."
       message:
         empty:
           $message: "TRAPI Response missing its Message!"
@@ -823,3 +805,26 @@ error:
               $context:
                 - identifier
               $description: "Value of the 'resource_role' property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty ResourceRole enum value!"
+critical:
+  trapi:
+    validation:
+      $message: "Schema validation error"
+      $context:
+        - identifier
+        - component
+        - reason
+      $description: "Critical JSON Schema validation error reported for specified TRAPI query component."
+    request:
+      invalid:
+        $message: "Test could not generate a valid TRAPI query request object using identified element"
+        $context:
+          - identifier
+          - test
+          - reason
+        $description: "Specified TRAPI query unit 'test' query could not be prepared for the indicated reason, using the identified Biolink starting element."
+    response:
+      unexpected_http_code:
+        $message: "Unexpected HTTP status code"
+        $context:
+          - identifier
+        $description: "TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted."
