@@ -31,9 +31,9 @@ def _output(json, flat=False):
 
 class ValidationReporter:
     """
-    General wrapper for managing validation status messages: information, warnings and errors.
-    The TRAPI version and Biolink Model versions are also tracked for convenience at
-    this abstract level although their application is within specific pertinent subclasses.
+    General wrapper for managing validation status messages: information, warnings, errors and 'critical' (errors).
+    The TRAPI version and Biolink Model versions are also tracked for convenience at this abstract level
+    although their application is within specific pertinent subclasses.
     """
 
     # Default major version resolves to latest TRAPI OpenAPI release,
@@ -43,7 +43,8 @@ class ValidationReporter:
     _message_type_name: Dict[str, str] = {
         "info": "information",
         "warning": "warnings",
-        "error": "errors"
+        "error": "errors",
+        "critical": "critical"
     }
 
     def __init__(
@@ -97,10 +98,13 @@ class ValidationReporter:
         #     "errors": {
         #       ...<similar to information data structure above>
         #     },
+        #     "critical": {
+        #       ...<similar to information data structure above>
+        #     }
         # }
         #
         self.messages: Dict[
-            str,  # message type (errors/warnings/information)
+            str,  # message type (critical/errors/warnings/information)
             Dict[
                 str,  # message 'code' as indexing key
                 # Dictionary of 'identifier' indexed messages with parameters
@@ -119,6 +123,7 @@ class ValidationReporter:
                 ]
             ]
         ] = {
+            "critical": dict(),
             "errors": dict(),
             "warnings": dict(),
             "information": dict()
@@ -170,7 +175,7 @@ class ValidationReporter:
         """Predicate to detect any recorded validation messages.
         :return: bool, True if ValidationReporter has any non-empty messages.
         """
-        return self.has_information() or self.has_warnings() or self.has_errors()
+        return self.has_information() or self.has_warnings() or self.has_errors() or self.has_critical()
 
     def has_information(self) -> bool:
         """Predicate to detect any recorded information messages.
@@ -189,6 +194,12 @@ class ValidationReporter:
         :return: bool, True if ValidationReporter has any error messages.
         """
         return bool(self.messages["errors"])
+
+    def has_critical(self) -> bool:
+        """Predicate to detect any recorded critical error messages.
+        :return: bool, True if ValidationReporter has any critical error messages.
+        """
+        return bool(self.messages["critical"])
 
     def dump_info(self, flat=False) -> str:
         """Dump information messages as JSON.
@@ -211,6 +222,13 @@ class ValidationReporter:
         """
         return _output(self.messages["errors"], flat)
 
+    def dump_critical(self, flat=False) -> str:
+        """Dump critical error messages as JSON.
+        :param flat: render output as 'flat' JSON (default: False)
+        :return: str, JSON formatted string of critical error messages.
+        """
+        return _output(self.messages["critical"], flat)
+
     def dump_messages(self, flat=False) -> str:
         """Dump all messages as JSON.
         :param flat: render output as 'flat' JSON (default: False)
@@ -222,11 +240,11 @@ class ValidationReporter:
     def get_message_type(code: str) -> str:
         """Get type of message code.
         :param code: message code
-        :return: message type, one of 'info', 'warning' or 'error'
+        :return: message type, one of 'info', 'warning', 'error' or 'critical'
         """
         code_id_parts: List[str] = code.split('.')
         message_type: str = code_id_parts[0]
-        if message_type in ['info', 'warning', 'error']:
+        if message_type in ['info', 'warning', 'error', 'critical']:
             return message_type
         else:
             raise NotImplementedError(
@@ -271,7 +289,7 @@ class ValidationReporter:
         # else: additional parameters are None
 
     def add_messages(self, new_messages: Dict[
-            str,  # message type (info/warning/error)
+            str,  # message type (info/warning/error/critical)
             Dict[
                 str,  # message 'code' as indexing key
 
@@ -283,10 +301,10 @@ class ValidationReporter:
     ]):
         """
         Batch addition of a dictionary of messages to a ValidationReporter instance.
-        :param new_messages: Dict[str, Dict], with key one of "information", "warnings" or "errors",
+        :param new_messages: Dict[str, Dict], with key one of "information", "warnings", "errors" or "critical",
                               with 'code' keyed dictionaries of (structured) message parameters.
         """
-        for message_type in self.messages:   # 'info', 'warning', 'error'
+        for message_type in self.messages:   # 'info', 'warning', 'error', 'critical'
             if message_type in new_messages:
                 message_type_contents = new_messages[message_type]
                 for code, content in message_type_contents.items():   # codes.yaml message codes
@@ -339,6 +357,13 @@ class ValidationReporter:
         """
         return copy.deepcopy(self.messages["errors"])
 
+    def get_critical(self) -> Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]:
+        """
+        Get copy of all recorded critical error messages.
+        :return: List, copy of all critical error messages.
+        """
+        return copy.deepcopy(self.messages["critical"])
+
     ############################
     # General Instance methods #
     ############################
@@ -384,7 +409,8 @@ class ValidationReporter:
         :return: bool, returns 'False' if validation method documented errors; True otherwise
         """
         validation_method(self, *args, **kwargs)
-        if self.has_errors():
+        # TODO: not sure if we should detect both 'errors' and 'critical' here or just 'critical'
+        if self.has_critical() or self.has_errors():
             return False
         else:
             return True
@@ -398,7 +424,7 @@ class ValidationReporter:
                      format to what is returned by the to_dict() method in this class.
         :return: True if the case contains validation messages
         """
-
+        # TODO: not sure if we should detect both 'errors' and 'critical' here or just 'critical'
         #
         # The 'case' dictionary object could have a format something like this:
         #
@@ -418,6 +444,11 @@ class ValidationReporter:
         #                 {
         #                     "error.knowledge_graph.empty_nodes": None
         #                 }
+        #             ],
+        #             "critical": [
+        #                 {
+        #                     "critical.trapi.validation": None
+        #                 }
         #             ]
         #         }
         #     }
@@ -426,8 +457,10 @@ class ValidationReporter:
         #
         if case is not None and tag in case and \
                 'messages' in case[tag] and \
-                'errors' in case[tag]['messages'] and \
-                case[tag]['messages']['errors']:
+                (
+                    'errors' in case[tag]['messages'] and case[tag]['messages']['errors'] or
+                    'critical' in case[tag]['messages'] and case[tag]['messages']['critical']
+                ):
             return True
         else:
             return False
@@ -476,11 +509,11 @@ class ValidationReporter:
 
         message_type: str
         coded_messages: Dict
-        # Top level partition of messages into 'error', 'warning' or 'info'
+        # Top level partition of messages into 'critical', 'error', 'warning' or 'info'
         for message_type, coded_messages in self.messages.items():
 
             # if there are coded validation messages for a
-            # given message type: 'error', 'warning' or 'info' ...
+            # given message type: 'critical', 'error', 'warning' or 'info' ...
             if coded_messages:
 
                 # ... then iterate through them and print them out
