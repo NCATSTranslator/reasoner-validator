@@ -14,6 +14,5 @@ gh-pages/
 .idea/
 
 # venv
-venv/
 ubuntu/
 py*/
