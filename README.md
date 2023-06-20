@@ -184,7 +184,7 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
 
 ```json
 {
-  "trapi_version": "1.3.0",
+  "trapi_version": "4",
   "biolink_version": "3.2.1",
   "response": {
       "message": {
@@ -227,11 +227,19 @@ one should typically get a response body something like the following JSON valid
 
 ```json
 {
-  "trapi_version": "1.3.0",
+  "trapi_version": "1.4.0",
   "biolink_version": "3.2.1",
   "messages": {
     # some categories of messages may be absent, hence, empty dictionaries
-    "information": {},
+    "critical": {},
+    "errors": {
+      "error.knowledge_graph.node.category.missing": {
+          # this message template does not have any additional parameters
+          # other than identifier hence it just has the unique identifier 
+          # value as a dictionary key, with associated value None
+           "MONDO:0005148": None
+        }
+    },
     "warnings": {
       # validation code
       "warning.knowledge_graph.node.unmapped_prefix": {
@@ -244,23 +252,15 @@ one should typically get a response body something like the following JSON valid
           ]
           
         }
-      
     },
-    "errors": {
-      "error.knowledge_graph.node.category.missing": {
-          # this message template does not have any additional parameters
-          # other than identifier hence it just has the unique identifier 
-          # value as a dictionary key, with associated value None
-           "MONDO:0005148": None
-        }
-    }
+    "information": {},
   }
 }
 ```
 
 To minimize redundancy in validation messages, messages are uniquely indexed in dictionaries at two levels:
 
-1. the (codes.yaml recorded) dot-delimited error code path string
+1. the (codes.yaml recorded) dot-delimited validation code path string
 2. for messages with templated parameters, by a mandatory 'identifier' field (which is expected to exist as a field in a template if such template has one or more parameterized fields)
 
 ### Running the Web Service within Docker

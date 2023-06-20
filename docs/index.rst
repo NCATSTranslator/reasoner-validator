@@ -139,8 +139,10 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
     # allow customization of the text format.
     validator.dump()
 
-The 'messages' returned are partitioned into 'information', 'warning' and 'error' messages
+The 'messages' returned are partitioned into 'information', 'warning', 'error' and 'critical' (error) messages
 in a dictionary looking something like the following (as an example):
+
+Note that the trapi_version parameter to the TRAPIResponseValidator can also be a local path to a .yaml TRAPI schema file, which is read in and used as the validation standard. In such a case, though, it is necessary to encode the TRAPI version in the root filename, e.g. my_trapi_schema_1.4.0-beta5.yaml
 
 .. code-block:: python
 
@@ -170,9 +172,17 @@ in a dictionary looking something like the following (as an example):
                 "500": None  # unexpected http status code returned
             },
             # other 'warning' code-indexed messages
-         },
+        },
         "errors": {
-            "error.trapi.request.invalid": {
+            "error.biolink.model.noncompliance": {
+                "biolink:vitamin": {
+                    "biolink_release": "3.4.5"
+                }
+            },
+            # other 'errors' code-indexed messages
+        },
+        "critical": {
+            "critical.trapi.request.invalid": {
                 # subject node descriptor is the 'identifier'
                 "CHEBI:37565[biolink:SmallMolecule]":
                 {
@@ -181,7 +191,7 @@ in a dictionary looking something like the following (as an example):
                 },
                 {...} # another message (same code type)
             },
-            # other 'error' code-indexed messages
+            # other 'critical' code-indexed messages
         }
     }
 
@@ -365,6 +375,7 @@ then, one should typically get a response body like the following JSON validatio
       "trapi_version": "v1.4.0",
       "biolink_version": "3.2.6",
       "messages": {
+        "critical": {},
         "errors": {
           "error.knowledge_graph.node.category.missing": {
             "MONDO:0005148": [
