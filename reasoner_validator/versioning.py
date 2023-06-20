@@ -73,10 +73,20 @@ class SemVer(NamedTuple):
                                       (default: ['prerelease', 'buildmetadata']).
         :return:
         """
+        assert string
         assert len(core_fields) > 0 and all([field in ['major', 'minor', 'patch'] for field in core_fields])
         assert all([field in ['prerelease', 'buildmetadata'] for field in ext_fields])
 
-        match = semver_pattern.fullmatch(string)
+        # If the string is a file path, generically detected using the .yaml file extension,
+        # then assume that the file path string encodes the SemVer string, as a part of the
+        # root file name just before the .yaml file extension, e.g. my_schema_3.2.1-beta5.yaml
+        if string.endswith(".yaml"):
+            root_path: str = string.replace(".yaml", "")
+            semver_string = root_path.split("_")[-1]
+        else:
+            semver_string = string
+
+        match = semver_pattern.fullmatch(semver_string)
 
         if match is None:
             raise SemVerError(f"'{string}' is not a valid release version")

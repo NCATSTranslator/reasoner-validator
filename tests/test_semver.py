@@ -1,6 +1,7 @@
 """Test semantic version handling."""
 import pytest
 
+from tests import SAMPLE_SCHEMA_FILE, SAMPLE_SCHEMA_VERSION
 from reasoner_validator.versioning import semver_pattern, SemVer, SemVerUnderspecified
 
 
@@ -144,3 +145,13 @@ def test_semver_not_equal_to():
 
     # pruned SemVer comparisons
     assert not one_four_zero != one_four_one_beta_pruned
+
+
+sample_schema_version = SemVer.from_string(SAMPLE_SCHEMA_VERSION)
+sample_schema_file_semver = SemVer.from_string(SAMPLE_SCHEMA_FILE)
+
+
+def test_schema_file_versioning():
+
+    # Sample schema file has internal version type
+    assert sample_schema_file_semver == sample_schema_version

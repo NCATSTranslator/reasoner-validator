@@ -1,18 +1,11 @@
 """Test TRAPI version handling."""
 from typing import Dict
-from sys import stderr
-from os.path import dirname, abspath
 
 import pytest
 
 from reasoner_validator.versioning import get_latest_version
 from reasoner_validator.trapi import load_schema, TRAPIAccessError
-
-LATEST_TRAPI_VERSION: str = "v1.4.0-beta4"
-
-TESTS_DIRECTORY = abspath(dirname(__file__))
-print(f"Test Directory: {TESTS_DIRECTORY}", file=stderr)
-SAMPLE_SCHEMA_FILE = f"{TESTS_DIRECTORY}/test_data/sample_trapi_schema.yaml"
+from tests import SAMPLE_SCHEMA_FILE, LATEST_TRAPI_VERSION
 
 
 def test_semver_spec_trapi_version():
