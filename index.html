@@ -204,8 +204,9 @@ poetry<span class="w"> </span>shell
 <span class="n">validator</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The ‘messages’ returned are partitioned into ‘information’, ‘warning’ and ‘error’ messages
+<p>The ‘messages’ returned are partitioned into ‘information’, ‘warning’, ‘error’ and ‘critical’ (error) messages
 in a dictionary looking something like the following (as an example):</p>
+<p>Note that the trapi_version parameter to the TRAPIResponseValidator can also be a local path to a .yaml TRAPI schema file, which is read in and used as the validation standard. In such a case, though, it is necessary to encode the TRAPI version in the root filename, e.g. my_trapi_schema_1.4.0-beta5.yaml</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">messages</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;info.excluded&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -232,9 +233,17 @@ in a dictionary looking something like the following (as an example):</p>
             <span class="s2">&quot;500&quot;</span><span class="p">:</span> <span class="kc">None</span>  <span class="c1"># unexpected http status code returned</span>
         <span class="p">},</span>
         <span class="c1"># other &#39;warning&#39; code-indexed messages</span>
-     <span class="p">},</span>
+    <span class="p">},</span>
     <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;error.trapi.request.invalid&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;error.biolink.model.noncompliance&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;biolink:vitamin&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;biolink_release&quot;</span><span class="p">:</span> <span class="s2">&quot;3.4.5&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="c1"># other &#39;errors&#39; code-indexed messages</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;critical&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;critical.trapi.request.invalid&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="c1"># subject node descriptor is the &#39;identifier&#39;</span>
             <span class="s2">&quot;CHEBI:37565[biolink:SmallMolecule]&quot;</span><span class="p">:</span>
             <span class="p">{</span>
@@ -243,7 +252,7 @@ in a dictionary looking something like the following (as an example):</p>
             <span class="p">},</span>
             <span class="p">{</span><span class="o">...</span><span class="p">}</span> <span class="c1"># another message (same code type)</span>
         <span class="p">},</span>
-        <span class="c1"># other &#39;error&#39; code-indexed messages</span>
+        <span class="c1"># other &#39;critical&#39; code-indexed messages</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -447,6 +456,7 @@ poetry<span class="w"> </span>shell
 <span class="w">  </span><span class="nt">&quot;trapi_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v1.4.0&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;biolink_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.2.6&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;messages&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;critical&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
 <span class="w">    </span><span class="nt">&quot;errors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;error.knowledge_graph.node.category.missing&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;MONDO:0005148&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
