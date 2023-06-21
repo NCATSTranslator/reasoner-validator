@@ -541,7 +541,7 @@ class TRAPIResponseValidator(ValidationReporter):
                     if "id" in details:
                         if subject_id == details["id"]:
                             subject_id_found = True
-                        elif object_id == details["id"]:
+                        if object_id == details["id"]:
                             object_id_found = True
 
             # However, TRAPI 1.4.0 Message 'Results' 'edge_bindings' are reported differently
