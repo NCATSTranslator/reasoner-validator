@@ -1,12 +1,14 @@
 from typing import Optional, List, Dict
 
+from bmt import Toolkit
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.biolink import (
     check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph,
+    BMTWrapper,
     BiolinkValidator,
     get_biolink_model_toolkit,
-    BiolinkValidator, TRAPIGraphType
+    TRAPIGraphType
 )
 
 # Maximum number of data points to scrutinize
@@ -744,21 +746,32 @@ class TRAPIResponseValidator(ValidationReporter):
         # the case 'subject_id', 'predicate' and 'object_id'
         edges: Dict = knowledge_graph["edges"]
 
+        bmtw = BMTWrapper(biolink_version=self.biolink_version)
+
         predicate = case["predicate"]
 
-        validator = BiolinkValidator(TRAPIGraphType.Knowledge_Graph, biolink_version=self.biolink_version)
-        inverse_predicate = validator.get_inverse_predicate(predicate)
+        bmt: Optional[Toolkit] = bmtw.get_bmt()
+        predicate_descendants: List[str]
+        inverse_predicate_descendants: List[str]
+        if bmt is not None:
+            predicate_descendants = bmt.get_descendants(predicate)
+            inverse_predicate = bmtw.get_inverse_predicate(predicate)
+            inverse_predicate_descendants = bmt.get_descendants(inverse_predicate)
+        else:
+            # simpler case in which we are ignoring deep Biolink Model validation
+            predicate_descendants = [predicate]
+            inverse_predicate_descendants = list()
 
         edge_id_found: Optional[str] = None
         for edge_id, edge in edges.items():
             # Note: this edge search could be arduous on a big knowledge graph?
             if edge["subject"] == subject_id and \
-                    edge["predicate"] == predicate and \
+                    edge["predicate"] in predicate_descendants and \
                     edge["object"] == object_id:
                 edge_id_found = edge_id
                 break
             elif edge["subject"] == object_id and \
-                    edge["predicate"] == inverse_predicate and \
+                    edge["predicate"] in inverse_predicate_descendants and \
                     edge["object"] == subject_id:
                 # observation of the inverse edge is also counted as a match?
                 edge_id_found = edge_id

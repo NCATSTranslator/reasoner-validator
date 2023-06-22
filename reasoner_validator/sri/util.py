@@ -38,7 +38,6 @@ def is_curie(s: str) -> bool:
         return False
 
 
-
 # TODO: not sure to what maxsize for LRU cache
 #       should be set so we just take the default
 @lru_cache()

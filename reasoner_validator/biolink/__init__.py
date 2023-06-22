@@ -83,60 +83,21 @@ class TRAPIGraphType(Enum):
     Knowledge_Graph = "Knowledge Graph"
 
 
-class BiolinkValidator(ValidationReporter):
-    """
-    Wrapper class for Biolink Model validation.
-    """
-    def __init__(
-        self,
-        graph_type: TRAPIGraphType,
-        trapi_version: Optional[str] = None,
-        biolink_version: Optional[str] = None,
-        sources: Optional[Dict[str, str]] = None,
-        strict_validation: bool = False
-    ):
-        """
-        Biolink Validator constructor.
-
-        :param graph_type: type of graph data being validated
-        :type graph_type: TRAPIGraphType
-        :param trapi_version: caller specified Biolink Model version (default: None, which takes the TRAPI 'latest')
-        :type trapi_version: Optional[str] or None
-        :param biolink_version: caller specified Biolink Model version (default: None, which takes the BMT 'latest')
-        :type biolink_version: Optional[str] or None
-        :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
-        :type sources: Optional[Dict[str,str]]
-        """
+class BMTWrapper:
+    def __init__(self, biolink_version: Optional[str] = None):
         self.bmt: Optional[Toolkit] = None
         if biolink_version != "suppress":
             # Here, the Biolink Model version is validated, and the relevant Toolkit pulled.
             self.bmt = get_biolink_model_toolkit(biolink_version=biolink_version)
-            resolved_biolink_version = self.bmt.get_model_version()
+            self.resolved_biolink_version = self.bmt.get_model_version()
         else:
-            resolved_biolink_version = "suppress"
-        ValidationReporter.__init__(
-            self,
-            prefix=f"Biolink Validation of {graph_type.value}",
-            trapi_version=trapi_version,
-            biolink_version=resolved_biolink_version,
-            sources=sources,
-            strict_validation=strict_validation
-        )
-        self.graph_type: TRAPIGraphType = graph_type
-        self.nodes: Set[str] = set()
+            self.resolved_biolink_version = "suppress"
 
-    def minimum_required_biolink_version(self, version: str) -> bool:
-        """
-        :param version: simple 'major.minor.patch' Biolink Model SemVer
-        :return: True if current version is equal to, or newer than, a targeted 'minimum_version'
-        """
-        try:
-            current: SemVer = SemVer.from_string(self.biolink_version)
-            target: SemVer = SemVer.from_string(version)
-            return current >= target
-        except SemVerError as sve:
-            logger.error(f"minimum_required_biolink_version() error: {str(sve)}")
-            return False
+    def get_resolved_biolink_version(self) -> Optional[str]:
+        return self.resolved_biolink_version
+
+    def get_bmt(self) -> Optional[Toolkit]:
+        return self.bmt
 
     def is_symmetric(self, name: str) -> bool:
         """
@@ -173,6 +134,55 @@ class BiolinkValidator(ValidationReporter):
                 ip = self.bmt.get_element(inverse_predicate_name)
                 return utils.format_element(ip)
         return None
+
+class BiolinkValidator(ValidationReporter, BMTWrapper):
+    """
+    Wrapper class for Biolink Model validation.
+    """
+    def __init__(
+        self,
+        graph_type: TRAPIGraphType,
+        trapi_version: Optional[str] = None,
+        biolink_version: Optional[str] = None,
+        sources: Optional[Dict[str, str]] = None,
+        strict_validation: bool = False
+    ):
+        """
+        Biolink Validator constructor.
+
+        :param graph_type: type of graph data being validated
+        :type graph_type: TRAPIGraphType
+        :param trapi_version: caller specified Biolink Model version (default: None, which takes the TRAPI 'latest')
+        :type trapi_version: Optional[str] or None
+        :param biolink_version: caller specified Biolink Model version (default: None, which takes the BMT 'latest')
+        :type biolink_version: Optional[str] or None
+        :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+        :type sources: Optional[Dict[str,str]]
+        """
+        BMTWrapper.__init__(self, biolink_version=biolink_version)
+        ValidationReporter.__init__(
+            self,
+            prefix=f"Biolink Validation of {graph_type.value}",
+            trapi_version=trapi_version,
+            biolink_version=self.get_resolved_biolink_version(),
+            sources=sources,
+            strict_validation=strict_validation
+        )
+        self.graph_type: TRAPIGraphType = graph_type
+        self.nodes: Set[str] = set()
+
+    def minimum_required_biolink_version(self, version: str) -> bool:
+        """
+        :param version: simple 'major.minor.patch' Biolink Model SemVer
+        :return: True if current version is equal to, or newer than, a targeted 'minimum_version'
+        """
+        try:
+            current: SemVer = SemVer.from_string(self.biolink_version)
+            target: SemVer = SemVer.from_string(version)
+            return current >= target
+        except SemVerError as sve:
+            logger.error(f"minimum_required_biolink_version() error: {str(sve)}")
+            return False
 
     def get_result(self) -> Tuple[str, Optional[Dict[str, Dict[str, Optional[List[Dict[str, str]]]]]]]:
         """
