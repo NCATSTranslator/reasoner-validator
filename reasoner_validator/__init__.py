@@ -754,9 +754,9 @@ class TRAPIResponseValidator(ValidationReporter):
         predicate_descendants: List[str]
         inverse_predicate_descendants: List[str]
         if bmt is not None:
-            predicate_descendants = bmt.get_descendants(predicate)
+            predicate_descendants = bmt.get_descendants(predicate, formatted=True)
             inverse_predicate = bmtw.get_inverse_predicate(predicate)
-            inverse_predicate_descendants = bmt.get_descendants(inverse_predicate)
+            inverse_predicate_descendants = bmt.get_descendants(inverse_predicate, formatted=True)
         else:
             # simpler case in which we are ignoring deep Biolink Model validation
             predicate_descendants = [predicate]

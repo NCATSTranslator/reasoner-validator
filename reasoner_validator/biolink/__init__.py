@@ -135,6 +135,7 @@ class BMTWrapper:
                 return utils.format_element(ip)
         return None
 
+
 class BiolinkValidator(ValidationReporter, BMTWrapper):
     """
     Wrapper class for Biolink Model validation.
