@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.6.3
+- 1.4.0 is now the full latest TRAPI release tracked by the code (for testing), but 1.4.0-beta code and unit tests being kept (for now)
+
 ## v3.6.2
 - Various tweaks to the case 'test edge' validation code, to meet SRI Testing needs
 - Split BiolinkValidator class into two parent parts, for ease of lightweight BMT wrapping reuse; for case edge validation, also look at predicate children (bullet proof validation against None BMT handle?)

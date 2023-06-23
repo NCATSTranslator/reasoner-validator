@@ -9,7 +9,7 @@ from json import dumps
 
 from reasoner_validator.trapi import TRAPISchemaValidator
 
-LATEST_TEST_VERSIONS = "1", "1.4", "1.4.0", "1.4.0-beta4"
+from tests import LATEST_TEST_VERSIONS
 
 SAMPLE_QUERY_1 = {
     "message": {

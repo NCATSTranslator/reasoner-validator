@@ -142,8 +142,8 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 
 ```json
 {
-  "trapi_version": "1.4.0-beta",
-  "biolink_version": "3.2.6",
+  "trapi_version": "1.4.0",
+  "biolink_version": "3.4.3",
   "sources": {
     "ara_source": "infores:aragorn",
     "kp_source": "infores:panther",
@@ -184,8 +184,8 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
 
 ```json
 {
-  "trapi_version": "4",
-  "biolink_version": "3.2.1",
+  "trapi_version": "1.4.0",
+  "biolink_version": "3.4.3",
   "response": {
       "message": {
         "query_graph": {
