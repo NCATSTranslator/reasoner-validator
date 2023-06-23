@@ -406,7 +406,7 @@ class ValidationReporter:
                ValidationReporter as its first argument, for use in reporting validation errors.
         :param args: any positional arguments to the validation_method, after the initial ValidationReporter argument
         :param kwargs: any (optional, additional) keyword arguments to the validation_method, after positional arguments
-        :return: bool, returns 'False' if validation method documented errors; True otherwise
+        :return: bool, returns 'False' if validation method documented (critical) errors; True otherwise
         """
         validation_method(self, *args, **kwargs)
         # TODO: not sure if we should detect both 'errors' and 'critical' here or just 'critical'
