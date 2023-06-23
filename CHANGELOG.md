@@ -2,6 +2,12 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
+## v3.6.2
+- Various tweaks to the case 'test edge' validation code, to meet SRI Testing needs
+- Split BiolinkValidator class into two parent parts, for ease of lightweight BMT wrapping reuse; for case edge validation, also look at predicate children (bullet proof validation against None BMT handle?)
+- Add trapi error code for missing knowledge graph; tweak Response validation codes and docs
+- Guarantee return of the original seed identifier when getting the list of aliases from Node Normalizer
+
 ## v3.6.1
 - Reversed order of codes in codes.yaml resulting in new documentation order: Critical at top, Information at the bottom
 - Fixed bug with SemVer capture of local schema files: assume SemVer versioning is embedded in root file name 
