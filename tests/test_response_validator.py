@@ -465,7 +465,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             None,
             False,
             # "Validate TRAPI Response: WARNING - Response returned an empty Message Knowledge Graph?"
-            "warning.response.knowledge_graph.empty"
+            "warning.trapi.response.knowledge_graph.empty"
         ),
         (
             # Query 5 - Partly empty Response.Message with a modest but workable
@@ -499,7 +499,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             None,
             False,
             # "Validate TRAPI Response: WARNING -Response returned empty Message.results?"
-            "warning.response.results.empty"
+            "warning.trapi.response.results.empty"
         ),
         (
             # Query 7 - Partly empty Response.Message with a modest but workable
@@ -534,7 +534,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             None,
             False,
             # "Validate TRAPI Response: ERROR - Response returned empty Message.results?"
-            "warning.response.results.empty"
+            "warning.trapi.response.results.empty"
         ),
         (
             # Query 9 - Full Message, without 'sources' and 'strict_validation': False - should pass?

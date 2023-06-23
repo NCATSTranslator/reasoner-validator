@@ -317,7 +317,7 @@ class TRAPIResponseValidator(ValidationReporter):
                 # An empty knowledge graph (warning) does not generally invalidate
                 # the whole Message, but no more validation tests are needed
                 if not self.suppress_empty_data_warnings:
-                    self.report(code="warning.response.knowledge_graph.empty")
+                    self.report(code="warning.trapi.response.knowledge_graph.empty")
             else:
                 mapping_validator: MappingValidator = check_node_edge_mappings(knowledge_graph)
                 if mapping_validator.has_messages():
@@ -385,7 +385,7 @@ class TRAPIResponseValidator(ValidationReporter):
 
             if not (results and len(results) > 0):
                 if not self.suppress_empty_data_warnings:
-                    self.report(code="warning.response.results.empty")
+                    self.report(code="warning.trapi.response.results.empty")
                     # An empty result (warning) does not generally invalidate
                     # the whole Message, but no more validation tests are needed
 

@@ -74,6 +74,12 @@
 
 **Description:** The given TRAPI Response is expected to return specific edge(s) relating to the original (test edge?) data used to prepare the TRAPI Request!
 
+### error.trapi.response.knowledge_graph.empty
+
+**Message:** Response returned an empty Message Knowledge Graph, which is an error in this context!
+
+**Description:** An empty Knowledge Graph is considered an error in this validation context!
+
 ### error.trapi.response.results.missing
 
 **Message:** TRAPI Message is missing its Results component!
@@ -780,6 +786,18 @@
 
 **Description:** The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable
 
+### warning.trapi.response.knowledge_graph.empty
+
+**Message:** Response returned an empty Message Knowledge Graph?
+
+**Description:** An empty Knowledge Graph is allowed but merits a boundary response warning?
+
+### warning.trapi.response.results.empty
+
+**Message:** Response returned empty Message.results?
+
+**Description:** Empty Results is allowed but merits a boundary response warning?
+
 ### warning.trapi.response.workflow.runner_parameters.null
 
 **Message:** TRAPI Response.workflow.runner_parameters property is missing?
@@ -799,18 +817,6 @@
 **Context:** identifier
 
 **Description:** An empty graph in this particular context is allowed but merits a boundary response warning?
-
-### warning.response.knowledge_graph.empty
-
-**Message:** Response returned an empty Message Knowledge Graph?
-
-**Description:** An empty Knowledge Graph is allowed but merits a boundary response warning?
-
-### warning.response.results.empty
-
-**Message:** Response returned empty Message.results?
-
-**Description:** Empty Results is allowed but merits a boundary response warning?
 
 ### warning.input_edge.node.category.deprecated
 
