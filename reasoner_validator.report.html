@@ -76,12 +76,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_errors"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.has_errors()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_information"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.has_information()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_messages"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.has_messages()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_validation_errors"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.has_validation_errors()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_warnings"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.has_warnings()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.is_strict_validation"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.is_strict_validation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.merge"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.merge()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.minimum_required_trapi_version"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.minimum_required_trapi_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.report"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.report()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.test_case_has_validation_errors"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.test_case_has_validation_errors()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.to_dict"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.to_dict()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.validate_biolink"><code class="docutils literal notranslate"><span class="pre">ValidationReporter.validate_biolink()</span></code></a></li>
 </ul>
@@ -244,13 +244,10 @@ although their application is within specific pertinent subclasses.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_messages" title="reasoner_validator.report.ValidationReporter.has_messages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_messages</span></code></a>()</p></td>
 <td><p>Predicate to detect any recorded validation messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_validation_errors" title="reasoner_validator.report.ValidationReporter.has_validation_errors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_validation_errors</span></code></a>(tag, case)</p></td>
-<td><p>Check if test case has validation errors.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_warnings" title="reasoner_validator.report.ValidationReporter.has_warnings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_warnings" title="reasoner_validator.report.ValidationReporter.has_warnings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code></a>()</p></td>
 <td><p>Predicate to detect any recorded warning messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.is_strict_validation" title="reasoner_validator.report.ValidationReporter.is_strict_validation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.is_strict_validation" title="reasoner_validator.report.ValidationReporter.is_strict_validation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool, value of validation strictness set in the ValidationReporter.</p>
@@ -258,10 +255,10 @@ although their application is within specific pertinent subclasses.</p>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.merge" title="reasoner_validator.report.ValidationReporter.merge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code></a>(reporter)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.merge" title="reasoner_validator.report.ValidationReporter.merge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code></a>(reporter)</p></td>
 <td><p>Merge all messages and metadata from a second ValidationReporter, into the calling ValidationReporter instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.minimum_required_trapi_version" title="reasoner_validator.report.ValidationReporter.minimum_required_trapi_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_trapi_version</span></code></a>(version)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.minimum_required_trapi_version" title="reasoner_validator.report.ValidationReporter.minimum_required_trapi_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_trapi_version</span></code></a>(version)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param version<span class="colon">:</span></dt>
 <dd class="field-odd"><p>simple 'major.minor.patch' TRAPI schema release SemVer</p>
@@ -269,8 +266,11 @@ although their application is within specific pertinent subclasses.</p>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.report" title="reasoner_validator.report.ValidationReporter.report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code></a>(code, **message)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.report" title="reasoner_validator.report.ValidationReporter.report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code></a>(code, **message)</p></td>
 <td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters) :param code:  :param message: named parameters representing extra (str-formatted) context for the given code message :return: None (internally record the validation message)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.test_case_has_validation_errors" title="reasoner_validator.report.ValidationReporter.test_case_has_validation_errors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_case_has_validation_errors</span></code></a>(tag, case)</p></td>
+<td><p>Check if test case has validation errors.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.to_dict" title="reasoner_validator.report.ValidationReporter.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>()</p></td>
 <td><p>Export ValidationReporter contents as a Python dictionary (including TRAPI version, Biolink Model version and messages) :return: Dict</p></td>
@@ -495,24 +495,6 @@ print per identifier row (value of 0 means print all; default: 0)</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.has_validation_errors">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_validation_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.has_validation_errors" title="Permalink to this definition"></a></dt>
-<dd><p>Check if test case has validation errors.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tag</strong> – str, top level string key in the ‘case’ whose value is the validation messages ‘dictionary’</p></li>
-<li><p><strong>case</strong> – Dict, containing error messages in a structurally similar
-format to what is returned by the to_dict() method in this class.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the case contains validation messages</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.has_warnings">
 <span class="sig-name descname"><span class="pre">has_warnings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.has_warnings" title="Permalink to this definition"></a></dt>
 <dd><p>Predicate to detect any recorded warning messages.
@@ -561,6 +543,24 @@ into the calling ValidationReporter instance.</p>
 :param code: 
 :param message: named parameters representing extra (str-formatted) context for the given code message
 :return: None (internally record the validation message)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.test_case_has_validation_errors">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_case_has_validation_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.test_case_has_validation_errors" title="Permalink to this definition"></a></dt>
+<dd><p>Check if test case has validation errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tag</strong> – str, top level string key in the ‘case’ whose value is the validation messages ‘dictionary’</p></li>
+<li><p><strong>case</strong> – Dict, containing error messages in a structurally similar
+format to what is returned by the to_dict() method in this class.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the case contains validation messages</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
