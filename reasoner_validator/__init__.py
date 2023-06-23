@@ -16,6 +16,7 @@ from reasoner_validator.biolink import (
 from reasoner_validator.trapi import check_trapi_validity, TRAPISchemaValidator
 from reasoner_validator.trapi.mapping import MappingValidator, check_node_edge_mappings
 from reasoner_validator.versioning import SemVer, SemVerError
+from reasoner_validator.sri.util import get_aliases
 
 import logging
 logger = logging.getLogger(__name__)
@@ -448,13 +449,13 @@ class TRAPIResponseValidator(ValidationReporter):
         return False if self.has_errors() else True
 
     @staticmethod
-    def case_node_found(target: str, identifier: str, case: Dict, nodes: Dict) -> bool:
+    def case_node_found(target: str, identifiers: List[str], case: Dict, nodes: Dict) -> bool:
         """
         Check for presence of the target identifier,
         with expected categories, in the "nodes" catalog.
 
         :param target: 'subject' or 'object'
-        :param identifier: (CURIE) identifier of the node
+        :param identifiers: List of node (CURIE) identifiers to be checked in the "nodes" catalog
         :param case: Dict, full test case (to access the target node 'category')
         :param nodes: Dict, nodes category indexed by node identifiers.
         :return:
@@ -468,15 +469,15 @@ class TRAPIResponseValidator(ValidationReporter):
 
         # Sanity check
         assert target in ["subject", "object"]
-
-        if identifier in nodes.keys():
-            # Found the target node identifier,
-            # but is the expected category present?
-            node_details = nodes[identifier]
-            if "categories" in node_details:
-                category = case[f"{target}_category"]
-                if category in node_details["categories"]:
-                    return True
+        for identifier in identifiers:
+            if identifier in nodes.keys():
+                # Found the target node identifier,
+                # but is the expected category present?
+                node_details = nodes[identifier]
+                if "categories" in node_details:
+                    category = case[f"{target}_category"]
+                    if category in node_details["categories"]:
+                        return True
 
         # Target node identifier or categories is missing,
         # or not annotated with the expected category?
@@ -723,12 +724,14 @@ class TRAPIResponseValidator(ValidationReporter):
         # with expected categories, in nodes catalog
         nodes: Dict = knowledge_graph["nodes"]
         subject_id = case["subject_id"] if "subject_id" in case else case["subject"]
-        if not self.case_node_found("subject", subject_id, case, nodes):
+        subject_aliases = get_aliases(subject_id)
+        if not self.case_node_found("subject", subject_aliases, case, nodes):
             # 'subject' node not found?
             return False
 
         object_id = case["object_id"] if "object_id" in case else case["object"]
-        if not self.case_node_found("object", object_id, case, nodes):
+        object_aliases = get_aliases(object_id)
+        if not self.case_node_found("object", object_aliases, case, nodes):
             # 'object' node not found?
             return False
 
@@ -762,27 +765,33 @@ class TRAPIResponseValidator(ValidationReporter):
             predicate_descendants = [predicate]
             inverse_predicate_descendants = list()
 
-        edge_id_found: Optional[str] = None
+        edge_id_match: Optional[str] = None
+        subject_match: Optional[str] = None
+        object_match: Optional[str] = None
         for edge_id, edge in edges.items():
             # Note: this edge search could be arduous on a big knowledge graph?
-            if edge["subject"] == subject_id and \
+            if edge["subject"] in subject_aliases and \
                     edge["predicate"] in predicate_descendants and \
-                    edge["object"] == object_id:
-                edge_id_found = edge_id
+                    edge["object"] in object_aliases:
+                edge_id_match = edge_id
+                subject_match = edge["subject"]
+                object_match = edge["object"]
                 break
-            elif edge["subject"] == object_id and \
+            elif edge["subject"] in object_aliases and \
                     edge["predicate"] in inverse_predicate_descendants and \
-                    edge["object"] == subject_id:
+                    edge["object"] in subject_aliases:
                 # observation of the inverse edge is also counted as a match?
-                edge_id_found = edge_id
+                subject_match = edge["subject"]
+                object_match = edge["object"]
+                edge_id_match = edge_id
                 break
 
-        if edge_id_found is None:
+        if edge_id_match is None:
             # Test case S--P->O edge not found?
             return False
 
         results: List = message["results"]
-        if not self.case_result_found(subject_id, object_id, edge_id_found, results, trapi_version):
+        if not self.case_result_found(subject_match, object_match, edge_id_match, results, trapi_version):
             # Some components of test case S--P->O edge
             # NOT bound within any Results?
             return False

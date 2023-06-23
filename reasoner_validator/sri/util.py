@@ -13,35 +13,27 @@ logger = logging.getLogger(__name__)
 
 # Endpoint for the Translator Normalizer service
 NODE_NORMALIZER_URL = 'https://nodenormalization-sri.renci.org/get_normalized_nodes'
+CURIE_PATTERN = re.compile(r"^[^ <()>:]*:[^/ :]+$")
 
 
-@lru_cache()
 def is_curie(s: str) -> bool:
     """
     Check if a given string is a CURIE.
 
-    Parameters
-    ----------
-    s: str
-        A string
-
-    Returns
-    -------
-    bool
-        Whether or not the given string is a CURIE
-
+    :param s: str, string to be validated as a CURIE
+    :return: bool, whether the given string is a CURIE
     """
+    # Method copied from kgx.prefix_manager.PrefixManager...
     if isinstance(s, str):
-        m = re.match(r"^[^ <()>:]*:[^/ :]+$", s)
+        m = CURIE_PATTERN.match(s)
         return bool(m)
     else:
         return False
 
 
-# TODO: not sure to what maxsize for LRU cache
-#       should be set so we just take the default
-@lru_cache()
-def get_aliases(identifier: str):
+# TODO: not sure to what maxsize for LRU cache but saving 1K identifiers for now
+@lru_cache(maxsize=1024)
+def get_aliases(identifier: str) -> List[str]:
     """
     Get clique of related identifiers from the Node Normalizer
     """
@@ -100,24 +92,6 @@ def get_aliases(identifier: str):
         logging.warning(f"get_aliases(): '{identifier}' is a singleton in its clique thus has no aliases...")
 
     return aliases
-
-
-CURIE_PATTERN = re.compile(r"^[^ <()>:]*:[^/ :]+$")
-
-
-def is_curie(s: str) -> bool:
-    """
-    Check if a given string is a CURIE.
-
-    :param s: str, string to be validated as a CURIE
-    :return: bool, whether or not the given string is a CURIE
-    """
-    # Method copied from kgx.prefix_manager.PrefixManager...
-    if isinstance(s, str):
-        m = CURIE_PATTERN.match(s)
-        return bool(m)
-    else:
-        return False
 
 
 def get_reference(curie: str) -> Optional[str]:
