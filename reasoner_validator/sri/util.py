@@ -82,7 +82,11 @@ def get_aliases(identifier: str) -> List[str]:
             # preferred_name = preferred_id["label"]
             if "equivalent_identifiers" in clique.keys():
                 aliases: List[str] = [entry["identifier"] for entry in clique["equivalent_identifiers"]]
-                aliases.remove(identifier)
+                #
+                # Decided that it was a bad idea to remove
+                # the original identifier from the aliases...
+                # aliases.remove(identifier)
+                #
                 # print(dumps(aliases, indent=2))
             else:
                 logging.warning(f"get_aliases(): missing the 'equivalent identifiers' for the '{identifier}' clique?")
