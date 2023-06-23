@@ -725,14 +725,22 @@ class TRAPIResponseValidator(ValidationReporter):
         nodes: Dict = knowledge_graph["nodes"]
         subject_id = case["subject_id"] if "subject_id" in case else case["subject"]
         subject_aliases = get_aliases(subject_id)
+        if not subject_aliases:
+            # in the off chance that node normalization doesn't know
+            # about the given subject id, then simply use it directly
+            subject_aliases.append(subject_id)
         if not self.case_node_found("subject", subject_aliases, case, nodes):
-            # 'subject' node not found?
+            # 'subject' node identifier not found?
             return False
 
         object_id = case["object_id"] if "object_id" in case else case["object"]
         object_aliases = get_aliases(object_id)
+        if not object_aliases:
+            # in the off chance that node normalization doesn't know
+            # about the given subject id, then simply use it directly
+            object_aliases.append(object_id)
         if not self.case_node_found("object", object_aliases, case, nodes):
-            # 'object' node not found?
+            # 'object' node identifier not found?
             return False
 
         # In the Knowledge Graph:
