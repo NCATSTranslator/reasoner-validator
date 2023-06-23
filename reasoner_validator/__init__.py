@@ -755,15 +755,15 @@ class TRAPIResponseValidator(ValidationReporter):
 
         bmt: Optional[Toolkit] = bmtw.get_bmt()
         predicate_descendants: List[str]
-        inverse_predicate_descendants: List[str]
+        inverse_predicate_descendants: List[str] = list()  # may sometimes remain empty...
         if bmt is not None:
             predicate_descendants = bmt.get_descendants(predicate, formatted=True)
             inverse_predicate = bmtw.get_inverse_predicate(predicate)
-            inverse_predicate_descendants = bmt.get_descendants(inverse_predicate, formatted=True)
+            if inverse_predicate:
+                inverse_predicate_descendants = bmt.get_descendants(inverse_predicate, formatted=True)
         else:
             # simpler case in which we are ignoring deep Biolink Model validation
             predicate_descendants = [predicate]
-            inverse_predicate_descendants = list()
 
         edge_id_match: Optional[str] = None
         subject_match: Optional[str] = None
