@@ -40,6 +40,7 @@ def get_aliases(identifier: str) -> List[str]:
     if not identifier:
         raise RuntimeError("get_aliases(): empty input identifier?")
 
+    aliases: Optional[List[str]] = None
     #
     # TODO: maybe check for IRI's here and attempt to translate
     #       (Q: now do we access the prefix map from BMT to do this?)
@@ -49,51 +50,53 @@ def get_aliases(identifier: str) -> List[str]:
     # We won't raise a RuntimeError for other various
     # erroneous runtime conditions but simply report warnings
     if not is_curie(identifier):
-
         logging.warning(f"get_aliases(): identifier '{identifier}' is not a CURIE thus cannot resolve its aliases?")
-        return list()
-
-    # Use the Translator Node Normalizer service to resolve the identifier clique
-    response = requests.get(NODE_NORMALIZER_URL, params={'curie': identifier})
-
-    if response.status_code != 200:
-        logging.warning(f"get_aliases(): unsuccessful Node Normalizer HTTP call, status code: {response.status_code}")
-        return list()
     else:
-        try:
-            result: Dict = response.json()
-        except (JSONDecodeError, UnicodeDecodeError) as je:
-            logging.warning(f"get_aliases(): Node Normalizer response JSON could not be decoded: {str(je)}?")
-            return list()
+        # Use the Translator Node Normalizer service to resolve the identifier clique
+        response = requests.get(NODE_NORMALIZER_URL, params={'curie': identifier})
 
-    if result and identifier not in result.keys():
-        logging.warning(f"get_aliases(): Node Normalizer didn't return the identifier '{identifier}' clique?")
-        return list()
-
-    clique = result[identifier]
-
-    aliases: List[str] = list()
-    if clique:
-        if "id" in clique.keys():
-            # TODO: Don't need the canonical identifier for method
-            #       but when you do, this is how you'll get it?
-            # clique_id = clique["id"]
-            # preferred_curie = preferred_id["identifier"]
-            # preferred_name = preferred_id["label"]
-            if "equivalent_identifiers" in clique.keys():
-                aliases: List[str] = [entry["identifier"] for entry in clique["equivalent_identifiers"]]
-                #
-                # Decided that it was a bad idea to remove
-                # the original identifier from the aliases...
-                # aliases.remove(identifier)
-                #
-                # print(dumps(aliases, indent=2))
-            else:
-                logging.warning(f"get_aliases(): missing the 'equivalent identifiers' for the '{identifier}' clique?")
+        result: Optional[Dict] = None
+        if response.status_code != 200:
+            logging.warning(
+                f"get_aliases(): unsuccessful Node Normalizer HTTP call, status code: {response.status_code}"
+            )
         else:
-            logging.warning(f"get_aliases(): missing the preferred 'id' for the '{identifier}' clique?")
-    else:
-        logging.warning(f"get_aliases(): '{identifier}' is a singleton in its clique thus has no aliases...")
+            try:
+                result = response.json()
+            except (JSONDecodeError, UnicodeDecodeError) as je:
+                logging.warning(f"get_aliases(): Node Normalizer response JSON could not be decoded: {str(je)}?")
+
+        if result:
+            if identifier not in result.keys():
+                logging.warning(f"get_aliases(): Node Normalizer didn't return the identifier '{identifier}' clique?")
+            else:
+                clique = result[identifier]
+                if clique:
+                    if "id" in clique.keys():
+                        # TODO: Don't need the canonical identifier for method
+                        #       but when you do, this is how you'll get it?
+                        # clique_id = clique["id"]
+                        # preferred_curie = preferred_id["identifier"]
+                        # preferred_name = preferred_id["label"]
+                        if "equivalent_identifiers" in clique.keys():
+                            aliases = [entry["identifier"] for entry in clique["equivalent_identifiers"]]
+                            #
+                            # Decided that it was a bad idea to remove
+                            # the original identifier from the aliases...
+                            # aliases.remove(identifier)
+                            #
+                            # print(dumps(aliases, indent=2))
+                        else:
+                            logging.warning(f"get_aliases(): missing the 'equivalent identifiers' for the '{identifier}' clique?")
+                    else:
+                        logging.warning(f"get_aliases(): missing the preferred 'id' for the '{identifier}' clique?")
+                else:
+                    logging.warning(f"get_aliases(): '{identifier}' is a singleton in its clique thus has no aliases...")
+
+    if not aliases:
+        # Logging various errors but always
+        # return the identifier as its own alias
+        aliases = [identifier]
 
     return aliases
 
