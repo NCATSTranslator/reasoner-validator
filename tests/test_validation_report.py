@@ -425,7 +425,6 @@ def test_validator_method():
            "Edge has provenance value which is not a well-formed InfoRes CURIE" in errors
 
 
-# has_validation_errors(root_key: str = 'validation', case: Optional[Dict] = None)
 @pytest.mark.parametrize(
     "query",
     [
@@ -493,4 +492,4 @@ def test_validator_method():
 )
 def test_has_validation_errors(query: Tuple):
     reporter = ValidationReporter()
-    assert reporter.has_validation_errors(tag=query[0], case=query[1]) == query[2]
+    assert reporter.test_case_has_validation_errors(tag=query[0], case=query[1]) == query[2]

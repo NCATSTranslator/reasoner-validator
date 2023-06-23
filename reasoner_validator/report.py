@@ -416,7 +416,7 @@ class ValidationReporter:
             return True
 
     @staticmethod
-    def has_validation_errors(tag: str, case: Dict) -> bool:
+    def test_case_has_validation_errors(tag: str, case: Dict) -> bool:
         """Check if test case has validation errors.
 
         :param tag: str, top level string key in the 'case' whose value is the validation messages 'dictionary'
@@ -435,9 +435,11 @@ class ValidationReporter:
         #             "information": [],
         #             "warnings": [
         #                 {
-        #                     "warning.predicate.non_canonical": [
-        #                         {"predicate": "biolink:participates_in"}  xxx deprecated? better check this one!
-        #                     ]
+        #                     "warning.predicate.non_canonical": {
+        #                         "biolink:participates_in": {
+        #                               "edge_id": "a--['biolink:participates_in']->b"
+        #                         }
+        #                     }
         #                 }
         #             ],
         #             "errors": [
