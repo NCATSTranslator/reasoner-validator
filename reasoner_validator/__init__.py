@@ -117,7 +117,8 @@ class TRAPIResponseValidator(ValidationReporter):
     def check_compliance_of_trapi_response(
             self,
             response: Optional[Dict],
-            edges_limit: int = 100
+            max_kg_edges: int = 0,
+            max_results: int = 0
     ):
         """
         One stop validation of all components of a TRAPI-schema compliant
@@ -135,9 +136,12 @@ class TRAPIResponseValidator(ValidationReporter):
 
         :param response: Query.Response to be validated.
         :type response: Optional[Dict]
-        :param edges_limit: integer maximum number of edges to be validated in the knowledge graph. A value of zero
-                            triggers validation of all edges in the knowledge graph (Default: 100)
-        :type edges_limit: int
+        :param max_kg_edges: integer maximum number of edges to be validated from the
+                                     knowledge graph of the response. A value of zero triggers validation
+                                      of all edges in the knowledge graph (Default: 0 - use all edges)
+        :type max_kg_edges: int
+        :param max_results: target sample number of results to validate (default: 0 for 'use all results').
+        :type max_results: int
 
         :returns: Validator cataloging "information", "warning" and "error" messages (could be empty)
         :rtype: ValidationReporter
@@ -174,29 +178,34 @@ class TRAPIResponseValidator(ValidationReporter):
         # Sequentially validate the Query Graph, Knowledge Graph then validate
         # the Results (which rely on the validity of the other two components)
         elif self.has_valid_query_graph(message) and \
-                self.has_valid_knowledge_graph(message, edges_limit):
-            self.has_valid_results(message)
+                self.has_valid_knowledge_graph(message, max_kg_edges):
+            self.has_valid_results(message, max_results)
 
     @staticmethod
-    def sample_results(results: List) -> List:
+    def sample_results(results: List, sample_size: int = 0) -> List:
         """
+        Subsample the results to a maximum size of 'sample_size'
 
         :param results: List, original list of Results
-        :return: List, RESULT_TEST_DATA_SAMPLE_SIZE sized subset of Results
+        :param sample_size: int, target sample size (default: 0 for 'use all results').
+
+        :return: List, 'sample_size' sized subset of Results
         """
-        sample_size = min(RESULT_TEST_DATA_SAMPLE_SIZE, len(results))
-        result_subsample = results[0:sample_size]
-        return result_subsample
+        if sample_size > 0:
+            sample_size = min(sample_size, len(results))
+            return results[0:sample_size]
+        else:
+            return results
 
     @staticmethod
-    def sample_graph(graph: Dict, edges_limit: int = 100) -> Dict:
+    def sample_graph(graph: Dict, edges_limit: int = 0) -> Dict:
         """
         Only process a strict subsample of the TRAPI Response Message knowledge graph.
 
         :param graph: original knowledge graph
         :type graph: Dict
         :param edges_limit: integer maximum number of edges to be validated in the knowledge graph. A value of zero
-                            triggers validation of all edges in the knowledge graph (could take a while! Default: 100)
+                            triggers validation of all edges in the knowledge graph (Default: 0 - use all edges)
         :type edges_limit: int
 
         :return: Dict, 'edges_limit' sized subset of knowledge graph
@@ -286,20 +295,20 @@ class TRAPIResponseValidator(ValidationReporter):
         # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
         return False if self.has_errors() else True
 
-    def has_valid_knowledge_graph(self, message: Dict, edges_limit: int = 100) -> bool:
+    def has_valid_knowledge_graph(self, message: Dict, edges_limit: int = 0) -> bool:
         """
         Validate a TRAPI Knowledge Graph.
 
         :param message: input message expected to contain the 'knowledge_graph'
         :type message: Dict
         :param edges_limit: integer maximum number of edges to be validated in the knowledge graph. A value of zero
-                            triggers validation of all edges in the knowledge graph (could take a while! Default: 100)
+                            triggers validation of all edges in the knowledge graph (Default: 0 - use all edges)
         :type edges_limit: int
 
         :return: bool, False, if validation errors
         """
         # This integrity constraint may not really be necessary
-        # since negative numbers are functionally inequivalent to zero
+        # since negative numbers are functionally equivalent to zero
         assert edges_limit >= 0, "The 'edges_limit' must be zero or a positive integer!"
 
         # The Knowledge Graph should not be missing
@@ -355,10 +364,13 @@ class TRAPIResponseValidator(ValidationReporter):
         # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
         return False if self.has_errors() else True
 
-    def has_valid_results(self, message: Dict) -> bool:
+    def has_valid_results(self, message: Dict, sample_size: int = 0) -> bool:
         """
         Validate a TRAPI Results.
+
         :param message: input message expected to contain the 'results'
+        :param sample_size: int, sample number of results to validate (default: 0 for 'use all results').
+
         :return: bool, False, if validation errors
         """
 
@@ -397,7 +409,7 @@ class TRAPIResponseValidator(ValidationReporter):
 
             else:
                 # Validate a subsample of a non-empty Message.results component.
-                results_sample = self.sample_results(results)
+                results_sample = self.sample_results(results, sample_size=sample_size)
                 for result in results_sample:
 
                     # generally validate against the pertinent schema

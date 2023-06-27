@@ -8,9 +8,14 @@ from pydantic import BaseModel
 import uvicorn
 from fastapi import FastAPI, HTTPException
 
+from bmt import Toolkit
+
 from reasoner_validator.trapi import TRAPISchemaValidator
 from reasoner_validator.versioning import get_latest_version
 from reasoner_validator import TRAPIResponseValidator
+
+default_toolkit: Toolkit = Toolkit()
+DEFAULT_BIOLINK_MODEL_VERSION = default_toolkit.get_model_version()
 
 app = FastAPI()
 
@@ -32,10 +37,11 @@ class Sources(BaseModel):
 
 
 class Query(BaseModel):
+
     trapi_version: Optional[str] = get_latest_version(TRAPISchemaValidator.DEFAULT_TRAPI_VERSION)
 
     # default: latest Biolink Model Toolkit supported version
-    biolink_version: Optional[str] = None
+    biolink_version: Optional[str] = DEFAULT_BIOLINK_MODEL_VERSION
 
     # See Sources above
     sources: Optional[Sources] = None
@@ -47,6 +53,14 @@ class Query(BaseModel):
     # validation normally reports empty Message query graph, knowledge graph and results as warnings.
     # This flag suppresses the reporting of such warnings (default: False)
     suppress_empty_data_warnings: Optional[bool] = None
+
+    # Maximum number of knowledge graph edges validated from each TRAPI Response
+    # returned from test edge query (default: 0 means 'validate all edges')
+    max_kg_edges: int = 0
+
+    # Maximum number of results validated from each TRAPI Response
+    # returned from each test edge query (default: 0 means 'validate all results')
+    max_results: int = 0
 
     # A full Query.Response is (now) expected here, as described in:
     # https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response-.
@@ -60,10 +74,10 @@ async def validate(query: Query):
         raise HTTPException(status_code=400, detail="Empty input message?")
 
     trapi_version: Optional[str] = query.trapi_version
-    print(f"Specified trapi_version == {trapi_version}", file=stderr)
+    print(f"Specified 'trapi_version' == {trapi_version}", file=stderr)
 
     biolink_version: Optional[str] = query.biolink_version
-    print(f"Specified biolink_version == {biolink_version}", file=stderr)
+    print(f"Specified 'biolink_version' == {biolink_version}", file=stderr)
 
     sources: Optional[Sources] = query.sources
     print(f"Validation Context == {sources}", file=stderr)
@@ -75,6 +89,12 @@ async def validate(query: Query):
         query.suppress_empty_data_warnings if query.suppress_empty_data_warnings else False
     print(f"suppress Empty Data Warnings == {str(suppress_empty_data_warnings)}", file=stderr)
 
+    max_kg_edges: int = query.max_kg_edges
+    print(f"Specified 'kg_edges_sample_size' == {max_kg_edges}", file=stderr)
+
+    max_results: int = query.max_results
+    print(f"Specified 'results_sample_size' == {max_results}", file=stderr)
+
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=trapi_version,
         biolink_version=biolink_version,
@@ -82,7 +102,11 @@ async def validate(query: Query):
         strict_validation=strict_validation,
         suppress_empty_data_warnings=suppress_empty_data_warnings
     )
-    validator.check_compliance_of_trapi_response(response=query.response)
+    validator.check_compliance_of_trapi_response(
+        response=query.response,
+        max_kg_edges=max_kg_edges,
+        max_results=max_results
+    )
 
     if not validator.has_messages():
         validator.report(code="info.compliant")
