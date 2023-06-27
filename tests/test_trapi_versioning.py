@@ -18,6 +18,16 @@ def test_unknown_semver_spec_trapi_version():
     assert trapi_version is None
 
 
+def test_semver_spec_trapi_version_with_prefix():
+    trapi_version: str = get_latest_version(release_tag=LATEST_TRAPI_VERSION)
+    assert trapi_version == LATEST_TRAPI_VERSION
+
+
+def test_semver_spec_trapi_version_without_prefix():
+    trapi_version: str = get_latest_version(release_tag=LATEST_TRAPI_VERSION[1:])
+    assert trapi_version == LATEST_TRAPI_VERSION
+
+
 def test_schema_spec_trapi_version():
     trapi_version = get_latest_version(release_tag=SAMPLE_SCHEMA_FILE)
     assert trapi_version is not None
