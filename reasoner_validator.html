@@ -203,7 +203,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.has_valid_query_graph" title="reasoner_validator.TRAPIResponseValidator.has_valid_query_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_valid_query_graph</span></code></a>(message)</p></td>
 <td><p>Validate a TRAPI Query Graph.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.has_valid_results" title="reasoner_validator.TRAPIResponseValidator.has_valid_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_valid_results</span></code></a>(message)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.has_valid_results" title="reasoner_validator.TRAPIResponseValidator.has_valid_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_valid_results</span></code></a>(message[, sample_size])</p></td>
 <td><p>Validate a TRAPI Results.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code>()</p></td>
@@ -234,13 +234,8 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sample_graph" title="reasoner_validator.TRAPIResponseValidator.sample_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_graph</span></code></a>(graph[, edges_limit])</p></td>
 <td><p>Only process a strict subsample of the TRAPI Response Message knowledge graph.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sample_results" title="reasoner_validator.TRAPIResponseValidator.sample_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_results</span></code></a>(results)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">param results<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List, original list of Results</p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sample_results" title="reasoner_validator.TRAPIResponseValidator.sample_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_results</span></code></a>(results[, sample_size])</p></td>
+<td><p>Subsample the results to a maximum size of 'sample_size'</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.TRAPIResponseValidator.sanitize_trapi_response" title="reasoner_validator.TRAPIResponseValidator.sanitize_trapi_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sanitize_trapi_response</span></code></a>(response)</p></td>
 <td><p>Some component TRAPI Responses cannot be validated further due to missing tags and None values.</p></td>
@@ -339,7 +334,7 @@ with expected categories, in the “nodes” catalog.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response">
-<span class="sig-name descname"><span class="pre">check_compliance_of_trapi_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_compliance_of_trapi_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_kg_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="Permalink to this definition"></a></dt>
 <dd><p>One stop validation of all components of a TRAPI-schema compliant
 Query.Response, including its Message against a designated Biolink Model release.
 The high level structure of a Query.Response is described in
@@ -362,8 +357,13 @@ The high level structure of a Query.Response is described in
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>response</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>]</em>) – Query.Response to be validated.</p></li>
-<li><p><strong>edges_limit</strong> (<em>int</em>) – integer maximum number of edges to be validated in the knowledge graph. A value of zero
-triggers validation of all edges in the knowledge graph (Default: 100)</p></li>
+<li><p><strong>max_kg_edges</strong> (<em>int</em>) – <p>integer maximum number of edges to be validated from the
+knowledge graph of the response. A value of zero triggers validation</p>
+<blockquote>
+<div><p>of all edges in the knowledge graph (Default: 0 - use all edges)</p>
+</div></blockquote>
+</p></li>
+<li><p><strong>max_results</strong> (<em>int</em>) – target sample number of results to validate (default: 0 for ‘use all results’).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -377,14 +377,14 @@ triggers validation of all edges in the knowledge graph (Default: 100)</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.has_valid_knowledge_graph">
-<span class="sig-name descname"><span class="pre">has_valid_knowledge_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.has_valid_knowledge_graph" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">has_valid_knowledge_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.has_valid_knowledge_graph" title="Permalink to this definition"></a></dt>
 <dd><p>Validate a TRAPI Knowledge Graph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>message</strong> (<em>Dict</em>) – input message expected to contain the ‘knowledge_graph’</p></li>
 <li><p><strong>edges_limit</strong> (<em>int</em>) – integer maximum number of edges to be validated in the knowledge graph. A value of zero
-triggers validation of all edges in the knowledge graph (could take a while! Default: 100)</p></li>
+triggers validation of all edges in the knowledge graph (Default: 0 - use all edges)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -403,22 +403,31 @@ triggers validation of all edges in the knowledge graph (could take a while! Def
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.has_valid_results">
-<span class="sig-name descname"><span class="pre">has_valid_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.has_valid_results" title="Permalink to this definition"></a></dt>
-<dd><p>Validate a TRAPI Results.
-:param message: input message expected to contain the ‘results’
-:return: bool, False, if validation errors</p>
+<span class="sig-name descname"><span class="pre">has_valid_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.has_valid_results" title="Permalink to this definition"></a></dt>
+<dd><p>Validate a TRAPI Results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> – input message expected to contain the ‘results’</p></li>
+<li><p><strong>sample_size</strong> – int, sample number of results to validate (default: 0 for ‘use all results’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool, False, if validation errors</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.sample_graph">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.sample_graph" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.sample_graph" title="Permalink to this definition"></a></dt>
 <dd><p>Only process a strict subsample of the TRAPI Response Message knowledge graph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>graph</strong> (<em>Dict</em>) – original knowledge graph</p></li>
 <li><p><strong>edges_limit</strong> (<em>int</em>) – integer maximum number of edges to be validated in the knowledge graph. A value of zero
-triggers validation of all edges in the knowledge graph (could take a while! Default: 100)</p></li>
+triggers validation of all edges in the knowledge graph (Default: 0 - use all edges)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -429,13 +438,17 @@ triggers validation of all edges in the knowledge graph (could take a while! Def
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.TRAPIResponseValidator.sample_results">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.sample_results" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#reasoner_validator.TRAPIResponseValidator.sample_results" title="Permalink to this definition"></a></dt>
+<dd><p>Subsample the results to a maximum size of ‘sample_size’</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>results</strong> – List, original list of Results</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results</strong> – List, original list of Results</p></li>
+<li><p><strong>sample_size</strong> – int, target sample size (default: 0 for ‘use all results’).</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List, RESULT_TEST_DATA_SAMPLE_SIZE sized subset of Results</p>
+<dd class="field-even"><p>List, ‘sample_size’ sized subset of Results</p>
 </dd>
 </dl>
 </dd></dl>
