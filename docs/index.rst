@@ -90,7 +90,7 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
 
         # If omit or set the Biolink Model version parameter to None,
         # then the current Biolink Model Toolkit default release applies
-        biolink_version="3.4.3",
+        biolink_version="3.5.0",
 
         # 'sources' are set to trigger checking of expected edge knowledge source provenance
         sources={
@@ -262,7 +262,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
         # If the 'biolink_version' given here is assumed, which overrides the TRAPI Response stated 'biolink_version';
         # Otherwise, the TRAPI Response stated 'biolink_version' (not BMT) becomes the default validation version.
 
-        biolink_version="3.4.3",
+        biolink_version="3.5.0",
 
         "sources": {
             "ara_source": "infores:aragorn",
@@ -309,7 +309,7 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
 
     {
         "schema_version": "1.4.0",
-        "biolink_version": "3.4.3",
+        "biolink_version": "3.5.0",
         "message": {
             "query_graph": {
                 "nodes": {
