@@ -1,306 +1,16 @@
 # Validation Codes Dictionary
 
-## Information
+## Critical Error
 
-### info.excluded
+### critical.trapi.validation
 
-**Message:** All test case S-P-O triples from resource test location, or specific user excluded S-P-O triples
+**Message:** Schema validation error
 
-**Context:** identifier
+**Context:** identifier, component, reason
 
-**Description:** Check the JSON KP test edge data file for specific 'exclude_tests' directives, either global to the file, or on specific edges.
+**Description:** Critical JSON Schema validation error reported for specified TRAPI query component.
 
-### info.compliant
-
-**Message:** Biolink Model-compliant TRAPI Message
-
-**Description:** Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards.
-
-### info.input_edge.predicate.abstract
-
-**Message:** Edge has an 'abstract' predicate
-
-**Context:** edge_id, identifier
-
-**Description:** Input edge data can have 'abstract' predicates, when the mode of validation is 'non-strict'.
-
-### info.input_edge.predicate.mixin
-
-**Message:** Edge has an 'mixin' predicate
-
-**Context:** edge_id, identifier
-
-**Description:** Input edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'.
-
-### info.query_graph.edge.predicate.abstract
-
-**Message:** Edge has an 'abstract' predicate
-
-**Context:** edge_id, identifier
-
-**Description:** TRAPI Messages in Query Graphs can have 'abstract' predicates, when the mode of validation is 'non-strict'.
-
-### info.query_graph.edge.predicate.mixin
-
-**Message:** Edge has an 'mixin' predicate
-
-**Context:** edge_id, identifier
-
-**Description:** TRAPI Messages in Query Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'.
-
-### info.knowledge_graph.edge.predicate.abstract
-
-**Message:** Edge has an 'abstract' predicate
-
-**Context:** edge_id, identifier
-
-**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' predicates, when the mode of validation is 'non-strict'.
-
-### info.knowledge_graph.edge.predicate.mixin
-
-**Message:** Edge has an 'mixin' predicate
-
-**Context:** edge_id, identifier
-
-**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'.
-
-### info.knowledge_graph.edge.attribute.type_id.abstract
-
-**Message:** Edge has an 'abstract' attribute_type_id
-
-**Context:** edge_id, identifier
-
-**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' attribute type identifiers, when the mode of validation is 'non-strict'.
-
-### info.knowledge_graph.edge.attribute.type_id.mixin
-
-**Message:** Edge has an 'mixin' attribute_type_id
-
-**Context:** edge_id, identifier
-
-**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' attribute type identifiers, when the mode of validation is 'non-strict'.
-
-## Warning
-
-### warning.trapi.response.status.unknown
-
-**Message:** TRAPI Response has unrecognized status code
-
-**Context:** identifier
-
-**Description:** The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable
-
-### warning.trapi.response.workflow.runner_parameters.null
-
-**Message:** TRAPI Response.workflow.runner_parameters property is missing?
-
-**Description:** If a 'runner_parameters' property value is given for a workflow step specification, it should not be null. This field will be ignored?
-
-### warning.trapi.response.workflow.parameters.null
-
-**Message:** TRAPI Response.workflow.parameters property is missing?
-
-**Description:** If a 'parameters' property value is given for a workflow step specification, it should not be null. This field will be ignored?
-
-### warning.graph.empty
-
-**Message:** Empty graph
-
-**Context:** identifier
-
-**Description:** An empty graph in this particular context is allowed but merits a boundary response warning?
-
-### warning.response.knowledge_graph.empty
-
-**Message:** Response returned an empty Message Knowledge Graph?
-
-**Description:** An empty Knowledge Graph is allowed but merits a boundary response warning?
-
-### warning.response.results.empty
-
-**Message:** Response returned empty Message.results?
-
-**Description:** Empty Results is allowed but merits a boundary response warning?
-
-### warning.input_edge.node.category.deprecated
-
-**Message:** Node category had deprecated category
-
-**Context:** node_id, identifier
-
-**Description:** Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
-
-### warning.input_edge.node.category.not_concrete
-
-**Message:** Node has unknown, abstract or mixin category
-
-**Context:** node_id, identifier
-
-**Description:** Node category may be unknown, abstract or a mixin in the current model. TRAPI Responses using this edge may not resolve any Knowledge Graph nodes with this category. Review Biolink Model for 'concrete' replacement?
-
-### warning.input_edge.node.id.unmapped_to_category
-
-**Message:** Node identifier found unmapped to target categories for node
-
-**Context:** identifier, unmapped_ids, categories
-
-**Description:** The namespaces of Biolink model node of specified category may be incomplete with respect to identifiers being used in input edge data?
-
-### warning.input_edge.predicate.deprecated
-
-**Message:** Edge has deprecated predicate
-
-**Context:** identifier
-
-**Description:** Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
-
-### warning.input_edge.predicate.non_canonical
-
-**Message:** Edge has non-canonical predicate
-
-**Context:** edge_id, identifier
-
-**Description:** A predicate selected for use as input data should preferably be tagged as 'canonical' in the specified Biolink Model release?
-
-### warning.query_graph.node.category.deprecated
-
-**Message:** Node has deprecated category
-
-**Context:** node_id, identifier
-
-**Description:** Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
-
-### warning.query_graph.node.ids.unmapped_prefix
-
-**Message:** Node identifiers found unmapped to target categories for node
-
-**Context:** identifier, unmapped_ids, categories
-
-**Description:** One or more node CURIE identifier namespaces are not found among any 'id_prefix' slot values in specified categories in the validating Biolink Model version?
-
-### warning.query_graph.edge.predicate.deprecated
-
-**Message:** Edge has deprecated predicate
-
-**Context:** identifier
-
-**Description:** Edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
-
-### warning.query_graph.edge.predicate.non_canonical
-
-**Message:** Edge has non-canonical predicate
-
-**Context:** edge_id, identifier
-
-**Description:** A predicate selected for use in a query graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
-
-### warning.knowledge_graph.node.category.deprecated
-
-**Message:** Node has deprecated category
-
-**Context:** node_id, identifier
-
-**Description:** Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
-
-### warning.knowledge_graph.node.id.unmapped_prefix
-
-**Message:** Node identifier found unmapped to target categories for node
-
-**Context:** identifier, categories
-
-**Description:** Node CURIE identifier namespace not found among any 'id_prefix' slot values in specified categories in the validating Biolink Model version?
-
-### warning.knowledge_graph.edge.predicate.deprecated
-
-**Message:** Edge has deprecated predicate
-
-**Context:** identifier
-
-**Description:** Edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
-
-### warning.knowledge_graph.edge.predicate.non_canonical
-
-**Message:** Edge has non-canonical predicate
-
-**Context:** edge_id, identifier
-
-**Description:** A predicate selected for use in a knowledge graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
-
-### warning.knowledge_graph.edge.attribute.type_id.not_association_slot
-
-**Message:** Edge has an attribute_type_id that is not an association slot
-
-**Context:** edge_id, identifier
-
-**Description:** Edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy.
-
-### warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix
-
-**Message:** Edge has an attribute_type_id that has a non-Biolink CURIE prefix mapped to Biolink
-
-**Context:** edge_id, identifier
-
-**Description:** Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes.
-
-### warning.knowledge_graph.edge.attribute.type_id.unknown_prefix
-
-**Message:** Edge has an attribute_type_id that has a CURIE prefix namespace unknown to Biolink
-
-**Context:** edge_id, identifier
-
-**Description:** The namespaces of 'attribute_type_id' terms may be incomplete with respect to Biolink Model version being used in the knowledge graph.
-
-### warning.knowledge_graph.edge.attribute.type_id.deprecated
-
-**Message:** Edge has a deprecated attribute_type_id
-
-**Context:** identifier
-
-**Description:** Edge 'attribute_type_id' is deprecated in current model, to be removed in the future. Review Biolink Model for replacement.
-
-### warning.knowledge_graph.edge.provenance.multiple_primary
-
-**Message:** Edge has recorded multiple 'primary' knowledge sources
-
-**Context:** identifier, sources
-
-**Description:** Edge attributes should record only a single primary knowledge source provenance attribute value.
-
-### warning.knowledge_graph.edge.provenance.ara.missing
-
-**Message:** Edge is missing ARA knowledge source provenance
-
-**Context:** edge_id, identifier
-
-**Description:** Edge attributes ARAs should record the Infores identifier of their knowledge source provenance with respect to ARA.
-
-### warning.knowledge_graph.edge.provenance.kp.missing
-
-**Message:** Edge attribute values are missing expected Knowledge Provider provenance
-
-**Context:** edge_id, identifier, kp_source_type
-
-**Description:** Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP.
-
-## Error
-
-### error.non_compliant
-
-**Message:** S-P-O statement is not compliant to Biolink Model release
-
-**Context:** identifier, biolink_release
-
-**Description:** This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause!
-
-### error.trapi.validation
-
-**Message:** Schema validation exception
-
-**Context:** identifier, reason
-
-**Description:** TRAPI query attempt triggered an abnormal server exception as noted.
-
-### error.trapi.request.invalid
+### critical.trapi.request.invalid
 
 **Message:** Test could not generate a valid TRAPI query request object using identified element
 
@@ -308,19 +18,29 @@
 
 **Description:** Specified TRAPI query unit 'test' query could not be prepared for the indicated reason, using the identified Biolink starting element.
 
+### critical.trapi.response.unexpected_http_code
+
+**Message:** Unexpected HTTP status code
+
+**Context:** identifier
+
+**Description:** TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted.
+
+## Error
+
+### error.biolink.model.noncompliance
+
+**Message:** S-P-O statement is not compliant to Biolink Model release
+
+**Context:** identifier, biolink_release
+
+**Description:** This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause!
+
 ### error.trapi.response.empty
 
 **Message:** TRAPI Response is missing!
 
 **Description:** TRAPI Response to be validated should not be totally empty but should have a Message body.
-
-### error.trapi.response.unexpected_http_code
-
-**Message:** TRAPI Response has an unexpected HTTP status code
-
-**Context:** identifier
-
-**Description:** TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted.
 
 ### error.trapi.response.message.empty
 
@@ -353,6 +73,12 @@
 **Context:** identifier
 
 **Description:** The given TRAPI Response is expected to return specific edge(s) relating to the original (test edge?) data used to prepare the TRAPI Request!
+
+### error.trapi.response.knowledge_graph.empty
+
+**Message:** Response returned an empty Message Knowledge Graph, which is an error in this context!
+
+**Description:** An empty Knowledge Graph is considered an error in this validation context!
 
 ### error.trapi.response.results.missing
 
@@ -1049,4 +775,278 @@
 **Context:** identifier
 
 **Description:** Value of the 'resource_role' property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty ResourceRole enum value!
+
+## Warning
+
+### warning.trapi.response.status.unknown
+
+**Message:** TRAPI Response has unrecognized status code
+
+**Context:** identifier
+
+**Description:** The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable
+
+### warning.trapi.response.knowledge_graph.empty
+
+**Message:** Response returned an empty Message Knowledge Graph?
+
+**Description:** An empty Knowledge Graph is allowed but merits a boundary response warning?
+
+### warning.trapi.response.results.empty
+
+**Message:** Response returned empty Message.results?
+
+**Description:** Empty Results is allowed but merits a boundary response warning?
+
+### warning.trapi.response.workflow.runner_parameters.null
+
+**Message:** TRAPI Response.workflow.runner_parameters property is missing?
+
+**Description:** If a 'runner_parameters' property value is given for a workflow step specification, it should not be null. This field will be ignored?
+
+### warning.trapi.response.workflow.parameters.null
+
+**Message:** TRAPI Response.workflow.parameters property is missing?
+
+**Description:** If a 'parameters' property value is given for a workflow step specification, it should not be null. This field will be ignored?
+
+### warning.graph.empty
+
+**Message:** Empty graph
+
+**Context:** identifier
+
+**Description:** An empty graph in this particular context is allowed but merits a boundary response warning?
+
+### warning.input_edge.node.category.deprecated
+
+**Message:** Node category had deprecated category
+
+**Context:** node_id, identifier
+
+**Description:** Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
+
+### warning.input_edge.node.category.not_concrete
+
+**Message:** Node has unknown, abstract or mixin category
+
+**Context:** node_id, identifier
+
+**Description:** Node category may be unknown, abstract or a mixin in the current model. TRAPI Responses using this edge may not resolve any Knowledge Graph nodes with this category. Review Biolink Model for 'concrete' replacement?
+
+### warning.input_edge.node.id.unmapped_to_category
+
+**Message:** Node identifier found unmapped to target categories for node
+
+**Context:** identifier, unmapped_ids, categories
+
+**Description:** The namespaces of Biolink model node of specified category may be incomplete with respect to identifiers being used in input edge data?
+
+### warning.input_edge.predicate.deprecated
+
+**Message:** Edge has deprecated predicate
+
+**Context:** identifier
+
+**Description:** Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
+
+### warning.input_edge.predicate.non_canonical
+
+**Message:** Edge has non-canonical predicate
+
+**Context:** edge_id, identifier
+
+**Description:** A predicate selected for use as input data should preferably be tagged as 'canonical' in the specified Biolink Model release?
+
+### warning.query_graph.node.category.deprecated
+
+**Message:** Node has deprecated category
+
+**Context:** node_id, identifier
+
+**Description:** Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?
+
+### warning.query_graph.node.ids.unmapped_prefix
+
+**Message:** Node identifiers found unmapped to target categories for node
+
+**Context:** identifier, unmapped_ids, categories
+
+**Description:** One or more node CURIE identifier namespaces are not found among any 'id_prefix' slot values in specified categories in the validating Biolink Model version?
+
+### warning.query_graph.edge.predicate.deprecated
+
+**Message:** Edge has deprecated predicate
+
+**Context:** identifier
+
+**Description:** Edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
+
+### warning.query_graph.edge.predicate.non_canonical
+
+**Message:** Edge has non-canonical predicate
+
+**Context:** edge_id, identifier
+
+**Description:** A predicate selected for use in a query graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
+
+### warning.knowledge_graph.node.category.deprecated
+
+**Message:** Node has deprecated category
+
+**Context:** node_id, identifier
+
+**Description:** Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
+
+### warning.knowledge_graph.node.id.unmapped_prefix
+
+**Message:** Node identifier found unmapped to target categories for node
+
+**Context:** identifier, categories
+
+**Description:** Node CURIE identifier namespace not found among any 'id_prefix' slot values in specified categories in the validating Biolink Model version?
+
+### warning.knowledge_graph.edge.predicate.deprecated
+
+**Message:** Edge has deprecated predicate
+
+**Context:** identifier
+
+**Description:** Edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
+
+### warning.knowledge_graph.edge.predicate.non_canonical
+
+**Message:** Edge has non-canonical predicate
+
+**Context:** edge_id, identifier
+
+**Description:** A predicate selected for use in a knowledge graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
+
+### warning.knowledge_graph.edge.attribute.type_id.not_association_slot
+
+**Message:** Edge has an attribute_type_id that is not an association slot
+
+**Context:** edge_id, identifier
+
+**Description:** Edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy.
+
+### warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix
+
+**Message:** Edge has an attribute_type_id that has a non-Biolink CURIE prefix mapped to Biolink
+
+**Context:** edge_id, identifier
+
+**Description:** Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes.
+
+### warning.knowledge_graph.edge.attribute.type_id.deprecated
+
+**Message:** Edge has a deprecated attribute_type_id
+
+**Context:** identifier
+
+**Description:** Edge 'attribute_type_id' is deprecated in current model, to be removed in the future. Review Biolink Model for replacement.
+
+### warning.knowledge_graph.edge.provenance.multiple_primary
+
+**Message:** Edge has recorded multiple 'primary' knowledge sources
+
+**Context:** identifier, sources
+
+**Description:** Edge attributes should record only a single primary knowledge source provenance attribute value.
+
+### warning.knowledge_graph.edge.provenance.ara.missing
+
+**Message:** Edge is missing ARA knowledge source provenance
+
+**Context:** edge_id, identifier
+
+**Description:** Edge attributes ARAs should record the Infores identifier of their knowledge source provenance with respect to ARA.
+
+### warning.knowledge_graph.edge.provenance.kp.missing
+
+**Message:** Edge attribute values are missing expected Knowledge Provider provenance
+
+**Context:** edge_id, identifier, kp_source_type
+
+**Description:** Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP.
+
+## Information
+
+### info.excluded
+
+**Message:** All test case S-P-O triples from resource test location, or specific user excluded S-P-O triples
+
+**Context:** identifier
+
+**Description:** Check the JSON KP test edge data file for specific 'exclude_tests' directives, either global to the file, or on specific edges.
+
+### info.compliant
+
+**Message:** Biolink Model-compliant TRAPI Message
+
+**Description:** Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards.
+
+### info.input_edge.predicate.abstract
+
+**Message:** Edge has an 'abstract' predicate
+
+**Context:** edge_id, identifier
+
+**Description:** Input edge data can have 'abstract' predicates, when the mode of validation is 'non-strict'.
+
+### info.input_edge.predicate.mixin
+
+**Message:** Edge has an 'mixin' predicate
+
+**Context:** edge_id, identifier
+
+**Description:** Input edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'.
+
+### info.query_graph.edge.predicate.abstract
+
+**Message:** Edge has an 'abstract' predicate
+
+**Context:** edge_id, identifier
+
+**Description:** TRAPI Messages in Query Graphs can have 'abstract' predicates, when the mode of validation is 'non-strict'.
+
+### info.query_graph.edge.predicate.mixin
+
+**Message:** Edge has an 'mixin' predicate
+
+**Context:** edge_id, identifier
+
+**Description:** TRAPI Messages in Query Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'.
+
+### info.knowledge_graph.edge.predicate.abstract
+
+**Message:** Edge has an 'abstract' predicate
+
+**Context:** edge_id, identifier
+
+**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' predicates, when the mode of validation is 'non-strict'.
+
+### info.knowledge_graph.edge.predicate.mixin
+
+**Message:** Edge has an 'mixin' predicate
+
+**Context:** edge_id, identifier
+
+**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'.
+
+### info.knowledge_graph.edge.attribute.type_id.abstract
+
+**Message:** Edge has an 'abstract' attribute_type_id
+
+**Context:** edge_id, identifier
+
+**Description:** TRAPI Messages in Knowledge Graphs can have 'abstract' attribute type identifiers, when the mode of validation is 'non-strict'.
+
+### info.knowledge_graph.edge.attribute.type_id.mixin
+
+**Message:** Edge has an 'mixin' attribute_type_id
+
+**Context:** edge_id, identifier
+
+**Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' attribute type identifiers, when the mode of validation is 'non-strict'.
 

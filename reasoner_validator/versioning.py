@@ -2,7 +2,6 @@
 import re
 from typing import NamedTuple, Optional, List
 from os import environ
-from functools import lru_cache
 from re import sub
 import requests
 try:
@@ -74,10 +73,20 @@ class SemVer(NamedTuple):
                                       (default: ['prerelease', 'buildmetadata']).
         :return:
         """
+        assert string
         assert len(core_fields) > 0 and all([field in ['major', 'minor', 'patch'] for field in core_fields])
         assert all([field in ['prerelease', 'buildmetadata'] for field in ext_fields])
 
-        match = semver_pattern.fullmatch(string)
+        # If the string is a file path, generically detected using the .yaml file extension,
+        # then assume that the file path string encodes the SemVer string, as a part of the
+        # root file name just before the .yaml file extension, e.g. my_schema_3.2.1-beta5.yaml
+        if string.endswith(".yaml"):
+            root_path: str = string.replace(".yaml", "")
+            semver_string = root_path.split("_")[-1]
+        else:
+            semver_string = string
+
+        match = semver_pattern.fullmatch(semver_string)
 
         if match is None:
             raise SemVerError(f"'{string}' is not a valid release version")
@@ -145,6 +154,19 @@ def _semver_eq_(obj: SemVer, other: SemVer) -> bool:
 
 
 SemVer.__eq__ = _semver_eq_
+
+
+def _semver_ne_(obj: SemVer, other: SemVer) -> bool:
+    """
+    Equal operator ('!=') override.
+    :param obj: SemVer
+    :param other: SemVer
+    :return: bool, True if obj and other are NOT equal
+    """
+    return not _semver_eq_(obj, other)
+
+
+SemVer.__ne__ = _semver_ne_
 
 
 def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
@@ -219,12 +241,30 @@ _latest = dict()
 
 # Provide an accessor function for retrieving the latest version in string format
 def get_latest_version(release_tag: str) -> Optional[str]:
+    """
+    Return the latest TRAPI version corresponding to the release tag given.
+    Note that if the release tag looks like a YAML file, then it is assumed
+    to be a direct schema specification. If a Git branch name in the schema
+    repository, the branch name is also passed on.
+
+    :param release_tag: (possibly partial) SemVer string, Git branch name,
+                        or YAML schema file name identifying a release.
+    :return: 'best' latest release of SemVer specification or the YAML file directly returned.
+    """
     global _latest
-    # strip any prefix from the release tag to ensure that
-    # only the SemVer part is used for the latest version lookup
-    release = sub(r'^[^0-9]+', '', release_tag)
-    latest: SemVer = _latest.get(release, None)
-    return str(latest) if latest else None
+
+    if release_tag.lower().endswith(".yaml"):
+        return release_tag
+    elif release_tag in branches:
+        # cases in which a branch name is
+        # given instead of a release number
+        return release_tag
+    else:
+        # strip any prefix from the release tag to ensure that
+        # only the SemVer part is used for the latest version lookup
+        release = sub(r'^[^0-9]+', '', release_tag)
+        latest: SemVer = _latest.get(release, None)
+        return str(latest) if latest else None
 
 
 def _set_preferred_version(release_tag: str, target_release: SemVer):

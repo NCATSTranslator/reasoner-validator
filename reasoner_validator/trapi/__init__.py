@@ -1,5 +1,7 @@
 """TRAPI Validation Functions."""
-from typing import Optional
+from json import dumps
+from typing import Optional, Dict
+from os.path import isfile
 import copy
 from functools import lru_cache
 
@@ -15,21 +17,45 @@ from reasoner_validator.versioning import (
     SemVerError,
     get_latest_version,
     GIT_ORG,
-    GIT_REPO,
-    branches
+    GIT_REPO
 )
 
 import logging
 logger = logging.getLogger(__name__)
 
 
+# For testing, set TRAPI API query POST timeouts to 10 minutes == 600 seconds
+DEFAULT_TRAPI_POST_TIMEOUT = 600.0
+
+
+class TRAPIAccessError(RuntimeError):
+    pass
+
+
 @lru_cache()
-def _load_schema(schema_version: str):
-    """Load schema from GitHub."""
-    result = requests.get(
-        f"https://raw.githubusercontent.com/{GIT_ORG}/{GIT_REPO}/{schema_version}/TranslatorReasonerAPI.yaml"
-    )
-    spec = load(result.text, Loader=Loader)
+def _load_schema(schema_version: str) -> Dict:
+    """
+    Load schema from GitHub version or directly from a local schema file.
+    :param schema_version: either a GitHub 'v' prefixed SemVer version of a
+           TRAPI schema or a file name (path) from which the TRAPI schema may be read in.
+    :return: Dict, schema components
+    """
+    spec: Dict
+    if schema_version.lower().endswith(".yaml"):
+        # treat as a candidate TRAPI schema file path or name (the latter, assumed local)
+        if not isfile(schema_version):
+            raise TRAPIAccessError(f"Candidate TRAPI schema file '{schema_version}' does not exist!")
+        with open(schema_version, "r") as schema_file:
+            spec = load(schema_file, Loader=Loader)
+        if spec is None:
+            raise TRAPIAccessError(f"Candidate TRAPI schema file '{schema_version}' could not be retrieved!")
+    else:
+        result = requests.get(
+            f"https://raw.githubusercontent.com/{GIT_ORG}/{GIT_REPO}/{schema_version}/TranslatorReasonerAPI.yaml"
+        )
+        schema_text: str = result.text
+        spec = load(schema_text, Loader=Loader)
+
     components = spec["components"]["schemas"]
     for component, schema in components.items():
         openapi_to_jsonschema(schema, version=schema_version)
@@ -45,23 +71,65 @@ def _load_schema(schema_version: str):
 
 def load_schema(target: str):
     """
-    Load schema from GitHub.
-    :param target: release semver or git branch name containing the target TRAPI schema.
+    Load schema from GitHub release or branch, or from a locally specified YAML schema file.
+    :param target: release semver, schema file path (with '.yaml' file extension)
+                    or a git branch name, all referencing a target TRAPI schema.
     :return: loaded TRAPI schema
     """
     mapped_release = get_latest_version(target)
     if mapped_release:
         schema_version = mapped_release
-    elif target in branches:
-        # cases in which a branch name is
-        # given instead of a release number
-        schema_version = target
     else:
         err_msg: str = f"No TRAPI version {target}"
         logger.error(err_msg)
         raise ValueError(err_msg)
 
     return _load_schema(schema_version)
+
+
+def _output(json, flat=False):
+    return dumps(json, sort_keys=False, indent=None if flat else 4)
+
+
+async def call_trapi(url: str, trapi_message):
+    """
+    Given an url and a TRAPI message, post the message
+    to the url and return the status and json response.
+
+    :param url:
+    :param trapi_message:
+    :return:
+    """
+    query_url = f'{url}/query'
+
+    # print(f"\ncall_trapi({query_url}):\n\t{dumps(trapi_message, sort_keys=False, indent=4)}", file=stderr, flush=True)
+
+    try:
+        response = requests.post(query_url, json=trapi_message, timeout=DEFAULT_TRAPI_POST_TIMEOUT)
+    except requests.Timeout:
+        # fake response object
+        logger.error(
+            f"call_trapi(\n\turl: '{url}',\n\ttrapi_message: '{_output(trapi_message)}') - Request POST TimeOut?"
+        )
+        response = requests.Response()
+        response.status_code = 408
+    except requests.RequestException as re:
+        # perhaps another unexpected Request failure?
+        logger.error(
+            f"call_trapi(\n\turl: '{url}',\n\ttrapi_message: '{_output(trapi_message)}') - "
+            f"Request POST exception: {str(re)}"
+        )
+        response = requests.Response()
+        response.status_code = 408
+
+    response_json = None
+    if response.status_code == 200:
+        try:
+            response_json = response.json()
+        except Exception as exc:
+            logger.error(f"call_trapi({query_url}) JSON access error: {str(exc)}")
+
+    return {'status_code': response.status_code, 'response_json': response_json}
 
 
 def fix_nullable(schema) -> None:
@@ -162,7 +230,7 @@ class TRAPISchemaValidator(ValidationReporter):
 
         """
         schema = load_schema(self.trapi_version)[component]
-        print("instance", instance)
+        # print("instance", instance)
         jsonschema.validate(instance, schema)
 
     def is_valid_trapi_query(self, instance, component: str = "Query"):
@@ -189,7 +257,16 @@ class TRAPISchemaValidator(ValidationReporter):
                 component=component
             )
         except jsonschema.ValidationError as e:
-            self.report(code="error.trapi.validation", identifier=self.trapi_version, reason=e.message)
+            if len(e.message) <= 160:
+                reason = e.message
+            else:
+                reason = e.message[0:49] + " "*5 + "... " + " "*5 + e.message[-100:-1]
+            self.report(
+                code="critical.trapi.validation",
+                identifier=self.trapi_version,
+                component=component,
+                reason=reason
+            )
 
 
 def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPISchemaValidator:

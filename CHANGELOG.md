@@ -2,8 +2,59 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator. 
 
-## v3.4.22
-- BMT and related dependencies rehabilitated and simplified?
+## v3.6.3
+- 1.4.0 is now the full latest TRAPI release tracked by the code (for testing), but 1.4.0-beta code and unit tests being kept (for now)
+
+## v3.6.2
+- Various tweaks to the case 'test edge' validation code, to meet SRI Testing needs
+- Split BiolinkValidator class into two parent parts, for ease of lightweight BMT wrapping reuse; for case edge validation, also look at predicate children (bullet proof validation against None BMT handle?)
+- Add trapi error code for missing knowledge graph; tweak Response validation codes and docs
+- Guarantee return of the original seed identifier when getting the list of aliases from Node Normalizer
+
+## v3.6.1
+- Reversed order of codes in codes.yaml resulting in new documentation order: Critical at top, Information at the bottom
+- Fixed bug with SemVer capture of local schema files: assume SemVer versioning is embedded in root file name 
+- Tiny tech debt clean up
+
+## v3.6.0
+- Introduced 'critical' category of validation messages (only a handful of messages to start, to be reviewed further)
+
+## v3.5.11
+- Bug fix for TRAPI Response sanitization
+
+## v3.5.10
+- Extend TRAPI Response sanitization (following Eric Deutsch guidance)
+
+## v3.5.9
+- Fixed bug in attribute_type_id detection of attribute_type_id namespaces
+
+## v3.5.8
+- implemented get_inverse_predicate() wrapper for returning (CURIE of) valid inverses of predicates (including symmetric predicates?)
+- implemented is_symmetric() method to detect symmetric (predicate) elements
+- various TRAPI edge case validation against knowledge graph, moved from SRI Testing harness to TRAPIValidator class
+
+## v3.5.7
+- patch to fix a previously unnoticed bug in SRI Testing related 'input edge' validation method (wouldn't affect non-SRI Testing related code usage of reasoner-validator)
+
+## v3.5.6
+- **ars_uuid_result_test_runner.py**  renamed to **trapi_response_validator.py** and generalized to accept a local TRAPI Response or possibly, an explicit endpoint URL and the TRAPI Request JSON with which to query, whose TRAPI Response is then validated.
+
+## v3.5.5
+- Added option to specify 'suppress' as a Biolink Model version string, which triggers suppression of Biolink Model-specific validation of TRAPI JSON messages
+
+## v3.5.4
+- Use of a local file path to a TRAPI schema implemented, with code validation using unit tests
+
+## v3.5.3
+- fixed query graph validation that was deleting node identifiers in the input query graphs
+
+## v3.5.2 - patched unit test in v3.5.1
+- error.trapi.validation 'reason' message text shortened by pruning to use only the start and end of the JSON Schema generated ValidationError message, to a maximum of 160 characters
+- unit tests fixed
+
+
+## v3.5.0
+- BMT and related dependencies rehabilitated and simplified? Some BMT functionality removed along the way (hence Minor rather than patch release)
 
 ## v3.4.22
 - detect all forms of null TRAPI attributes (i.e. strings like "n/a", "none" and "null")

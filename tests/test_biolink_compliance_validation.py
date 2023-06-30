@@ -32,6 +32,9 @@ pp = PrettyPrinter(indent=4)
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
 LATEST_BIOLINK_MODEL_VERSION = "3.2.0"
 
+# special case of signalling suppression of validation
+SUPPRESS_BIOLINK_MODEL_VALIDATION = "suppress"
+
 
 def test_set_default_biolink_versioned_global_environment():
     validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
@@ -95,209 +98,220 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             ""
         ),
-        (   # Query 1 - Missing subject category
-            LATEST_BIOLINK_MODEL_VERSION,
+        (   # Query 1 - Valid edge object, using original 'subject' and 'object' JSON tags
+            LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
             {
+                'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
                 'subject': 'UBERON:0005453',
                 'object': 'UBERON:0035769'
             },
+            ""  # should still no generate an error message
+        ),
+        (   # Query 2 - Missing subject category
+            LATEST_BIOLINK_MODEL_VERSION,
+            {
+                'object_category': 'biolink:AnatomicalEntity',
+                'predicate': 'biolink:subclass_of',
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
+            },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Subject has a missing Biolink category!"
             "error.input_edge.node.category.missing"
         ),
-        (   # Query 2 - Invalid subject category
+        (   # Query 3 - Invalid subject category
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:NotACategory',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Subject element 'biolink:NotACategory' is unknown!"
             "error.input_edge.node.category.unknown"
         ),
-        (   # Query 3 - Missing object category
+        (   # Query 4 - Missing object category
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Object has a missing Biolink category!"
             "error.input_edge.node.category.missing"
         ),
-        (   # Query 4 - Invalid object category
+        (   # Query 5 - Invalid object category
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:NotACategory',
                 'predicate': 'biolink:subclass_of',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Object element 'biolink:NotACategory' is unknown!"
             "error.input_edge.node.category.unknown"
         ),
-        (   # Query 5 - Missing predicate
+        (   # Query 6 - Missing predicate
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate is missing or empty!"
             "error.input_edge.predicate.missing"
         ),
-        (   # Query 6 - Empty predicate
+        (   # Query 7- Empty predicate
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': '',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate is missing or empty!"
             "error.input_edge.predicate.missing"
         ),
-        (   # Query 7 - Predicate is deprecated
+        (   # Query 8 - Predicate is deprecated
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:Drug',
                 'object_category': 'biolink:Protein',
                 'predicate': 'biolink:increases_amount_or_activity_of',
-                'subject': 'NDC:0002-8215-01',  # a form of insulin
-                'object': 'MONDO:0005148'  # type 2 diabetes?
+                'subject_id': 'NDC:0002-8215-01',  # a form of insulin
+                'object_id': 'MONDO:0005148'  # type 2 diabetes?
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Predicate element " +
             # "'binds' is deprecated?"  # in Biolink 3.1.1
             "warning.input_edge.predicate.deprecated"
         ),
-        (   # Query 8 - Predicate is abstract
+        (   # Query 9 - Predicate is abstract
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:InformationContentEntity',
                 'object_category': 'biolink:Agent',
                 'predicate': 'biolink:contributor',
-                'subject': 'PMID:1234',
-                'object': 'ORCID:56789'
+                'subject_id': 'PMID:1234',
+                'object_id': 'ORCID:56789'
             },
             # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:contributor' is abstract."
             "info.input_edge.predicate.abstract"
         ),
-        (   # Query 9 - Predicate is a mixin
+        (   # Query 10 - Predicate is a mixin
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:Drug',
                 'object_category': 'biolink:BiologicalProcess',
                 'predicate': 'biolink:decreases_amount_or_activity_of',
-                'subject': 'NDC:50090‑0766',  # Metformin
-                'object': 'GO:0006094'  # Gluconeogenesis
+                'subject_id': 'NDC:50090‑0766',  # Metformin
+                'object_id': 'GO:0006094'  # Gluconeogenesis
             },
             # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:decreases_amount_or_activity_of' is a mixin."
             "info.input_edge.predicate.mixin"
         ),
-        (   # Query 10 - Unknown predicate element
+        (   # Query 11 - Unknown predicate element
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:not_a_predicate',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:not_a_predicate' is unknown!"
             "error.input_edge.predicate.unknown"
         ),
-        (   # Query 11 - Invalid or unknown predicate
+        (   # Query 12 - Invalid or unknown predicate
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:has_unit',
-                'subject': 'UBERON:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:has_unit' is invalid!"
             "error.input_edge.predicate.invalid"
         ),
-        (   # Query 12 - Non-canonical directed predicate
+        (   # Query 13 - Non-canonical directed predicate
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:SmallMolecule',
                 'object_category': 'biolink:Disease',
                 'predicate': 'biolink:affected_by',
-                'subject': 'DRUGBANK:DB00331',
-                'object': 'MONDO:0005148'
+                'subject_id': 'DRUGBANK:DB00331',
+                'object_id': 'MONDO:0005148'
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Edge predicate 'biolink:affected_by' is non-canonical?"
             "warning.input_edge.predicate.non_canonical"
         ),
-        (   # Query 13 - Missing subject
+        (   # Query 14 - Missing subject
             LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'object': 'UBERON:0035769'
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Subject node identifier is missing!"
             "error.input_edge.node.id.missing"
         ),
-        (   # Query 14 - Unmappable subject namespace
+        (   # Query 15 - Unmappable subject namespace
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'subject': 'FOO:0005453',
-                'object': 'UBERON:0035769'
+                'subject_id': 'FOO:0005453',
+                'object_id': 'UBERON:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Subject node identifier 'FOO:0005453' " +
             # "is unmapped to 'biolink:AnatomicalEntity'?"
             "warning.input_edge.node.id.unmapped_to_category"
         ),
-        (   # Query 15 - missing object
+        (   # Query 16 - missing object
             LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'subject': "UBERON:0005453"
+                'subject_id': "UBERON:0005453"
             },
             # f"{INPUT_EDGE_PREFIX}: ERROR - Object node identifier is missing!"
             "error.input_edge.node.id.missing"
         ),
-        (   # Query 16 - Unmappable object namespace
+        (   # Query 17 - Unmappable object namespace
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
                 'predicate': 'biolink:subclass_of',
-                'subject': 'UBERON:0005453',
-                'object': 'BAR:0035769'
+                'subject_id': 'UBERON:0005453',
+                'object_id': 'BAR:0035769'
             },
             # f"{INPUT_EDGE_PREFIX}: WARNING - Object node identifier 'BAR:0035769' " +
             # "is unmapped to 'biolink:AnatomicalEntity'?"
             "warning.input_edge.node.id.unmapped_to_category"
         ),
-        (   # Query 17 - Valid other model
+        (   # Query 18 - Valid other model
             "1.8.2",
             {
                 'subject_category': 'biolink:ChemicalSubstance',
                 'object_category': 'biolink:Protein',
                 'predicate': 'biolink:entity_negatively_regulates_entity',
-                'subject': 'DRUGBANK:DB00945',
-                'object': 'UniProtKB:P23219'
+                'subject_id': 'DRUGBANK:DB00945',
+                'object_id': 'UniProtKB:P23219'
             },
             ""
         ),
@@ -313,25 +327,25 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         #     # f"{INPUT_EDGE_PREFIX}: WARNING - Subject 'biolink:Nutrient' is deprecated?"
         #     "warning.input_edge.node.category.deprecated"
         # ),
-        (   # Query 18 - Issue a warning for input_edge data with a category that is a mixin?
+        (   # Query 19 - Issue a warning for input_edge data with a category that is a mixin?
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:GeneOrGeneProduct',
                 'object_category': 'biolink:Protein',
                 'predicate': 'biolink:related_to',
-                'subject': 'HGNC:9604',
-                'object': 'UniProtKB:P23219'
+                'subject_id': 'HGNC:9604',
+                'object_id': 'UniProtKB:P23219'
             },
             "warning.input_edge.node.category.not_concrete"
         ),
-        (   # Query 19 - Issue a warning for input_edge data with a category that is abstract?
+        (   # Query 20 - Issue a warning for input_edge data with a category that is abstract?
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AdministrativeEntity',
                 'object_category': 'biolink:Agent',
                 'predicate': 'biolink:related_to',
-                'subject': 'isbn:1234',
-                'object': 'ORCID:1234'
+                'subject_id': 'isbn:1234',
+                'object_id': 'ORCID:1234'
             },
             "warning.input_edge.node.category.not_concrete"
         )
@@ -340,6 +354,81 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
 def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
     validator: BiolinkValidator = check_biolink_model_compliance_of_input_edge(edge=query[1], biolink_version=query[0])
     check_messages(validator, query[2])
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 0: Sample small valid TRAPI Query Graph
+            {
+                "edges": {
+                    "t_edge": {
+                        "attribute_constraints": [],
+                        "exclude": None,
+                        "knowledge_type": "inferred",
+                        "object": "on",
+                        "option_group_id": None,
+                        "predicates": [
+                            "biolink:treats"
+                        ],
+                        "qualifier_constraints": [],
+                        "subject": "sn"
+                    }
+                },
+                "nodes": {
+                    "on": {
+                        "categories": [
+                            "biolink:Disease"
+                        ],
+                        "constraints": [],
+                        "ids": [
+                            "MONDO:0015564"
+                        ],
+                        "is_set": False,
+                        "option_group_id": None
+                    },
+                    "sn": {
+                        "categories": [
+                            "biolink:ChemicalEntity"
+                        ],
+                        "constraints": [],
+                        "ids": None,
+                        "is_set": False,
+                        "option_group_id": None
+                    }
+                }
+            }
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 1: Simpler small valid TRAPI Query Graph
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            }
+        )
+    ]
+)
+def test_conservation_of_query_graph(query: Tuple):
+    """
+    This test checks for internal glitch where the query graph is somehow deleted
+    """
+    original_graph: Dict = deepcopy(query[1])
+    check_biolink_model_compliance_of_query_graph(graph=query[1], biolink_version=query[0])
+    assert query[1] == original_graph
 
 
 @pytest.mark.parametrize(
@@ -774,6 +863,51 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
             },
             # f"{QUERY_GRAPH_PREFIX}: INFO - Predicate element 'biolink:increases_amount_or_activity_of' is a mixin."
             "info.query_graph.edge.predicate.mixin"
+        ),
+        (
+            SUPPRESS_BIOLINK_MODEL_VALIDATION,
+            # Query 24: ... but if present, predicates must be valid
+            #           for the specified Biolink Model version, but...
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:has_unit"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            # ...since Biolink Model validation is tagged as 'suppress',
+            # we  don't expect any validation output here?
+            ""
+        ),
+        (
+            SUPPRESS_BIOLINK_MODEL_VALIDATION,
+            # Query 25: Query edge predicate is a mixin...but...
+            {
+                "nodes": {
+                    "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:increases_amount_or_activity_of"],
+                        "object": "IRS1"
+                    }
+                }
+            },
+            # ...since Biolink Model validation is tagged as 'suppress',
+            # we  don't expect any validation output here?
+            ""
         )
     ]
 )
@@ -896,12 +1030,27 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(query: Tuple):
                 "attributes": []
             },
             get_ara_test_case(),
-            # "Edge has empty attributes!"
+            # "Edge has empty attributes!" Allowed
             ""
         ),
+        (
+            # Query 3. EDAM-DATA:2526 ought to have an acceptable namespace
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "EDAM-DATA:2526",
+                        "value": "some-value"
+                    }
+                ]
+            },
+            get_ara_test_case(),
+            # "Edge has an acceptable namespace prefix
+            ""
+        )
+        # CHEMBL.COMPOUND:CHEMBL112--biolink:occurs_together_in_literature_with->NCBIGene:762
     ]
 )
-def test_post_1_4_0_trapi_validate_missing_or_empty_attributes(query: Tuple):
+def test_post_1_4_0_trapi_validate_attributes(query: Tuple):
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
@@ -1156,7 +1305,8 @@ def qualifier_validator(
         tested_method,
         edge_model: str,
         query: Tuple[Dict, str],
-        trapi_version: Optional[str] = None
+        trapi_version: Optional[str] = None,
+        biolink_version: Optional[str] = LATEST_BIOLINK_MODEL_VERSION
 ):
     # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     # Sanity check: does TRAPI validation catch this first?
@@ -1179,14 +1329,16 @@ def qualifier_validator(
 
     mock_edge["object"] = "mock_object"
     trapi_validator.is_valid_trapi_query(mock_edge, edge_model)
-    if trapi_validator.has_errors():
+    # TODO: not sure if simple errors should be fully displaced
+    #       by 'critical' errors or rather, just complement them
+    if trapi_validator.has_critical():
         validator = trapi_validator
     else:
         # if you get this far,then attempt additional Biolink Validation
         validator = BiolinkValidator(
             graph_type=TRAPIGraphType.Query_Graph,
             trapi_version=trapi_version,
-            biolink_version=LATEST_BIOLINK_MODEL_VERSION
+            biolink_version=biolink_version
         )
         tested_method(
             validator,
@@ -1207,13 +1359,13 @@ def qualifier_validator(
             {
                 'qualifier_constraints': None
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 2 - 'qualifier_constraints' value is not an array - invalidated by TRAPI schema
             {
                 'qualifier_constraints': {}
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 3 - empty 'qualifier_constraints' array value - since nullable: true, this should pass
             {
@@ -1227,7 +1379,7 @@ def qualifier_validator(
                     {}
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 5 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
             {
@@ -1235,7 +1387,7 @@ def qualifier_validator(
                     []
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 6 - 'qualifier_set' entry is missing the 'qualifier_set' key - invalidated by TRAPI schema
             {
@@ -1243,7 +1395,7 @@ def qualifier_validator(
                     {"not_qualifier_set": []}
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 7 - 'qualifier_set' entry is empty
             {
@@ -1261,7 +1413,7 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 9 - 'qualifier' entry in the qualifier_set is empty - invalidated by TRAPI schema
             {
@@ -1273,7 +1425,7 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 10 - 'qualifier' entry is not a JSON object (dictionary) - invalidated by TRAPI schema
             {
@@ -1285,7 +1437,7 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 11 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
             {
@@ -1300,7 +1452,7 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 12 - 'qualifier_type_id' property value is unknown
             {
@@ -1359,7 +1511,7 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (   # Query 16 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
             #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
@@ -1437,6 +1589,55 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
     )
 
 
+@pytest.mark.parametrize(
+    "query",
+    [
+        (   # Query 0 - 'qualifier_type_id' is the special qualifier case 'biolink:qualified_predicate'
+            #            an incorrect value, which is not a Biolink predicate,  but...
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:qualified_predicate",
+                                'qualifier_value': "biolink:Association"
+                            }
+                        ]
+                    }
+                ]
+            },
+            # ...since Biolink Model validation is tagged as 'suppress',
+            #    then we don't expect any validation output here?
+            ""
+        ),
+        (  # Query 14 - 'qualifier_type_id' property value is not a Biolink qualifier term, but...
+            {
+                'qualifier_constraints': [
+                    {
+                        "qualifier_set": [
+                            {
+                                'qualifier_type_id': "biolink:related_to",
+                                'qualifier_value': "fake-qualifier-value"
+                            }
+                        ]
+                    }
+                ]
+            },
+            # ...since Biolink Model validation is tagged as 'suppress',
+            #    then we don't expect any validation output here?
+            ""
+        )
+    ]
+)
+def test_biolink_validation_suppressed_validate_qualifier_constraints(query: Tuple[Dict, str]):
+    qualifier_validator(
+        tested_method=BiolinkValidator.validate_qualifier_constraints,
+        edge_model="QEdge",
+        query=query,
+        biolink_version="suppress"
+    )
+
+
 QC_QS_NOT_A_CURIE = {
     'qualifier_constraints': [
         {
@@ -1462,7 +1663,7 @@ QC_QS_NOT_A_CURIE = {
         (  # Query 1 - 'qualifier_type_id' value not a Biolink CURIE - schema validation error in TRAPI < 1.4.0-beta
             "1.4.0-beta",
             QC_QS_NOT_A_CURIE,
-            "error.trapi.validation"
+            "critical.trapi.validation"
         )
     ]
 )
@@ -1492,7 +1693,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             {
                 'qualifiers': {}
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 3 - empty 'qualifiers' array value - since nullable: true, this should pass
             {
@@ -1504,13 +1705,13 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
             {
                 'qualifiers': [{}]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 5 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
             {
                 'qualifiers': [[]]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 6 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
             {
@@ -1521,7 +1722,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (  # Query 7 - 'qualifier_type_id' property value is unknown
             {
@@ -1565,7 +1766,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
                     }
                 ]
             },
-            "error.trapi.validation"
+            "critical.trapi.validation"
         ),
         (   # Query 11 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
             #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
@@ -1627,7 +1828,7 @@ Q_NOT_A_CURIE = {
         (  # Query 1 - 'qualifier_type_id' value not a Biolink CURIE - schema validation error in TRAPI < 1.4.0-beta
                 "1.4.0-beta",
                 Q_NOT_A_CURIE,
-                "error.trapi.validation"
+                "critical.trapi.validation"
         )
     ]
 )
@@ -2502,8 +2703,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge attribute_type_id 'foo:bar' " +
             # f"has a CURIE prefix namespace unknown to Biolink!"
-            # TODO: Code for validating this is commented out pending a BMT repair of the test
-            "warning.knowledge_graph.edge.attribute.type_id.unknown_prefix"
+            "warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix"
         ),
         (   # Query 26:  # An earlier Biolink Model won't recognize a category not found in its specified release
             "1.8.2",
@@ -2532,6 +2732,78 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                 }
             },
             "error.knowledge_graph.node.category.unknown"
+        ),
+        (   # Query 27:  #'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
+            SUPPRESS_BIOLINK_MODEL_VALIDATION,
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:Gene"
+                       ]
+                    },
+                    "PUBCHEM.COMPOUND:597": {
+                        "name": "cytosine",
+                        "categories": [
+                            "biolink:SmallMolecule"
+                        ],
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:physically_interacts_with",
+                        "object": "PUBCHEM.COMPOUND:597",
+                        "attributes": [{"attribute_type_id": "foo:bar", "value": "some value"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
+                    }
+                }
+            },
+            # ...since Biolink Model validation is tagged as 'suppress',
+            # we  don't expect any validation output here?
+            ""
+        ),
+        (
+            SUPPRESS_BIOLINK_MODEL_VALIDATION,
+            # Query 28: 'attribute_type_id' is not a 'biolink:association_slot'
+            #           (biolink:synonym is a node property) but...
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:Gene"
+                       ]
+                    },
+                    "PUBCHEM.COMPOUND:597": {
+                        "name": "cytosine",
+                        "categories": [
+                            "biolink:SmallMolecule"
+                        ],
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:physically_interacts_with",
+                        "object": "PUBCHEM.COMPOUND:597",
+                        "attributes": [{"attribute_type_id": "biolink:synonym", "value": "some synonym"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
+                    }
+                }
+            },
+            # ...since Biolink Model validation is tagged as 'suppress',
+            # we  don't expect any validation output here?
+            ""
         )
     ]
 )
@@ -2576,6 +2848,17 @@ def test_pre_trapi_1_4_0_validate_attributes():
         biolink_version=LATEST_BIOLINK_MODEL_VERSION
     )
     check_messages(validator, "error.knowledge_graph.edge.attribute.missing")
+
+
+def test_suppress_biolink_validation_pre_trapi_1_4_0_validate_attributes():
+    # message edges must have at least some 'provenance' attributes
+    edge_without_attributes = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
+    validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
+        graph=edge_without_attributes,
+        trapi_version="1.3.0",
+        biolink_version=SUPPRESS_BIOLINK_MODEL_VALIDATION
+    )
+    check_messages(validator, "")
 
 
 SAMPLE_RETRIEVAL_SOURCE = {
@@ -2675,3 +2958,42 @@ def test_latest_trapi_validate_sources(sources: bool, validation_code: str):
         biolink_version=LATEST_BIOLINK_MODEL_VERSION
     )
     check_messages(validator, validation_code)
+
+
+@pytest.mark.parametrize(
+    "predicate,result",
+    [
+        (None, False),
+        ("biolink:related_to", True),
+        ("related_to", True),
+        ("related to", True),
+        ("biolink:active_in", False),
+        ("active_in", False),
+        ("active in", False),
+        ("biolink:has_active_component", False)
+    ]
+)
+def test_is_symmetric(predicate, result):
+    # we assume the default is a late version which has proper inverse
+    validator: BiolinkValidator = BiolinkValidator(TRAPIGraphType.Knowledge_Graph, biolink_version=None)
+    assert validator.is_symmetric(predicate) == result
+
+
+@pytest.mark.parametrize(
+    "predicate,inverse",
+    [
+        (None, None),
+        ("", None),
+        ("biolink:related_to", "biolink:related_to"),
+        ("related_to", "biolink:related_to"),
+        ("related to", "biolink:related_to"),
+        ("biolink:active_in", "biolink:has_active_component"),
+        ("active_in", "biolink:has_active_component"),
+        ("active in", "biolink:has_active_component"),
+        ("biolink:has_active_component", "biolink:active_in")
+    ]
+)
+def test_get_inverse_predicate(predicate, inverse):
+    # we assume the default is a late version which has proper inverse
+    validator: BiolinkValidator = BiolinkValidator(TRAPIGraphType.Knowledge_Graph, biolink_version=None)
+    assert validator.get_inverse_predicate(predicate) == inverse

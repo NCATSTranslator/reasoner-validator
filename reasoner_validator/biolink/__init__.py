@@ -8,8 +8,7 @@ from urllib.error import HTTPError
 from pprint import PrettyPrinter
 
 
-from bmt import Toolkit
-from bmt.utils import parse_name
+from bmt import Toolkit, utils
 from linkml_runtime.linkml_model import ClassDefinition, Element
 
 from reasoner_validator.sri.util import is_curie
@@ -38,7 +37,6 @@ def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional
                 + biolink_version
                 + "' is not a properly formatted semantic version?"
             )
-
 
         if svm >= SemVer.from_string("2.2.14"):
             biolink_version = "v" + str(svm)
@@ -85,7 +83,60 @@ class TRAPIGraphType(Enum):
     Knowledge_Graph = "Knowledge Graph"
 
 
-class BiolinkValidator(ValidationReporter):
+class BMTWrapper:
+    def __init__(self, biolink_version: Optional[str] = None):
+        self.bmt: Optional[Toolkit] = None
+        if biolink_version != "suppress":
+            # Here, the Biolink Model version is validated, and the relevant Toolkit pulled.
+            self.bmt = get_biolink_model_toolkit(biolink_version=biolink_version)
+            self.resolved_biolink_version = self.bmt.get_model_version()
+        else:
+            self.resolved_biolink_version = "suppress"
+
+    def get_resolved_biolink_version(self) -> Optional[str]:
+        return self.resolved_biolink_version
+
+    def get_bmt(self) -> Optional[Toolkit]:
+        return self.bmt
+
+    def is_symmetric(self, name: str) -> bool:
+        """
+        Checks if a given element identified by name, is a symmetric (predicate) slot.
+        :param name: name of the element
+        :return: True if element is a symmetric (predicate) slot.
+        """
+        # TODO: perhaps this method ought to be in the Biolink Model Toolkit?
+        if not name:
+            return False
+        element: Optional[Element] = self.bmt.get_element(name)
+        if element['symmetric']:
+            return True
+        else:
+            return False
+
+    def get_inverse_predicate(self, predicate: Optional[str]) -> Optional[str]:
+        """
+        Utility wrapper of logic to robustly test if a predicate exists and has an inverse.
+        :param predicate: CURIE or string name of predicate for which the inverse is sought.
+        :return: CURIE string of inverse predicate, if it exists; None otherwise
+        """
+        # TODO: perhaps this method ought to be in the Biolink Model Toolkit?
+        if predicate and self.bmt.is_predicate(predicate):
+            predicate_name = utils.parse_name(predicate)
+            inverse_predicate_name = self.bmt.get_inverse(predicate_name)
+            if not inverse_predicate_name:
+                if self.is_symmetric(predicate_name):
+                    inverse_predicate_name = predicate_name
+                else:
+                    inverse_predicate_name = None
+
+            if inverse_predicate_name:
+                ip = self.bmt.get_element(inverse_predicate_name)
+                return utils.format_element(ip)
+        return None
+
+
+class BiolinkValidator(ValidationReporter, BMTWrapper):
     """
     Wrapper class for Biolink Model validation.
     """
@@ -109,13 +160,12 @@ class BiolinkValidator(ValidationReporter):
         :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
         :type sources: Optional[Dict[str,str]]
         """
-        self.bmt: Toolkit = get_biolink_model_toolkit(biolink_version=biolink_version)
-        resolved_biolink_version = self.bmt.get_model_version()
+        BMTWrapper.__init__(self, biolink_version=biolink_version)
         ValidationReporter.__init__(
             self,
             prefix=f"Biolink Validation of {graph_type.value}",
             trapi_version=trapi_version,
-            biolink_version=resolved_biolink_version,
+            biolink_version=self.get_resolved_biolink_version(),
             sources=sources,
             strict_validation=strict_validation
         )
@@ -163,47 +213,50 @@ class BiolinkValidator(ValidationReporter):
                 if not isinstance(slots["categories"], List):
                     self.report(code="error.knowledge_graph.node.categories.not_array", identifier=node_id)
                 else:
-                    categories = slots["categories"]
-                    node_prefix_mapped: bool = False
-                    concrete_category_found: bool = False
-                    for category in categories:
-                        category: Optional[ClassDefinition] = \
-                            self.validate_category(
-                                context="knowledge_graph",
-                                node_id=node_id,
-                                category=category
+                    if self.validate_biolink():
+                        # Biolink Validation of node, if not suppressed
+                        categories = slots["categories"]
+                        node_prefix_mapped: bool = False
+                        concrete_category_found: bool = False
+                        for category in categories:
+                            category: Optional[ClassDefinition] = \
+                                self.validate_category(
+                                    context="knowledge_graph",
+                                    node_id=node_id,
+                                    category=category
+                                )
+                            # Only 'concrete' (non-abstract, non-mixin, preferably,
+                            # non-deprecated) categories are of interest here,
+                            # since only they will have associated namespaces
+                            if category:
+                                concrete_category_found: bool = True
+                                possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
+                                if possible_subject_categories and category.name in possible_subject_categories:
+                                    node_prefix_mapped = True
+                                    # don't need to search any more categories
+                                    break
+
+                        if not concrete_category_found:
+                            self.report(
+                                code="error.knowledge_graph.node.categories.not_concrete",
+                                identifier=node_id,
+                                categories=str(categories)
                             )
-                        # Only 'concrete' (non-abstract, non-mixin, preferably,
-                        # non-deprecated) categories are of interest here,
-                        # since only they will have associated namespaces
-                        if category:
-                            concrete_category_found: bool = True
-                            possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
-                            if possible_subject_categories and category.name in possible_subject_categories:
-                                node_prefix_mapped = True
-                                # don't need to search any more categories
-                                break
 
-                    if not concrete_category_found:
-                        self.report(
-                            code="error.knowledge_graph.node.categories.not_concrete",
-                            identifier=node_id,
-                            categories=str(categories)
-                        )
-
-                    if not node_prefix_mapped:
-                        self.report(
-                            code="warning.knowledge_graph.node.id.unmapped_prefix",
-                            identifier=node_id,
-                            categories=str(categories)
-                        )
+                        if not node_prefix_mapped:
+                            self.report(
+                                code="warning.knowledge_graph.node.id.unmapped_prefix",
+                                identifier=node_id,
+                                categories=str(categories)
+                            )
             else:
                 self.report(
                     code="error.knowledge_graph.node.category.missing",
                     context=self.graph_type.value, identifier=node_id
                 )
 
-            # TODO: Do we need to (or can we) validate here, any other Knowledge Graph node fields? Perhaps not yet?
+            # TODO: Do we need to (or can we) validate here, any other
+            #       Knowledge Graph node fields? Perhaps not yet?
 
         else:  # Query Graph node validation
 
@@ -211,11 +264,15 @@ class BiolinkValidator(ValidationReporter):
             if "ids" in slots and slots["ids"]:
                 has_node_ids = True
                 node_ids = slots["ids"]
-                if not isinstance(node_ids, List):
+                if isinstance(node_ids, List):
+                    # because the validation below is destructive
+                    # to node_ids, we copy the original list
+                    node_ids = node_ids.copy()
+                else:
                     self.report(code="error.query_graph.node.ids.not_array", identifier=node_id)
                     # we'll pretend that the ids were mistakenly
                     # just a scalar string, then continue validating
-                    node_ids = [node_ids]
+                    node_ids = [str(node_ids)]
             else:
                 has_node_ids = False
                 node_ids = list()  # a null "ids" value is permitted in QNodes
@@ -226,35 +283,37 @@ class BiolinkValidator(ValidationReporter):
                     if not isinstance(categories, List):
                         self.report(code="error.query_graph.node.categories.not_array", identifier=node_id)
                     else:
-                        id_prefix_mapped: Dict = {identifier: False for identifier in node_ids}
-                        for category in categories:
-                            category: Optional[ClassDefinition] = \
-                                self.validate_category(
-                                    context="query_graph",
-                                    node_id=node_id,
-                                    category=category
-                                )
-                            # Only 'concrete' (non-abstract, non-mixin, preferably, non-deprecated)
-                            # categories will be tested here for identifier namespaces.  Also, we
-                            # actually don't care if Query Graphs don't have at least one concrete category...
-                            if category:
-                                for identifier in node_ids:  # may be empty list if not provided...
-                                    possible_subject_categories = self.bmt.get_element_by_prefix(identifier)
-                                    if category.name in possible_subject_categories:
-                                        id_prefix_mapped[identifier] = True
-                                        node_ids.remove(identifier)
-                                        # found a suitable mapping for the given identifier
-                                        break
+                        if self.validate_biolink():
+                            # Biolink Validation of node, if not suppressed
+                            id_prefix_mapped: Dict = {identifier: False for identifier in node_ids}
+                            for category in categories:
+                                category: Optional[ClassDefinition] = \
+                                    self.validate_category(
+                                        context="query_graph",
+                                        node_id=node_id,
+                                        category=category
+                                    )
+                                # Only 'concrete' (non-abstract, non-mixin, preferably, non-deprecated)
+                                # categories will be tested here for identifier namespaces.  Also, we
+                                # actually don't care if Query Graphs don't have at least one concrete category...
+                                if category:
+                                    for identifier in node_ids:  # may be empty list if not provided...
+                                        possible_subject_categories = self.bmt.get_element_by_prefix(identifier)
+                                        if category.name in possible_subject_categories:
+                                            id_prefix_mapped[identifier] = True
+                                            node_ids.remove(identifier)
+                                            # found a suitable mapping for the given identifier
+                                            break
 
-                        # At this point, if any 'node_ids' are NOT
-                        # removed (above), then they are unmapped
-                        if has_node_ids and node_ids:
-                            self.report(
-                                code="warning.query_graph.node.ids.unmapped_prefix",
-                                identifier=node_id,
-                                unmapped_ids=str(node_ids),
-                                categories=str(categories)
-                            )
+                            # At this point, if any 'node_ids' are NOT
+                            # removed (above), then they are unmapped
+                            if has_node_ids and node_ids:
+                                self.report(
+                                    code="warning.query_graph.node.ids.unmapped_prefix",
+                                    identifier=node_id,
+                                    unmapped_ids=str(node_ids),
+                                    categories=str(categories)
+                                )
 
                 # else:  # null "categories" value is permitted in QNodes by nullable: true
             # else:  # missing "categories" key is permitted in QNodes by nullable: true
@@ -391,12 +450,16 @@ class BiolinkValidator(ValidationReporter):
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
         # we only report errors about missing or empty edge attributes if TRAPI 1.3.0 or earlier,
+        # and Biolink Validation is not suppressed, since we can't fully validate provenance)
         # since earlier TRAPI releases are minimally expected to record provenance attributes
+        # we only report this for TRAPI < 1.4 when Biolink Validation is done given that
+        # without Biolink validation, provenance cannot be reliably assessed
+
         if 'attributes' not in edge:
-            if not self.minimum_required_trapi_version("1.4.0-beta"):
+            if self.validate_biolink() and not self.minimum_required_trapi_version("1.4.0-beta"):
                 self.report(code="error.knowledge_graph.edge.attribute.missing", identifier=edge_id)
         elif not edge['attributes']:
-            if not self.minimum_required_trapi_version("1.4.0-beta"):
+            if self.validate_biolink() and not self.minimum_required_trapi_version("1.4.0-beta"):
                 self.report(code="error.knowledge_graph.edge.attribute.empty", identifier=edge_id)
         elif not isinstance(edge['attributes'], List):
             self.report(code="error.knowledge_graph.edge.attribute.not_array", identifier=edge_id)
@@ -434,7 +497,7 @@ class BiolinkValidator(ValidationReporter):
                         identifier=edge_id
                     )
                 elif not attribute['value'] or \
-                        str(attribute['value']).upper() in ["N/A","NONE","NULL"]:
+                        str(attribute['value']).upper() in ["N/A", "NONE", "NULL"]:
                     self.report(
                         code="error.knowledge_graph.edge.attribute.value.empty",
                         identifier=edge_id
@@ -456,7 +519,7 @@ class BiolinkValidator(ValidationReporter):
                             identifier=attribute_type_id,
                             edge_id=edge_id
                         )
-                    else:
+                    elif self.validate_biolink():
                         # 'attribute_type_id' is a CURIE, but how well does it map?
                         prefix = attribute_type_id.split(":", 1)[0]
                         if prefix == 'biolink':
@@ -519,29 +582,21 @@ class BiolinkValidator(ValidationReporter):
                                                         infores == kp_source:
                                                     found_kp_knowledge_source = True
 
-                        # if not a Biolink association_slot, at least,
-                        # check if it is an id prefix known to Biolink.
-                        # We won't call it a hard error, but issue a warning
-                        elif not self.bmt.get_element_by_prefix(prefix):
+                        # if not a Biolink 'association_slot', at least, check if the 'attribute_type_id' has a
+                        # namespace (prefix) known to Biolink. We won't call it a hard error, but issue a warning
+                        elif not self.bmt.get_element_by_prefix(attribute_type_id):
                             self.report(
-                                code="warning.knowledge_graph.edge.attribute.type_id.unknown_prefix",
-                                identifier=attribute_type_id,
-                                edge_id=edge_id
-                            )
-                        # TODO: probably need to take a closer look at validating outlier terms here
-                        #       Maybe enumerations will help
-                        else:
-                            self.report(
-                                code="info.knowledge_graph.edge.attribute.type_id.non_biolink_prefix",
+                                code="warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix",
                                 identifier=attribute_type_id,
                                 edge_id=edge_id
                             )
 
             # Edge provenance tags only recorded in Edge attributes prior to TRAPI 1.4.0-beta
-            if not self.minimum_required_trapi_version("1.4.0-beta"):
-
-                # TODO: After all the attributes have been scanned,
-                #       check for provenance. Treat as warnings for now.
+            if not self.minimum_required_trapi_version("1.4.0-beta") and self.validate_biolink():
+                # After all the attributes have been scanned,
+                # check for provenance. Treat as warnings for now.
+                # Note that provenance checking is only done when Biolink validation is done
+                # (since the various flags are not properly set above, for the test)
                 self.validate_provenance(
                     edge_id,
                     ara_source, found_ara_knowledge_source,
@@ -637,7 +692,7 @@ class BiolinkValidator(ValidationReporter):
             self.report(code="error.knowledge_graph.edge.qualifiers.not_array", identifier=edge_id)
         elif not edge['qualifiers']:
             return  # nullable: true... an empty 'qualifiers' array is ok?
-        else:
+        elif self.validate_biolink():
             qualifiers: List = edge['qualifiers']
             self.validate_qualifier_entry(
                 context="knowledge_graph.edge.qualifiers",
@@ -671,7 +726,7 @@ class BiolinkValidator(ValidationReporter):
                         code="error.query_graph.edge.qualifier_constraints.qualifier_set.empty",
                         identifier=edge_id
                     )
-                else:
+                elif self.validate_biolink():
                     # We have a putative non-empty 'qualifier_set'
                     qualifier_set: List = qualifier_set_entry['qualifier_set']
                     self.validate_qualifier_entry(
@@ -897,8 +952,9 @@ class BiolinkValidator(ValidationReporter):
                     context=self.graph_type.value,
                     identifier=edge_id
                 )
-            else:
+            elif self.validate_biolink():
                 self.validate_predicate(edge_id=edge_id, predicate=predicate)
+
         else:  # is a Query Graph...
             if predicates is None:
                 # Query Graphs can have a missing or null predicates slot
@@ -907,8 +963,9 @@ class BiolinkValidator(ValidationReporter):
                 self.report(code="error.query_graph.edge.predicate.not_array", identifier=edge_id)
             elif len(predicates) == 0:
                 self.report(code="error.query_graph.edge.predicate.empty_array", identifier=edge_id)
-            else:
-                # Should now be a non-empty list of CURIES which are valid Biolink Predicates
+            elif self.validate_biolink():
+                # Should now be a non-empty list of CURIES
+                # which should validate as Biolink Predicates
                 for predicate in predicates:
                     if not predicate:
                         continue  # sanity check
@@ -1037,8 +1094,20 @@ class BiolinkValidator(ValidationReporter):
         subject_category_curie = edge['subject_category'] if 'subject_category' in edge else None
         object_category_curie = edge['object_category'] if 'object_category' in edge else None
         predicate = edge['predicate'] if 'predicate' in edge else None
-        subject_curie = edge['subject'] if 'subject' in edge else None
-        object_curie = edge['object'] if 'object' in edge else None
+
+        if 'subject_id' in edge:
+            subject_curie = edge['subject_id']
+        elif 'subject' in edge:
+            subject_curie = edge['subject']
+        else:
+            subject_curie = None
+
+        if 'object_id' in edge:
+            object_curie = edge['object_id']
+        elif 'object' in edge:
+            object_curie = edge['object']
+        else:
+            object_curie = None
 
         edge_id = f"{str(subject_curie)}--{predicate}->{str(object_curie)}"
 
@@ -1188,7 +1257,7 @@ def check_biolink_model_compliance_of_query_graph(
     return validator
 
 
-def  check_biolink_model_compliance_of_knowledge_graph(
+def check_biolink_model_compliance_of_knowledge_graph(
     graph: Dict,
     trapi_version: Optional[str] = None,
     biolink_version: Optional[str] = None,

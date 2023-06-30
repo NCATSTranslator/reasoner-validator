@@ -49,18 +49,21 @@ To develop this package, install with all extras dependencies using:
 poetry install --all-extras
 ```
 
-## Running Validation against an ARS UUID Result(*)
+## Running Validation against an ARS UUID Result(*) or using a Local TRAPI Request Query
 
-A local script **`ars_uuid_result_test_runner.py`** is available to run TRAPI Response validation against a 
-UUID indexed query result of the Biomedical Knowledge Translator "Autonomous Relay System" (ARS).
+A local script **`trapi_validator.py`** is available to run TRAPI Response validation against either a PK (UUID)
+indexed query result of the Biomedical Knowledge Translator "Autonomous Relay System" (ARS), a local JSON Response
+text file or a locally triggered _ad hoc_ query Request against an directly specified TRAPI endpoint.
 
-For usage, type:
+Note that it is best run within a **`poetry shell`** created by **`poetry install`**.
+
+For script usage, type:
 
 ```bash
-./ars_uuid_result_test_runner.py --help
+./trapi_validator.py --help
 ```
 
-(*) Thank you Eric Deutsch for the prototype of this script
+(*) Thank you Eric Deutsch for the prototype code for this script
 
 ## Running tests
 
@@ -76,10 +79,25 @@ Run the tests with coverage report:
 poetry run pytest --cov
 ```
 
+Note that [poetry automatically uses any existing virtual environment](https://python-poetry.org/docs/basic-usage/#using-your-virtual-environment), but you can otherwise also enter the one that is created by poetry by default:
+
+```shell
+poetry shell
+# run your commands, e.g. the web service module
+exit  # exit the poetry shell
+```
+
+The use of the Poetry shell command allows for running of the tests without the `poetry run` prefix. We will continue in this manner.
+
+```bash
+% poetry shell
+(reasoner-validator-py3.9) % pytest --cov
+```
+
 Run the tests with detailed coverage report in a HTML page:
 
 ```bash
-poetry run pytest --cov --cov-report html
+pytest --cov --cov-report html
 ```
 
 Serve the report on http://localhost:3000:
@@ -112,7 +130,7 @@ cd ../docs
 make html
 ```
 
-The resulting **index.html** and related pages are now available for viewing within the docs subfolder __build/html_.
+The resulting **index.html** and related pages describing the programmatic API are now available for viewing within the docs subfolder __build/html_.  
 
 ## Validation Run as a Web Service
 
@@ -124,8 +142,8 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 
 ```json
 {
-  "trapi_version": "1.4.0-beta",
-  "biolink_version": "3.2.6",
+  "trapi_version": "1.4.0",
+  "biolink_version": "3.4.3",
   "sources": {
     "ara_source": "infores:aragorn",
     "kp_source": "infores:panther",
@@ -138,7 +156,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 
 The request body consists of JSON data structure with two top level tag:
 
-- An **optional** `trapi_version` tag can be given a value of the TRAPI version against which the message will be validated, expressed as a SemVer string (defaults to 'latest' if omitted; partial SemVer strings are resolved to their 'latest' minor and patch releases). 
+- An **optional** `trapi_version` tag can be given a value of the TRAPI version against which the message will be validated, expressed as a SemVer string (defaults to 'latest' if omitted; partial SemVer strings are resolved to their 'latest' minor and patch releases). This value may also be a GitHub branch name (e.g. '**master**').
 - An **optional** `biolink_version` tag can be given a value of the Biolink Model version against which the message knowledge graph semantic contents will be validated, expressed as a SemVer string (defaults to 'latest' Biolink Model Toolkit supported version, if omitted). 
 - An **optional** `sources` with an object dictionary (example shown) specifying the ARA and KP sources involved in the TRAPI call (specified by infores CURIE) and the expected KP provenance source type, i.e. 'primary' implies that the KP is tagged as a 'biolink:primary_knowledge_source'. Optional in that the root "sources" or any of the subsidiary tags may be omitted (default to None)
 - An **optional** `strict_validation` flag (default: None or 'false'). If 'true' then follow strict validation rules, such as treating as 'error' states the use of `category`, `predicate` and `attribute_type_id` that are of type `abstract` or `mixin`  as errors. 
@@ -158,14 +176,6 @@ The service may be run directly as a Python module. The web services module may 
 python -m api.main
 ```
 
-Note that [poetry automatically uses any existing virtual environment](https://python-poetry.org/docs/basic-usage/#using-your-virtual-environment), but you can otherwise also enter the one that is created by poetry by default:
-
-```shell
-poetry shell
-# run your commands, e.g. the web service module
-exit  # exit the poetry shell
-```
-
 Go to  http://localhost/docs to see the service documentation and to use the simple UI to input TRAPI messages for validation.
 
 ### Typical Output
@@ -174,8 +184,8 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
 
 ```json
 {
-  "trapi_version": "1.3.0",
-  "biolink_version": "3.2.1",
+  "trapi_version": "1.4.0",
+  "biolink_version": "3.4.3",
   "response": {
       "message": {
         "query_graph": {
@@ -217,11 +227,19 @@ one should typically get a response body something like the following JSON valid
 
 ```json
 {
-  "trapi_version": "1.3.0",
+  "trapi_version": "1.4.0",
   "biolink_version": "3.2.1",
   "messages": {
     # some categories of messages may be absent, hence, empty dictionaries
-    "information": {},
+    "critical": {},
+    "errors": {
+      "error.knowledge_graph.node.category.missing": {
+          # this message template does not have any additional parameters
+          # other than identifier hence it just has the unique identifier 
+          # value as a dictionary key, with associated value None
+           "MONDO:0005148": None
+        }
+    },
     "warnings": {
       # validation code
       "warning.knowledge_graph.node.unmapped_prefix": {
@@ -234,23 +252,15 @@ one should typically get a response body something like the following JSON valid
           ]
           
         }
-      
     },
-    "errors": {
-      "error.knowledge_graph.node.category.missing": {
-          # this message template does not have any additional parameters
-          # other than identifier hence it just has the unique identifier 
-          # value as a dictionary key, with associated value None
-           "MONDO:0005148": None
-        }
-    }
+    "information": {},
   }
 }
 ```
 
 To minimize redundancy in validation messages, messages are uniquely indexed in dictionaries at two levels:
 
-1. the (codes.yaml recorded) dot-delimited error code path string
+1. the (codes.yaml recorded) dot-delimited validation code path string
 2. for messages with templated parameters, by a mandatory 'identifier' field (which is expected to exist as a field in a template if such template has one or more parameterized fields)
 
 ### Running the Web Service within Docker

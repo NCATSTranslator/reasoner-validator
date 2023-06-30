@@ -8,9 +8,10 @@ import pytest
 from jsonschema.exceptions import ValidationError
 
 from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema, load_schema
-from pprint import pprint
+
+from tests import LATEST_TEST_VERSIONS
+
 PRE_1_4_0_TEST_VERSIONS = "1.2", "1.2.0", "1.3", "1.3.0"
-LATEST_TEST_VERSIONS = "1", "1.4", "1.4.0", "1.4.0-beta4"
 ALL_TEST_VERSIONS = PRE_1_4_0_TEST_VERSIONS + LATEST_TEST_VERSIONS
 
 
@@ -517,7 +518,7 @@ def test_message_node_binding_component_validation(trapi_version):
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     sample_node_binding = {
         "id": "SGD:S000000065",
-        # 'qnode_id' is not formally specified in spec but it is an
+        # 'qnode_id' is not formally specified in spec, but it is an
         # example of an additionalProperties: true permitted field
         "qnode_id": "SGD:S000000065",
         "query_id": None

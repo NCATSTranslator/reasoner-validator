@@ -15,16 +15,15 @@ TEST_BIOLINK_VERSION = "2.4.8"
 def check_messages(validator: ValidationReporter, code, no_errors: bool = False):
     messages: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = validator.get_messages()
     if code:
+        # print("code is:", code)
+        # print("message_type", message_type)
         # TODO: 'code' should be found in code.yaml
         # value: Optional[Tuple[str, str]] = CodeDictionary.get_code_subtree(code)
         # assert value is not None
         message_type = validator.get_message_type(code)
-        if message_type == "error":
-            print("code is:", code)
-            print("message_type", message_type)
-            print("messages['errors']:", messages['errors'])
-            for error_code in messages['errors']:
-                print("error code is:", error_code)
+        if message_type == "critical":
+            assert any([critical_code == code for critical_code in messages['critical']])
+        elif message_type == "error":
             assert any([error_code == code for error_code in messages['errors']])
         elif message_type == "warning":
             assert any([warning_code == code for warning_code in messages['warnings']])
@@ -32,7 +31,8 @@ def check_messages(validator: ValidationReporter, code, no_errors: bool = False)
             assert any([info_code == code for info_code in messages['information']])
     else:
         if no_errors:
-            # just don't want any hard errors; info and warnings are ok?
+            # just don't want any 'critical' (errors) nor 'errors'; 'information' and 'warnings' are ok?
+            assert not validator.has_critical(), f"Unexpected critical error messages seen {messages}"
             assert not validator.has_errors(), f"Unexpected error messages seen {messages}"
         else:
             # no expected at all? Assert the absence of such messages?
@@ -44,6 +44,7 @@ def test_check_basic_get_code_subtree():
     assert CodeDictionary.get_code_subtree("info") is not None
     assert CodeDictionary.get_code_subtree("warning") is not None
     assert CodeDictionary.get_code_subtree("error") is not None
+    assert CodeDictionary.get_code_subtree("critical") is not None
     assert CodeDictionary.get_code_subtree("foo.bar") is None
 
 
@@ -117,9 +118,6 @@ def test_get_code_subtree_internal_subtree():
     assert subtree is not None
     assert all([key in ["node", "predicate", "edge"] for key in subtree])
 
-    assert CodeDictionary.get_code_subtree("error") is not None
-    assert CodeDictionary.get_code_subtree("foo.bar") is None
-
 
 def test_get_entry():
     assert CodeDictionary.get_code_entry("") is None
@@ -135,6 +133,7 @@ def test_get_entry():
     assert CodeDictionary.get_code_entry("info.query_graph.node") is None
     assert CodeDictionary.get_code_entry("warning") is None
     assert CodeDictionary.get_code_entry("error") is None
+    assert CodeDictionary.get_code_entry("critical") is None
 
     # Unknown code?
     assert CodeDictionary.get_code_entry("foo.bar") is None
@@ -143,7 +142,7 @@ def test_get_entry():
 def test_get_message_template():
     assert CodeDictionary.get_message_template("") is None
     assert CodeDictionary.get_message_template("info.compliant") == "Biolink Model-compliant TRAPI Message"
-    assert CodeDictionary.get_message_template("error.trapi.request.invalid") == \
+    assert CodeDictionary.get_message_template("critical.trapi.request.invalid") == \
            "Test could not generate a valid TRAPI query request object using identified element"
     assert CodeDictionary.get_message_template("foo.bar") is None
 
@@ -219,6 +218,8 @@ def test_messages():
     assert reporter1.has_information()
     assert not reporter1.has_warnings()
     assert not reporter1.has_errors()
+    assert not reporter1.has_critical()
+
     reporter1.report("warning.graph.empty", identifier="Reporter1 Unit Test")
     assert reporter1.has_warnings()
     reporter1.report("error.knowledge_graph.nodes.empty")
@@ -236,7 +237,7 @@ def test_messages():
         identifier="biolink:this_is_a_mixin",
         edge_id="a-biolink:this_is_a_mixin->b"
     )
-    reporter2.report("warning.response.results.empty")
+    reporter2.report("warning.trapi.response.results.empty")
     reporter2.report("error.knowledge_graph.edges.empty")
     reporter1.merge(reporter2)
     assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
@@ -266,10 +267,21 @@ def test_messages():
             }
         },
         "errors": {
-            "error.trapi.validation": {
+            "error.biolink.model.noncompliance": {
                 "6.6.6": [
                     {
                         'reason': "Dave, this can only be due to human error..."
+                    }
+                ]
+
+            }
+        },
+        "critical": {
+            "critical.trapi.validation": {
+                "9.1.1": [
+                    {
+                        'component': 'Query',
+                        'reason': "Fire, Ambulance or Police?"
                     }
                 ]
 
@@ -302,19 +314,26 @@ def test_messages():
     errors: List[str] = list()
     for code, parameters in messages['errors'].items():
         errors.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "ERROR - Trapi: Schema validation exception" in errors
-    
+    assert "ERROR - Biolink Model: S-P-O statement is not compliant to Biolink Model release" in errors
+
+    assert "critical" in messages
+    assert len(messages['critical']) > 0
+    critical: List[str] = list()
+    for code, parameters in messages['critical'].items():
+        critical.extend(CodeDictionary.display(code, parameters, add_prefix=True))
+    assert "CRITICAL - Trapi: Schema validation error" in critical
+
     obj = reporter1.to_dict()
     assert obj["trapi_version"] == TEST_TRAPI_VERSION
     assert obj["biolink_version"] == TEST_BIOLINK_VERSION
     assert "messages" in obj
-    assert "errors" in obj["messages"]
-    assert "error.trapi.validation" in obj["messages"]["errors"]
-    messages: Optional[Dict[str, List[Dict[str, str]]]] = obj["messages"]["errors"]["error.trapi.validation"]
-    assert messages, "Empty 'error.trapi.validation' messages set?"
-    assert "6.6.6" in messages
-    message_subset: List = messages["6.6.6"]
-    assert "Dave, this can only be due to human error..."\
+    assert "critical" in obj["messages"]
+    assert "critical.trapi.validation" in obj["messages"]["critical"]
+    messages: Optional[Dict[str, List[Dict[str, str]]]] = obj["messages"]["critical"]["critical.trapi.validation"]
+    assert messages, "Empty 'critical.trapi.validation' messages set?"
+    assert "9.1.1" in messages
+    message_subset: List = messages["9.1.1"]
+    assert "Fire, Ambulance or Police?"\
            in [message['reason'] for message in message_subset if 'reason' in message]
 
     for n in range(0, 10):
@@ -354,7 +373,7 @@ def test_messages():
     reporter1.dump(title="My KP Validation Report", id_rows=1, msg_rows=1, compact_format=True, file=stderr)
 
     validation_report: str = reporter1.dumps(id_rows=2, msg_rows=3)
-    assert validation_report.startswith("Errors:")
+    assert validation_report.startswith("Critical:")
 
 
 def test_validator_method():
@@ -406,7 +425,6 @@ def test_validator_method():
            "Edge has provenance value which is not a well-formed InfoRes CURIE" in errors
 
 
-# has_validation_errors(root_key: str = 'validation', case: Optional[Dict] = None)
 @pytest.mark.parametrize(
     "query",
     [
@@ -419,11 +437,28 @@ def test_validator_method():
                     "messages": {
                         "information": {},
                         "warnings": {},
-                        "errors": {""}
+                        "errors": {},
+                        "critical": {""}
                     }
                 }
             },
             True
+        ),
+        (
+                'validation',
+                {
+                    "validation": {
+                        "trapi_version": "1.3",
+                        "biolink_version": "2.4.7",
+                        "messages": {
+                            "information": {},
+                            "warnings": {},
+                            "errors": {""},
+                            "critical": {}
+                        }
+                    }
+                },
+                True
         ),
         (
             "validation",
@@ -446,7 +481,8 @@ def test_validator_method():
                                 }
                             ]
                         },
-                        "errors": {}
+                        "errors": {},
+                        "critical": {}
                     }
                 }
             },
@@ -456,4 +492,4 @@ def test_validator_method():
 )
 def test_has_validation_errors(query: Tuple):
     reporter = ValidationReporter()
-    assert reporter.has_validation_errors(tag=query[0], case=query[1]) == query[2]
+    assert reporter.test_case_has_validation_errors(tag=query[0], case=query[1]) == query[2]

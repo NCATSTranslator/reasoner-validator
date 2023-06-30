@@ -117,7 +117,7 @@ class CodeDictionary:
             is_leaf: Optional[bool] = False
     ) -> Optional[Tuple[str, Dict]]:
         """
-        Get subtree of specified dot-delimited tag name, returned with message type (i.e. info, warning, error).
+        Get subtree of specified dot-delimited tag name, returning message type (i.e. info, warning, error, critical).
         If optional 'is_leaf' flag is set to True, then only return the code if it is a terminal leaf in the code tree.
 
         :param code: Optional[str], dot delimited validation message code identifier (None is ok, but returns None)
@@ -125,9 +125,9 @@ class CodeDictionary:
                                      "message" or "description" (default: return all facets of the code entry)
         :param is_leaf: Optional[bool], only return entry if it is a 'leaf' of the code tree (default: False)
 
-        :return: Optional[Tuple[str, Dict[str,str]]], 2-tuple of the code type (i.e. info, warning, error) and the
-                 validation message entry (dictionary); None if empty code or code unknown in the code dictionary,
-                 or (if the is_leaf option is 'True') if the code doesn't resolve to a single leaf.
+        :return: Optional[Tuple[str, Dict[str,str]]], 2-tuple of the code type (i.e. info, warning, error, critical)
+                 and the validation message entry (dictionary); None if empty code or code unknown in the
+                 code dictionary, or (if the is_leaf option is 'True') if the code doesn't resolve to a single leaf.
         """
         if not code:
             return None
@@ -212,7 +212,7 @@ class CodeDictionary:
                            a list of dictionaries containing all the other expected parameters keys and their values
                            for every distinct message).
         :param add_prefix: bool, flag to prepend a prefix for the message type
-                           (i.e. error, warning, info) to displayed messages (default: False)
+                           (i.e. critical, error, warning, info) to displayed messages (default: False)
 
         :return: List[str], list of decoded messages
         """
@@ -280,8 +280,16 @@ class CodeDictionary:
             with open(filename, mode='w') as markdown_file:
                 print("# Validation Codes Dictionary\n", file=markdown_file)
                 top_level_tag: str
+
                 for top_level_tag in code_dictionary.keys():
-                    top_level_name = "Information" if top_level_tag == "info" else top_level_tag.capitalize()
+
+                    if top_level_tag == "info":
+                        top_level_name = "Information"
+                    elif top_level_tag == "critical":
+                        top_level_name = "Critical Error"
+                    else:
+                        top_level_name = top_level_tag.capitalize()
+
                     print(f"## {top_level_name}\n", file=markdown_file)
                     cls._dump_code_markdown_entries(
                         top_level_tag,

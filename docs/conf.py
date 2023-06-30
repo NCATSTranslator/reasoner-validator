@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Reasoner Validator'
-copyright = '2022, Richard Bruskiewich;  2020-21, Patrick Wang'
+copyright = '2022-23, Richard Bruskiewich;  2020-21, Patrick Wang'
 author = 'Richard Bruskiewich and Patrick Wang'
 
 

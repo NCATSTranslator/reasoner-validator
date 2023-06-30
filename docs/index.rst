@@ -32,6 +32,9 @@ Checkout then setup dependencies and the standard virtual environment using poet
     git checkout https://github.com/NCATSTranslator/reasoner-validator.git
     cd reasoner-validator
     poetry install
+    poetry shell
+
+These operations install the software and creates a virtual operation for running the software in a simple fashion.
 
 You can optionally, `use a tool like pyenv to set your local shell Python version to a 3.9 release <https://python-poetry.org/docs/managing-environments/>`_  prior to the poetry installation.
 
@@ -87,7 +90,7 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
 
         # If omit or set the Biolink Model version parameter to None,
         # then the current Biolink Model Toolkit default release applies
-        biolink_version="3.2.6",
+        biolink_version="3.4.3",
 
         # 'sources' are set to trigger checking of expected edge knowledge source provenance
         sources={
@@ -136,8 +139,10 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
     # allow customization of the text format.
     validator.dump()
 
-The 'messages' returned are partitioned into 'information', 'warning' and 'error' messages
+The 'messages' returned are partitioned into 'information', 'warning', 'error' and 'critical' (error) messages
 in a dictionary looking something like the following (as an example):
+
+Note that the trapi_version parameter to the TRAPIResponseValidator can also be a local path to a .yaml TRAPI schema file, which is read in and used as the validation standard. In such a case, though, it is necessary to encode the TRAPI version in the root filename, e.g. my_trapi_schema_1.4.0-beta5.yaml
 
 .. code-block:: python
 
@@ -167,9 +172,17 @@ in a dictionary looking something like the following (as an example):
                 "500": None  # unexpected http status code returned
             },
             # other 'warning' code-indexed messages
-         },
+        },
         "errors": {
-            "error.trapi.request.invalid": {
+            "error.biolink.model.noncompliance": {
+                "biolink:vitamin": {
+                    "biolink_release": "3.4.5"
+                }
+            },
+            # other 'errors' code-indexed messages
+        },
+        "critical": {
+            "critical.trapi.request.invalid": {
                 # subject node descriptor is the 'identifier'
                 "CHEBI:37565[biolink:SmallMolecule]":
                 {
@@ -178,7 +191,7 @@ in a dictionary looking something like the following (as an example):
                 },
                 {...} # another message (same code type)
             },
-            # other 'error' code-indexed messages
+            # other 'critical' code-indexed messages
         }
     }
 
@@ -202,6 +215,23 @@ Python API
 
 Refer to the `reasoner_validator package unit tests <https://github
 .com/NCATSTranslator/reasoner-validator/blob/master/tests>`_ for additional guidance on how to use the Python API.
+
+
+Running Validation against an ARS UUID Result(*) or using a Local TRAPI Request Query
+=====================================================================================
+
+A local script trapi_validator.py is available to run TRAPI Response validation against either a PK (UUID)
+indexed query result of the Biomedical Knowledge Translator "Autonomous Relay System" (ARS), a local JSON Response
+text file or a locally triggered _ad hoc_ query Request against an directly specified TRAPI endpoint.
+
+Note that it is best run within a **`poetry shell`** created by **`poetry install`**.
+
+For script usage, type:
+
+.. code-block:: bash
+
+    ./trapi_validator.py --help
+
 
 Validation Run as a Web Service
 ===============================
@@ -232,7 +262,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
         # If the 'biolink_version' given here is assumed, which overrides the TRAPI Response stated 'biolink_version';
         # Otherwise, the TRAPI Response stated 'biolink_version' (not BMT) becomes the default validation version.
 
-        biolink_version="3.2.6",
+        biolink_version="3.4.3",
 
         "sources": {
             "ara_source": "infores:aragorn",
@@ -260,6 +290,7 @@ The service may be run directly as a Python module after certain dependencies ar
 .. code-block:: bash
 
     poetry install
+    poetry shell
 
 The module may afterwards be run, as follows:
 
@@ -278,7 +309,7 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
 
     {
         "schema_version": "1.4.0",
-        "biolink_version": "3.2.6",
+        "biolink_version": "3.4.3",
         "message": {
             "query_graph": {
                 "nodes": {
@@ -341,9 +372,10 @@ then, one should typically get a response body like the following JSON validatio
 .. code-block:: json
 
     {
-      "trapi_version": "v1.4.0",
-      "biolink_version": "3.2.6",
+      "trapi_version": "1.4.0",
+      "biolink_version": "3.4.3",
       "messages": {
+        "critical": {},
         "errors": {
           "error.knowledge_graph.node.category.missing": {
             "MONDO:0005148": [
