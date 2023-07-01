@@ -1105,7 +1105,8 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
         (
             # Query 8 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
             _TEST_TRAPI_1_4_0_FULL_SAMPLE,
-            # patched 1.4.0 test schema - fixed critical TRAPI schema parsing error with auxiliary_graphs
+            # patched 1.4.0 test schema - fixed critical
+            # TRAPI schema parsing error with auxiliary_graphs
             PATCHED_140_SCHEMA_FILEPATH,
             None,
             None,
