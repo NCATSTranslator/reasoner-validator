@@ -1546,7 +1546,7 @@ def qualifier_validator(
         #     },
         #     ""    # this other use case should also pass
         # ),
-        (   # Query 18 - 'qualifier_type_id' is the special qualifier case 'biolink:qualified_predicate'
+        (   # Query 17 - 'qualifier_type_id' is the special qualifier case 'biolink:qualified_predicate'
             #            with a Biolink predicate as its value
             {
                 'qualifier_constraints': [
@@ -1562,7 +1562,7 @@ def qualifier_validator(
             },
             ""  # this particular use case should also pass
         ),
-        (   # Query 19 - 'qualifier_type_id' is the special qualifier case 'biolink:qualified_predicate'
+        (   # Query 18 - 'qualifier_type_id' is the special qualifier case 'biolink:qualified_predicate'
             #            an incorrect value, which is not a Biolink predicate
             {
                 'qualifier_constraints': [
