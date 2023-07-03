@@ -149,6 +149,10 @@ def fix_nullable(schema) -> None:
     ]
 
 
+TRAPI_1_4_0_BETA = SemVer.from_string("1.4.0-beta")
+TRAPI_1_4_0_BETA4 = SemVer.from_string("1.4.0-beta4")
+
+
 def openapi_to_jsonschema(schema, version: str) -> None:
     """
     Convert OpenAPI schema to JSON schema.
@@ -168,8 +172,10 @@ def openapi_to_jsonschema(schema, version: str) -> None:
 
     # we'll only tweak mapped schemata and
     # such releases that are prior to TRAPI 1.4.0-beta
-    if (mapped_semver and not (mapped_semver >= SemVer.from_string("1.4.0-beta"))) \
-            and "allOf" in schema:
+    if (
+            mapped_semver and
+            not (TRAPI_1_4_0_BETA4 >= mapped_semver >= TRAPI_1_4_0_BETA)
+        ) and "allOf" in schema:
         # September 1, 2022 hacky patch to rewrite 'allOf'
         # tagged schemata, in TRAPI 1.3.0 or earlier, to 'oneOf'
         schema["oneOf"] = schema.pop("allOf")
@@ -178,7 +184,7 @@ def openapi_to_jsonschema(schema, version: str) -> None:
         for tag, prop in schema.get("properties", dict()).items():
             openapi_to_jsonschema(prop, version=version)
 
-    if schema.get("type", None) == "array":
+    elif schema.get("type", None) == "array":
         openapi_to_jsonschema(schema.get("items", dict()), version=version)
 
     if schema.pop("nullable", False):

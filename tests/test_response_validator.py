@@ -8,10 +8,15 @@ import logging
 
 from json import dump
 
+from copy import deepcopy
+
 import pytest
 
 from reasoner_validator import TRAPIResponseValidator
+
+from tests import PATCHED_140_SCHEMA_FILEPATH
 from tests.test_validation_report import check_messages
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
@@ -98,7 +103,7 @@ _TEST_RESULTS_1 = [
         {
             "node_bindings": {
                 "type-2 diabetes": [{"id": "MONDO:0005148"}],
-                "drug": [{"id": "CHEBI:6801"}]
+                "drug": [{"id": "ncats.drug:9100L32L2N"}]
             },
             "edge_bindings": {
                 "treats": [{"id": "df87ff82"}]
@@ -226,6 +231,70 @@ _TEST_KG_4 = {
     'edges': _TEST_EDGES_4
 }
 
+# From Implementation Guidlines circa June 2023
+_TEST_TRAPI_1_4_0_FULL_SAMPLE = {
+    "message": {
+        "query_graph": {
+            "nodes": {
+                "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                "drug": {"categories": ["biolink:Drug"]}
+            },
+            "edges": {
+                "treats": {"subject": "drug", "predicates": ["biolink:treats"],
+                           "object": "type-2 diabetes"}
+            }
+        },
+        "knowledge_graph": {
+            "nodes": {
+                "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
+                "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
+            },
+            "edges": {
+                "df87ff82": {"subject": "ncats.drug:9100L32L2N", "predicate": "biolink:treats",
+                             "object": "MONDO:0005148", "sources": [
+                        {"resource_id": "infores:molepro",
+                         "resource_role": "primary_knowledge_source"}]}
+            }
+        },
+        "auxiliary_graphs": {
+            "a0": {
+                "edges": [
+                    "e02",
+                    "e12"
+                ]
+            },
+            "a1": {
+                "edges": [
+                    "extra_edge0"
+                ]
+            },
+            "a2": {
+                "edges": [
+                    "extra_edge1"
+                ]
+            }
+        },
+        "results": [
+            {
+                "node_bindings": {
+                    "type-2 diabetes": [{"id": "MONDO:0005148"}],
+                    "drug": [{"id": "ncats.drug:9100L32L2N"}]
+                },
+                "analyses": [
+                    {
+                        "resource_id": "infores:ara0",
+                        "edge_bindings": {"treats": [{"id": "df87ff82"}]},
+                        "support_graphs": [],
+                        "score": 0.7
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+_TEST_TRAPI_1_4_0_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_TRAPI_1_4_0_FULL_SAMPLE)
+_TEST_TRAPI_1_4_0_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
 
 @pytest.mark.parametrize(
     "query",
@@ -1089,6 +1158,50 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
             None,
             False,
             ""
+        ),
+        (
+            # Query 7 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
+            _TEST_TRAPI_1_4_0_FULL_SAMPLE,
+            # 25 June 2023 1.4.0 trapi_version with
+            # defective auxiliary_graphs schema model
+            TRAPI_1_4_0,
+            None,
+            None,
+            False,
+            "critical.trapi.validation"
+        ),
+        (
+            # Query 8 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
+            _TEST_TRAPI_1_4_0_FULL_SAMPLE,
+            # patched 1.4.0 test schema - fixed critical
+            # TRAPI schema parsing error with auxiliary_graphs
+            PATCHED_140_SCHEMA_FILEPATH,
+            None,
+            None,
+            False,
+            ""
+        ),
+        (
+            # Query 9 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
+            _TEST_TRAPI_1_4_0_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
+            # 25 June 2023 1.4.0 trapi_version with
+            # defective auxiliary_graphs schema model
+            TRAPI_1_4_0,
+            None,
+            None,
+            False,
+            ""  # nullable: true allows this outcome
+        ),
+        (
+            # Query 10 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
+            _TEST_TRAPI_1_4_0_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
+            # patched 1.4.0 test schema - fixed critical
+            # TRAPI schema parsing error with auxiliary_graphs
+            PATCHED_140_SCHEMA_FILEPATH,
+            None,
+            None,
+            False,
+            ""  # should still work if nullable: true
         )
     ]
 )

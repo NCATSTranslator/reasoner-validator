@@ -94,9 +94,9 @@ class TRAPIResponseValidator(ValidationReporter):
                     if 'upstream_resource_ids' not in source or source['upstream_resource_ids'] is None:
                         source['upstream_resource_ids'] = list()
 
-        # 'auxiliary_graphs' (from TRAPI 1.4.0-beta3 onwards)
-        # ought to be nullable, however... not specified that way (yet)
-        if current_version >= self.TRAPI_1_4_0_BETA3 and \
+        # 'auxiliary_graphs' (introduced the TRAPI 1.4.0-beta3 pre-releases,
+        # full updated in the full 1.4.0 release) ought to be nullable
+        if self.TRAPI_1_4_0_BETA4 >= current_version >= self.TRAPI_1_4_0_BETA3 and \
                 ('auxiliary_graphs' not in response['message'] or response['message']['auxiliary_graphs'] is None):
             response['message']['auxiliary_graphs'] = dict()
 
@@ -534,8 +534,10 @@ class TRAPIResponseValidator(ValidationReporter):
         :return: bool, True if case S-P-O edge was found in the results
         """
         trapi_1_4_0: bool
-        try:    # try block ... Sanity check: in case the trapi_version is somehow invalid?
-            target_version: SemVer = SemVer.from_string(trapi_version)
+        try:
+            # try block ... Sanity check: in case the trapi_version is somehow invalid?
+            # ignore any prerelease/build qualifiers
+            target_version: SemVer = SemVer.from_string(trapi_version, ext_fields=[])
             trapi_1_4_0 = target_version >= SemVer.from_string("1.4.0")
         except SemVerError as sve:
             logger.warning(f"case_result_found() 'trapi_version' seems invalid: {str(sve)}. Default to latest?")

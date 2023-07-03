@@ -1,7 +1,7 @@
 """Test semantic version handling."""
 import pytest
 
-from tests import SAMPLE_SCHEMA_FILE, SAMPLE_SCHEMA_VERSION
+from tests import PATCHED_SCHEMA_VERSION, PATCHED_140_SCHEMA_FILEPATH
 from reasoner_validator.versioning import semver_pattern, SemVer, SemVerUnderspecified
 
 
@@ -147,8 +147,8 @@ def test_semver_not_equal_to():
     assert not one_four_zero != one_four_one_beta_pruned
 
 
-sample_schema_version = SemVer.from_string(SAMPLE_SCHEMA_VERSION)
-sample_schema_file_semver = SemVer.from_string(SAMPLE_SCHEMA_FILE)
+sample_schema_version = SemVer.from_string(PATCHED_SCHEMA_VERSION)
+sample_schema_file_semver = SemVer.from_string(PATCHED_140_SCHEMA_FILEPATH)
 
 
 def test_schema_file_versioning():
