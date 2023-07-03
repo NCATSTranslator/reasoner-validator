@@ -296,6 +296,7 @@ _TEST_TRAPI_1_4_0_FULL_SAMPLE = {
 _TEST_TRAPI_1_4_0_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_TRAPI_1_4_0_FULL_SAMPLE)
 _TEST_TRAPI_1_4_0_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
 
+
 @pytest.mark.parametrize(
     "query",
     [
@@ -974,67 +975,8 @@ def test_sample_graph(query: Tuple[int, int, int]):
         ),
         (   # Query 26 - We throw a full TRAPI JSON example here (taken directly from the
             #            TRAPI implementation guidelines...) just for fun and profit
-            {
-                "message": {
-                    "query_graph": {
-                        "nodes": {
-                            "type-2 diabetes": {"ids": ["MONDO:0005148"]},
-                            "drug": {"categories": ["biolink:Drug"]}
-                        },
-                        "edges": {
-                            "treats": {"subject": "drug", "predicates": ["biolink:treats"],
-                                       "object": "type-2 diabetes"}
-                        }
-                    },
-                    "knowledge_graph": {
-                        "nodes": {
-                            "MONDO:0005148": {"name": "type-2 diabetes"},
-                            "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
-                        },
-                        "edges": {
-                            "df87ff82": {"subject": "CHEBI:6801", "predicate": "biolink:treats",
-                                         "object": "MONDO:0005148", "sources": [
-                                    {"resource_id": "infores:molepro",
-                                     "resource_role": "primary_knowledge_source"}]}
-                        }
-                    },
-                    "auxiliary_graphs": {
-                        "a0": {
-                            "edges": [
-                                "e02",
-                                "e12"
-                            ]
-                        },
-                        "a1": {
-                            "edges": [
-                                "extra_edge0"
-                            ]
-                        },
-                        "a2": {
-                            "edges": [
-                                "extra_edge1"
-                            ]
-                        }
-                    },
-                    "results": [
-                        {
-                            "node_bindings": {
-                                "type-2 diabetes": [{"id": "MONDO:0005148"}],
-                                "drug": [{"id": "CHEBI:6801"}]
-                            },
-                            "analyses": [
-                                {
-                                    "resource_id": "infores:ara0",
-                                    "edge_bindings": {"treats": [{"id": "df87ff82"}]},
-                                    "support_graphs": [],
-                                    "score": 0.7
-                                }
-                            ]
-                        }
-                    ]
-                }
-            },
-            TRAPI_1_4_0,  # trapi_version
+            _TEST_TRAPI_1_4_0_FULL_SAMPLE,
+            TRAPI_1_4_0,
             None,
             None,
             True,

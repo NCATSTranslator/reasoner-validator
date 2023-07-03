@@ -1,6 +1,6 @@
 """TRAPI Validation Functions."""
 from json import dumps
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from os.path import isfile
 import copy
 from functools import lru_cache
@@ -150,7 +150,36 @@ def fix_nullable(schema) -> None:
 
 
 TRAPI_1_4_0_BETA = SemVer.from_string("1.4.0-beta")
+TRAPI_1_4_0_BETA3 = SemVer.from_string("1.4.0-beta3")
 TRAPI_1_4_0_BETA4 = SemVer.from_string("1.4.0-beta4")
+TRAPI_1_4_0 = SemVer.from_string("1.4.0")
+
+
+def map_semver(version: str):
+    mapped_semver: Optional[SemVer]
+    try:
+        mapped_semver = SemVer.from_string(version)
+    except SemVerError as sve:
+        # if we cannot map the version, then it may simply
+        # be a non-versioned branch of the schemata
+        logger.error(str(sve))
+        mapped_semver = None
+    return mapped_semver
+
+
+def patch_schema(tag: str, schema: Dict, version: str):
+    # temporary patch for small TRAPI schema bugs
+    # TODO: fix TRAPI schemata to eliminate these
+    mapped_semver: Optional[SemVer] = map_semver(version)
+    if (
+            mapped_semver and
+            (TRAPI_1_4_0 >= mapped_semver >= TRAPI_1_4_0_BETA3)
+    ):
+        if tag == "auxiliary_graphs":
+            # TODO: very short term workaround for problematics 'auxiliary_graphs' value schema
+            schema["type"] = "object"
+            value_types: List[str] = schema.pop("oneOf")
+            schema["additionalProperties"] = value_types[0]
 
 
 def openapi_to_jsonschema(schema, version: str) -> None:
@@ -160,28 +189,21 @@ def openapi_to_jsonschema(schema, version: str) -> None:
     :param version: str, TRAPI version against which the schema is currently being validated.
     :return:
     """
-
-    mapped_semver: Optional[SemVer]
-    try:
-        mapped_semver = SemVer.from_string(version)
-    except SemVerError as sve:
-        # if we cannot map the version, then it may simply
-        # be a non-versioned branch of the schemata
-        logger.error(str(sve))
-        mapped_semver = None
+    mapped_semver: Optional[SemVer] = map_semver(version)
 
     # we'll only tweak mapped schemata and
     # such releases that are prior to TRAPI 1.4.0-beta
     if (
             mapped_semver and
             not (TRAPI_1_4_0_BETA4 >= mapped_semver >= TRAPI_1_4_0_BETA)
-        ) and "allOf" in schema:
+    ) and "allOf" in schema:
         # September 1, 2022 hacky patch to rewrite 'allOf'
         # tagged schemata, in TRAPI 1.3.0 or earlier, to 'oneOf'
         schema["oneOf"] = schema.pop("allOf")
 
     if schema.get("type", None) == "object":
         for tag, prop in schema.get("properties", dict()).items():
+            patch_schema(tag, prop, version)
             openapi_to_jsonschema(prop, version=version)
 
     elif schema.get("type", None) == "array":
