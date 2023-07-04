@@ -175,7 +175,7 @@ def patch_schema(tag: str, schema: Dict, version: str):
             mapped_semver and
             (TRAPI_1_4_0 >= mapped_semver >= TRAPI_1_4_0_BETA3)
     ):
-        if tag == "auxiliary_graphs":
+        if tag == "auxiliary_graphs" and "oneOf" in schema:
             # TODO: very short term workaround for problematics 'auxiliary_graphs' value schema
             schema["type"] = "object"
             value_types: List[str] = schema.pop("oneOf")

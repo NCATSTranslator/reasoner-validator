@@ -1106,11 +1106,12 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
             _TEST_TRAPI_1_4_0_FULL_SAMPLE,
             # 25 June 2023 1.4.0 trapi_version with
             # defective auxiliary_graphs schema model
+            # now temporarily patched?
             TRAPI_1_4_0,
             None,
             None,
             False,
-            "critical.trapi.validation"
+            ""  # would be a "critical.trapi.validation" if the schema was unpatched
         ),
         (
             # Query 8 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
