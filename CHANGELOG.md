@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## v3.6.5
+- temporary TRAPI schema patch for validation correction
+- clean out other technical debt
+
 ## v3.6.4
 - Update Biolink Model Toolkit to 1.1.0 (implicit Biolink Model 3.5.0 update)
 

@@ -12,7 +12,7 @@ DEFAULT_CODES_DOCUMENTATION_FILE = abspath(join(dirname(__file__), "..", "docs",
 
 class CodeDictionary:
 
-    CODE_DICTIONARY: str = abspath(join(dirname(__file__), "codes.yaml"))
+    CODE_DICTIONARY_FILE: str = abspath(join(dirname(__file__), "codes.yaml"))
 
     MESSAGE = "$message"
     CONTEXT = "$context"
@@ -24,7 +24,7 @@ class CodeDictionary:
     def _get_code_dictionary(cls) -> Dict:
         if not cls.code_dictionary:
             # Open the file and load the file
-            with open(cls.CODE_DICTIONARY, mode='r') as f:
+            with open(cls.CODE_DICTIONARY_FILE, mode='r') as f:
                 cls.code_dictionary = load(f, Loader=BaseLoader)
         return cls.code_dictionary
 
