@@ -184,14 +184,14 @@ def map_semver(version: str):
 
 def patch_schema(tag: str, schema: Dict, version: str):
     # temporary patch for small TRAPI schema bugs
-    # TODO: fix TRAPI schemata to eliminate these
     mapped_semver: Optional[SemVer] = map_semver(version)
     if (
             mapped_semver and
             (TRAPI_1_4_0_SEMVER >= mapped_semver >= TRAPI_1_4_0_BETA3_SEMVER)
     ):
         if tag == "auxiliary_graphs" and "oneOf" in schema:
-            # TODO: very short term workaround for problematics 'auxiliary_graphs' value schema
+            # TODO: very short term workaround for problematic
+            #       TRAPI 1.4.0 'auxiliary_graphs' value schema
             schema["type"] = "object"
             value_types: List[str] = schema.pop("oneOf")
             schema["additionalProperties"] = value_types[0]
