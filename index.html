@@ -150,7 +150,7 @@ poetry<span class="w"> </span>shell
 
 <span class="p">}</span>
 <span class="n">validator</span> <span class="o">=</span> <span class="n">TRAPIResponseValidator</span><span class="p">(</span>
-    <span class="n">trapi_version</span><span class="o">=</span><span class="s2">&quot;1.4.0&quot;</span><span class="p">,</span>
+    <span class="n">trapi_version</span><span class="o">=</span><span class="s2">&quot;1.4.1&quot;</span><span class="p">,</span>
 
     <span class="c1"># If omit or set the Biolink Model version parameter to None,</span>
     <span class="c1"># then the current Biolink Model Toolkit default release applies</span>
@@ -347,7 +347,7 @@ text file or a locally triggered _ad <a href="#id1"><span class="problematic" id
     # If the following trapi_version parameter is given, then it overrides the TRAPI Response &#39;schema_version&#39;;
     # Otherwise, the TRAPI Response &#39;schema_version&#39; (not &#39;latest&#39;) becomes the default validation version.
 
-    trapi_version=&quot;1.4.0&quot;,
+    trapi_version=&quot;1.4.1&quot;,
 
     # If the Biolink Model version is omitted or set to None, then the current Biolink Model Toolkit is used.
 
@@ -394,7 +394,7 @@ poetry<span class="w"> </span>shell
 <h2>Typical Output<a class="headerlink" href="#typical-output" title="Permalink to this heading"></a></h2>
 <p>As an example of the kind of output to expect, if one posts the following TRAPI Response JSON data as input to the <strong>/validate</strong> endpoint:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;schema_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.4.0&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;schema_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.4.1&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;biolink_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.5.0&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;query_graph&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -456,7 +456,7 @@ poetry<span class="w"> </span>shell
 </div>
 <p>then, one should typically get a response body like the following JSON validation result back:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;trapi_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.4.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;trapi_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.4.1&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;biolink_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.4.3&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;messages&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;critical&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
