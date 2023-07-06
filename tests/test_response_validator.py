@@ -13,7 +13,7 @@ from copy import deepcopy
 import pytest
 
 from reasoner_validator import TRAPIResponseValidator
-from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0
+from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_1
 
 from tests import PATCHED_140_SCHEMA_FILEPATH
 from tests.test_validation_report import check_messages
@@ -230,7 +230,7 @@ _TEST_KG_4 = {
 }
 
 # From Implementation Guidlines circa June 2023
-_TEST_TRAPI_1_4_0_FULL_SAMPLE = {
+_TEST_TRAPI_1_4_1_FULL_SAMPLE = {
     "message": {
         "query_graph": {
             "nodes": {
@@ -298,8 +298,8 @@ _TEST_TRAPI_1_4_0_FULL_SAMPLE = {
     }
 }
 
-_TEST_TRAPI_1_4_0_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_TRAPI_1_4_0_FULL_SAMPLE)
-_TEST_TRAPI_1_4_0_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
+_TEST_TRAPI_1_4_1_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_TRAPI_1_4_1_FULL_SAMPLE)
+_TEST_TRAPI_1_4_1_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
 
 
 @pytest.mark.parametrize(
@@ -980,8 +980,8 @@ def test_sample_graph(query: Tuple[int, int, int]):
         ),
         (   # Query 26 - We throw a full TRAPI JSON example here (taken directly from the
             #            TRAPI implementation guidelines...) just for fun and profit
-            _TEST_TRAPI_1_4_0_FULL_SAMPLE,
-            TRAPI_1_4_0,
+            _TEST_TRAPI_1_4_1_FULL_SAMPLE,
+            TRAPI_1_4_1,
             None,
             None,
             True,
@@ -1108,11 +1108,11 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
         ),
         (
             # Query 7 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
-            _TEST_TRAPI_1_4_0_FULL_SAMPLE,
+            _TEST_TRAPI_1_4_1_FULL_SAMPLE,
             # 25 June 2023 1.4.0 trapi_version with
             # defective auxiliary_graphs schema model
             # now temporarily patched?
-            TRAPI_1_4_0,
+            TRAPI_1_4_1,
             None,
             None,
             False,
@@ -1120,7 +1120,7 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
         ),
         (
             # Query 8 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
-            _TEST_TRAPI_1_4_0_FULL_SAMPLE,
+            _TEST_TRAPI_1_4_1_FULL_SAMPLE,
             # patched 1.4.0 test schema - fixed critical
             # TRAPI schema parsing error with auxiliary_graphs
             PATCHED_140_SCHEMA_FILEPATH,
@@ -1131,10 +1131,10 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
         ),
         (
             # Query 9 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
-            _TEST_TRAPI_1_4_0_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
+            _TEST_TRAPI_1_4_1_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
             # 25 June 2023 1.4.0 trapi_version with
             # defective auxiliary_graphs schema model
-            TRAPI_1_4_0,
+            TRAPI_1_4_1,
             None,
             None,
             False,
@@ -1142,7 +1142,7 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
         ),
         (
             # Query 10 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
-            _TEST_TRAPI_1_4_0_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
+            _TEST_TRAPI_1_4_1_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
             # patched 1.4.0 test schema - fixed critical
             # TRAPI schema parsing error with auxiliary_graphs
             PATCHED_140_SCHEMA_FILEPATH,

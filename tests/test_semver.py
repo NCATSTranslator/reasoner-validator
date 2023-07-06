@@ -31,6 +31,11 @@ def test_underspecified_string():
         assert str(SemVer.from_string("1.2"))
 
 
+def test_fewer_core_fields():
+    # test underspecified semver
+    assert SemVer.from_string("1.2", core_fields=["major", "minor"])
+
+
 def test_string_with_prefix():
     # test semver with (ignorable Pypi-style release) semver
     assert str(SemVer.from_string("v1.2.4", ignore_prefix=True)) == "1.2.4"
@@ -51,8 +56,11 @@ one_four_zero = SemVer.from_string("1.4.0")
 one_four_one = SemVer.from_string("1.4.1")
 one_four_zero_beta = SemVer.from_string("1.4.0-beta")
 
+one_three_only = SemVer.from_string("1.3.0", core_fields=['major', 'minor'])
+one_four_only = SemVer.from_string("1.4.0", core_fields=['major', 'minor'])
+
 # special pruned
-one_four_one_beta_pruned = SemVer.from_string("1.4.1-beta", core_fields=['major', 'minor'], ext_fields=[])
+one_four_one_beta_pruned = SemVer.from_string("1.4.1-beta", ext_fields=[])
 
 one_four_zero_beta_one = SemVer.from_string("1.4.0-beta1")
 one_four_zero_beta_four = SemVer.from_string("1.4.0-beta4")
@@ -86,7 +94,10 @@ def test_semver_greater_or_equal_to():
     assert not one_one_zero >= one_one_one_r_b
 
     # pruned SemVer comparisons
-    assert one_four_zero >= one_four_one_beta_pruned
+    assert one_four_one >= one_four_one_beta_pruned
+    assert one_four_one_beta_pruned >= one_four_zero
+    assert one_four_zero >= one_four_only
+    assert one_four_zero >= one_three_only
 
     # ... real world comparisons
     assert one_three_zero >= one_three_zero_beta
@@ -122,7 +133,8 @@ def test_semver_equal_to():
     assert not one_four_zero_beta_one == one_four_zero_beta_four
 
     # pruned SemVer comparisons
-    assert one_four_zero == one_four_one_beta_pruned
+    assert one_four_one == one_four_one_beta_pruned
+    assert one_four_zero == one_four_only
 
 
 def test_semver_not_equal_to():
@@ -144,7 +156,8 @@ def test_semver_not_equal_to():
     assert one_four_zero_beta_one != one_four_zero_beta_four
 
     # pruned SemVer comparisons
-    assert not one_four_zero != one_four_one_beta_pruned
+    assert one_four_zero != one_four_one_beta_pruned
+    assert one_four_zero != one_three_only
 
 
 sample_schema_version = SemVer.from_string(PATCHED_SCHEMA_VERSION)

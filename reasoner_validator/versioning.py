@@ -1,8 +1,8 @@
 """Utilities."""
-import re
 from typing import NamedTuple, Optional, List
+from sys import stderr
 from os import environ
-from re import sub
+from re import sub, compile
 import requests
 try:
     from yaml import CLoader as Loader
@@ -27,7 +27,7 @@ branches = [
 
 # This is modified version of a standard SemVer regex which
 # takes into account the possibility of capturing a non-numeric prefix
-semver_pattern = re.compile(
+semver_pattern = compile(
     r"^(?P<prefix>[a-zA-Z]*)(?P<major>0|[1-9]\d*)(\.(?P<minor>0|[1-9]\d*)(\.(?P<patch>0|[1-9]\d*))?)?" +
     r"(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][\da-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][\da-zA-Z-]*))*))?"
     r"(?:\+(?P<buildmetadata>[\da-zA-Z-]+(?:\.[\da-zA-Z-]+)*))?$"
@@ -73,8 +73,12 @@ class SemVer(NamedTuple):
                                       (default: ['prerelease', 'buildmetadata']).
         :return:
         """
+        # sanity check on required and allowed parameters
         assert string
+        # print(core_fields, file=stderr)
         assert len(core_fields) > 0 and all([field in ['major', 'minor', 'patch'] for field in core_fields])
+        assert len(core_fields) >= 1 and 'major' in core_fields
+        assert len(core_fields) >= 2 and 'major' in core_fields and 'minor' in core_fields
         assert all([field in ['prerelease', 'buildmetadata'] for field in ext_fields])
 
         # If the string is a file path, generically detected using the .yaml file extension,
@@ -94,14 +98,28 @@ class SemVer(NamedTuple):
         captured = match.groupdict()
         missing_fields_errmsg = f"SemVer '{string}' is missing expected fields: {', '.join(core_fields)}"
 
-        if not all([group in captured for group in core_fields]):
-            raise SemVerUnderspecified(missing_fields_errmsg)
+        observed_prefix = captured["prefix"] if not ignore_prefix else ""
+        core_field_values: List[int] = list()
+        for field in ['major', 'minor', 'patch']:
+            if field in core_fields:
+                if field in captured and captured[field] is not None:
+                    core_field_values.append(int(captured[field]))
+                else:
+                    raise SemVerUnderspecified(missing_fields_errmsg)
+            else:
+                core_field_values.append(0)
 
+        ext_field_values: List[Optional[str]] = list()
+        for field in ['prerelease', 'buildmetadata']:
+            if field in ext_fields and field in captured:
+                ext_field_values.append(captured[field])
+            else:
+                ext_field_values.append(None)
         try:
             return cls(
-                captured["prefix"] if not ignore_prefix else "",
-                *[int(captured[group]) for group in core_fields],
-                *[captured[group] for group in ext_fields],
+                observed_prefix,
+                *core_field_values,
+                *ext_field_values
             )
         except TypeError:
             raise SemVerUnderspecified(missing_fields_errmsg)
@@ -183,14 +201,16 @@ def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
         return False
 
     # obj.major == other.major
-    # Check 'minor' level
+
+    # Now check 'minor' level
     elif obj.minor > other.minor:
         return True
     elif obj.minor < other.minor:
         return False
 
     # obj.minor == other.minor
-    # Check 'patch' level
+
+    # Now check 'patch' level
     elif obj.patch > other.patch:
         return True
     elif obj.patch < other.patch:
@@ -198,7 +218,7 @@ def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
 
     # obj.patch == other.patch
 
-    # Check 'prerelease' tagging
+    # Now check 'prerelease' tagging
     elif obj.prerelease and not other.prerelease:
         return False
     elif not obj.prerelease:

@@ -34,6 +34,7 @@ TRAPI_1_4_1: str = str(TRAPI_1_4_1_SEMVER)
 
 TRAPI_1_4_0_BETA_SEMVER = SemVer.from_string("v1.4.0-beta")
 TRAPI_1_4_0_BETA = str(TRAPI_1_4_0_BETA_SEMVER)
+
 TRAPI_1_4_0_BETA2_SEMVER = SemVer.from_string("v1.4.0-beta2")
 TRAPI_1_4_0_BETA3_SEMVER = SemVer.from_string("v1.4.0-beta3")
 TRAPI_1_4_0_BETA4_SEMVER = SemVer.from_string("v1.4.0-beta4")
@@ -169,12 +170,6 @@ def fix_nullable(schema) -> None:
     ]
 
 
-TRAPI_1_4_0_BETA = SemVer.from_string("1.4.0-beta")
-TRAPI_1_4_0_BETA3_SEMVER = SemVer.from_string("1.4.0-beta3")
-TRAPI_1_4_0_BETA4_SEMVER = SemVer.from_string("1.4.0-beta4")
-TRAPI_1_4_0_SEMVER = SemVer.from_string("1.4.0")
-
-
 def map_semver(version: str):
     mapped_semver: Optional[SemVer]
     try:
@@ -215,7 +210,7 @@ def openapi_to_jsonschema(schema, version: str) -> None:
     # such releases that are prior to TRAPI 1.4.0-beta
     if (
             mapped_semver and
-            not (TRAPI_1_4_0_BETA4_SEMVER >= mapped_semver >= TRAPI_1_4_0_BETA)
+            not (TRAPI_1_4_0_BETA4_SEMVER >= mapped_semver >= TRAPI_1_4_0_BETA_SEMVER)
     ) and "allOf" in schema:
         # September 1, 2022 hacky patch to rewrite 'allOf'
         # tagged schemata, in TRAPI 1.3.0 or earlier, to 'oneOf'
