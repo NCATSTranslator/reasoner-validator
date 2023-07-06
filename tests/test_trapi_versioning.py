@@ -1,16 +1,26 @@
 """Test TRAPI version handling."""
-from typing import Dict
+from typing import Dict, Optional
 
 import pytest
 
 from reasoner_validator.versioning import get_latest_version
-from reasoner_validator.trapi import load_schema, TRAPIAccessError
-from tests import PATCHED_140_SCHEMA_FILEPATH, LATEST_TRAPI_VERSION
+from reasoner_validator.trapi import LATEST_TRAPI_RELEASE, load_schema, TRAPIAccessError
+from tests import PATCHED_140_SCHEMA_FILEPATH
+
+
+def test_release_tag_is_none():
+    trapi_version:  Optional[str] = get_latest_version(release_tag=None)
+    assert trapi_version is None
+
+
+def test_release_tag_is_empty_string():
+    trapi_version:  Optional[str] = get_latest_version(release_tag="")
+    assert trapi_version is None
 
 
 def test_semver_spec_trapi_version():
     trapi_version: str = get_latest_version(release_tag="1")
-    assert trapi_version == LATEST_TRAPI_VERSION
+    assert trapi_version == LATEST_TRAPI_RELEASE
 
 
 def test_unknown_semver_spec_trapi_version():
@@ -19,13 +29,13 @@ def test_unknown_semver_spec_trapi_version():
 
 
 def test_semver_spec_trapi_version_with_prefix():
-    trapi_version: str = get_latest_version(release_tag=LATEST_TRAPI_VERSION)
-    assert trapi_version == LATEST_TRAPI_VERSION
+    trapi_version: str = get_latest_version(release_tag=LATEST_TRAPI_RELEASE)
+    assert trapi_version == LATEST_TRAPI_RELEASE
 
 
 def test_semver_spec_trapi_version_without_prefix():
-    trapi_version: str = get_latest_version(release_tag=LATEST_TRAPI_VERSION[1:])
-    assert trapi_version == LATEST_TRAPI_VERSION
+    trapi_version: str = get_latest_version(release_tag=LATEST_TRAPI_RELEASE[1:])
+    assert trapi_version == LATEST_TRAPI_RELEASE
 
 
 def test_schema_spec_trapi_version():

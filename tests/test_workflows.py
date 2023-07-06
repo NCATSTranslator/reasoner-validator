@@ -9,7 +9,7 @@ from json import dumps
 
 from reasoner_validator.trapi import TRAPISchemaValidator
 
-from tests import LATEST_TEST_VERSIONS
+from tests import LATEST_TEST_RELEASES
 
 SAMPLE_QUERY_1 = {
     "message": {
@@ -66,7 +66,7 @@ SAMPLE_QUERY_2 = {
     ]
 }
 
-QUERY_VERSION = [qv for qv in product(LATEST_TEST_VERSIONS, (SAMPLE_QUERY_1, SAMPLE_QUERY_2))]
+QUERY_VERSION = [qv for qv in product(LATEST_TEST_RELEASES, (SAMPLE_QUERY_1, SAMPLE_QUERY_2))]
 
 
 @pytest.mark.parametrize("trapi_version,query", QUERY_VERSION)

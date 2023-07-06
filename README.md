@@ -142,7 +142,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 
 ```json
 {
-  "trapi_version": "1.4.0",
+  "trapi_version": "1.4.1",
   "biolink_version": "3.5.0",
   "sources": {
     "ara_source": "infores:aragorn",
@@ -184,7 +184,7 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
 
 ```json
 {
-  "trapi_version": "1.4.0",
+  "trapi_version": "1.4.1",
   "biolink_version": "3.5.0",
   "response": {
       "message": {
@@ -227,7 +227,7 @@ one should typically get a response body something like the following JSON valid
 
 ```json
 {
-  "trapi_version": "1.4.0",
+  "trapi_version": "1.4.1",
   "biolink_version": "3.2.1",
   "messages": {
     # some categories of messages may be absent, hence, empty dictionaries

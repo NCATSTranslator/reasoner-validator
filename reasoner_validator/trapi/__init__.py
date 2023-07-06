@@ -23,6 +23,26 @@ from reasoner_validator.versioning import (
 import logging
 logger = logging.getLogger(__name__)
 
+TRAPI_1_3_0_SEMVER = SemVer.from_string("v1.3.0")
+TRAPI_1_3_0: str = str(TRAPI_1_3_0_SEMVER)
+
+TRAPI_1_4_0_SEMVER = SemVer.from_string("v1.4.0")
+TRAPI_1_4_0: str = str(TRAPI_1_4_0_SEMVER)
+# patch version to fix 'auxiliary_graphs' model in 1.4.0
+TRAPI_1_4_1_SEMVER = SemVer.from_string("v1.4.1")
+TRAPI_1_4_1: str = str(TRAPI_1_4_1_SEMVER)
+
+TRAPI_1_4_0_BETA_SEMVER = SemVer.from_string("v1.4.0-beta")
+TRAPI_1_4_0_BETA = str(TRAPI_1_4_0_BETA_SEMVER)
+TRAPI_1_4_0_BETA2_SEMVER = SemVer.from_string("v1.4.0-beta2")
+TRAPI_1_4_0_BETA3_SEMVER = SemVer.from_string("v1.4.0-beta3")
+TRAPI_1_4_0_BETA4_SEMVER = SemVer.from_string("v1.4.0-beta4")
+
+LATEST_TRAPI_RELEASE_SEMVER: SemVer = TRAPI_1_4_1_SEMVER
+LATEST_TRAPI_RELEASE: str = str(LATEST_TRAPI_RELEASE_SEMVER)
+
+LATEST_TRAPI_MAJOR_RELEASE_SEMVER: SemVer = SemVer.from_string("v1.4", core_fields=['major', 'minor'])
+LATEST_TRAPI_MAJOR_RELEASE: str = str(LATEST_TRAPI_MAJOR_RELEASE_SEMVER)
 
 # For testing, set TRAPI API query POST timeouts to 10 minutes == 600 seconds
 DEFAULT_TRAPI_POST_TIMEOUT = 600.0
@@ -150,9 +170,9 @@ def fix_nullable(schema) -> None:
 
 
 TRAPI_1_4_0_BETA = SemVer.from_string("1.4.0-beta")
-TRAPI_1_4_0_BETA3 = SemVer.from_string("1.4.0-beta3")
-TRAPI_1_4_0_BETA4 = SemVer.from_string("1.4.0-beta4")
-TRAPI_1_4_0 = SemVer.from_string("1.4.0")
+TRAPI_1_4_0_BETA3_SEMVER = SemVer.from_string("1.4.0-beta3")
+TRAPI_1_4_0_BETA4_SEMVER = SemVer.from_string("1.4.0-beta4")
+TRAPI_1_4_0_SEMVER = SemVer.from_string("1.4.0")
 
 
 def map_semver(version: str):
@@ -173,7 +193,7 @@ def patch_schema(tag: str, schema: Dict, version: str):
     mapped_semver: Optional[SemVer] = map_semver(version)
     if (
             mapped_semver and
-            (TRAPI_1_4_0 >= mapped_semver >= TRAPI_1_4_0_BETA3)
+            (TRAPI_1_4_0_SEMVER >= mapped_semver >= TRAPI_1_4_0_BETA3_SEMVER)
     ):
         if tag == "auxiliary_graphs" and "oneOf" in schema:
             # TODO: very short term workaround for problematics 'auxiliary_graphs' value schema
@@ -195,7 +215,7 @@ def openapi_to_jsonschema(schema, version: str) -> None:
     # such releases that are prior to TRAPI 1.4.0-beta
     if (
             mapped_semver and
-            not (TRAPI_1_4_0_BETA4 >= mapped_semver >= TRAPI_1_4_0_BETA)
+            not (TRAPI_1_4_0_BETA4_SEMVER >= mapped_semver >= TRAPI_1_4_0_BETA)
     ) and "allOf" in schema:
         # September 1, 2022 hacky patch to rewrite 'allOf'
         # tagged schemata, in TRAPI 1.3.0 or earlier, to 'oneOf'

@@ -13,6 +13,7 @@ from copy import deepcopy
 import pytest
 
 from reasoner_validator import TRAPIResponseValidator
+from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0
 
 from tests import PATCHED_140_SCHEMA_FILEPATH
 from tests.test_validation_report import check_messages
@@ -20,9 +21,6 @@ from tests.test_validation_report import check_messages
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
-
-PRE_TRAPI_1_4_0 = "1.3.0"
-TRAPI_1_4_0 = "1.4.0"
 
 _TEST_QG_1 = {
     "nodes": {
@@ -250,10 +248,17 @@ _TEST_TRAPI_1_4_0_FULL_SAMPLE = {
                 "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
             },
             "edges": {
-                "df87ff82": {"subject": "ncats.drug:9100L32L2N", "predicate": "biolink:treats",
-                             "object": "MONDO:0005148", "sources": [
-                        {"resource_id": "infores:molepro",
-                         "resource_role": "primary_knowledge_source"}]}
+                "df87ff82": {
+                    "subject": "ncats.drug:9100L32L2N",
+                    "predicate": "biolink:treats",
+                    "object": "MONDO:0005148",
+                    "sources": [
+                        {
+                            "resource_id": "infores:molepro",
+                            "resource_role": "primary_knowledge_source"
+                        }
+                    ]
+                }
             }
         },
         "auxiliary_graphs": {
@@ -468,7 +473,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
 
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -482,7 +487,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": None
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -497,7 +502,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": None
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -514,7 +519,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": None
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -531,7 +536,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": None
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -548,7 +553,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     # "results": None
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -565,7 +570,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": None
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -582,7 +587,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": {"invalid results"}
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -600,7 +605,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": []
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -616,7 +621,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_1
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -631,7 +636,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_1
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             True,
@@ -646,7 +651,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_1
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             {
                 "ara_source": None,
@@ -665,7 +670,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_1
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             {
                 "ara_source": None,
@@ -684,7 +689,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_1
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             {
                 "ara_source": "infores:aragorn",
@@ -703,7 +708,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_1
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             {
                 "ara_source": "infores:molepro",
@@ -722,7 +727,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_1
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             {
                 "ara_source": None,
@@ -742,7 +747,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_1
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             {
                 "ara_source": None,
@@ -762,7 +767,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_1
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             {
                 "ara_source": None,
@@ -785,7 +790,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_2
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -800,7 +805,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_2
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             True,
@@ -817,7 +822,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                 },
                 "workflow": "workflows-not-an-array"
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             True,
@@ -836,7 +841,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                 },
                 "workflow": ["not-a-valid-workflow-spec"]
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             True,
@@ -857,7 +862,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                 },
                 "workflow": [{"id": "annotate"}]
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             True,
@@ -899,7 +904,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     }
                 ]
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             True,
@@ -943,7 +948,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     }
                 ]
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             True,
@@ -967,7 +972,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     }
                 ]
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             True,
@@ -1004,7 +1009,7 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
 
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -1017,7 +1022,7 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
                     "results": None
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -1031,7 +1036,7 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
                     "results": None
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -1047,7 +1052,7 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
                     "results": None
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -1063,7 +1068,7 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
                     "results": None
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -1079,7 +1084,7 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
                     # "results": None
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,
@@ -1095,7 +1100,7 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
                     "results": None
                 }
             },
-            PRE_TRAPI_1_4_0,  # trapi_version
+            TRAPI_1_3_0,
             None,
             None,
             False,

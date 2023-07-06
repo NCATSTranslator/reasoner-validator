@@ -3,7 +3,7 @@ from typing import Optional, List, Dict
 from reasoner_validator import TRAPIResponseValidator
 
 SAMPLE_RESPONSE = {
-    "schema_version": "1.4.0",
+    "schema_version": "1.4.1",
     "biolink_version": "3.2.6",
     "message": {
         "query_graph": {

@@ -11,6 +11,7 @@ from bmt import Toolkit
 from linkml_runtime.linkml_model import SlotDefinition
 
 from reasoner_validator import TRAPISchemaValidator
+from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0_BETA
 from reasoner_validator.biolink import (
     TRAPIGraphType,
     BiolinkValidator,
@@ -991,7 +992,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
 def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(query: Tuple):
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
-        trapi_version="1.3.0",
+        trapi_version=TRAPI_1_3_0,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
         sources=query[1]
     )
@@ -1134,7 +1135,7 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
     """TRAPI pre-1.4.0 releases recorded provenance in attributes. This unit test checks for this"""
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
-        trapi_version="1.3.0",
+        trapi_version=TRAPI_1_3_0,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
         sources=query[1]
     )
@@ -1315,7 +1316,7 @@ def qualifier_validator(
     mock_edge: Dict = deepcopy(query[0])
     mock_edge["subject"] = "mock_subject"
 
-    if trapi_validator.minimum_required_trapi_version("1.4.0-beta"):
+    if trapi_validator.minimum_required_trapi_version(TRAPI_1_4_0_BETA):
         # not testing Edge semantics here but rather, the qualifiers,
         # but from 1.4.0-beta(2) onwards, we also need
         # a non-null predicate and the new 'sources' field here!
@@ -1656,12 +1657,12 @@ QC_QS_NOT_A_CURIE = {
     "query",
     [
         (  # Query 0 - 'qualifier_type_id' value not a Biolink CURIE - seen as 'unknown' in TRAPI < 1.4.0-beta
-            "1.3.0",
+            TRAPI_1_3_0,
             QC_QS_NOT_A_CURIE,
             "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
         ),
         (  # Query 1 - 'qualifier_type_id' value not a Biolink CURIE - schema validation error in TRAPI < 1.4.0-beta
-            "1.4.0-beta",
+            TRAPI_1_4_0_BETA,
             QC_QS_NOT_A_CURIE,
             "critical.trapi.validation"
         )
@@ -1821,12 +1822,12 @@ Q_NOT_A_CURIE = {
     "query",
     [
         (  # Query 0 - 'qualifier_type_id' value not a Biolink CURIE - seen as 'unknown' in TRAPI < 1.4.0-beta
-                "1.3.0",
+                TRAPI_1_3_0,
                 Q_NOT_A_CURIE,
                 "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown"
         ),
         (  # Query 1 - 'qualifier_type_id' value not a Biolink CURIE - schema validation error in TRAPI < 1.4.0-beta
-                "1.4.0-beta",
+                TRAPI_1_4_0_BETA,
                 Q_NOT_A_CURIE,
                 "critical.trapi.validation"
         )
@@ -2844,7 +2845,7 @@ def test_pre_trapi_1_4_0_validate_attributes():
     edge_without_attributes = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
     validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
         graph=edge_without_attributes,
-        trapi_version="1.3.0",
+        trapi_version=TRAPI_1_3_0,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION
     )
     check_messages(validator, "error.knowledge_graph.edge.attribute.missing")
@@ -2855,7 +2856,7 @@ def test_suppress_biolink_validation_pre_trapi_1_4_0_validate_attributes():
     edge_without_attributes = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
     validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
         graph=edge_without_attributes,
-        trapi_version="1.3.0",
+        trapi_version=TRAPI_1_3_0,
         biolink_version=SUPPRESS_BIOLINK_MODEL_VALIDATION
     )
     check_messages(validator, "")

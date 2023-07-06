@@ -13,7 +13,18 @@ from reasoner_validator.biolink import (
 
 # Maximum number of data points to scrutinize
 # in various parts TRAPI Query Response.Message
-from reasoner_validator.trapi import check_trapi_validity, TRAPISchemaValidator
+from reasoner_validator.trapi import (
+    TRAPI_1_3_0_SEMVER,
+    TRAPI_1_4_0_SEMVER,
+    TRAPI_1_4_1_SEMVER,
+    TRAPI_1_4_0_BETA3_SEMVER,
+    TRAPI_1_4_0_BETA4_SEMVER,
+    LATEST_TRAPI_MAJOR_RELEASE_SEMVER,
+    LATEST_TRAPI_RELEASE_SEMVER,
+    LATEST_TRAPI_RELEASE,
+    check_trapi_validity,
+    TRAPISchemaValidator
+)
 from reasoner_validator.trapi.mapping import MappingValidator, check_node_edge_mappings
 from reasoner_validator.versioning import SemVer, SemVerError
 from reasoner_validator.sri.util import get_aliases
@@ -31,12 +42,6 @@ class TRAPIResponseValidator(ValidationReporter):
     TRAPI Validator is an overall wrapper class for validating
     conformance of TRAPI Responses to TRAPI and the Biolink Model.
     """
-
-    TRAPI_1_3_0 = SemVer.from_string("1.3.0")
-    TRAPI_1_4_0 = SemVer.from_string("1.4.0")
-    TRAPI_1_4_0_BETA3 = SemVer.from_string("1.4.0-beta3")
-    TRAPI_1_4_0_BETA4 = SemVer.from_string("1.4.0-beta4")
-
     def __init__(
             self,
             trapi_version: Optional[str] = None,
@@ -67,7 +72,19 @@ class TRAPIResponseValidator(ValidationReporter):
             sources=sources,
             strict_validation=strict_validation
         )
-        self.suppress_empty_data_warnings = suppress_empty_data_warnings
+        self._is_trapi_1_4: Optional[bool] = None
+        self.suppress_empty_data_warnings: bool = suppress_empty_data_warnings
+
+    def is_trapi_1_4(self) -> bool:
+        assert self.trapi_version
+        try:  # try block ... Sanity check: in case the trapi_version is somehow invalid?
+            target_major_version: SemVer = SemVer.from_string(self.trapi_version, core_fields=['major', 'minor'])
+            self._is_trapi_1_4 = target_major_version >= LATEST_TRAPI_MAJOR_RELEASE_SEMVER
+        except SemVerError as sve:
+            logger.error(f"Current TRAPI release '{self.trapi_version}' seems invalid: {str(sve)}. Reset to latest?")
+            self.trapi_version = LATEST_TRAPI_RELEASE
+            self._is_trapi_1_4 = True
+        return self._is_trapi_1_4
 
     def sanitize_trapi_response(self, response: Dict) -> Dict:
         """
@@ -82,7 +99,7 @@ class TRAPIResponseValidator(ValidationReporter):
         current_version: SemVer = SemVer.from_string(self.trapi_version)
         # the message is not empty
         if 'knowledge_graph' in response['message'] and response['message']['knowledge_graph'] is not None and \
-                self.TRAPI_1_4_0_BETA4 >= current_version != self.TRAPI_1_3_0:
+                TRAPI_1_4_0_BETA4_SEMVER >= current_version != TRAPI_1_3_0_SEMVER:
             for key, edge in response['message']['knowledge_graph']['edges'].items():
                 edge_id = f"{str(edge['subject'])}--{str(edge['predicate'])}->{str(str(edge['object']))}"
                 if 'sources' not in edge or not edge['sources']:
@@ -95,8 +112,8 @@ class TRAPIResponseValidator(ValidationReporter):
                         source['upstream_resource_ids'] = list()
 
         # 'auxiliary_graphs' (introduced the TRAPI 1.4.0-beta3 pre-releases,
-        # full updated in the full 1.4.0 release) ought to be nullable
-        if self.TRAPI_1_4_0_BETA4 >= current_version >= self.TRAPI_1_4_0_BETA3 and \
+        # full fixed in the 1.4.1 release) ought to be nullable.
+        if TRAPI_1_4_0_SEMVER >= current_version >= TRAPI_1_4_0_BETA3_SEMVER and \
                 ('auxiliary_graphs' not in response['message'] or response['message']['auxiliary_graphs'] is None):
             response['message']['auxiliary_graphs'] = dict()
 
@@ -379,15 +396,6 @@ class TRAPIResponseValidator(ValidationReporter):
         #     :param output_node_binding: node 'a' or 'b' of the ('one hop') QGraph test query
         #     :type output_node_binding: str
 
-        trapi_1_4_0: bool
-        try:  # try block ... Sanity check: in case the trapi_version is somehow invalid?
-            target_version: SemVer = SemVer.from_string(self.trapi_version)
-            trapi_1_4_0 = target_version >= SemVer.from_string("1.4.0")
-        except SemVerError as sve:
-            logger.error(f"has_valid_results() 'self.trapi_version' seems invalid: {str(sve)}. Reset to latest?")
-            self.trapi_version = "1.4.0"
-            trapi_1_4_0 = True
-
         # The Message.Results key should not be missing?
         if 'results' not in message:
             if not self.suppress_empty_data_warnings:
@@ -423,7 +431,7 @@ class TRAPIResponseValidator(ValidationReporter):
                         self.merge(trapi_validator)
 
                     # Maybe some additional TRAPI-release specific non-schematic validation here?
-                    if trapi_1_4_0:
+                    if self.is_trapi_1_4():
                         # TODO: implement me!
                         pass
                     else:
@@ -533,16 +541,6 @@ class TRAPIResponseValidator(ValidationReporter):
         :param trapi_version: str, target TRAPI version of the Response being validated
         :return: bool, True if case S-P-O edge was found in the results
         """
-        trapi_1_4_0: bool
-        try:
-            # try block ... Sanity check: in case the trapi_version is somehow invalid?
-            # ignore any prerelease/build qualifiers
-            target_version: SemVer = SemVer.from_string(trapi_version, ext_fields=[])
-            trapi_1_4_0 = target_version >= SemVer.from_string("1.4.0")
-        except SemVerError as sve:
-            logger.warning(f"case_result_found() 'trapi_version' seems invalid: {str(sve)}. Default to latest?")
-            trapi_1_4_0 = True
-
         result_found: bool = False
         result: Dict
 
@@ -563,7 +561,7 @@ class TRAPIResponseValidator(ValidationReporter):
 
             # However, TRAPI 1.4.0 Message 'Results' 'edge_bindings' are reported differently
             #          from 1.3.0, rather, embedded in 'Analysis' objects (and 'Auxiliary Graphs')
-            if trapi_1_4_0:
+            if self.is_trapi_1_4():
                 #
                 #     "auxiliary_graphs": {
                 #         "a0": {

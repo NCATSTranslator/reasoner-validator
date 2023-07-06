@@ -87,11 +87,17 @@ def get_aliases(identifier: str) -> List[str]:
                             #
                             # print(dumps(aliases, indent=2))
                         else:
-                            logging.warning(f"get_aliases(): missing the 'equivalent identifiers' for the '{identifier}' clique?")
+                            logging.warning(
+                                f"get_aliases(): missing the 'equivalent identifiers' for the '{identifier}' clique?"
+                            )
                     else:
-                        logging.warning(f"get_aliases(): missing the preferred 'id' for the '{identifier}' clique?")
+                        logging.warning(
+                            f"get_aliases(): missing the preferred 'id' for the '{identifier}' clique?"
+                        )
                 else:
-                    logging.warning(f"get_aliases(): '{identifier}' is a singleton in its clique thus has no aliases...")
+                    logging.warning(
+                        f"get_aliases(): '{identifier}' is a singleton in its clique thus has no aliases..."
+                    )
 
     if not aliases:
         # Logging various errors but always

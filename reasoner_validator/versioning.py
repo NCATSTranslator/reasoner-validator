@@ -240,7 +240,7 @@ _latest = dict()
 
 
 # Provide an accessor function for retrieving the latest version in string format
-def get_latest_version(release_tag: str) -> Optional[str]:
+def get_latest_version(release_tag: Optional[str]) -> Optional[str]:
     """
     Return the latest TRAPI version corresponding to the release tag given.
     Note that if the release tag looks like a YAML file, then it is assumed
@@ -253,7 +253,9 @@ def get_latest_version(release_tag: str) -> Optional[str]:
     """
     global _latest
 
-    if release_tag.lower().endswith(".yaml"):
+    if not release_tag:
+        return None
+    elif release_tag.lower().endswith(".yaml"):
         return release_tag
     elif release_tag in branches:
         # cases in which a branch name is
