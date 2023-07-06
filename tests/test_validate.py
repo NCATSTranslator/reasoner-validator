@@ -79,7 +79,7 @@ def test_openapi_to_jsonschema(query: Tuple[Dict, str]):
 
 
 @pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_load_schema(trapi_version):
+def test_load_schema(trapi_version: str):
     """Test load_schema(trapi_version)."""
     schema = load_schema(trapi_version)
     assert schema, f"TRAPI Schema for release '{trapi_version}' is not available?"
@@ -95,7 +95,7 @@ def test_load_master_schema():
     "trapi_version",
     ALL_TEST_VERSIONS
 )
-def test_query_and_version_completion(trapi_version):
+def test_query_and_version_completion(trapi_version: str):
     """Test TRAPIValidator(trapi_version=query).validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     validator.validate({
@@ -109,7 +109,7 @@ def test_query_and_version_completion(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_edgebinding(trapi_version):
+def test_edgebinding(trapi_version: str):
     """Test TRAPIValidator(trapi_version=query).validate_EdgeBinding()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     validator.validate({
@@ -122,7 +122,7 @@ def test_edgebinding(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_nullable(trapi_version):
+def test_nullable(trapi_version: str):
     """Test nullable categories property."""
     qnode = {
         "categories": None
@@ -133,7 +133,7 @@ def test_nullable(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_nullable_message_properties(trapi_version):
+def test_nullable_message_properties(trapi_version: str):
     """Test nullable message properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     message = {
@@ -149,7 +149,7 @@ def test_nullable_message_properties(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_nullable_query_level_properties(trapi_version):
+def test_nullable_query_level_properties(trapi_version: str):
     """Test nullable TRAPI Query level properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     trapi_query = {
@@ -194,7 +194,7 @@ SAMPLE_WORKFLOW_1_0_0 = [
 
 
 @pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
-def test_query_trapi_pre_1_4_0_workflow_properties(trapi_version):
+def test_query_trapi_pre_1_4_0_workflow_properties(trapi_version: str):
     """Test flawed TRAPI Query workflow properties with pre-TRAPI 1.4.0."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     query = deepcopy(SAMPLE_QUERY)
@@ -245,7 +245,7 @@ SAMPLE_WORKFLOW_1_3_4 = [
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_query_latest_trapi_workflow_properties(trapi_version):
+def test_query_latest_trapi_workflow_properties(trapi_version: str):
     """Test flawed TRAPI Query workflow properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     query = deepcopy(SAMPLE_QUERY)
@@ -287,7 +287,7 @@ def test_query_latest_trapi_workflow_properties(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_nullable_async_query_level_properties(trapi_version):
+def test_nullable_async_query_level_properties(trapi_version: str):
     """Test nullable TRAPI Query level properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     async_trapi_query = {
@@ -308,7 +308,7 @@ def test_nullable_async_query_level_properties(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_nullable_response_properties(trapi_version):
+def test_nullable_response_properties(trapi_version: str):
     """Test nullable TRAPI Query level properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     async_trapi_query = {
@@ -327,7 +327,7 @@ def test_nullable_response_properties(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
-def test_trapi_pre_1_4_0_message_results_component_validation(trapi_version):
+def test_trapi_pre_1_4_0_message_results_component_validation(trapi_version: str):
     """Test Message.Results component in TRAPIValidator(trapi_version=query).validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     sample_message_result = {
@@ -368,7 +368,7 @@ def test_trapi_pre_1_4_0_message_results_component_validation(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_latest_trapi_message_results_component_validation(trapi_version):
+def test_latest_trapi_message_results_component_validation(trapi_version: str):
     """Test Message.Results component in TRAPIValidator(trapi_version=query).validate()."""
     #     Result:
     #       type: object
@@ -513,7 +513,7 @@ def test_latest_trapi_message_results_component_validation(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_message_node_binding_component_validation(trapi_version):
+def test_message_node_binding_component_validation(trapi_version: str):
     """Test NodeBinding component in TRAPIValidator(trapi_version=query).validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     sample_node_binding = {
@@ -534,7 +534,7 @@ def test_message_node_binding_component_validation(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_message_attribute_component_validation(trapi_version):
+def test_message_attribute_component_validation(trapi_version: str):
     """Test Attribute component in TRAPIValidator(trapi_version=query).validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     sample_attribute = {
@@ -558,7 +558,7 @@ def test_message_attribute_component_validation(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", PRE_1_4_0_TEST_VERSIONS)
-def test_pre_1_4_0_trapi_message_edge_component_validation(trapi_version):
+def test_pre_1_4_0_trapi_message_edge_component_validation(trapi_version: str):
     """Test 'good' Message.KnowledgeGraph.Edge component in
        TRAPIValidator(trapi_version="PRE_1_4_0_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -604,7 +604,7 @@ SAMPLE_LATEST_TEST_EDGE = {
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_latest_trapi_good_message_edge_component_validation(trapi_version):
+def test_latest_trapi_good_message_edge_component_validation(trapi_version: str):
     """Test 'good' Message.KnowledgeGraph.Edge component in
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -612,7 +612,7 @@ def test_latest_trapi_good_message_edge_component_validation(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_latest_trapi_missing_key_message_edge_component_validation(trapi_version):
+def test_latest_trapi_missing_key_message_edge_component_validation(trapi_version: str):
     """Test Message.KnowledgeGraph.Edge components missing their required keys
        in TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -625,7 +625,7 @@ def test_latest_trapi_missing_key_message_edge_component_validation(trapi_versio
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_latest_trapi_null_message_edge_component_validation(trapi_version):
+def test_latest_trapi_null_message_edge_component_validation(trapi_version: str):
     """Test Message.KnowledgeGraph.Edge components having null values in
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -640,7 +640,7 @@ def test_latest_trapi_null_message_edge_component_validation(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_latest_trapi_flawed_message_edge_component_validation(trapi_version):
+def test_latest_trapi_flawed_message_edge_component_validation(trapi_version: str):
     """Test invalid Message.KnowledgeGraph.Edge.predicate in
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -652,7 +652,7 @@ def test_latest_trapi_flawed_message_edge_component_validation(trapi_version):
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trapi_version):
+def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trapi_version: str):
     """Test various invalid Message.KnowledgeGraph.Edge.sources values in
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -679,7 +679,7 @@ def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trap
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trapi_version):
+def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trapi_version: str):
     """Test various invalid Message.KnowledgeGraph.Edge.sources values in
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
