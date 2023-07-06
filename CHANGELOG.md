@@ -5,6 +5,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 ## v3.6.6
 - code takes TRAPI 1.4.1 as the latest schema
 - abstract out TRAPI versions a bit more and move TRAPI release constants to a global context
+- further clean up of SemVer versioning code tech debt
 
 ## v3.6.5
 - temporary TRAPI schema patch for validation correction
