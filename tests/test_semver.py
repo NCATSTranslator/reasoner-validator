@@ -56,8 +56,8 @@ one_four_zero = SemVer.from_string("1.4.0")
 one_four_one = SemVer.from_string("1.4.1")
 one_four_zero_beta = SemVer.from_string("1.4.0-beta")
 
-one_three_only = SemVer.from_string("1.3.0", core_fields=['major', 'minor'])
-one_four_only = SemVer.from_string("1.4.0", core_fields=['major', 'minor'])
+one_three_only = SemVer.from_string("1.3", core_fields=['major', 'minor'])
+one_four_only = SemVer.from_string("1.4", core_fields=['major', 'minor'])
 
 # special pruned
 one_four_one_beta_pruned = SemVer.from_string("1.4.1-beta", ext_fields=[])
