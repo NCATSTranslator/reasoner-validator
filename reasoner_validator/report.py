@@ -247,11 +247,13 @@ class ValidationReporter:
                 f"ValidationReport.get_message_type(): {code} is unknown code type: {message_type}"
             )
 
-    def report(self, code: str, **message):
+    def report(self, code: str, source_trail: Optional[List[str]] = None, **message):
         """
-        Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters)
-        :param code: 
-        :param message: named parameters representing extra (str-formatted) context for the given code message
+        Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters).
+
+        :param code: str, dot delimited validation path code
+        :param source_trail, List[str], ordered audit trail of provenance for a given Edge knowledge source provenance.
+        :param message: **Dict, named parameters representing extra (str-formatted) context for the given code message
         :return: None (internally record the validation message)
         """
         # Sanity check: that the given code has been registered in the codes.yaml file
