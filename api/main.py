@@ -98,14 +98,14 @@ async def validate(query: Query):
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=trapi_version,
         biolink_version=biolink_version,
-        sources=sources.dict() if sources is not None else None,
         strict_validation=strict_validation,
         suppress_empty_data_warnings=suppress_empty_data_warnings
     )
     validator.check_compliance_of_trapi_response(
         response=query.response,
         max_kg_edges=max_kg_edges,
-        max_results=max_results
+        max_results=max_results,
+        target_provenance=sources.dict() if sources is not None else None,
     )
 
     if not validator.has_messages():

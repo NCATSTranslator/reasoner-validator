@@ -46,7 +46,6 @@ class TRAPIResponseValidator(ValidationReporter):
             self,
             trapi_version: Optional[str] = None,
             biolink_version: Optional[str] = None,
-            sources: Optional[Dict] = None,
             strict_validation: bool = False,
             suppress_empty_data_warnings: bool = False
     ):
@@ -56,8 +55,6 @@ class TRAPIResponseValidator(ValidationReporter):
         :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                                 validated (Default: if None, use the Biolink Model Toolkit default version).
         :type biolink_version: Optional[str] = None
-        :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation.
-        :type sources: Dict
         :param strict_validation: if True, some tests validate as 'error'; None or False, simply issue a 'warning'
         :type strict_validation: Optional[bool] = None
         :param suppress_empty_data_warnings: validation normally reports empty Message query graph, knowledge graph
@@ -69,7 +66,6 @@ class TRAPIResponseValidator(ValidationReporter):
             prefix="Validate TRAPI Response",
             trapi_version=trapi_version,
             biolink_version=biolink_version,
-            sources=sources,
             strict_validation=strict_validation
         )
         self._is_trapi_1_4: Optional[bool] = None
@@ -135,7 +131,8 @@ class TRAPIResponseValidator(ValidationReporter):
             self,
             response: Optional[Dict],
             max_kg_edges: int = 0,
-            max_results: int = 0
+            max_results: int = 0,
+            target_provenance: Optional[Dict] = None
     ):
         """
         One stop validation of all components of a TRAPI-schema compliant
@@ -159,6 +156,8 @@ class TRAPIResponseValidator(ValidationReporter):
         :type max_kg_edges: int
         :param max_results: target sample number of results to validate (default: 0 for 'use all results').
         :type max_results: int
+        :param target_provenance: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+        :type target_provenance: Dict
 
         :returns: Validator cataloging "information", "warning" and "error" messages (could be empty)
         :rtype: ValidationReporter
@@ -195,7 +194,7 @@ class TRAPIResponseValidator(ValidationReporter):
         # Sequentially validate the Query Graph, Knowledge Graph then validate
         # the Results (which rely on the validity of the other two components)
         elif self.has_valid_query_graph(message) and \
-                self.has_valid_knowledge_graph(message, max_kg_edges):
+                self.has_valid_knowledge_graph(message, max_kg_edges, target_provenance):
             self.has_valid_results(message, max_results)
 
     @staticmethod
@@ -312,7 +311,12 @@ class TRAPIResponseValidator(ValidationReporter):
         # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
         return False if self.has_errors() else True
 
-    def has_valid_knowledge_graph(self, message: Dict, edges_limit: int = 0) -> bool:
+    def has_valid_knowledge_graph(
+            self,
+            message: Dict,
+            edges_limit: int = 0,
+            target_provenance: Optional[Dict] = None
+    ) -> bool:
         """
         Validate a TRAPI Knowledge Graph.
 
@@ -321,6 +325,8 @@ class TRAPIResponseValidator(ValidationReporter):
         :param edges_limit: integer maximum number of edges to be validated in the knowledge graph. A value of zero
                             triggers validation of all edges in the knowledge graph (Default: 0 - use all edges)
         :type edges_limit: int
+        :param target_provenance: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+        :type target_provenance: Dict
 
         :return: bool, False, if validation errors
         """
@@ -370,7 +376,7 @@ class TRAPIResponseValidator(ValidationReporter):
                             graph=kg_sample,
                             trapi_version=self.trapi_version,
                             biolink_version=self.biolink_version,
-                            sources=self.sources,
+                            target_provenance=target_provenance,
                             # the ValidationReporter calling this function *might*
                             # have an explicit strict_validation override (if not None)
                             strict_validation=self.strict_validation

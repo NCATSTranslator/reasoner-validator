@@ -994,7 +994,7 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(query: Tuple):
         graph_type=TRAPIGraphType.Knowledge_Graph,
         trapi_version=TRAPI_1_3_0,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
-        sources=query[1]
+        target_provenance=query[1]
     )
     validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
     check_messages(validator, query[2])
@@ -1055,7 +1055,7 @@ def test_post_1_4_0_trapi_validate_attributes(query: Tuple):
     validator = BiolinkValidator(
         graph_type=TRAPIGraphType.Knowledge_Graph,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
-        sources=query[1]
+        target_provenance=query[1]
     )
     validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
     check_messages(validator, query[2])
@@ -1137,7 +1137,7 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
         graph_type=TRAPIGraphType.Knowledge_Graph,
         trapi_version=TRAPI_1_3_0,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
-        sources=query[1]
+        target_provenance=query[1]
     )
     validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
     check_messages(validator, query[2])
@@ -1296,7 +1296,7 @@ def test_latest_validate_attributes(query: Tuple):
         graph_type=TRAPIGraphType.Knowledge_Graph,
         # trapi_version="latest",
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
-        sources=query[1]
+        target_provenance=query[1]
     )
     validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
     check_messages(validator, query[2])

@@ -993,10 +993,9 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=query[1],
         biolink_version=query[2],
-        sources=query[3],
         strict_validation=query[4]
     )
-    validator.check_compliance_of_trapi_response(response=query[0])
+    validator.check_compliance_of_trapi_response(response=query[0], target_provenance=query[3])
     check_messages(validator, query[5], no_errors=True)
 
 
@@ -1159,9 +1158,8 @@ def test_check_biolink_model_compliance_of_trapi_response_suppressing_empty_data
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=trapi_version,
         biolink_version=biolink_version,
-        sources=sources,
         strict_validation=strict_validation,
         suppress_empty_data_warnings=True
     )
-    validator.check_compliance_of_trapi_response(response=response)
+    validator.check_compliance_of_trapi_response(response=response, target_provenance=sources)
     check_messages(validator, code, no_errors=True)

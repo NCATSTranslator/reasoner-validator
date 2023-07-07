@@ -52,7 +52,6 @@ class ValidationReporter:
             prefix: Optional[str] = None,
             trapi_version: Optional[str] = None,
             biolink_version: Optional[str] = None,
-            sources: Optional[Dict] = None,
             strict_validation: bool = False
     ):
         """
@@ -64,8 +63,6 @@ class ValidationReporter:
         :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                                 validated (Default: if None, use the Biolink Model Toolkit default version).
         :type biolink_version: Optional[str] = None
-        :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
-        :type sources: Dict
         :param strict_validation: if True, abstract and mixin elements validate as 'error';
                                   if None or False, just issue a 'warning'
         :type strict_validation: Optional[bool] = None
@@ -74,7 +71,6 @@ class ValidationReporter:
         self.trapi_version = get_latest_version(trapi_version) \
             if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
         self.biolink_version = biolink_version
-        self.sources: Optional[Dict] = sources
         self.strict_validation: Optional[bool] = strict_validation
         #
         # self.messages have dictionary structure something like the following:

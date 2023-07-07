@@ -145,7 +145,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         graph_type: TRAPIGraphType,
         trapi_version: Optional[str] = None,
         biolink_version: Optional[str] = None,
-        sources: Optional[Dict[str, str]] = None,
+        target_provenance: Optional[Dict[str, str]] = None,
         strict_validation: bool = False
     ):
         """
@@ -157,8 +157,8 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         :type trapi_version: Optional[str] or None
         :param biolink_version: caller specified Biolink Model version (default: None, which takes the BMT 'latest')
         :type biolink_version: Optional[str] or None
-        :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
-        :type sources: Optional[Dict[str,str]]
+        :param target_provenance: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+        :type target_provenance: Optional[Dict[str,str]]
         """
         BMTWrapper.__init__(self, biolink_version=biolink_version)
         ValidationReporter.__init__(
@@ -166,9 +166,9 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             prefix=f"Biolink Validation of {graph_type.value}",
             trapi_version=trapi_version,
             biolink_version=self.get_resolved_biolink_version(),
-            sources=sources,
             strict_validation=strict_validation
         )
+        self.target_provenance: Optional[Dict] = target_provenance
         self.graph_type: TRAPIGraphType = graph_type
         self.nodes: Set[str] = set()
 
@@ -376,17 +376,17 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         ara_source: Optional[str] = None
         kp_source: Optional[str] = None
         kp_source_type: Optional[str] = None
-        if self.sources:
-            if 'ara_source' in self.sources and self.sources['ara_source']:
-                ara_source: str = self.sources['ara_source']
+        if self.target_provenance:
+            if 'ara_source' in self.target_provenance and self.target_provenance['ara_source']:
+                ara_source: str = self.target_provenance['ara_source']
                 if not ara_source.startswith("infores:"):
                     ara_source = f"infores:{ara_source}"
-            if 'kp_source' in self.sources and self.sources['kp_source']:
-                kp_source: str = self.sources['kp_source']
+            if 'kp_source' in self.target_provenance and self.target_provenance['kp_source']:
+                kp_source: str = self.target_provenance['kp_source']
                 if not kp_source.startswith("infores:"):
                     kp_source = f"infores:{kp_source}"
-            kp_source_type = self.sources['kp_source_type'] \
-                if 'kp_source_type' in self.sources and self.sources['kp_source_type'] else 'aggregator'
+            kp_source_type = self.target_provenance['kp_source_type'] \
+                if 'kp_source_type' in self.target_provenance and self.target_provenance['kp_source_type'] else 'aggregator'
             kp_source_type = f"biolink:{kp_source_type}_knowledge_source"
 
         return ara_source, kp_source, kp_source_type
@@ -1261,7 +1261,7 @@ def check_biolink_model_compliance_of_knowledge_graph(
     graph: Dict,
     trapi_version: Optional[str] = None,
     biolink_version: Optional[str] = None,
-    sources: Optional[Dict] = None,
+    target_provenance: Optional[Dict] = None,
     strict_validation: Optional[bool] = None
 ) -> BiolinkValidator:
     """
@@ -1275,8 +1275,8 @@ def check_biolink_model_compliance_of_knowledge_graph(
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                             validated (Default: if None, use the Biolink Model Toolkit default version).
     :type biolink_version: Optional[str] = None
-    :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
-    :type sources: Dict
+    :param target_provenance: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+    :type target_provenance: Dict
     :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
     :type strict_validation: Optional[bool] = None; defaults to 'True' if not set
 
@@ -1294,7 +1294,7 @@ def check_biolink_model_compliance_of_knowledge_graph(
         graph_type=TRAPIGraphType.Knowledge_Graph,
         trapi_version=trapi_version,
         biolink_version=biolink_version,
-        sources=sources,
+        target_provenance=target_provenance,
         strict_validation=strict_validation
     )
     validator.check_biolink_model_compliance(graph)
