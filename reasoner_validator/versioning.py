@@ -1,6 +1,5 @@
 """Utilities."""
 from typing import NamedTuple, Optional, List
-from sys import stderr
 from os import environ
 from re import sub, compile
 import requests
@@ -99,7 +98,14 @@ class SemVer(NamedTuple):
         match = semver_pattern.fullmatch(semver_string)
 
         if match is None:
-            raise SemVerError(f"'{string}' is not a valid release version")
+            if string.endswith(".yaml"):
+                raise SemVerError(
+                    "the mandatory TRAPI 'Semantic Version' suffix string of the root file (path) name:\n"
+                    f"\t'{string}'\nof your local YAML schema file, must delimited from the prefix of "
+                    f"the root file (path) name by a leading underscore character!"
+                )
+            else:
+                raise SemVerError(f"'{string}' is not a valid release version!")
 
         captured = match.groupdict()
         missing_fields_errmsg = f"SemVer '{string}' is missing expected fields: {', '.join(core_fields)}"
