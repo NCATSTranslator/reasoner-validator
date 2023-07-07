@@ -61,8 +61,11 @@ class SemVer(NamedTuple):
 
     ):
         """
-        Initializes a SemVer from a string.  This is an 'augmented' SemVer which may also have
-        an alphabetic prefix (for example, a 'v' for 'version' designation of a GitHub release)
+        Initializes a SemVer from a string.  This is an 'augmented' SemVer which may also have an alphabetic prefix
+        (for example, a 'v' for 'version' designation of a GitHub release). Note that the string may be a
+        YAML file (path) name. In such a case, the SemVer is assumed to be encoded as a suffix in the root file name
+        just before the .yaml file extension - e.g. my_schema_3.2.1-beta5.yaml - where the version suffix string
+        is assumed to be delimited by a leading underscore character (i.e. "3.2.1-beta5" in the above example).
 
         :param string: str, string encoding the SemVer.
         :param ignore_prefix: bool, if set, any alphabetic prefix of the SemVer string is ignored (not recorded)
@@ -84,6 +87,9 @@ class SemVer(NamedTuple):
         # If the string is a file path, generically detected using the .yaml file extension,
         # then assume that the file path string encodes the SemVer string, as a part of the
         # root file name just before the .yaml file extension, e.g. my_schema_3.2.1-beta5.yaml
+        #
+        # Note that the TRAPI version suffix to the root file name
+        # is assumed to be delimited by a leading underscore character.
         if string.endswith(".yaml"):
             root_path: str = string.replace(".yaml", "")
             semver_string = root_path.split("_")[-1]
