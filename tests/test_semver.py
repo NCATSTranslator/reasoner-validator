@@ -1,8 +1,17 @@
 """Test semantic version handling."""
 import pytest
 
-from tests import PATCHED_SCHEMA_VERSION, PATCHED_140_SCHEMA_FILEPATH
-from reasoner_validator.versioning import semver_pattern, SemVer, SemVerUnderspecified
+from tests import (
+    PATCHED_SCHEMA_VERSION,
+    PATCHED_140_SCHEMA_FILEPATH,
+    BROKEN_SCHEMA_FILEPATH
+)
+from reasoner_validator.versioning import (
+    semver_pattern,
+    SemVer,
+    SemVerError,
+    SemVerUnderspecified
+)
 
 
 def test_regex_pattern():
@@ -165,6 +174,7 @@ sample_schema_file_semver = SemVer.from_string(PATCHED_140_SCHEMA_FILEPATH)
 
 
 def test_schema_file_versioning():
-
     # Sample schema file has internal version type
     assert sample_schema_file_semver == sample_schema_version
+    with pytest.raises(SemVerError):
+        SemVer.from_string(BROKEN_SCHEMA_FILEPATH)
