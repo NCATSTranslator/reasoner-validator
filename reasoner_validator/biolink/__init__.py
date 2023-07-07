@@ -765,7 +765,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         #         edge_id=edge_id
         #     )
 
-    def validate_sources(self, edge_id: str, edge: Dict) -> Optional[List[str]]:
+    def validate_sources(self, edge_id: str, edge: Dict) -> List[str]:
         """
         Validate (TRAPI 1.4.0-beta ++) Edge.sources provenance.
 
@@ -773,7 +773,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         :param edge: Dict, the edge object associated with some attributes are expected to be found
         :return: Optional[List[str]], ordered audit trail of Edge provenance infores-specified knowledge sources
         """
-        source_trail: Optional[List[str]] = None
+        source_trail: List[str] = list()
         # we ought not to have to test for the absence of the "sources" tag
         # if general TRAPI schema validation is run, since it will catch such missing data
         # however, this method may be directly run on invalid TRAPI data, so...
@@ -871,13 +871,13 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                                 found_kp_knowledge_source = True
 
                             # TODO: capture the upstream 'upstream_resource_id' source here
-
+                            source_trail.append(identifier)
                     else:
                         # TODO: capture current 'resource_id' as the anticipated parent 'primary_knowledge_source?
-                        pass
+                        source_trail.append(resource_id)
                 else:
                     # TODO: capture current 'resource_id' as the solely recorded 'primary_knowledge_source'?
-                    pass
+                    source_trail.append(resource_id)
 
                 # 4. If provided (Optional), we *could* check the optional 'source_record_urls'
                 #    if they are all resolvable URLs (but maybe we do not attempt this for now...)
@@ -894,7 +894,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                 found_primary_knowledge_source
             )
 
-            return source_trail  # may be 'None' if required RetrievalSource 'sources' entries are missing
+            return source_trail  # may be empty if required RetrievalSource 'sources' entries are missing
 
     def validate_predicate(self, edge_id: str, predicate: str):
         """
