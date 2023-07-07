@@ -142,8 +142,6 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
 The 'messages' returned are partitioned into 'information', 'warning', 'error' and 'critical' (error) messages
 in a dictionary looking something like the following (as an example):
 
-Note that the trapi_version parameter to the TRAPIResponseValidator can also be a local path to a .yaml TRAPI schema file, which is read in and used as the validation standard. In such a case, though, it is necessary to encode the TRAPI version in the root filename, e.g. my_trapi_schema_1.4.0-beta5.yaml
-
 .. code-block:: python
 
     messages: Dict[str, List[Dict[str,str]]] = {
@@ -198,6 +196,12 @@ Note that the trapi_version parameter to the TRAPIResponseValidator can also be 
 
 Every message has a 'code' and optional context-specific parameters which correspond to
 named fields in the Python string templates found in the `reasoner_validator package 'codes.yaml' file <https://github.com/NCATSTranslator/reasoner-validator/blob/master/reasoner_validator/codes.yaml>`_.
+
+Note that the trapi_version parameter to the TRAPIResponseValidator can also be a local path to a .yaml TRAPI schema file, which is read in and used as the validation standard. In such a case, though, it is necessary to encode the TRAPI version as a suffix to the root filename, e.g. my_trapi_schema_1.4.0-beta5.yaml. Note that the TRAPI version suffix to the root file name is assumed to be delimited by a leading underscore character. The simplistic parsing of this version is as follows:
+
+.. code-block:: python
+    root_path: str = string.replace(".yaml", "")
+    semver_string = root_path.split("_")[-1]
 
 Python API
 ----------
