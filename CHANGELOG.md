@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## v3.7.0
+- implementation of reasoner-validator issue #86 in which explicit validation error KP/ARA sources are reported in the validation. This change is sufficiently disruptive to the code methods and representation that 'minor' release of the repository is incremented to 3.7.
+- to avoid confusion with new 'source' reporting, the pre-3.7 provenance 'sources' variable is renamed to 'target_provenance' and the variable localized directly into the BiolinkValidator constructor and included as parameter for pertinent high level method calls
+
 ## v3.6.6
 - code takes TRAPI 1.4.1 as the latest schema
 - abstract out TRAPI versions a bit more and move TRAPI release constants to a global context

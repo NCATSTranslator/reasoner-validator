@@ -93,8 +93,8 @@ _TEST_EDGES_1 = {
     }
 
 _TEST_KG_1 = {
-    'nodes': _TEST_NODES_1,
-    'edges': _TEST_EDGES_1
+    "nodes": _TEST_NODES_1,
+    "edges": _TEST_EDGES_1
 }
 
 _TEST_RESULTS_1 = [
@@ -130,8 +130,8 @@ _TEST_EDGES_2 = {
     }
 
 _TEST_KG_2 = {
-    'nodes': _TEST_NODES_1,
-    'edges': _TEST_EDGES_2
+    "nodes": _TEST_NODES_1,
+    "edges": _TEST_EDGES_2
 }
 
 _TEST_QG_2 = {
@@ -183,8 +183,8 @@ _TEST_EDGES_3 = {
     }
 
 _TEST_KG_3 = {
-    'nodes': _TEST_NODES_2,
-    'edges': _TEST_EDGES_3
+    "nodes": _TEST_NODES_2,
+    "edges": _TEST_EDGES_3
 }
 
 _TEST_RESULTS_2 = [
@@ -225,8 +225,8 @@ _TEST_EDGES_4 = {
 
 
 _TEST_KG_4 = {
-    'nodes': _TEST_NODES_1,
-    'edges': _TEST_EDGES_4
+    "nodes": _TEST_NODES_1,
+    "edges": _TEST_EDGES_4
 }
 
 # From Implementation Guidlines circa June 2023
@@ -305,92 +305,92 @@ _TEST_TRAPI_1_4_1_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs
 @pytest.mark.parametrize(
     "query",
     [
-        (   # Query 0 - No 'workflow' key in TRAPI Response
+        (   # Query 0 - No "workflow" key in TRAPI Response
             {
-                'message': {}
+                "message": {}
             },
         ),
-        (   # Query 1 - Null 'workflow' key value
+        (   # Query 1 - Null "workflow" key value
             {
-                'message': {},
-                'workflow': None
+                "message": {},
+                "workflow": None
             },
         ),
-        (  # Query 2 - Null 'workflow' key list
+        (  # Query 2 - Null "workflow" key list
             {
-                'message': {},
-                'workflow': []
+                "message": {},
+                "workflow": []
             },
         ),
-        (  # Query 3 - 'runner_parameters' is Null
+        (  # Query 3 - "runner_parameters" is Null
             {
-                'message': {},
-                'workflow': [
+                "message": {},
+                "workflow": [
                     {
-                        'runner_parameters': None,
-                        'id': 'sort_results_score',
-                        'parameters': {"ascending_or_descending": "ascending"}
+                        "runner_parameters": None,
+                        "id": "sort_results_score",
+                        "parameters": {"ascending_or_descending": "ascending"}
                     }
                 ]
             },
         ),
-        (  # Query 4 - 'parameters' is Null
+        (  # Query 4 - "parameters" is Null
             {
-                'message': {},
-                'workflow': [
-                    {'runner_parameters': {'allowlist': ["infores:aragorn"]}, 'id': 'lookup', 'parameters': None}
+                "message": {},
+                "workflow": [
+                    {"runner_parameters": {"allowlist": ["infores:aragorn"]}, "id": "lookup", "parameters": None}
                 ]
             },
         ),
-        (  # Query 5 - both 'parameters' and 'runner_parameters' are Null
+        (  # Query 5 - both "parameters" and "runner_parameters" are Null
             {
-                'message': {},
-                'workflow': [
-                    {'runner_parameters': None, 'id': 'lookup', 'parameters': None}
+                "message": {},
+                "workflow": [
+                    {"runner_parameters": None, "id": "lookup", "parameters": None}
                 ]
             },
         ),
         (   # Query 6 - Now, we patch the Message itself when it is not empty - knowledge graph is nullable
             {
-                'message': {
-                    'knowledge_graph': None
+                "message": {
+                    "knowledge_graph": None
                 }
             },
         ),
         (   # Query 7 - Now, we patch the Message itself when it is not empty
             {
-                'message': {
-                    'knowledge_graph': {
-                        'nodes': {},
-                        'edges': {}
+                "message": {
+                    "knowledge_graph": {
+                        "nodes": {},
+                        "edges": {}
                     }
                 }
             },
         ),
         (   # Query 8 - Now, we patch the Message itself when it is not empty
             {
-                'message': {
-                    'knowledge_graph': {
-                        'nodes': {},
-                        'edges': {}
+                "message": {
+                    "knowledge_graph": {
+                        "nodes": {},
+                        "edges": {}
                     }
                 }
             },
         ),
-        (   # Query 9 - Now, we patch the Message.knowledge_edge.sources itself when it is not empty
+        (   # Query 9 - Now, we patch the "Message.knowledge_edge.sources" itself when it is not empty
             {
-                'message': {
-                    'knowledge_graph': {
-                        'nodes': {},
-                        'edges': {
+                "message": {
+                    "knowledge_graph": {
+                        "nodes": {},
+                        "edges": {
                             "alice-in-wonderland": {
-                                 'subject': "tweedle-dee",
-                                 'predicate': "and",
-                                 'object': "tweedle-dum",
-                                 'sources': [
+                                 "subject": "tweedle-dee",
+                                 "predicate": "and",
+                                 "object": "tweedle-dum",
+                                 "sources": [
                                      {
-                                         'resource_id': "infores:rabbit-hole",
-                                         'resource_role': "primary_knowledge_source"
+                                         "resource_id": "infores:rabbit-hole",
+                                         "resource_role": "primary_knowledge_source"
                                      }
                                  ]
                             }
@@ -401,8 +401,8 @@ _TEST_TRAPI_1_4_1_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs
         ),
         (   # Query 10 - Now, we patch the Message itself when it is not empty
             {
-                'message': {
-                    'auxiliary_graphs': None
+                "message": {
+                    "auxiliary_graphs": None
                 }
             },
         )
@@ -591,7 +591,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             None,
             None,
             False,
-            # "Validate TRAPI Response: ERROR - the 'Response.Message.Results' field
+            # "Validate TRAPI Response: ERROR - the "Response.Message.Results" field
             # is not TRAPI schema validated since it has the wrong format!"
             "critical.trapi.validation"
         ),
@@ -613,7 +613,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             "warning.trapi.response.results.empty"
         ),
         (
-            # Query 9 - Full Message, without 'sources' and 'strict_validation': False - should pass?
+            # Query 9 - Full Message, without "sources" and "strict_validation": False - should pass?
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -643,7 +643,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             ""
         ),
         (
-            # Query 11 - Full Message, with strict validation and non-null sources that match
+            # Query 11 - Full Message, with "strict validation" and non-null sources" that match
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -700,7 +700,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             "warning.knowledge_graph.edge.provenance.ara.missing"
         ),
         (
-            # Query 14 - Full Message, with strict validation and a non-null sources data that matches
+            # Query 14 - Full Message, with "strict validation" and a non-null "sources" data that matches
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -719,7 +719,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
             ""
         ),
         (
-            # Query 15 - Full Message, with strict validation and a non-null sources KP that matches
+            # Query 15 - Full Message, with "strict validation" and a non-null "sources" KP that matches
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -759,7 +759,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
         ),
         (
             # Query 17 - Full Message, with strict validation and
-            #            non-null kp_source_type results, has multiple primary knowledge sources
+            #            non-null kp_source_type results, has multiple "primary knowledge sources"
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -779,7 +779,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
         ),
         (
             # Query 18 - Full Message, with non-strict validation.
-            #            Both knowledge graph nodes have 'mixin' categories,
+            #            Both knowledge graph nodes have "mixin" categories,
             #            the list of categories for knowledge graphs
             #            must have at least one concrete category,
             #            hence, a validation error is now reported:
@@ -813,7 +813,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
         ),
         (
             # Query 20 - Valid full Message, under strict validation.
-            #            Message is valid, but the 'workflow' field is not an array?
+            #            Message is valid, but the "workflow" field is not an array?
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -826,12 +826,12 @@ def test_sample_graph(query: Tuple[int, int, int]):
             None,
             None,
             True,
-            # "Validate TRAPI Response: ERROR - TRAPI schena error: the 'workflow' field must be an array"
+            # "Validate TRAPI Response: ERROR - TRAPI schema error: the "workflow" field must be an array"
             "critical.trapi.validation"
         ),
         (
             # Query 21 - Valid full Message, under strict validation.
-            #            Message is valid, the 'workflow' field is an array,
+            #            Message is valid, the "workflow" field is an array,
             #            but the single list entry is an invalid workflow spec?
             {
                 "message": {
@@ -845,15 +845,15 @@ def test_sample_graph(query: Tuple[int, int, int]):
             None,
             None,
             True,
-            # Validate TRAPI Response: ERROR - TRAPI schema error: the 'workflow' field must be an array of
-            # a 'workflow' JSON objects, with contents as defined by the workflow schema.
+            # Validate TRAPI Response: ERROR - TRAPI schema error: the "workflow" field must be an array of
+            # a "workflow" JSON objects, with contents as defined by the workflow schema.
             "critical.trapi.validation"
         ),
         (
             # Query 22 - Valid full Message, under strict validation.
-            #            Message is valid, the 'workflow' field is an array,
+            #            Message is valid, the "workflow" field is an array,
             #            but the single list entry is in the workflow schema
-            #            and has at least the one required field 'id'
+            #            and has at least the one required field "id"
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -869,8 +869,8 @@ def test_sample_graph(query: Tuple[int, int, int]):
             ""   # this simple workflow spec should pass?
         ),
         (
-            # Query 23 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
-            #            but the single list entry is an elaborated 'real world' workflow spec,
+            # Query 23 - Valid full Message, under strict validation. Message is valid, the "workflow" field is array,
+            #            but the single list entry is an elaborated "real world" workflow spec,
             #            but one entry overlay_compute_ngd is incomplete - doesn't fully validate!
             {
                 "message": {
@@ -879,7 +879,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_1
                 },
                 "workflow": [
-                    {  # 'real' world workflow spec from E. Deutsch
+                    {  # "real" world workflow spec from E. Deutsch
                       "id": "fill",
                       "parameters": {
                         "allowlist": [
@@ -908,13 +908,13 @@ def test_sample_graph(query: Tuple[int, int, int]):
             None,
             None,
             True,
-            # "Validate TRAPI Response: ERROR - TRAPI schema validation error: the 'workflow'
-            # field entry overlay_compute_ngd is missing a required parameter 'qnodes_keys'
+            # "Validate TRAPI Response: ERROR - TRAPI schema validation error: the "workflow"
+            # field entry overlay_compute_ngd is missing a required parameter "qnodes_keys"
             "critical.trapi.validation"
         ),
         (
-            # Query 24 - Valid full Message, under strict validation. Message is valid, the 'workflow' field is array,
-            #            but the single list entry is an elaborated 'real world' workflow spec
+            # Query 24 - Valid full Message, under strict validation. Message is valid, the "workflow" field is array,
+            #            but the single list entry is an elaborated "real world" workflow spec
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -922,7 +922,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
                     "results": _TEST_RESULTS_1
                 },
                 "workflow": [
-                    {  # 'real' world workflow spec from E. Deutsch
+                    {  # "real" world workflow spec from E. Deutsch
                       "id": "fill",
                       "parameters": {
                         "allowlist": [
@@ -956,7 +956,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
         ),
         (
             # Query 25 - Valid full Message, under strict validation. Message is valid,
-            #            the 'workflow' field is an array, but runner_parameters is None.
+            #            the "workflow" field is an array, but runner_parameters is None.
             #            This is technically invalid, but we have a code patch which should filter it out (for now)
             {
                 "message": {

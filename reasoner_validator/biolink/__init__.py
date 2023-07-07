@@ -368,9 +368,9 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
 
         return element
 
-    def get_target_sources(self) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+    def get_target_provenance(self) -> Tuple[Optional[str], Optional[str], Optional[str]]:
         """
-        Returns infores prefix normalized validation caller provided tTarget provenance sources metadata.
+        Returns infores-prefix-normalized target provenance metadata.
         :return: Tuple[Optional[str], Optional[str], Optional[str]] of ara_source, kp_source, kp_source_type
         """
         ara_source: Optional[str] = None
@@ -399,7 +399,8 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             found_primary_knowledge_source
     ):
         """
-        Validates ARA and KP sources based on surveyed Edge slots (in 'attributes' pre-1.4.0; in 'sources', post-1.4.0).
+        Validates ARA and KP infores knowledge sources based on surveyed Edge slots
+        (recorded in edge "attributes" pre-1.4.0; in "sources", post-1.4.0).
 
         :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param ara_source: str, user specified target ARA infores
@@ -469,7 +470,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             ara_source: Optional[str]
             kp_source: Optional[str]
             kp_source_type: Optional[str]
-            ara_source, kp_source, kp_source_type = self.get_target_sources()
+            ara_source, kp_source, kp_source_type = self.get_target_provenance()
 
             # Expecting ARA and KP 'aggregator_knowledge_source' attributes?
             found_ara_knowledge_source = False
@@ -768,21 +769,21 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         :param edge: Dict, the edge object associated with some attributes are expected to be found
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
-        # we ought not to have to test for the absence of the 'sources' tag
+        # we ought not to have to test for the absence of the "sources" tag
         # if general TRAPI schema validation is run, since it will catch such missing data
         # however, this method may be directly run on invalid TRAPI data, so...
-        if 'sources' not in edge:
+        if "sources" not in edge:
             self.report(code="error.knowledge_graph.edge.sources.missing", identifier=edge_id)
-        elif not edge['sources']:
-            # Cardinality of 'sources' array is also validated by the TRAPI schema
+        elif not edge["sources"]:
+            # Cardinality of "sources" array is also validated by the TRAPI schema
             # but for the same reasons noted above, we check again here.
             self.report(code="error.knowledge_graph.edge.sources.empty", identifier=edge_id)
-        elif not isinstance(edge['sources'], List):
+        elif not isinstance(edge["sources"], List):
             self.report(code="error.knowledge_graph.edge.sources.not_array", identifier=edge_id)
         else:
-            edge_sources = edge['sources']
+            edge_sources = edge["sources"]
 
-            # The RetrievalSource items in the 'sources' array is also partially validated insofar as JSONSchema can
+            # The RetrievalSource items in the "sources" array is also partially validated insofar as JSONSchema can
             # validate based on the TRAPI schema; however, some kinds of validation are either not deterministic from
             # the schema. The remainder of this method validates an initial basic 'semantic' subset of RetrievalSource
             # content for which the validation is both easy and deemed generally useful. This includes detection of
@@ -793,7 +794,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             ara_source: Optional[str]
             kp_source: Optional[str]
             kp_source_type: Optional[str]
-            ara_source, kp_source, kp_source_type = self.get_target_sources()
+            ara_source, kp_source, kp_source_type = self.get_target_provenance()
 
             # Expecting ARA and KP 'aggregator_knowledge_source' attributes?
             found_ara_knowledge_source = False
@@ -866,7 +867,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                 # if "source_record_urls" in retrieval_source:
                 #     source_record_urls: Optional[List[str]] = retrieval_source["source_record_urls"]
 
-            # TODO: After all the 'sources' RetrievalSource entries have been scanned, then
+            # TODO: After all the "sources" RetrievalSource entries have been scanned, then
             #       perform a complete validation check for complete expected provenance.
             self.validate_provenance(
                 edge_id,
@@ -987,7 +988,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             self.validate_attributes(edge_id=edge_id, edge=edge)
             self.validate_qualifiers(edge_id=edge_id, edge=edge)
 
-            # Edge provenance 'sources' field is only recorded in
+            # Edge provenance "sources" field is only recorded in
             # Edge attributes, from TRAPI 1.4.0-beta onwards
             if self.minimum_required_trapi_version("1.4.0-beta"):
                 self.validate_sources(edge_id=edge_id, edge=edge)
