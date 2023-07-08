@@ -330,41 +330,76 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
     def set_nodes(self, nodes: Set):
         self.nodes.update(nodes)
 
-    def validate_element_status(self, context: str, identifier: str, edge_id: str) -> Optional[Element]:
+    def validate_element_status(
+            self,
+            context: str,
+            identifier: str,
+            edge_id: str,
+            source_trail: Optional[str] = None
+    ) -> Optional[Element]:
         """
         Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.
 
         :param context: str, parsing context (e.g. 'Node')
         :param identifier: str, name of the putative Biolink element ('class')
         :param edge_id: str, identifier of enclosing edge containing the element (e.g. the 'edge_id')
-
+        :param source_trail: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
         :return: Optional[Element], Biolink Element resolved to 'name' if element no validation error; None otherwise.
         """
         element: Optional[Element] = self.bmt.get_element(identifier)
         if not element:
-            self.report(code=f"error.{context}.unknown", identifier=identifier, edge_id=edge_id)
+            self.report(
+                code=f"error.{context}.unknown",
+                source_trail=source_trail,
+                identifier=identifier,
+                edge_id=edge_id
+            )
             return None
 
         if element.deprecated:
             # We won't index the instances where the deprecated element is seen, since we assume that
             # component developers learning about the issue will globally fix it in their graphs
-            self.report(code=f"warning.{context}.deprecated", identifier=identifier)
+            self.report(
+                code=f"warning.{context}.deprecated",
+                source_trail=source_trail,
+                identifier=identifier
+            )
             # return None - a deprecated term is not treated as a failure but just as a warning
 
         if element.abstract:
             if self.strict_validation:
-                self.report(code=f"error.{context}.abstract", identifier=identifier, edge_id=edge_id)
+                self.report(
+                    code=f"error.{context}.abstract",
+                    source_trail=source_trail,
+                    identifier=identifier,
+                    edge_id=edge_id
+                )
                 return None
             else:
-                self.report(code=f"info.{context}.abstract", identifier=identifier, edge_id=edge_id)
+                self.report(
+                    code=f"info.{context}.abstract",
+                    source_trail=source_trail,
+                    identifier=identifier,
+                    edge_id=edge_id
+                )
 
         elif self.bmt.is_mixin(identifier):
             # A mixin cannot be instantiated ...
             if self.strict_validation:
-                self.report(code=f"error.{context}.mixin", identifier=identifier, edge_id=edge_id)
+                self.report(
+                    code=f"error.{context}.mixin",
+                    source_trail=source_trail,
+                    identifier=identifier,
+                    edge_id=edge_id
+                )
                 return None
             else:
-                self.report(code=f"info.{context}.mixin", identifier=identifier, edge_id=edge_id)
+                self.report(
+                    code=f"info.{context}.mixin",
+                    source_trail=source_trail,
+                    identifier=identifier,
+                    edge_id=edge_id
+                )
 
         return element
 
@@ -396,7 +431,8 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             edge_id,
             ara_source, found_ara_knowledge_source,
             kp_source, found_kp_knowledge_source, kp_source_type,
-            found_primary_knowledge_source
+            found_primary_knowledge_source,
+            source_trail: Optional[str]
     ):
         """
         Validates ARA and KP infores knowledge sources based on surveyed Edge slots
@@ -408,6 +444,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         :param kp_source: str, user specified target KP infores
         :param found_kp_knowledge_source:  bool, True if target KP infores knowledge source was found
         :param kp_source_type:  str, user specified KP knowledge source type (i.e. primary, aggregate, etc.)
+        :param source_trail: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
         :param found_primary_knowledge_source: List[str], list of all infores discovered tagged as 'primary'
         :return:
         """
@@ -415,6 +452,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             # found target ARA knowledge source (if applicable)
             self.report(
                 code="warning.knowledge_graph.edge.provenance.ara.missing",
+                source_trail=source_trail,
                 identifier=ara_source,
                 edge_id=edge_id
             )
@@ -423,21 +461,24 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             # found target KP knowledge source (if applicable)
             self.report(
                 code="warning.knowledge_graph.edge.provenance.kp.missing",
+                source_trail=source_trail,
                 identifier=kp_source,
                 kp_source_type=kp_source_type,
-                identedge_idifier=edge_id
+                edge_id=edge_id
             )
 
         if not found_primary_knowledge_source:
             # Found a primary tagged source...
             self.report(
                 code="error.knowledge_graph.edge.provenance.missing_primary",
+                source_trail=source_trail,
                 identifier=edge_id
             )
         elif len(found_primary_knowledge_source) > 1:
             # ... but only one!
             self.report(
                 code="warning.knowledge_graph.edge.provenance.multiple_primary",
+                source_trail=source_trail,
                 identifier=edge_id,
                 sources=",".join(found_primary_knowledge_source)
             )
@@ -447,7 +488,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             edge_id: str,
             edge: Dict,
             source_trail: Optional[str] = None
-    ) -> Dict[str, List[str]]:
+    ) -> Optional[str]:
         """
         Validate Knowledge Edge Attributes. For TRAPI 1.3.0, may also return an ordered audit trail of Edge provenance
         infores-specified knowledge sources, as parsed in from the list of attributes (returns 'None' otherwise).
@@ -455,13 +496,13 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param edge: Dict, the edge object associated with some attributes are expected to be found
         :param source_trail: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
-        :return:  Dict[str, List[str]], resource id indexed 'sources' catalog of Edge knowledge source infores CURIEs
+        :return: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
         """
-        # in TRAPI 1.4.0, the source_trail is parsed in from the Edge.sources annotation,
-        # hence the source_trail is already known and given to this method for reporting purposes
+        # in TRAPI 1.4.0, the source_trail is parsed in from the Edge.sources annotation, hence
+        # the source_trail is already known and given to this method for reporting purposes here
 
-        # Otherwise, in TRAPI 1.3.0, the 'sources' may be compiled here, in this method,
-        # from the attributes themselves, then returned for use by the rest of the application
+        # Otherwise, in TRAPI 1.3.0, the 'sources' may be compiled here, in this method, from the attributes
+        # themselves, then a newly generated 'source_trail', returned for use by the rest of the application
         sources: Dict[str, List[str]] = dict()
 
         # we only report errors about missing or empty edge attributes if TRAPI 1.3.0 or earlier,
@@ -470,10 +511,10 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         # we only report this for TRAPI < 1.4 when Biolink Validation is done given that
         # without Biolink validation, provenance cannot be reliably assessed
 
-        # we can already use 'source_trail' here in the report in case it was
-        # already computed by the validate_sources parsing of TRAPI 1.4.0;
-        # if TRAPI 1.3.0 is the validation standard, wouldn't matter...
-        # can't figure out provenance anyhow without attributes!
+        # We can already use 'source_trail' here in the report in case it was
+        # already pre-computed by the validate_sources parsing of TRAPI 1.4.0;
+        # if TRAPI 1.3.0 is the validation standard, the 'source_trail' would
+        # be undefined here, since we can't figure it out without attributes!
         if 'attributes' not in edge:
             if self.validate_biolink() and not self.minimum_required_trapi_version("1.4.0-beta"):
                 self.report(
@@ -497,7 +538,10 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         else:
             attributes = edge['attributes']
 
-            # TODO: maybe try to figure out TRAPI 1.3.0 attribute-defined "sources" here?
+            # TODO: maybe try to figure out TRAPI 1.3.0 attribute-defined 'sources'
+            #       here, then generate the associated 'source_trail' string?
+            raise NotImplementedError("Implement capture of 'sources' from TRAPI 1.3.0 attributes!")
+            # source_trail = self.build_source_trail(sources) if sources else None
 
             ara_source: Optional[str]
             kp_source: Optional[str]
@@ -643,10 +687,11 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                     edge_id,
                     ara_source, found_ara_knowledge_source,
                     kp_source, found_kp_knowledge_source, kp_source_type,
-                    found_primary_knowledge_source
+                    found_primary_knowledge_source,
+                    source_trail=source_trail
                 )
 
-        return sources  # may be 'None' if the required attributes are missing
+        return source_trail  # may be 'None' if the required attributes are missing
 
     def validate_attribute_constraints(self, edge_id: str, edge: Dict):
         """
@@ -812,13 +857,13 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         # Infores validates properly here
         return True
 
-    def validate_sources(self, edge_id: str, edge: Dict) -> Dict[str, List[str]]:
+    def validate_sources(self, edge_id: str, edge: Dict) -> Optional[str]:
         """
         Validate (TRAPI 1.4.0-beta ++) Edge.sources provenance.
 
         :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param edge: Dict, the edge object associated with some attributes are expected to be found
-        :return: Dict[str, List[str]], resource id indexed 'sources' catalog of Edge knowledge source infores CURIEs
+        :return: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
         """
         sources: Dict[str, List[str]] = dict()
         # we ought not to have to test for the absence of the "sources" tag
@@ -948,14 +993,17 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
 
             # After all the "sources" RetrievalSource entries have been scanned,
             # then perform a complete validation check for complete expected provenance.
+            source_trail: Optional[str] = self.build_source_trail(sources) if sources else None
+
             self.validate_provenance(
                 edge_id,
                 ara_source, found_ara_knowledge_source,
                 kp_source, found_kp_knowledge_source, kp_source_type,
-                found_primary_knowledge_source
+                found_primary_knowledge_source,
+                source_trail=source_trail
             )
 
-            return sources  # may be empty if required RetrievalSource 'sources' entries are missing
+            return source_trail  # may be empty if required RetrievalSource 'sources' entries are missing
 
     def validate_predicate(self, edge_id: str, predicate: str, source_trail: Optional[str] = None):
         """
@@ -973,12 +1021,14 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         biolink_class = self.validate_element_status(
             context=context,
             identifier=predicate,
-            edge_id=edge_id
+            edge_id=edge_id,
+            source_trail=source_trail
         )
         if biolink_class:
             if not self.bmt.is_predicate(predicate):
                 self.report(
                     code=f"error.{context}.invalid",
+                    source_trail=source_trail,
                     identifier=predicate,
                     edge_id=edge_id
                 )
@@ -986,13 +1036,14 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                     not self.bmt.is_translator_canonical_predicate(predicate):
                 self.report(
                     code=f"warning.{context}.non_canonical",
+                    source_trail=source_trail,
                     identifier=predicate,
                     edge_id=edge_id
                 )
 
     @staticmethod
     def build_source_trail(sources: Optional[Dict[str, List[str]]]) -> Optional[str]:
-        return None
+        raise NotImplementedError("Implement Me!")
 
     def validate_graph_edge(self, edge: Dict):
         """
@@ -1041,23 +1092,22 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             # Edge provenance "sources" field is only recorded
             # as an Edge property, from TRAPI 1.4.0-beta onwards
             if self.minimum_required_trapi_version("1.4.0-beta"):
-                # don't capture the return value of validate_attributes since for
-                # TRAPI 1.4.0, the 'source_trail' is parsed in by 'validate_sources'
-                sources = self.validate_sources(edge_id=edge_id, edge=edge)
-                source_trail = self.build_source_trail(sources) if sources else None
-                # for TRAPI 1.3.0, the 'validate_sources' computed 'source_trail' is
-                # communicated to 'validate_attributes', for validation reporting purposes
+                # For TRAPI 1.4.0, the 'source_trail' is parsed in by 'validate_sources'...
+                source_trail = self.validate_sources(edge_id=edge_id, edge=edge)
+
+                # ...then the 'validate_sources' computed 'source_trail' is communicated
+                #    to 'validate_attributes' for use in attribute validation reporting
                 self.validate_attributes(edge_id=edge_id, edge=edge, source_trail=source_trail)
             else:
-                # for TRAPI 1.3.0, the 'sources' are discovered internally by
-                # 'validate_attributes' then returned for external reporting purposes
-                sources = self.validate_attributes(edge_id=edge_id, edge=edge)
-                source_trail = self.build_source_trail(sources) if sources else None
+                # For TRAPI 1.3.0, the 'sources' are discovered internally by 'validate_attributes'
+                # and the resulting source_trail returned, for further external reporting purposes
+                source_trail = self.validate_attributes(edge_id=edge_id, edge=edge)
         else:
             self.validate_attribute_constraints(edge_id=edge_id, edge=edge)
 
             # Edge "qualifiers" field is only recorded as an
             # Edge property, from TRAPI 1.3.0-beta onwards
+            # We don't care about 'source_trail' here, for the Query Graph edges
             if self.minimum_required_trapi_version("1.3.0-beta"):
                 self.validate_qualifier_constraints(edge_id=edge_id, edge=edge)
 
@@ -1416,7 +1466,7 @@ def check_biolink_model_compliance_of_knowledge_graph(
     :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                             validated (Default: if None, use the Biolink Model Toolkit default version).
     :type biolink_version: Optional[str] = None
-    :param target_provenance: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+    :param target_provenance: Dictionary of validation context identifying the ARA and KP for provenance validation
     :type target_provenance: Dict
     :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
     :type strict_validation: Optional[bool] = None; defaults to 'True' if not set

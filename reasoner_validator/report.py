@@ -256,6 +256,8 @@ class ValidationReporter:
         :param message: **Dict, named parameters representing extra (str-formatted) context for the given code message
         :return: None (internally record the validation message)
         """
+        raise NotImplementedError("Implement the source_trail annotation!")
+
         # Sanity check: that the given code has been registered in the codes.yaml file
         assert CodeDictionary.get_code_entry(code) is not None, f"ValidationReporter.report: unknown code '{code}'"
 
