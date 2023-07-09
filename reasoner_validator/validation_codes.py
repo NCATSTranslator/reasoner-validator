@@ -243,16 +243,16 @@ class CodeDictionary:
                             content: Dict = identifier_dict.copy()
                             content.update(another_parameter_dict)
                             message_set[scope].append(
-                                f"{message_type_prefix}{context}{template.format(**content)}\nof source '{scope}'"
+                                f"{message_type_prefix}{context}{template.format(**content)}"
                             )
                     else:
                         message_set[scope].append(
-                            f"{message_type_prefix}{context}{template.format(**identifier_dict)}\nof source '{scope}'"
+                            f"{message_type_prefix}{context}{template.format(**identifier_dict)}"
                         )
 
             else:
                 # simple scalar message without parameterization?
-                return message_set[scope].append(f"{message_type_prefix}{context}{template}\nof source '{scope}'")
+                message_set[scope].append(f"{message_type_prefix}{context}{template}")
 
         return message_set
 

@@ -1,5 +1,5 @@
 """Testing Validation Report methods"""
-from typing import Optional, Dict, Tuple, List
+from typing import Optional, Dict, Tuple, List, Union
 from sys import stderr
 
 import pytest
@@ -297,37 +297,37 @@ def test_messages():
     reporter1.add_messages(new_messages)
 
     # Verify what we have
-    messages: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = reporter1.get_messages()
+    encoded_messages: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = reporter1.get_messages()
 
-    assert "information" in messages
-    assert len(messages['information']) > 0
-    information: List[str] = list()
-    for code, parameters in messages['information'].items():
-        information.extend(CodeDictionary.display(code, parameters, add_prefix=True))
+    assert "information" in encoded_messages
+    assert len(encoded_messages['information']) > 0
+    information: Dict[str, Union[str, List[str]]] = dict()
+    for code, messages in encoded_messages['information'].items():
+        information.update(CodeDictionary.display(code, messages, add_prefix=True))
     assert "INFO - Excluded: All test case S-P-O triples from resource test location, " + \
-           "or specific user excluded S-P-O triples" in information
+           "or specific user excluded S-P-O triples" in information["global"]
 
-    assert "warnings" in messages
-    assert len(messages['warnings']) > 0
-    warnings: List[str] = list()
-    for code, parameters in messages['warnings'].items():
-        warnings.extend(CodeDictionary.display(code, parameters, add_prefix=True))
+    assert "warnings" in encoded_messages
+    assert len(encoded_messages['warnings']) > 0
+    warnings: Dict[str, Union[str, List[str]]] = dict()
+    for code, messages in encoded_messages['warnings'].items():
+        warnings.update(CodeDictionary.display(code, messages, add_prefix=True))
     assert "WARNING - Knowledge Graph Node Id Unmapped: " + \
-           "Node identifier found unmapped to target categories for node" in warnings
+           "Node identifier found unmapped to target categories for node" in warnings["global"]
 
-    assert "errors" in messages
-    assert len(messages['errors']) > 0
-    errors: List[str] = list()
-    for code, parameters in messages['errors'].items():
-        errors.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "ERROR - Biolink Model: S-P-O statement is not compliant to Biolink Model release" in errors
+    assert "errors" in encoded_messages
+    assert len(encoded_messages['errors']) > 0
+    errors: Dict[str, Union[str, List[str]]] = dict()
+    for code, messages in encoded_messages['errors'].items():
+        errors.update(CodeDictionary.display(code, messages, add_prefix=True))
+    assert "ERROR - Biolink Model: S-P-O statement is not compliant to Biolink Model release" in errors["global"]
 
-    assert "critical" in messages
-    assert len(messages['critical']) > 0
-    critical: List[str] = list()
-    for code, parameters in messages['critical'].items():
-        critical.extend(CodeDictionary.display(code, parameters, add_prefix=True))
-    assert "CRITICAL - Trapi: Schema validation error" in critical
+    assert "critical" in encoded_messages
+    assert len(encoded_messages['critical']) > 0
+    critical: Dict[str, Union[str, List[str]]] = dict()
+    for code, messages in encoded_messages['critical'].items():
+        critical.update(CodeDictionary.display(code, messages, add_prefix=True))
+    assert "CRITICAL - Trapi: Schema validation error" in critical["global"]
 
     obj = reporter1.to_dict()
     assert obj["trapi_version"] == TEST_TRAPI_VERSION
@@ -335,10 +335,20 @@ def test_messages():
     assert "messages" in obj
     assert "critical" in obj["messages"]
     assert "critical.trapi.validation" in obj["messages"]["critical"]
-    messages: Optional[Dict[str, List[Dict[str, str]]]] = obj["messages"]["critical"]["critical.trapi.validation"]
-    assert messages, "Empty 'critical.trapi.validation' messages set?"
-    assert "9.1.1" in messages
-    message_subset: List = messages["9.1.1"]
+    encoded_messages: Optional[
+        Dict[
+            str,  # scope
+            Dict[
+                str,  # identifier
+                List[
+                    Dict[str, str]
+                ]
+            ]
+        ]
+    ] = obj["messages"]["critical"]["critical.trapi.validation"]
+    assert encoded_messages, "Empty 'critical.trapi.validation' messages set?"
+    assert "9.1.1" in encoded_messages["global"]
+    message_subset: List = encoded_messages["global"]["9.1.1"]
     assert "Fire, Ambulance or Police?"\
            in [message['reason'] for message in message_subset if 'reason' in message]
 
