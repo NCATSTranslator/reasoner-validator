@@ -317,7 +317,7 @@ class ValidationReporter:
                 for code, details in message_type_contents.items():   # codes.yaml message codes
                     if code not in self.messages[message_type]:
                         self.messages[message_type][code] = dict()
-                    for source, content in details:  # scope is 'global' or a 'source_trail'
+                    for source, content in details.items():  # scope is 'global' or a 'source_trail'
                         scope = self.messages[message_type][code][source] = dict()
                         if content:
                             # content is of type Dict[str, Optional[List[Dict[str, str]]]]

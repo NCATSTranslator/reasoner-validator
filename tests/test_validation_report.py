@@ -254,37 +254,43 @@ def test_messages():
     new_messages: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = {
         "information": {
             "info.excluded": {
-                "Horace van der Gelder": None
+                "global": {
+                    "Horace van der Gelder": None
+                }
             }
         },
         "warnings": {
             "warning.knowledge_graph.node.id.unmapped_prefix": {
-                "Will Robinson": [
-                    {
-                        "categories": "Lost in Space"
-                    }
-                ]
+                "infores:lost-in-space": {
+                    "Will Robinson": [
+                        {
+                            "categories": "Lost in Space"
+                        }
+                    ]
+                }
             }
         },
         "errors": {
             "error.biolink.model.noncompliance": {
-                "6.6.6": [
-                    {
-                        'reason': "Dave, this can only be due to human error..."
-                    }
-                ]
-
+                "global": {
+                    "6.6.6": [
+                        {
+                            'reason': "Dave, this can only be due to human error..."
+                        }
+                    ]
+                }
             }
         },
         "critical": {
             "critical.trapi.validation": {
-                "9.1.1": [
-                    {
-                        'component': 'Query',
-                        'reason': "Fire, Ambulance or Police?"
-                    }
-                ]
-
+                "global": {
+                    "9.1.1": [
+                        {
+                            'component': 'Query',
+                            'reason': "Fire, Ambulance or Police?"
+                        }
+                    ]
+                }
             }
         }
     }

@@ -1,6 +1,6 @@
 import copy
 from os.path import join, abspath, dirname
-from typing import Optional, Any, Dict, List, Tuple
+from typing import Optional, Any, Dict, List, Tuple, Union
 
 from yaml import load, BaseLoader
 import logging
@@ -185,36 +185,39 @@ class CodeDictionary:
     def display(
             cls,
             code: str,  # code for specific validation message template
-            parameters: Optional[
+            messages: Optional[
                 Dict[
-                    str,  # message template 'identifier' key value
-                    Optional[
-                        List[
-                            Dict[str, str]  # dictionary of other template parameters (if present)
+                    str,  # scope of 'global' or 'source_trail' string
+                    Dict[
+                        str,  # message template 'identifier' key value
+                        Optional[
+                            List[
+                                Dict[str, str]  # dictionary of other template parameters (if present)
+                            ]
                         ]
                     ]
                 ]
             ] = None,
             add_prefix: bool = False
-    ) -> List[str]:
+    ) -> Dict[str, Union[str, List[str]]]:
         """
         Generate one or more full messages from provided Validation Reporter code
         and associated parameters (if applicable).
 
         :param code: str,  valid (dot delimited YAML key path) identified code,
                            which should be registered in the project codes.yaml file.
-        :param parameters: Optional[Dict[str, Optional[List[Dict[str, str]]]]], collection of all
-                           message parameters dictionaries associated with list of messages of the given code,
-                           indexed by their unique 'identifier' template field (note: all messages with
-                           one or more template parameters are expected to have an 'identifier' parameter,
-                           the values for which corresponding to the keys of the dictionary. The value of those
-                           keys are either 'None' if the identifier is the only template parameter, or alternately,
-                           a list of dictionaries containing all the other expected parameters keys and their values
-                           for every distinct message).
+        :param messages: Optional[Dict[str, Dict[str, Optional[List[Dict[str, str]]]]]], collection of all
+                         message parameter dictionaries associated with list of messages of the given code,
+                         indexed by their messages scope then their unique 'identifier' template field
+                         (note: all messages with one or more template parameters are expected to have
+                         an 'identifier' parameter, the values for which corresponding to the keys of the dictionary.
+                         The value of those keys are either 'None' if the identifier is the only template parameter,
+                         or alternately, a list of dictionaries containing all the other expected parameters keys
+                         and their values for every distinct message).
         :param add_prefix: bool, flag to prepend a prefix for the message type
                            (i.e. critical, error, warning, info) to displayed messages (default: False)
 
-        :return: List[str], list of decoded messages
+        :return: Dict[str, Union[str, List[str]]]], scope indexed dictionary of lists of decoded messages for a code
         """
         value: Optional[Tuple[str, Dict[str, str]]] = cls.get_code_subtree(code, is_leaf=True)
         assert value, f"CodeDictionary.display(): unknown message code {code}"
@@ -224,31 +227,34 @@ class CodeDictionary:
         context: str = cls.validation_code_tag(code) + ": " if add_prefix else ""
 
         template: str = cls.get_message_template(code)
-
-        if parameters:
-            # Message template parameterized with one or more sets of additional
-            # named message parameters, assumed to be referenced by the template
-            message_list: List = list()
-            for identifier in parameters.keys():
-                other_parameters: Optional[List[Dict[str, str]]] = parameters[identifier]
-                identifier_dict: Dict = {'identifier': identifier}
-                if other_parameters:
-                    # is a list of one or more dictionaries of additional parameters
-                    for another_parameter_dict in other_parameters:
-                        # make copies, to be safe...
-                        content: Dict = identifier_dict.copy()
-                        content.update(another_parameter_dict)
-                        message_list.append(
-                            f"{message_type_prefix}{context}{template.format(**content)}"
+        message_set: Dict = dict()
+        for scope, parameters in messages.items():
+            message_set[scope] = list()
+            if parameters:
+                # Message template parameterized with one or more sets of additional
+                # named message parameters, assumed to be referenced by the template
+                for identifier in parameters.keys():
+                    other_parameters: Optional[List[Dict[str, str]]] = parameters[identifier]
+                    identifier_dict: Dict = {'identifier': identifier}
+                    if other_parameters:
+                        # is a list of one or more dictionaries of additional parameters
+                        for another_parameter_dict in other_parameters:
+                            # make copies, to be safe...
+                            content: Dict = identifier_dict.copy()
+                            content.update(another_parameter_dict)
+                            message_set[scope].append(
+                                f"{message_type_prefix}{context}{template.format(**content)}\nof source '{scope}'"
+                            )
+                    else:
+                        message_set[scope].append(
+                            f"{message_type_prefix}{context}{template.format(**identifier_dict)}\nof source '{scope}'"
                         )
-                else:
-                    message_list.append(
-                        f"{message_type_prefix}{context}{template.format(**identifier_dict)}"
-                    )
-            return message_list
-        else:
-            # simple scalar message without parameterization?
-            return [f"{message_type_prefix}{context}{template}"]
+
+            else:
+                # simple scalar message without parameterization?
+                return message_set[scope].append(f"{message_type_prefix}{context}{template}\nof source '{scope}'")
+
+        return message_set
 
     @classmethod
     def _dump_code_markdown_entries(cls, root: str, code_subtree: Dict, markdown_file):

@@ -540,7 +540,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
 
             # TODO: maybe try to figure out TRAPI 1.3.0 attribute-defined 'sources'
             #       here, then generate the associated 'source_trail' string?
-            raise NotImplementedError("Implement capture of 'sources' from TRAPI 1.3.0 attributes!")
+            # raise NotImplementedError("Implement capture of 'sources' from TRAPI 1.3.0 attributes!")
             # source_trail = self.build_source_trail(sources) if sources else None
 
             ara_source: Optional[str]
@@ -1043,7 +1043,20 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
 
     @staticmethod
     def build_source_trail(sources: Optional[Dict[str, List[str]]]) -> Optional[str]:
-        raise NotImplementedError("Implement Me!")
+        """
+        Returns a 'source_trail' path from 'primary_knowledge_source' upwards.
+        This initial implementation only returns the 'primary_knowledge_source' infores itself.
+
+        :param sources: Optional[Dict[str, List[str]]], catalog of upstream knowledge sources indexed by resource_id's
+        :return: Optional[str] (infores) source audit trail ('path') from primary to topmost wrapper knowledge source
+        """
+        # TODO: proper path construction from sources to replace this quick and dirty implementation
+        if sources:
+            for infores in sources.keys():
+                if not sources[infores]:
+                    return str(infores)
+        else:
+            return None
 
     def validate_graph_edge(self, edge: Dict):
         """
@@ -1081,8 +1094,6 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         # and (Biolink) edge qualifiers (or qualifier_constraints)
         source_trail: Optional[str] = None
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
-
-            sources: Optional[Dict[str, List[str]]]
 
             # Edge "qualifiers" field is only recorded as an
             # Edge property, from TRAPI 1.3.0-beta onwards
