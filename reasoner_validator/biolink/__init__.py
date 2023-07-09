@@ -538,8 +538,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         else:
             attributes = edge['attributes']
 
-            # TODO: maybe try to figure out TRAPI 1.3.0 attribute-defined 'sources'
-            #       here, then generate the associated 'source_trail' string?
+            # TODO: EDeutsch feedback: maybe we don't need to capture TRAPI 1.3.0 attribute-defined 'sources'
             # raise NotImplementedError("Implement capture of 'sources' from TRAPI 1.3.0 attributes!")
             # source_trail = self.build_source_trail(sources) if sources else None
 
