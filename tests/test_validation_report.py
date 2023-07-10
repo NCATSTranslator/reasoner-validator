@@ -159,29 +159,43 @@ def test_get_description():
 
 
 def test_message_display():
-    assert "INFO - Compliant: Biolink Model-compliant TRAPI Message" in CodeDictionary.display(
-        code="info.compliant",
+    scoped_messages = CodeDictionary.display(code="info.compliant",add_prefix=True)
+    assert "INFO - Compliant: Biolink Model-compliant TRAPI Message" in scoped_messages["global"]
+
+    scoped_messages = CodeDictionary.display("error.knowledge_graph.nodes.empty", add_prefix=True)
+    assert "ERROR - Knowledge Graph Nodes: No nodes found!" in scoped_messages["global"]
+
+    scoped_messages = CodeDictionary.display(
+        code="info.excluded",
+
+        # this code has "global" scope plus
+        # an "identifier" context, but no other parameters
+        messages={
+            "global": {"a->biolink:related_to->b": None}
+        },
         add_prefix=True
     )
-    assert "ERROR - Knowledge Graph Nodes: No nodes found!" \
-           in CodeDictionary.display("error.knowledge_graph.nodes.empty", add_prefix=True)
     assert "INFO - Excluded: All test case S-P-O triples from " + \
-           "resource test location, or specific user excluded S-P-O triples" \
-           in CodeDictionary.display(
-                code="info.excluded",
-                parameters={"a->biolink:related_to->b": None},  # this code has no other parameters
-                add_prefix=True
-            )
+           "resource test location, or specific user excluded S-P-O triples" in scoped_messages["global"]
+
+    scoped_messages = CodeDictionary.display(
+        code="info.input_edge.predicate.abstract",
+
+        # this code has "global" scope, an "identifier" context
+        # plus one other parameter named 'edge_id'
+        messages={
+            "infores:chebi->infores:molepro->infores:arax": {
+                "biolink:contributor": [
+                    {
+                        "edge_id": "a->biolink:related_to->b"
+                    }
+                ]
+            }
+        },
+        add_prefix=True
+    )
     assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate" \
-           in CodeDictionary.display(
-                code="info.input_edge.predicate.abstract",
-                parameters={
-                    "biolink:contributor": [
-                        {"edge_id": "a->biolink:related_to->b"}
-                    ]
-                },  # this code has one other parameter named 'element_name'
-                add_prefix=True
-            )
+           in scoped_messages["infores:chebi->infores:molepro->infores:arax"]
 
 
 def test_unknown_message_code():
