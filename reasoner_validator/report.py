@@ -28,6 +28,73 @@ class ReportJsonEncoder(JSONEncoder):
 def _output(json, flat=False):
     return dumps(json, cls=ReportJsonEncoder, sort_keys=False, indent=None if flat else 4)
 
+#
+# The MESSAGE_CATALOG data structure is something like the following:
+#
+#  {
+#    # message 'type'
+#     "information": {
+#
+#        # message 'code'
+#         "info.input_edge.predicate.mixin": {
+#
+#             # message 'scope' may be a source_trail (as shown) or "global"
+#             "infores:molepro -> infores:arax": {
+#
+#                 # characteristic "identifier" to which the validation message specifically applies
+#                 "biolink:interacts_with"[
+#                     {  # parameters of a distinct message
+#                       "edge_id": "a--biolink:interacts_with->b"
+#                     },
+#                     { <parameters of second reported message...> },
+#                     etc...
+#                 ]
+#             }
+#         } ,
+#         # codes without parameters can just be set to an empty list?
+#         "info.compliant.message": {"global": []}
+#
+#     },
+#     "warnings":  {
+#       ...<similar to information data structure above>
+#     },
+#     "errors": {
+#       ...<similar to information data structure above>
+#     },
+#     "critical": {
+#       ...<similar to information data structure above>
+#     }
+# }
+#
+
+
+MESSAGE_PARTITION = Dict[
+    str,  # message 'code' as indexing key
+    Dict[
+        str,  # source_trail 'origin' of affected edge or 'global' validation error
+
+        # Dictionary of 'identifier' indexed messages with parameters
+        # (Maybe None, if code doesn't have any additional parameters)
+        Optional[
+            Dict[
+                str,  # key is the message-unique template 'identifier' value of parameterized messages
+                Optional[
+                    List[
+                        # Each reported message adds a dictionary of such parameters
+                        # to the list here; these are not guaranteed to be unique
+                        Dict[str, str]
+                    ]
+                ]
+            ]
+        ]
+    ]
+]
+
+MESSAGE_CATALOG = Dict[
+    str,  # message type (critical/errors/warnings/information)
+    MESSAGE_PARTITION
+]
+
 
 class ValidationReporter:
     """
@@ -72,57 +139,7 @@ class ValidationReporter:
             if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
         self.biolink_version = biolink_version
         self.strict_validation: Optional[bool] = strict_validation
-        #
-        # self.messages have dictionary structure something like the following:
-        #
-        # self.messages = {
-        #     "information": {
-        #         "info.input_edge.node.category.abstract": [
-        #             {  # parameters of a distinct message
-        #               "name": <name-parameter>
-        #             },
-        #             { <parameters of second reported message...> },
-        #             etc...
-        #         ],
-        #         # codes without parameters can just be set to an empty list?
-        #         "info.compliant.message": []
-        #
-        #     },
-        #     "warnings":  {
-        #       ...<similar to information data structure above>
-        #     },
-        #     "errors": {
-        #       ...<similar to information data structure above>
-        #     },
-        #     "critical": {
-        #       ...<similar to information data structure above>
-        #     }
-        # }
-        #
-        self.messages: Dict[
-            str,  # message type (critical/errors/warnings/information)
-            Dict[
-                str,  # message 'code' as indexing key
-                Dict[
-                    str,  # source_trail 'origin' of affected edge or 'global' validation error
-
-                    # Dictionary of 'identifier' indexed messages with parameters
-                    # (Maybe None, if code doesn't have any additional parameters)
-                    Optional[
-                        Dict[
-                            str,  # key is the message-unique template 'identifier' value of parameterized messages
-                            Optional[
-                                List[
-                                    # Each reported message adds a dictionary of such parameters
-                                    # to the list here; these are not guaranteed to be unique
-                                    Dict[str, str]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ] = {
+        self.messages: MESSAGE_CATALOG = {
             "critical": dict(),
             "errors": dict(),
             "warnings": dict(),
@@ -257,6 +274,7 @@ class ValidationReporter:
 
         :param code: str, dot delimited validation path code
         :param source_trail, Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
+                             Defaults to "global" if not specified.
         :param message: **Dict, named parameters representing extra (str-formatted) context for the given code message
         :return: None (internally record the validation message)
         """
@@ -272,7 +290,7 @@ class ValidationReporter:
         if source_trail is not None and source_trail not in self.messages[message_type][code]:
             scope = self.messages[message_type][code][source_trail] = dict()
         else:
-            scope = self.messages[message_type][code]['global'] = dict()
+            scope = self.messages[message_type][code]["global"] = dict()
 
         if message:
             # If a message has any parameters, then one of them is
@@ -293,19 +311,7 @@ class ValidationReporter:
 
         # else: additional parameters are None
 
-    def add_messages(self, new_messages: Dict[
-            str,  # message type (info/warning/error/critical)
-            Dict[
-                str,  # message 'code' as indexing key
-
-                Dict[
-                    str,  # List of Dictionaries of parameters
-                    # (Maybe None, if specific code doesn't
-                    # have additional associated parameters)
-                    Optional[Dict[str, Optional[List[Dict[str, str]]]]]
-                ]
-            ]
-    ]):
+    def add_messages(self, new_messages: MESSAGE_CATALOG):
         """
         Batch addition of a dictionary of messages to a ValidationReporter instance.
         :param new_messages: Dict[str, Dict], with key one of "information", "warnings", "errors" or "critical",
@@ -317,7 +323,9 @@ class ValidationReporter:
                 for code, details in message_type_contents.items():   # codes.yaml message codes
                     if code not in self.messages[message_type]:
                         self.messages[message_type][code] = dict()
-                    for source, content in details.items():  # scope is 'global' or a 'source_trail'
+
+                    # 'source' scope is 'global' or a source trail path string, from primary to topmost aggregator
+                    for source, content in details.items():
                         scope = self.messages[message_type][code][source] = dict()
                         if content:
                             # content is of type Dict[str, Optional[List[Dict[str, str]]]]
@@ -338,37 +346,37 @@ class ValidationReporter:
                                     # the message 'identifier' is the only parameter
                                     scope[identifier] = None
 
-    def get_messages(self) -> Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]]:
+    def get_messages(self) -> MESSAGE_CATALOG:
         """
         Get copy of all messages as a Python data structure.
         :return: Dict (copy) of all validation messages in the ValidationReporter.
         """
         return copy.deepcopy(self.messages)
 
-    def get_info(self) -> Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]:
+    def get_info(self) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded information messages.
+        Get copy of all recorded 'information' messages.
         :return: List, copy of all information messages.
         """
         return copy.deepcopy(self.messages["information"])
 
-    def get_warnings(self) -> Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]:
+    def get_warnings(self) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded warning messages.
+        Get copy of all recorded 'warning' messages.
         :return: List, copy of all warning messages.
         """
         return copy.deepcopy(self.messages["warnings"])
 
-    def get_errors(self) -> Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]:
+    def get_errors(self) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded error messages.
+        Get copy of all recorded 'error' messages.
         :return: List, copy of all error messages.
         """
         return copy.deepcopy(self.messages["errors"])
 
-    def get_critical(self) -> Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]:
+    def get_critical(self) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded critical error messages.
+        Get copy of all recorded 'critical' error messages.
         :return: List, copy of all critical error messages.
         """
         return copy.deepcopy(self.messages["critical"])
@@ -543,19 +551,7 @@ class ValidationReporter:
                     print(f"\n{message_type.capitalize()}:", file=file)
 
                 code: str  # validation codes
-                messages_by_code:  Optional[
-                    Dict[
-                        str,  # 'global' or 'source_trail' scope
-                        Dict[
-                            str,      # Keys are 'identifiers' associated with the validation code
-                            Optional[
-                                List[
-                                    Dict[str, str]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                messages_by_code:  Optional[MESSAGE_PARTITION]
 
                 # Grouping message outputs by validation codes
                 for code, messages_by_code in coded_messages.items():
