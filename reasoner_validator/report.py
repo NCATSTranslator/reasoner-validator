@@ -68,28 +68,47 @@ def _output(json, flat=False):
 #
 
 
-MESSAGE_PARTITION = Dict[
-    str,  # message 'code' as indexing key
-    Dict[
-        str,  # source_trail 'origin' of affected edge or 'global' validation error
+# One instance of 'MESSAGE_PARAMETERS' is a dictionary of string
+# parameters associated with a  given message code, as documented
+# within the global 'codes.yaml' validation message catalog
+MESSAGE_PARAMETERS = Dict[str, str]
 
-        # Dictionary of 'identifier' indexed messages with parameters
-        # (Maybe None, if code doesn't have any additional parameters)
-        Optional[
-            Dict[
-                str,  # key is the message-unique template 'identifier' value of parameterized messages
-                Optional[
-                    List[
-                        # Each reported message adds a dictionary of such parameters
-                        # to the list here; these are not guaranteed to be unique
-                        Dict[str, str]
-                    ]
-                ]
-            ]
-        ]
-    ]
+# An 'IDENTIFIED_MESSAGES' data structure is a dictionary of Lists
+# parameterized messages, indexed by a unique 'identifier' discriminator
+# (i.e. the Biolink Model or TRAPI token target of the validation)
+IDENTIFIED_MESSAGES = Dict[
+    str,  # key is the message-unique template 'identifier' value of parameterized messages
+
+    # Note: some message codes may not have any associated
+    # parameters beyond their discriminating identifier
+    Optional[List[MESSAGE_PARAMETERS]]
 ]
 
+# A 'SCOPED_MESSAGES' data structure is a dictionary of message parameters associated to a
+# particular coded message and resolved as to knowledge source. The scope may be 'global' or
+# defined by a 'source trail' of knowledge source specified by infores,
+# from a biolink:primary_knowledge_source up to a topmost biolink:aggregator_knowledge_source
+# retrieving the given knowledge assertion (Subject-Predicate-Object statement with evidence).
+SCOPED_MESSAGES = Dict[
+    str,  # source_trail 'origin' of affected edge or 'global' validation error
+
+    # (A given message code may have no IDENTIFIED_MESSAGES with discriminating identifier
+    # and parameters hence,it may have a scoped value of  'None')
+    Optional[IDENTIFIED_MESSAGES]
+]
+
+
+# A 'MESSAGE_PARTITION' is a dictionary of coded messages,
+# indexed by validation code and corresponding to one of the
+# four major categories of validation messages:
+# critical/errors/warnings/information
+MESSAGE_PARTITION = Dict[
+    str,  # message 'code' as indexing key
+    SCOPED_MESSAGES
+]
+
+# A MESSAGE_CATALOG contains the validation messages from all four
+# major categories of validation: critical/errors/warnings/information
 MESSAGE_CATALOG = Dict[
     str,  # message type (critical/errors/warnings/information)
     MESSAGE_PARTITION
@@ -175,10 +194,9 @@ class ValidationReporter:
     def validate_biolink(self) -> bool:
         """
         Predicate to check if the Biolink (version) is
-        tagged to 'suppress" compliance validation.
+        tagged to 'suppress' compliance validation.
 
-        :return: returns 'True' if Biolink Validation is expected.
-        :rtype bool
+        :return: bool, returns 'True' if Biolink Validation is expected.
         """
         return self.biolink_version is None or self.biolink_version.lower() != "suppress"
 
@@ -532,9 +550,10 @@ class ValidationReporter:
                 # compact also ignores underlining
                 print(title, file=file)
 
+        # self.messages is a MESSAGE_CATALOG where MESSAGE_CATALOG is Dict[<message type>, MESSAGE_PARTITION]
+        # <message type> is the top level partition of messages into 'critical', 'error', 'warning' or 'info'
         message_type: str
-        coded_messages: Dict
-        # Top level partition of messages into 'critical', 'error', 'warning' or 'info'
+        coded_messages: MESSAGE_PARTITION
         for message_type, coded_messages in self.messages.items():
 
             # if there are coded validation messages for a
@@ -550,8 +569,13 @@ class ValidationReporter:
                     # compact also ignores underlining
                     print(f"\n{message_type.capitalize()}:", file=file)
 
-                code: str  # validation codes
-                messages_by_code:  Optional[MESSAGE_PARTITION]
+                # 'coded_messages' is a MESSAGE_PARTITION where
+                # MESSAGE_PARTITION is Dict[<validation code>, SCOPED_MESSAGES]
+
+                # 'validation code' is the dot-delimited string
+                # representation of the YAML path of the message codes.yaml
+                code: str
+                messages_by_code:  SCOPED_MESSAGES
 
                 # Grouping message outputs by validation codes
                 for code, messages_by_code in coded_messages.items():
@@ -565,79 +589,99 @@ class ValidationReporter:
                     if not compact_format:
                         print(file=file)
 
-                    if messages_by_code is not None:
+                    # 'messages_by_code' is a SCOPED_MESSAGES where
+                    # SCOPED_MESSAGES is Dict[<scope>, Optional[IDENTIFIED_MESSAGES]]
 
-                        for scope, messages_by_scope in messages_by_code.items():
+                    # <scope> is "global" or source trail path string
+                    scope: str
+                    messages_by_scope: Optional[IDENTIFIED_MESSAGES]
+                    for scope, messages_by_scope in messages_by_code.items():
 
-                            print(f"\t$ {scope}", file=file)
+                        print(f"\t$ {scope}", file=file)
 
-                            # Codes with associated parameters should have
-                            # an embedded dictionary with 'identifier' keys
+                        # Codes with associated parameters should have
+                        # an embedded dictionary with 'identifier' keys
 
-                            ids_per_row: int = 0
-                            num_ids: int = len(messages_by_scope.keys())
-                            more_ids: int = num_ids - id_rows if num_ids > id_rows else 0
+                        ids_per_row: int = 0
+                        num_ids: int = len(messages_by_scope.keys())
+                        more_ids: int = num_ids - id_rows if num_ids > id_rows else 0
 
-                            for identifier, messages in messages_by_scope.items():
+                        # 'messages_by_scope' is Optional[IDENTIFIED_MESSAGES] where
+                        # 'IDENTIFIED_MESSAGES' is Dict[<identifier>, Optional[List[MESSAGE_PARAMETERS]]]
 
-                                if messages is None:
+                        # An entry of 'messages_by_scope' may be None if the given message code
+                        # has no additional parameters that distinguish instances of context (e.g. edge id?)
+                        # where the validation message occurs for the given identifier.
 
-                                    # For codes solely with a list of 'identifier' parameters associated
-                                    # with the message, just print the identifier
+                        # unique 'identifier' discriminator of the
+                        # (TRAPI or Biolink) token target of the validation
+                        identifier: str
+                        messages: Optional[List[MESSAGE_PARAMETERS]]
+                        for identifier, messages in messages_by_scope.items():
 
-                                    print(f"\t\t# {identifier}", file=file)
+                            if messages is None:
 
-                                    if not compact_format:
-                                        print(file=file)
+                                # For codes whose context of validation is solely discerned
+                                # with their identifier, just print out the identifier
 
-                                else:
-                                    # Code has list of dictionaries of additional context for messages.
-                                    # In this case, the keys of the dictionary are the 'identifier'
-                                    # strings and the values are lists of dictionaries, each of which
-                                    # contains the additional contextual parameters for one message
-                                    print(f"\t\t# {identifier}:", file=file)
+                                print(f"\t\t# {identifier}", file=file)
 
-                                    first_message: bool = True
-                                    messages_per_row: int = 0
-                                    num_messages: int = len(messages)
-                                    more_msgs: int = num_messages - msg_rows if num_messages > msg_rows else 0
+                                if not compact_format:
+                                    print(file=file)
 
-                                    for parameters in messages:
+                            else:
+                                # Since we have already checked if messages is None above, then we assume here that
+                                # 'messages' is a List[MESSAGE_PARAMETERS] which records distinct additional context
+                                # for a list of messages associated with a given code.
+                                print(f"\t\t# {identifier}:", file=file)
 
-                                        if first_message:
-                                            tags = tuple(parameters.keys())
-                                            print(f"\t\t- {' | '.join(tags)}: ", file=file)
-                                            first_message = False
+                                first_message: bool = True
+                                messages_per_row: int = 0
+                                num_messages: int = len(messages)
+                                more_msgs: int = num_messages - msg_rows if num_messages > msg_rows else 0
 
-                                        print(f"\t\t\t{' | '.join(parameters.values())}", file=file)
+                                # 'messages' is an instance List[MESSAGE_PARAMETERS] where every entry of
+                                # 'MESSAGE_PARAMETERS' is a dictionary of additional parameters documenting
+                                # one specific instance of validation message related to the given identifier,
+                                # where the keys are validation code specific (documented in codes.yaml)
+                                parameters: MESSAGE_PARAMETERS
+                                for parameters in messages:
 
-                                        messages_per_row += 1
-                                        if msg_rows and messages_per_row >= msg_rows:
-                                            if more_msgs:
-                                                print(
-                                                    f"\t\t{str(more_msgs)} more messages for identifier '{identifier}'...",
-                                                    file=file
-                                                )
-                                            break
+                                    if first_message:
+                                        tags = tuple(parameters.keys())
+                                        print(f"\t\t- {' | '.join(tags)}: ", file=file)
+                                        first_message = False
 
-                                    if not compact_format:
-                                        print(file=file)
+                                    print(f"\t\t\t{' | '.join(parameters.values())}", file=file)
 
-                                ids_per_row += 1
-                                if id_rows and ids_per_row >= id_rows:
-                                    if more_ids:
-                                        print(
-                                            f"{str(more_ids)} more identifiers for code '{code_label}'...",
-                                            file=file
-                                        )
-                                    break
+                                    messages_per_row += 1
+                                    if msg_rows and messages_per_row >= msg_rows:
+                                        if more_msgs:
+                                            print(
+                                                f"\t\t{str(more_msgs)} more messages " +
+                                                f"for identifier '{identifier}'...",
+                                                file=file
+                                            )
+                                        break
 
-                            if not compact_format:
-                                print(file=file)
+                                if not compact_format:
+                                    print(file=file)
 
-                        # else:
-                        #     For codes with associated non-parametric templates,
-                        #     just printing the template (done above) suffices
+                            ids_per_row += 1
+                            if id_rows and ids_per_row >= id_rows:
+                                if more_ids:
+                                    print(
+                                        f"{str(more_ids)} more identifiers for code '{code_label}'...",
+                                        file=file
+                                    )
+                                break
+
+                        if not compact_format:
+                            print(file=file)
+
+                    # else:
+                    #     For codes with associated non-parametric templates,
+                    #     just printing the template (done above) suffices
 
             # else: print nothing if a given message_type has no messages
 
