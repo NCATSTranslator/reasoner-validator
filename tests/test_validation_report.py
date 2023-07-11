@@ -1,10 +1,10 @@
 """Testing Validation Report methods"""
-from typing import Optional, Dict, Tuple, List, Union
+from typing import Optional, Dict, Tuple, List
 from sys import stderr
 
 import pytest
 
-from reasoner_validator.message import MESSAGE_CATALOG
+from reasoner_validator.message import MESSAGE_CATALOG, SCOPED_MESSAGES
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.validation_codes import CodeDictionary
 from reasoner_validator.versioning import get_latest_version
@@ -160,7 +160,7 @@ def test_get_description():
 
 
 def test_message_display():
-    scoped_messages = CodeDictionary.display(code="info.compliant",add_prefix=True)
+    scoped_messages = CodeDictionary.display(code="info.compliant", add_prefix=True)
     assert "INFO - Compliant: Biolink Model-compliant TRAPI Message" in scoped_messages["global"]
 
     scoped_messages = CodeDictionary.display("error.knowledge_graph.nodes.empty", add_prefix=True)
@@ -321,7 +321,7 @@ def test_messages():
     information: List[str] = list()
     for code, messages in message_catalog['information'].items():
         scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        information.extend(scoped_messages.values())
+        information.append(scoped_messages['global'][0])
     assert "INFO - Excluded: All test case S-P-O triples from resource test location, " + \
            "or specific user excluded S-P-O triples" in information
 
@@ -330,7 +330,7 @@ def test_messages():
     warnings: List[str] = list()
     for code, messages in message_catalog['warnings'].items():
         scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        warnings.extend(scoped_messages.values())
+        warnings.append(scoped_messages['infores:earth->infores:spaceship'][0])
     assert "WARNING - Knowledge Graph Node Id Unmapped: " + \
            "Node identifier found unmapped to target categories for node" in warnings
 
@@ -339,7 +339,7 @@ def test_messages():
     errors: List[str] = list()
     for code, messages in message_catalog['errors'].items():
         scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        errors.extend(scoped_messages.values())
+        errors.append(scoped_messages['global'][0])
     assert "ERROR - Biolink Model: S-P-O statement is not compliant to Biolink Model release" in errors
 
     assert "critical" in message_catalog
@@ -347,7 +347,7 @@ def test_messages():
     critical: List[str] = list()
     for code, messages in message_catalog['critical'].items():
         scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        critical.extend(scoped_messages.values())
+        critical.append(scoped_messages['global'][0])
     assert "CRITICAL - Trapi: Schema validation error" in critical
 
     obj = reporter1.to_dict()

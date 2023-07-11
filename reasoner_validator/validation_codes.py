@@ -189,7 +189,7 @@ class CodeDictionary:
             code: str,  # code for specific validation message template
             messages: Optional[SCOPED_MESSAGES] = None,
             add_prefix: bool = False
-    ) -> Dict[str, Union[str, List[str]]]:
+    ) -> Dict[str, List[str]]:
         """
         Generate one or more full messages from provided Validation Reporter code
         and associated parameters (if applicable).
@@ -201,7 +201,7 @@ class CodeDictionary:
         :param add_prefix: bool, flag to prepend a prefix for the message type
                            (i.e. critical, error, warning, info) to displayed messages (default: False)
 
-        :return: Dict[str, Union[str, List[str]]]], scope-indexed dictionary of lists of decoded messages for a code
+        :return: Dict[str, List[str]], scope-indexed dictionary of lists of decoded messages for a given code
         """
         # All validation messages have a context, even if just "global" with no other distinguishing parameters.
         if messages is None:
