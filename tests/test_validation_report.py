@@ -321,7 +321,8 @@ def test_messages():
     information: List[str] = list()
     for code, messages in message_catalog['information'].items():
         scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        information.append(scoped_messages['global'][0])
+        scope, value = scoped_messages.popitem()
+        information.append(value[0])
     assert "INFO - Excluded: All test case S-P-O triples from resource test location, " + \
            "or specific user excluded S-P-O triples" in information
 
@@ -330,7 +331,8 @@ def test_messages():
     warnings: List[str] = list()
     for code, messages in message_catalog['warnings'].items():
         scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        warnings.append(scoped_messages['infores:earth->infores:spaceship'][0])
+        scope, value = scoped_messages.popitem()
+        warnings.append(value[0])
     assert "WARNING - Knowledge Graph Node Id Unmapped: " + \
            "Node identifier found unmapped to target categories for node" in warnings
 
@@ -339,7 +341,8 @@ def test_messages():
     errors: List[str] = list()
     for code, messages in message_catalog['errors'].items():
         scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        errors.append(scoped_messages['global'][0])
+        scope, value = scoped_messages.popitem()
+        errors.append(value[0])
     assert "ERROR - Biolink Model: S-P-O statement is not compliant to Biolink Model release" in errors
 
     assert "critical" in message_catalog
@@ -347,7 +350,8 @@ def test_messages():
     critical: List[str] = list()
     for code, messages in message_catalog['critical'].items():
         scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        critical.append(scoped_messages['global'][0])
+        scope, value = scoped_messages.popitem()
+        critical.append(value[0])
     assert "CRITICAL - Trapi: Schema validation error" in critical
 
     obj = reporter1.to_dict()
@@ -435,20 +439,24 @@ def test_validator_method():
 
     reporter.apply_validation(validator_method, test_data, **test_parameters)
 
-    messages: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = reporter.get_messages()
+    message_catalog: MESSAGE_CATALOG = reporter.get_messages()
 
-    assert "warnings" in messages
-    assert len(messages['warnings']) > 0
+    assert "warnings" in message_catalog
+    assert len(message_catalog['warnings']) > 0
     warnings: List[str] = list()
-    for code, parameters in messages['warnings'].items():
-        warnings.extend(CodeDictionary.display(code, parameters, add_prefix=True))
+    for code, messages in message_catalog['warnings'].items():
+        scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
+        scope, value = scoped_messages.popitem()
+        warnings.append(value[0])
     assert "WARNING - Graph: Empty graph" in warnings
 
-    assert "errors" in messages
-    assert len(messages['errors']) > 0
+    assert "errors" in message_catalog
+    assert len(message_catalog['errors']) > 0
     errors: List[str] = list()
-    for code, parameters in messages['errors'].items():
-        errors.extend(CodeDictionary.display(code, parameters, add_prefix=True))
+    for code, messages in message_catalog['errors'].items():
+        scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
+        scope, value = scoped_messages.popitem()
+        errors.append(value[0])
     assert "ERROR - Knowledge Graph Edge Provenance Infores: " + \
            "Edge has provenance value which is not a well-formed InfoRes CURIE" in errors
 

@@ -1196,8 +1196,8 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                 edge_id=edge_id
             )
 
-    # TODO: 11-July-2023: Certain specific 'abstract' or 'mixin' categories are being
-    #                     validated as 'warnings', for short term validation purposes
+    # TODO: 11-July-2023: Certain specific 'abstract' or 'mixin' categories used in Knowledge Graphs
+    #                     are being validated for now as 'warnings', for short term validation purposes
     CATEGORY_INCLUSIONS = ["biolink:BiologicalEntity"]
 
     def validate_category(
@@ -1231,9 +1231,9 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                         identifier=category,
                         node_id=node_id
                     )
-                if context == "knowledge_graph" and \
-                        (biolink_class.abstract or self.bmt.is_mixin(category)):
-                    if category in self.CATEGORY_INCLUSIONS:
+                if biolink_class.abstract or self.bmt.is_mixin(category):
+                    # See above note about CATEGORY_INCLUSIONS
+                    if context == "knowledge_graph" and category in self.CATEGORY_INCLUSIONS:
                         self.report(
                             code=f"warning.{context}.node.category.abstract_or_mixin",
                             identifier=category,
