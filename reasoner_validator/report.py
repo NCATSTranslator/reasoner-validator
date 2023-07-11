@@ -242,8 +242,7 @@ class ValidationReporter:
                 else:
                     # keep track of additional parameters in a list of dictionaries
                     # (may have additional, currently unavoidable, content duplication?)
-                    if message_identifier not in self.messages[message_type][code] or \
-                            scope[message_identifier] is None:
+                    if message_identifier not in scope or scope[message_identifier] is None:
                         scope[message_identifier] = list()
 
                     scope[message_identifier].append(message)
