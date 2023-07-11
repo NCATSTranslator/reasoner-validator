@@ -2076,7 +2076,36 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 9: abstract category in Knowledge Graphs? Itself ignored now during validation,
+            # Query 9: unknown category specified
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:BiologicalEntity"
+                       ]
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:physically_interacts_with",
+                        "object": "NCBIGene:29974",
+                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
+                    }
+                }
+            },
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Node has deprecated category!"
+            "warning.knowledge_graph.node.category.abstract_or_mixin"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 10: abstract category in Knowledge Graphs? Itself ignored now during validation,
             #          although if at least one 'concrete' class is not given, other related
             #          validation errors (e.g. 'unmapped_prefix'?) may be reported?
             {
@@ -2112,7 +2141,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 10: mixin category in Knowledge Graphs? Itself ignored now during validation,
+            # Query 11: mixin category in Knowledge Graphs? Itself ignored now during validation,
             #          although if at least one 'concrete' class is not given with id_prefix mappings,
             #          other related validation errors (e.g. 'unmapped_prefix'?) may be reported?
             {
@@ -2177,7 +2206,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         # ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 11: invalid node CURIE prefix namespace, for specified category
+            # Query 12: invalid node CURIE prefix namespace, for specified category
             {
                 "nodes": {
                     "FOO:1234": {
@@ -2217,7 +2246,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 12: missing or empty subject, predicate, object values
+            # Query 13: missing or empty subject, predicate, object values
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2248,7 +2277,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 13: 'subject' id is missing from the nodes catalog
+            # Query 14: 'subject' id is missing from the nodes catalog
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2283,7 +2312,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 14: predicate is unknown
+            # Query 15: predicate is unknown
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2318,7 +2347,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 15: predicate is invalid - may be a valid Biolink element but is not a predicate
+            # Query 16: predicate is invalid - may be a valid Biolink element but is not a predicate
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2353,7 +2382,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 16: predicate is a mixin - not allowed in Knowledge Graphs
+            # Query 17: predicate is a mixin - not allowed in Knowledge Graphs
             {
                 "nodes": {
                     "HGNC:3059": {
@@ -2388,7 +2417,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 17: predicate is abstract - not allowed in Knowledge Graphs
+            # Query 18: predicate is abstract - not allowed in Knowledge Graphs
             {
                 "nodes": {
                     "PMID:1234": {
@@ -2423,7 +2452,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 18: predicate is non-canonical
+            # Query 19: predicate is non-canonical
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2458,7 +2487,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 19: 'object' id is missing from the nodes catalog
+            # Query 20: 'object' id is missing from the nodes catalog
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2494,7 +2523,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 20: attribute 'attribute_type_id' is missing
+            # Query 21: attribute 'attribute_type_id' is missing
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2529,7 +2558,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 21: attribute 'value' is missing?
+            # Query 22: attribute 'value' is missing?
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2564,7 +2593,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 22: 'attribute_type_id' is not a CURIE
+            # Query 23: 'attribute_type_id' is not a CURIE
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2599,7 +2628,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 23: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
+            # Query 24: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2635,7 +2664,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 24: 'attribute_type_id' has a 'biolink' CURIE prefix and is an association_slot, so it should pass
+            # Query 25: 'attribute_type_id' has a 'biolink' CURIE prefix and is an association_slot, so it should pass
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2672,7 +2701,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 25: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
+            # Query 26: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2706,7 +2735,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             # f"has a CURIE prefix namespace unknown to Biolink!"
             "warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix"
         ),
-        (   # Query 26:  # An earlier Biolink Model won't recognize a category not found in its specified release
+        (   # Query 27:  # An earlier Biolink Model won't recognize a category not found in its specified release
             "1.8.2",
             {
                 # Sample nodes
@@ -2734,7 +2763,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             },
             "error.knowledge_graph.node.category.unknown"
         ),
-        (   # Query 27:  #'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
+        (   # Query 28:  #'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
             {
                 "nodes": {
@@ -2771,7 +2800,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 28: 'attribute_type_id' is not a 'biolink:association_slot'
+            # Query 29: 'attribute_type_id' is not a 'biolink:association_slot'
             #           (biolink:synonym is a node property) but...
             {
                 "nodes": {

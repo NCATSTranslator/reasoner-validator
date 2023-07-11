@@ -898,6 +898,14 @@
 
 **Description:** Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?
 
+### warning.knowledge_graph.node.category.abstract_or_mixin
+
+**Message:** Node has a abstract or mixin category
+
+**Context:** node_id, identifier
+
+**Description:** Node category is abstract or a mixin in the current model. Please consider selecting a more specific, concrete Biolink Model category?
+
 ### warning.knowledge_graph.node.id.unmapped_prefix
 
 **Message:** Node identifier found unmapped to target categories for node

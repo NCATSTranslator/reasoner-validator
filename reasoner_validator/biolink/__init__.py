@@ -1196,6 +1196,10 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                 edge_id=edge_id
             )
 
+    # TODO: 11-July-2023: Certain specific 'abstract' or 'mixin' categories are being
+    #                     validated as 'warnings', for short term validation purposes
+    CATEGORY_INCLUSIONS = ["biolink:BiologicalEntity"]
+
     def validate_category(
             self,
             context: str,
@@ -1220,14 +1224,23 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         if category:
             biolink_class = self.bmt.get_element(category)
             if biolink_class:
+                # 'category' is known to Biolink... good start!
                 if biolink_class.deprecated:
                     self.report(
                         code=f"warning.{context}.node.category.deprecated",
                         identifier=category,
                         node_id=node_id
                     )
-                if biolink_class.abstract or self.bmt.is_mixin(category):
-                    biolink_class = None
+                if context == "knowledge_graph" and \
+                        (biolink_class.abstract or self.bmt.is_mixin(category)):
+                    if category in self.CATEGORY_INCLUSIONS:
+                        self.report(
+                            code=f"warning.{context}.node.category.abstract_or_mixin",
+                            identifier=category,
+                            node_id=node_id
+                        )
+                    else:
+                        biolink_class = None
                 elif not self.bmt.is_category(category):
                     self.report(
                         code=f"error.{context}.node.category.not_a_category",
