@@ -3,8 +3,8 @@
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
 ## 3.7.2
-- biolink:InformationContentEntity, and biolink:OrganismalEntity added to exceptions only triggering a 'warning', not an 'error' validation message.
-- 
+- biolink:InformationContentEntity added to exceptions only triggering a 'warning', not an 'error' validation message.
+
 ## 3.7.1
 - JSONSCHEMA pinned to ~4.17.3 (implying <4.18.0 releases) for now, until we can figure out why the 4.18.0 causes the severe workflow schema access bug
 

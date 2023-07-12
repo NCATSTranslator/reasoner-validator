@@ -1245,11 +1245,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
 
     # TODO: 11-July-2023: Certain specific 'abstract' or 'mixin' categories used in Knowledge Graphs
     #                     are being validated for now as 'warnings', for short term validation purposes
-    CATEGORY_INCLUSIONS = [
-        "biolink:BiologicalEntity",
-        "biolink:InformationContentEntity",
-        "biolink:OrganismalEntity"
-    ]
+    CATEGORY_INCLUSIONS = ["biolink:BiologicalEntity", "biolink:InformationContentEntity"]
 
     def validate_category(
             self,
