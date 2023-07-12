@@ -5,6 +5,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 ## v3.7.0
 - implementation of reasoner-validator issue #86 in which explicit validation error KP/ARA sources are reported in the validation. This change is sufficiently disruptive to the code methods and representation that 'minor' release of the repository is incremented to 3.7.
 - to avoid confusion with new 'source' reporting, the pre-3.7 provenance 'sources' variable is renamed to 'target_provenance' and the variable localized directly into the BiolinkValidator constructor and included as parameter for pertinent high level method calls
+- Use of Biolink node category "biolink:BiologicalCategory" which is abstract, now only triggers a validation warning, not an error. The 'exception' is currently hard coded into the validation (could have other categories added in this manner, if needed, later).
 
 ## v3.6.6
 - code takes TRAPI 1.4.1 as the latest schema
