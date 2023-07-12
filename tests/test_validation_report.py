@@ -278,7 +278,7 @@ def test_messages():
         },
         "warnings": {
             "warning.knowledge_graph.node.id.unmapped_prefix": {
-                "infores:earth->infores:spaceship": {
+                "infores:earth -> infores:spaceship": {
                     "Will Robinson": [
                         {
                             "categories": "Lost in Space"

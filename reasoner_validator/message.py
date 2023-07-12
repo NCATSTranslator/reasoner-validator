@@ -65,13 +65,12 @@ IDENTIFIED_MESSAGES = Dict[
 # from a biolink:primary_knowledge_source up to a topmost biolink:aggregator_knowledge_source
 # retrieving the given knowledge assertion (Subject-Predicate-Object statement with evidence).
 SCOPED_MESSAGES = Dict[
-    str,  # source_trail 'origin' of affected edge or 'global' validation error
+    str,  # 'source trail' origin of affected edge or 'global' validation error
 
     # (A given message code may have no IDENTIFIED_MESSAGES with discriminating identifier
-    # and parameters hence,it may have a scoped value of  'None')
+    #  and parameters hence,it may have a scoped value of 'None')
     Optional[IDENTIFIED_MESSAGES]
 ]
-
 
 # A 'MESSAGE_PARTITION' is a dictionary of coded messages,
 # indexed by validation code and corresponding to one of the

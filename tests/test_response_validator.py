@@ -13,7 +13,7 @@ from copy import deepcopy
 import pytest
 
 from reasoner_validator import TRAPIResponseValidator
-from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_1
+from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_2
 
 from tests import PATCHED_140_SCHEMA_FILEPATH
 from tests.test_validation_report import check_messages
@@ -230,7 +230,7 @@ _TEST_KG_4 = {
 }
 
 # From Implementation Guidlines circa June 2023
-_TEST_TRAPI_1_4_1_FULL_SAMPLE = {
+_TEST_TRAPI_1_4_2_FULL_SAMPLE = {
     "message": {
         "query_graph": {
             "nodes": {
@@ -254,8 +254,30 @@ _TEST_TRAPI_1_4_1_FULL_SAMPLE = {
                     "object": "MONDO:0005148",
                     "sources": [
                         {
+                            "resource_id": "infores:chebi",
+                            "resource_role": "primary_knowledge_source",
+                            "upstream_resource_ids": []
+                        },
+                        {
+                            "resource_id": "infores:biothings-explorer",
+                            "resource_role": "aggregator_knowledge_source",
+                            "upstream_resource_ids": [
+                                "infores:chebi"
+                            ]
+                        },
+                        {
                             "resource_id": "infores:molepro",
-                            "resource_role": "primary_knowledge_source"
+                            "resource_role": "aggregator_knowledge_source",
+                            "upstream_resource_ids": [
+                                "infores:biothings-explorer"
+                            ]
+                        },
+                        {
+                            "resource_id": "infores:arax",
+                            "resource_role": "aggregator_knowledge_source",
+                            "upstream_resource_ids": [
+                                "infores:molepro"
+                            ]
                         }
                     ]
                 }
@@ -298,8 +320,8 @@ _TEST_TRAPI_1_4_1_FULL_SAMPLE = {
     }
 }
 
-_TEST_TRAPI_1_4_1_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_TRAPI_1_4_1_FULL_SAMPLE)
-_TEST_TRAPI_1_4_1_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
+_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
+_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
 
 
 @pytest.mark.parametrize(
@@ -980,8 +1002,8 @@ def test_sample_graph(query: Tuple[int, int, int]):
         ),
         (   # Query 26 - We throw a full TRAPI JSON example here (taken directly from the
             #            TRAPI implementation guidelines...) just for fun and profit
-            _TEST_TRAPI_1_4_1_FULL_SAMPLE,
-            TRAPI_1_4_1,
+            _TEST_TRAPI_1_4_2_FULL_SAMPLE,
+            TRAPI_1_4_2,
             None,
             None,
             True,
@@ -1107,11 +1129,11 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
         ),
         (
             # Query 7 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
-            _TEST_TRAPI_1_4_1_FULL_SAMPLE,
+            _TEST_TRAPI_1_4_2_FULL_SAMPLE,
             # 25 June 2023 1.4.0 trapi_version with
             # defective auxiliary_graphs schema model
             # now temporarily patched?
-            TRAPI_1_4_1,
+            TRAPI_1_4_2,
             None,
             None,
             False,
@@ -1119,7 +1141,7 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
         ),
         (
             # Query 8 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
-            _TEST_TRAPI_1_4_1_FULL_SAMPLE,
+            _TEST_TRAPI_1_4_2_FULL_SAMPLE,
             # patched 1.4.0 test schema - fixed critical
             # TRAPI schema parsing error with auxiliary_graphs
             PATCHED_140_SCHEMA_FILEPATH,
@@ -1130,10 +1152,10 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
         ),
         (
             # Query 9 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
-            _TEST_TRAPI_1_4_1_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
+            _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
             # 25 June 2023 1.4.0 trapi_version with
             # defective auxiliary_graphs schema model
-            TRAPI_1_4_1,
+            TRAPI_1_4_2,
             None,
             None,
             False,
@@ -1141,7 +1163,7 @@ def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
         ),
         (
             # Query 10 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
-            _TEST_TRAPI_1_4_1_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
+            _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
             # patched 1.4.0 test schema - fixed critical
             # TRAPI schema parsing error with auxiliary_graphs
             PATCHED_140_SCHEMA_FILEPATH,
@@ -1163,3 +1185,25 @@ def test_check_biolink_model_compliance_of_trapi_response_suppressing_empty_data
     )
     validator.check_compliance_of_trapi_response(response=response, target_provenance=sources)
     check_messages(validator, code, no_errors=True)
+
+
+_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_REPORTABLE_ERRORS = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
+sample_message = _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_REPORTABLE_ERRORS["message"]
+sample_qgraph = sample_message["query_graph"]
+sample_kg = sample_message["knowledge_graph"]
+sample_kg_node_missing_category = sample_kg["nodes"]["MONDO:0005148"].pop("categories")
+sample_kg_edge_missing_node_subject = sample_kg["edges"]["df87ff82"].pop("subject")
+sample_kg_edge_abstract_predicate = sample_kg["edges"]["df87ff82"]["predicate"] = "biolink:not_a_predicate"
+
+
+@pytest.mark.parametrize(
+    "response",
+    [
+        _TEST_TRAPI_1_4_2_FULL_SAMPLE,
+        _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_REPORTABLE_ERRORS
+    ]
+)
+def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(response: Dict):
+    validator: TRAPIResponseValidator = TRAPIResponseValidator()
+    validator.check_compliance_of_trapi_response(response=response)
+    validator.dump()
