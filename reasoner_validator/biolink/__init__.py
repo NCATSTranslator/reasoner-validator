@@ -1044,12 +1044,17 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
     def build_source_trail(sources: Optional[Dict[str, List[str]]]) -> Optional[str]:
         """
         Returns a 'source_trail' path from 'primary_knowledge_source' upwards.
-        This initial implementation only returns the 'primary_knowledge_source' infores itself.
 
         :param sources: Optional[Dict[str, List[str]]], catalog of upstream knowledge sources indexed by resource_id's
         :return: Optional[str] (infores) source audit trail ('path') from primary to topmost wrapper knowledge source
         """
-        # TODO: proper path construction from sources to replace this quick and dirty implementation
+        #
+        # {'infores:chebi': [], 'infores:molepro': ['infores:chebi'], 'infores:arax': ['infores:molepro']}
+        #
+        #          should generate a string like:
+        #
+        # "infores:chebi -> infores:molepro -> infores:arax"
+        #
         if sources:
             for infores in sources.keys():
                 if not sources[infores]:

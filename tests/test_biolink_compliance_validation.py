@@ -1,7 +1,7 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import Tuple, Optional, Dict
+from typing import Tuple, Optional, Dict, List
 from sys import stderr
 from copy import deepcopy
 from pprint import PrettyPrinter
@@ -2891,15 +2891,50 @@ def test_suppress_biolink_validation_pre_trapi_1_4_0_validate_attributes():
     check_messages(validator, "")
 
 
-SAMPLE_RETRIEVAL_SOURCE = {
+SAMPLE_PRIMARY_RETRIEVAL_SOURCE = {
+    # required, infores CURIE to an Information Resource
+    "resource_id": "infores:chebi",
+
+    # required, string drawn from the TRAPI ResourceRoleEnum
+    # values that were formerly recorded as TRAPI attributes
+    # are now presented as first class edge annotation
+    "resource_role": "primary_knowledge_source",
+
+    # nothing upstream... it' primary!
+    "upstream_resource_ids": []
+}
+
+SAMPLE_KP_RETRIEVAL_SOURCE = {
     # required, infores CURIE to an Information Resource
     "resource_id": "infores:molepro",
 
     # required, string drawn from the TRAPI ResourceRoleEnum
     # values that were formerly recorded as TRAPI attributes
     # are now presented as first class edge annotation
-    "resource_role": "primary_knowledge_source"
+    "resource_role": "aggregator_knowledge_source",
+
+    # primary knowledge source is 'upstream'
+    "upstream_resource_ids": ["infores:chebi"]
 }
+
+SAMPLE_ARA_RETRIEVAL_SOURCE = {
+    # required, infores CURIE to an Information Resource
+    "resource_id": "infores:arax",
+
+    # required, string drawn from the TRAPI ResourceRoleEnum
+    # values that were formerly recorded as TRAPI attributes
+    # are now presented as first class edge annotation
+    "resource_role": "aggregator_knowledge_source",
+
+    # KP is 'upstream'
+    "upstream_resource_ids": ["infores:molepro"]
+}
+
+SAMPLE_SOURCES_ARRAY = [
+    SAMPLE_PRIMARY_RETRIEVAL_SOURCE,
+    SAMPLE_KP_RETRIEVAL_SOURCE,
+    SAMPLE_ARA_RETRIEVAL_SOURCE
+]
 
 SAMPLE_RETRIEVAL_SOURCE_EMPTY_RESOURCE_ID = {
     # required, string drawn from the TRAPI ResourceRoleEnum
@@ -2944,10 +2979,22 @@ SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN = {
 }
 
 
+def test_build_source_trail():
+    sources: Optional[Dict[str, List[str]]] = {
+        'infores:chebi': [],
+        'infores:molepro': ['infores:chebi'],
+        'infores:arax': ['infores:molepro']
+    }
+    assert BiolinkValidator.build_source_trail(sources) == "infores:chebi -> infores:molepro -> infores:arax"
+
+
 @pytest.mark.parametrize(
     "sources,validation_code",
     [
-        ([SAMPLE_RETRIEVAL_SOURCE], ""),  # No validation code generated?
+        ([SAMPLE_PRIMARY_RETRIEVAL_SOURCE], ""),  # No validation code generated?
+        ([SAMPLE_KP_RETRIEVAL_SOURCE], "error.knowledge_graph.edge.provenance.missing_primary"),
+        ([SAMPLE_ARA_RETRIEVAL_SOURCE], "error.knowledge_graph.edge.provenance.missing_primary"),
+        (SAMPLE_SOURCES_ARRAY, ""),             # No validation code generated?
         (None, "error.knowledge_graph.edge.sources.missing"),
         ([], "error.knowledge_graph.edge.sources.empty"),
         ("not-an-array", "error.knowledge_graph.edge.sources.not_array"),
