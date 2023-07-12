@@ -2980,12 +2980,24 @@ SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN = {
 
 
 def test_build_source_trail():
-    sources: Optional[Dict[str, List[str]]] = {
-        'infores:chebi': [],
-        'infores:molepro': ['infores:chebi'],
-        'infores:arax': ['infores:molepro']
+    sources: Dict[str, List[str]] = {
+        "infores:chebi": [],
+        "infores:biothings-explorer": ["infores:chebi"],
+        "infores:molepro": ["infores:biothings-explorer"],
+        "infores:arax": ["infores:molepro"]
     }
-    assert BiolinkValidator.build_source_trail(sources) == "infores:chebi -> infores:molepro -> infores:arax"
+    assert BiolinkValidator.build_source_trail(sources) == \
+           "infores:chebi -> infores:biothings-explorer -> infores:molepro -> infores:arax"
+
+    # even though a primary_knowledge_source appears to be missing
+    # we are able to infer a path on a putative primary source
+    sources: Optional[Dict[str, List[str]]] = {
+        "infores:biothings-explorer": ["infores:chebi"],
+        "infores:molepro": ["infores:biothings-explorer"],
+        "infores:arax": ["infores:molepro"]
+    }
+    assert BiolinkValidator.build_source_trail(sources) == \
+           "infores:chebi -> infores:biothings-explorer -> infores:molepro -> infores:arax"
 
 
 @pytest.mark.parametrize(

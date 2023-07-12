@@ -1043,22 +1043,64 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
     @staticmethod
     def build_source_trail(sources: Optional[Dict[str, List[str]]]) -> Optional[str]:
         """
-        Returns a 'source_trail' path from 'primary_knowledge_source' upwards.
+        Returns a 'source_trail' path from 'primary_knowledge_source' upwards. The "sources" should
+        have at least one and only one primary knowledge source (with an empty 'upstream_resource_ids' list).
 
         :param sources: Optional[Dict[str, List[str]]], catalog of upstream knowledge sources indexed by resource_id's
-        :return: Optional[str] (infores) source audit trail ('path') from primary to topmost wrapper knowledge source
+        :return: Optional[str] source ("audit") trail ('path') from primary to topmost wrapper knowledge source infores
         """
-        #
-        # {'infores:chebi': [], 'infores:molepro': ['infores:chebi'], 'infores:arax': ['infores:molepro']}
-        #
-        #          should generate a string like:
-        #
-        # "infores:chebi -> infores:molepro -> infores:arax"
-        #
         if sources:
-            for infores in sources.keys():
-                if not sources[infores]:
-                    return str(infores)
+            # Example "sources"...:
+            # {
+            #     "infores:chebi": [],
+            #     "infores:biothings-explorer": ["infores:chebi"],
+            #     "infores:molepro": ["infores:biothings-explorer"],
+            #     "infores:arax": ["infores:molepro"]
+            # }
+            #
+            source_paths: Dict = {
+                upstream_resource_ids[0] if upstream_resource_ids else "primary": downstream_id
+                for downstream_id, upstream_resource_ids in sources.items()
+            }
+
+            # ...reversed and flattened into "source_paths"...:
+            # {
+            #     "infores:biothings-explorer": "infores:molepro",
+            #     "infores:chebi": "infores:biothings-explorer",
+            #     "infores:molepro": "infores:arax",
+            #     "primary": "infores:chebi"
+            # }
+            current_resource = source_paths["primary"] if "primary" in source_paths else None
+            # current_resource == "infores:chebi"  # could be 'None' if no primary resources available?
+            source_trail: Optional[str] = None
+            if current_resource is not None:
+                source_trail = current_resource
+                while True:
+                    if current_resource in source_paths:
+                        current_resource = source_paths[current_resource]
+                        source_trail += f" -> {current_resource}"
+                    else:
+                        break  # this should 'break' at "infores:arax"
+            else:
+                # Missing the primary resource? With a bit more effort
+                # Infer the path from the other direction?
+                reverse_source_path: Dict = dict()
+                for upstream_id, downstream_id in source_paths.items():
+                    if downstream_id not in source_paths:
+                        source_trail = f"{upstream_id} -> {downstream_id}"
+                        current_resource = upstream_id
+                    else:
+                        reverse_source_path[downstream_id] = upstream_id
+
+                while True:
+                    if current_resource in reverse_source_path:
+                        current_resource = reverse_source_path[current_resource]
+                        source_trail = f"{current_resource} -> " + source_trail
+                    else:
+                        break
+
+            # "infores:chebi -> infores:biothings-explorer -> infores:molepro -> infores:arax"
+            return source_trail
         else:
             return None
 
