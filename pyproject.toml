@@ -42,7 +42,12 @@ include = [
 [tool.poetry.dependencies]
 python = "^3.9"
 bmt = "^1.1.0"
-jsonschema = "^4.17.0"
+
+# jsonschema needs to be pinned to <= 4.18.0 for now,
+# since 4.18.0 appeared to break something for the
+# access and processing of JSON schemata
+jsonschema = "~4.17.3"
+
 PyYAML = "^6.0"
 requests = "^2.28.1"
 pydantic = "^1.10.11"
@@ -52,8 +57,8 @@ sphinx = {version = "^5.3.0", optional = true}
 myst-parser = {version = "^0.18.1", optional = true}
 fastapi = {version = "^0.68", optional = true}
 uvicorn = {version = "^0.15", optional = true}
-pytest-cov = {version = "^4.0.0", optional = true}
-pytest = {version = "^7.2.2", optional = true}
+pytest-cov = {version = "^4.0.0"}
+pytest = {version = "^7.2.2"}
 sphinx-rtd-theme = {version = "^1.2.1", optional = true}
 
 
@@ -64,7 +69,6 @@ sphinx-rtd-theme = {version = "^1.2.1", optional = true}
 [tool.poetry.extras]
 docs = ["numpydoc", "sphinx", "myst-parser", "sphinx-rtd-theme"]
 web = ["fastapi", "uvicorn"]
-dev = ["pytest", "pytest-cov"]
 
 [tool.coverage.run]
 source = ["reasoner_validator"]
