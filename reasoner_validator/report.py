@@ -6,6 +6,13 @@ import copy
 
 from json import dumps, JSONEncoder
 
+from reasoner_validator.message import (
+    MESSAGE_CATALOG,
+    MESSAGE_PARTITION,
+    SCOPED_MESSAGES,
+    IDENTIFIED_MESSAGES,
+    MESSAGE_PARAMETERS
+)
 from reasoner_validator.validation_codes import CodeDictionary
 from reasoner_validator.versioning import SemVer, SemVerError, get_latest_version
 
@@ -52,7 +59,6 @@ class ValidationReporter:
             prefix: Optional[str] = None,
             trapi_version: Optional[str] = None,
             biolink_version: Optional[str] = None,
-            sources: Optional[Dict] = None,
             strict_validation: bool = False
     ):
         """
@@ -64,8 +70,6 @@ class ValidationReporter:
         :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
                                 validated (Default: if None, use the Biolink Model Toolkit default version).
         :type biolink_version: Optional[str] = None
-        :param sources: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
-        :type sources: Dict
         :param strict_validation: if True, abstract and mixin elements validate as 'error';
                                   if None or False, just issue a 'warning'
         :type strict_validation: Optional[bool] = None
@@ -74,55 +78,8 @@ class ValidationReporter:
         self.trapi_version = get_latest_version(trapi_version) \
             if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
         self.biolink_version = biolink_version
-        self.sources: Optional[Dict] = sources
         self.strict_validation: Optional[bool] = strict_validation
-        #
-        # self.messages have dictionary structure something like the following:
-        #
-        # self.messages = {
-        #     "information": {
-        #         "info.input_edge.node.category.abstract": [
-        #             {  # parameters of a distinct message
-        #               "name": <name-parameter>
-        #             },
-        #             { <parameters of second reported message...> },
-        #             etc...
-        #         ],
-        #         # codes without parameters can just be set to an empty list?
-        #         "info.compliant.message": []
-        #
-        #     },
-        #     "warnings":  {
-        #       ...<similar to information data structure above>
-        #     },
-        #     "errors": {
-        #       ...<similar to information data structure above>
-        #     },
-        #     "critical": {
-        #       ...<similar to information data structure above>
-        #     }
-        # }
-        #
-        self.messages: Dict[
-            str,  # message type (critical/errors/warnings/information)
-            Dict[
-                str,  # message 'code' as indexing key
-                # Dictionary of 'identifier' indexed messages with parameters
-                # (Maybe None, if code doesn't have any additional parameters)
-                Optional[
-                    Dict[
-                        str,  # key is the message-unique template 'identifier' value of parameterized messages
-                        Optional[
-                            List[
-                                # Each reported message adds a dictionary of such parameters
-                                # to the list here; these are not guaranteed to be unique
-                                Dict[str, str]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ] = {
+        self.messages: MESSAGE_CATALOG = {
             "critical": dict(),
             "errors": dict(),
             "warnings": dict(),
@@ -158,10 +115,9 @@ class ValidationReporter:
     def validate_biolink(self) -> bool:
         """
         Predicate to check if the Biolink (version) is
-        tagged to 'suppress" compliance validation.
+        tagged to 'suppress' compliance validation.
 
-        :return: returns 'True' if Biolink Validation is expected.
-        :rtype bool
+        :return: bool, returns 'True' if Biolink Validation is expected.
         """
         return self.biolink_version is None or self.biolink_version.lower() != "suppress"
 
@@ -251,11 +207,14 @@ class ValidationReporter:
                 f"ValidationReport.get_message_type(): {code} is unknown code type: {message_type}"
             )
 
-    def report(self, code: str, **message):
+    def report(self, code: str, source_trail: Optional[str] = None, **message):
         """
-        Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters)
-        :param code: 
-        :param message: named parameters representing extra (str-formatted) context for the given code message
+        Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters).
+
+        :param code: str, dot delimited validation path code
+        :param source_trail, Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
+                             Defaults to "global" if not specified.
+        :param message: **Dict, named parameters representing extra (str-formatted) context for the given code message
         :return: None (internally record the validation message)
         """
         # Sanity check: that the given code has been registered in the codes.yaml file
@@ -264,41 +223,33 @@ class ValidationReporter:
         message_type_id = self.get_message_type(code)
         message_type = self._message_type_name[message_type_id]
         if code not in self.messages[message_type]:
-            self.messages[message_type][code] = None
-        if message:
-            # Should have at least an "identifier" parameter
-            if self.messages[message_type][code] is None:
-                self.messages[message_type][code] = dict()
+            self.messages[message_type][code] = dict()
 
+        # Set current scope of validation message
+        if source_trail is not None and source_trail not in self.messages[message_type][code]:
+            scope = self.messages[message_type][code][source_trail] = dict()
+        else:
+            scope = self.messages[message_type][code]["global"] = dict()
+
+        if message:
             # If a message has any parameters, then one of them is
             # expected to be a message indexing identifier
             if "identifier" in message:
                 message_identifier = message.pop("identifier")
                 if not message:
                     # the message_identifier was the only parameter to keep track of...
-                    self.messages[message_type][code][message_identifier] = None
+                    scope[message_identifier] = None
                 else:
                     # keep track of additional parameters in a list of dictionaries
                     # (may have additional, currently unavoidable, content duplication?)
-                    if message_identifier not in self.messages[message_type][code] or \
-                            self.messages[message_type][code][message_identifier] is None:
-                        self.messages[message_type][code][message_identifier] = list()
+                    if message_identifier not in scope or scope[message_identifier] is None:
+                        scope[message_identifier] = list()
 
-                    self.messages[message_type][code][message_identifier].append(message)
+                    scope[message_identifier].append(message)
 
         # else: additional parameters are None
 
-    def add_messages(self, new_messages: Dict[
-            str,  # message type (info/warning/error/critical)
-            Dict[
-                str,  # message 'code' as indexing key
-
-                # List of Dictionaries of parameters
-                # (Maybe None, if specific code doesn't
-                # have additional associated parameters)
-                Optional[Dict[str, Optional[List[Dict[str, str]]]]]
-            ]
-    ]):
+    def add_messages(self, new_messages: MESSAGE_CATALOG):
         """
         Batch addition of a dictionary of messages to a ValidationReporter instance.
         :param new_messages: Dict[str, Dict], with key one of "information", "warnings", "errors" or "critical",
@@ -307,59 +258,63 @@ class ValidationReporter:
         for message_type in self.messages:   # 'info', 'warning', 'error', 'critical'
             if message_type in new_messages:
                 message_type_contents = new_messages[message_type]
-                for code, content in message_type_contents.items():   # codes.yaml message codes
+                for code, details in message_type_contents.items():   # codes.yaml message codes
                     if code not in self.messages[message_type]:
-                        self.messages[message_type][code] = None
-                    if content:
-                        # content is of type Dict[str, Optional[List[Dict[str, str]]]]
-                        # where dictionary keys are a set of message discriminating 'identifier'
-                        identifier: str
-                        parameters: Optional[List[Dict[str, str]]]
-                        for identifier, parameters in content.items():
-                            if self.messages[message_type][code] is None:
-                                self.messages[message_type][code] = dict()
-                            if parameters:
-                                # additional parameters seen?
-                                if identifier not in self.messages[message_type][code] or \
-                                        self.messages[message_type][code][identifier] is None:
-                                    self.messages[message_type][code][identifier] = list()
+                        self.messages[message_type][code] = dict()
 
-                                self.messages[message_type][code][identifier].extend(parameters)
-                            else:
-                                # the message 'identifier' is the only parameter
-                                self.messages[message_type][code][identifier] = None
+                    # 'source' scope is 'global' or a source trail path string, from primary to topmost aggregator
+                    for source, content in details.items():
+                        scope = self.messages[message_type][code][source] = dict()
+                        if content:
+                            # content is of type Dict[str, Optional[List[Dict[str, str]]]]
+                            # where dictionary keys are a set of message discriminating 'identifier'
+                            identifier: str
+                            parameters: Optional[List[Dict[str, str]]]
+                            for identifier, parameters in content.items():
+                                if self.messages[message_type][code] is None:
+                                    self.messages[message_type][code] = dict()
+                                if parameters:
+                                    # additional parameters seen?
+                                    if identifier not in self.messages[message_type][code] or \
+                                            scope[identifier] is None:
+                                        scope[identifier] = list()
 
-    def get_messages(self) -> Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]]:
+                                    scope[identifier].extend(parameters)
+                                else:
+                                    # the message 'identifier' is the only parameter
+                                    scope[identifier] = None
+
+    def get_messages(self) -> MESSAGE_CATALOG:
         """
         Get copy of all messages as a Python data structure.
         :return: Dict (copy) of all validation messages in the ValidationReporter.
         """
         return copy.deepcopy(self.messages)
 
-    def get_info(self) -> Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]:
+    def get_info(self) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded information messages.
+        Get copy of all recorded 'information' messages.
         :return: List, copy of all information messages.
         """
         return copy.deepcopy(self.messages["information"])
 
-    def get_warnings(self) -> Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]:
+    def get_warnings(self) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded warning messages.
+        Get copy of all recorded 'warning' messages.
         :return: List, copy of all warning messages.
         """
         return copy.deepcopy(self.messages["warnings"])
 
-    def get_errors(self) -> Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]:
+    def get_errors(self) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded error messages.
+        Get copy of all recorded 'error' messages.
         :return: List, copy of all error messages.
         """
         return copy.deepcopy(self.messages["errors"])
 
-    def get_critical(self) -> Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]:
+    def get_critical(self) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded critical error messages.
+        Get copy of all recorded 'critical' error messages.
         :return: List, copy of all critical error messages.
         """
         return copy.deepcopy(self.messages["critical"])
@@ -436,20 +391,26 @@ class ValidationReporter:
         #             "warnings": [
         #                 {
         #                     "warning.predicate.non_canonical": {
-        #                         "biolink:participates_in": {
-        #                               "edge_id": "a--['biolink:participates_in']->b"
+        #                         "infores:molepro -> infores:arax": {  # local source scope of error
+        #                             "biolink:participates_in": {
+        #                                   "edge_id": "a--['biolink:participates_in']->b"
+        #                             }
         #                         }
         #                     }
         #                 }
         #             ],
         #             "errors": [
         #                 {
-        #                     "error.knowledge_graph.empty_nodes": None
+        #                     "error.knowledge_graph.empty_nodes": {
+        #                         "global": None  # scope of error
+        #                     }
         #                 }
         #             ],
         #             "critical": [
         #                 {
-        #                     "critical.trapi.validation": None
+        #                     "critical.trapi.validation": {
+        #                         "global": None   # scope of critical error
+        #                     }
         #                 }
         #             ]
         #         }
@@ -509,119 +470,152 @@ class ValidationReporter:
                 # compact also ignores underlining
                 print(title, file=file)
 
-        message_type: str
-        coded_messages: Dict
-        # Top level partition of messages into 'critical', 'error', 'warning' or 'info'
-        for message_type, coded_messages in self.messages.items():
+        print(
+            "Validation against TRAPI " +
+            f"'{str(self.trapi_version if self.trapi_version is not None else 'Default')}' version " +
+            "and Biolink Model " +
+            f"'{str(self.biolink_version if self.biolink_version is not None else 'Default')}' version.",
+            file=file
+        )
 
-            # if there are coded validation messages for a
-            # given message type: 'critical', 'error', 'warning' or 'info' ...
-            if coded_messages:
+        if self.has_messages():
 
-                # ... then iterate through them and print them out
+            # self.messages is a MESSAGE_CATALOG where MESSAGE_CATALOG is Dict[<message type>, MESSAGE_PARTITION]
+            # <message type> is the top level partition of messages into 'critical', 'error', 'warning' or 'info'
+            message_type: str
+            coded_messages: MESSAGE_PARTITION
+            for message_type, coded_messages in self.messages.items():
 
-                if not compact_format:
-                    print(f"\033[4m{message_type.capitalize()}\033[0m", file=file)
-                    print(file=file)
-                else:
-                    # compact also ignores underlining
-                    print(f"\n{message_type.capitalize()}:", file=file)
+                # if there are coded validation messages for a
+                # given message type: 'critical', 'error', 'warning' or 'info' ...
+                if coded_messages:
 
-                code: str  # validation codes
-                messages_by_code:  Optional[
-                    Dict[
-                        str,      # Keys are 'identifiers' associated with the validation code
-                        Optional[
-                            List[
-                                Dict[str, str]
-                            ]
-                        ]
-                    ]
-                ]
+                    # ... then iterate through them and print them out
 
-                # Grouping message outputs by validation codes
-                for code, messages_by_code in coded_messages.items():
-
-                    code_label: str = CodeDictionary.validation_code_tag(code)
-                    print(
-                        f"* {code_label}:\n"
-                        f"=> {CodeDictionary.get_message_template(code)}",
-                        file=file
-                    )
                     if not compact_format:
+                        print(f"\033[4m{message_type.capitalize()}\033[0m", file=file)
                         print(file=file)
+                    else:
+                        # compact also ignores underlining
+                        print(f"\n{message_type.capitalize()}:", file=file)
 
-                    if messages_by_code is not None:
+                    # 'coded_messages' is a MESSAGE_PARTITION where
+                    # MESSAGE_PARTITION is Dict[<validation code>, SCOPED_MESSAGES]
 
-                        # Codes with associated parameters should have
-                        # an embedded dictionary with 'identifier' keys
+                    # 'validation code' is the dot-delimited string
+                    # representation of the YAML path of the message codes.yaml
+                    code: str
+                    messages_by_code:  SCOPED_MESSAGES
 
-                        ids_per_row: int = 0
-                        num_ids: int = len(messages_by_code.keys())
-                        more_ids: int = num_ids - id_rows if num_ids > id_rows else 0
+                    # Grouping message outputs by validation codes
+                    for code, messages_by_code in coded_messages.items():
 
-                        for identifier, messages in messages_by_code.items():
-
-                            if messages is None:
-
-                                # For codes solely with a list of 'identifier' parameters associated
-                                # with the message, just print the identifier
-
-                                print(f"\t# {identifier}", file=file)
-
-                                if not compact_format:
-                                    print(file=file)
-
-                            else:
-                                # Code has list of dictionaries of additional context for messages.
-                                # In this case, the keys of the dictionary are the 'identifier'
-                                # strings and the values are lists of dictionaries, each of which
-                                # contains the additional contextual parameters for one message
-                                print(f"\t# {identifier}:", file=file)
-
-                                first_message: bool = True
-                                messages_per_row: int = 0
-                                num_messages: int = len(messages)
-                                more_msgs: int = num_messages - msg_rows if num_messages > msg_rows else 0
-
-                                for parameters in messages:
-
-                                    if first_message:
-                                        tags = tuple(parameters.keys())
-                                        print(f"\t- {' | '.join(tags)}: ", file=file)
-                                        first_message = False
-
-                                    print(f"\t\t{' | '.join(parameters.values())}", file=file)
-
-                                    messages_per_row += 1
-                                    if msg_rows and messages_per_row >= msg_rows:
-                                        if more_msgs:
-                                            print(
-                                                f"\t{str(more_msgs)} more messages for identifier '{identifier}'...",
-                                                file=file
-                                            )
-                                        break
-
-                                if not compact_format:
-                                    print(file=file)
-
-                            ids_per_row += 1
-                            if id_rows and ids_per_row >= id_rows:
-                                if more_ids:
-                                    print(
-                                        f"{str(more_ids)} more identifiers for code '{code_label}'...",
-                                        file=file
-                                    )
-                                break
-
+                        code_label: str = CodeDictionary.validation_code_tag(code)
+                        print(
+                            f"* {code_label}:\n"
+                            f"=> {CodeDictionary.get_message_template(code)}",
+                            file=file
+                        )
                         if not compact_format:
                             print(file=file)
 
-                    # else:
-                    #     For codes with associated non-parametric templates,
-                    #     just printing the template (done above) suffices
+                        # 'messages_by_code' is a SCOPED_MESSAGES where
+                        # SCOPED_MESSAGES is Dict[<scope>, Optional[IDENTIFIED_MESSAGES]]
 
-            # else: print nothing if a given message_type has no messages
+                        # <scope> is "global" or source trail path string
+                        scope: str
+                        messages_by_scope: Optional[IDENTIFIED_MESSAGES]
+                        for scope, messages_by_scope in messages_by_code.items():
+
+                            print(f"\t$ {scope}", file=file)
+
+                            # Codes with associated parameters should have
+                            # an embedded dictionary with 'identifier' keys
+
+                            ids_per_row: int = 0
+                            num_ids: int = len(messages_by_scope.keys())
+                            more_ids: int = num_ids - id_rows if num_ids > id_rows else 0
+
+                            # 'messages_by_scope' is Optional[IDENTIFIED_MESSAGES] where
+                            # 'IDENTIFIED_MESSAGES' is Dict[<identifier>, Optional[List[MESSAGE_PARAMETERS]]]
+
+                            # An entry of 'messages_by_scope' may be None if the given message code
+                            # has no additional parameters that distinguish instances of context (e.g. edge id?)
+                            # where the validation message occurs for the given identifier.
+
+                            # unique 'identifier' discriminator of the
+                            # (TRAPI or Biolink) token target of the validation
+                            identifier: str
+                            messages: Optional[List[MESSAGE_PARAMETERS]]
+                            for identifier, messages in messages_by_scope.items():
+
+                                if messages is None:
+
+                                    # For codes whose context of validation is solely discerned
+                                    # with their identifier, just print out the identifier
+
+                                    print(f"\t\t# {identifier}", file=file)
+
+                                    if not compact_format:
+                                        print(file=file)
+
+                                else:
+                                    # Since we have already checked if messages is None above, then we assume here that
+                                    # 'messages' is a List[MESSAGE_PARAMETERS] which records distinct additional context
+                                    # for a list of messages associated with a given code.
+                                    print(f"\t\t# {identifier}:", file=file)
+
+                                    first_message: bool = True
+                                    messages_per_row: int = 0
+                                    num_messages: int = len(messages)
+                                    more_msgs: int = num_messages - msg_rows if num_messages > msg_rows else 0
+
+                                    # 'messages' is an instance List[MESSAGE_PARAMETERS] where every entry of
+                                    # 'MESSAGE_PARAMETERS' is a dictionary of additional parameters documenting
+                                    # one specific instance of validation message related to the given identifier,
+                                    # where the keys are validation code specific (documented in codes.yaml)
+                                    parameters: MESSAGE_PARAMETERS
+                                    for parameters in messages:
+
+                                        if first_message:
+                                            tags = tuple(parameters.keys())
+                                            print(f"\t\t- {' | '.join(tags)}: ", file=file)
+                                            first_message = False
+
+                                        print(f"\t\t\t{' | '.join(parameters.values())}", file=file)
+
+                                        messages_per_row += 1
+                                        if msg_rows and messages_per_row >= msg_rows:
+                                            if more_msgs:
+                                                print(
+                                                    f"\t\t{str(more_msgs)} more messages " +
+                                                    f"for identifier '{identifier}'...",
+                                                    file=file
+                                                )
+                                            break
+
+                                    if not compact_format:
+                                        print(file=file)
+
+                                ids_per_row += 1
+                                if id_rows and ids_per_row >= id_rows:
+                                    if more_ids:
+                                        print(
+                                            f"{str(more_ids)} more identifiers for code '{code_label}'...",
+                                            file=file
+                                        )
+                                    break
+
+                            if not compact_format:
+                                print(file=file)
+
+                        # else:
+                        #     For codes with associated non-parametric templates,
+                        #     just printing the template (done above) suffices
+
+                # else: print nothing if a given message_type has no messages
+        else:
+            print(f"Hurray! No validation messages reported!", file=file)
 
     def dumps(
             self,

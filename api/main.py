@@ -20,17 +20,11 @@ DEFAULT_BIOLINK_MODEL_VERSION = default_toolkit.get_model_version()
 app = FastAPI()
 
 
-#
-# We don't instantiate the full TRAPI models here but
-# just use an open-ended dictionary which should have
-# query_graph, knowledge_graph and results JSON tag-values
-#
-
 # Dictionary of validation context identifying the  ARA and KP
-# sources subject to edge provenance attribute validation
+# target KP and ARA knowledge sources subject to edge provenance attribute validation
 # (key-value examples as given here)
-# Example: Sources(ara_source="aragorn", kp_source="panther", kp_source_type="primary")
-class Sources(BaseModel):
+# Example: TargetProvenance(ara_source="aragorn", kp_source="panther", kp_source_type="primary")
+class TargetProvenance(BaseModel):
     ara_source: Optional[str] = None,
     kp_source: Optional[str] = None,
     kp_source_type: Optional[str] = None
@@ -43,8 +37,8 @@ class Query(BaseModel):
     # default: latest Biolink Model Toolkit supported version
     biolink_version: Optional[str] = DEFAULT_BIOLINK_MODEL_VERSION
 
-    # See Sources above
-    sources: Optional[Sources] = None
+    # See TargetProvenance above
+    target_provenance: Optional[TargetProvenance] = None
 
     # Apply strict validation of element abstract or mixin status of category, attribute_type_id and predicate elements
     # and detection of absent Knowledge Graph Edge predicate and attributes (despite 'nullable: true' model permission)
@@ -62,8 +56,11 @@ class Query(BaseModel):
     # returned from each test edge query (default: 0 means 'validate all results')
     max_results: int = 0
 
-    # A full Query.Response is (now) expected here, as described in:
-    # https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response-.
+    #
+    # We don't instantiate the full TRAPI models here but just use an open-ended dictionary which should have
+    # query_graph, knowledge_graph and results JSON tag-values.  A full Query.Response is (now) expected here,
+    # as described in: https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response-.
+    #
     response: Dict
 
 
@@ -79,8 +76,8 @@ async def validate(query: Query):
     biolink_version: Optional[str] = query.biolink_version
     print(f"Specified 'biolink_version' == {biolink_version}", file=stderr)
 
-    sources: Optional[Sources] = query.sources
-    print(f"Validation Context == {sources}", file=stderr)
+    target_provenance: Optional[TargetProvenance] = query.target_provenance
+    print(f"Validation Context == {target_provenance}", file=stderr)
 
     strict_validation: bool = query.strict_validation if query.strict_validation else False
     print(f"Validation Context == {str(strict_validation)}", file=stderr)
@@ -98,14 +95,14 @@ async def validate(query: Query):
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=trapi_version,
         biolink_version=biolink_version,
-        sources=sources.dict() if sources is not None else None,
         strict_validation=strict_validation,
         suppress_empty_data_warnings=suppress_empty_data_warnings
     )
     validator.check_compliance_of_trapi_response(
         response=query.response,
         max_kg_edges=max_kg_edges,
-        max_results=max_results
+        max_results=max_results,
+        target_provenance=target_provenance.dict() if target_provenance is not None else None,
     )
 
     if not validator.has_messages():

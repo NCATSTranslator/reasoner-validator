@@ -618,7 +618,7 @@ def test_latest_trapi_missing_key_message_edge_component_validation(trapi_versio
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
         validator.validate({
-            # missing required 'subject', 'predicate', 'object' and 'sources'
+            # missing required 'subject', 'predicate', 'object' and "sources"
             "foo": {},
             "bar": {},
         }, "Edge")
@@ -652,52 +652,52 @@ def test_latest_trapi_flawed_message_edge_component_validation(trapi_version: st
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trapi_version: str):
+def test_latest_trapi_more_flawed_message_edge_retrieval_sources_component_validation(trapi_version: str):
     """Test various invalid Message.KnowledgeGraph.Edge.sources values in
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
-        faulty_sources = SAMPLE_LATEST_TEST_EDGE.copy()
-        # 'sources' is not an array (of RetrievalSource objects)
-        faulty_sources["sources"] = "not-an-array"
-        validator.validate(faulty_sources, "Edge")
+        faulty_target_provenance = SAMPLE_LATEST_TEST_EDGE.copy()
+        # "target_provenance" is not an array (of RetrievalSource objects)
+        faulty_target_provenance["target_provenance"] = "not-an-array"
+        validator.validate(faulty_target_provenance, "Edge")
     with pytest.raises(ValidationError):
-        faulty_sources = SAMPLE_LATEST_TEST_EDGE.copy()
-        # items in the 'sources' array must be a non-empty array of (RetrievalSource) objects
-        faulty_sources["sources"] = list()
-        validator.validate(faulty_sources, "Edge")
+        faulty_target_provenance = SAMPLE_LATEST_TEST_EDGE.copy()
+        # items in the "target_provenance" array must be a non-empty array of (RetrievalSource) objects
+        faulty_target_provenance["target_provenance"] = list()
+        validator.validate(faulty_target_provenance, "Edge")
     with pytest.raises(ValidationError):
-        faulty_sources = SAMPLE_LATEST_TEST_EDGE.copy()
-        # items in the 'sources' array must be (RetrievalSource) objects
-        faulty_sources["sources"] = ["not-a-json-object"]
-        validator.validate(faulty_sources, "Edge")
+        faulty_target_provenance = SAMPLE_LATEST_TEST_EDGE.copy()
+        # items in the "target_provenance" array must be (RetrievalSource) objects
+        faulty_target_provenance["target_provenance"] = ["not-a-json-object"]
+        validator.validate(faulty_target_provenance, "Edge")
     with pytest.raises(ValidationError):
-        faulty_sources = SAMPLE_LATEST_TEST_EDGE.copy()
-        # items in the 'sources' array must be RetrievalSource objects
-        faulty_sources["sources"] = [{"not-an-RetrievalSource-key": "something"}]
-        validator.validate(faulty_sources, "Edge")
+        faulty_target_provenance = SAMPLE_LATEST_TEST_EDGE.copy()
+        # items in the "target_provenance" array must be RetrievalSource objects
+        faulty_target_provenance["target_provenance"] = [{"not-an-RetrievalSource-key": "something"}]
+        validator.validate(faulty_target_provenance, "Edge")
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_latest_trapi_more_flawed_message_edge_sources_component_validation(trapi_version: str):
+def test_latest_trapi_more_flawed_message_edge_retrieval_sources_component_validation(trapi_version: str):
     """Test various invalid Message.KnowledgeGraph.Edge.sources values in
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
         faulty_rs = SAMPLE_RETRIEVAL_SOURCE.copy()
-        # items in the 'sources' array must be
+        # items in the "target_provenance" array must be
         # RetrievalSource objects with a 'resource' key
         faulty_rs.pop("resource_id")
         validator.validate(faulty_rs, "RetrievalSource")
     with pytest.raises(ValidationError):
         faulty_rs = SAMPLE_RETRIEVAL_SOURCE.copy()
-        # items in the 'sources' array must be
+        # items in the "target_provenance" array must be
         # RetrievalSource objects with a 'resource' key
         faulty_rs.pop("resource_role")
         validator.validate(faulty_rs, "RetrievalSource")
     with pytest.raises(ValidationError):
         faulty_rs = SAMPLE_RETRIEVAL_SOURCE.copy()
-        # items in the 'sources' array must be
+        # items in the "target_provenance" array must be
         # RetrievalSource objects with a 'resource' key
         faulty_rs["resource_role"] = "not_a_ResourceRoleEnum_enum_value"
         validator.validate(faulty_rs, "RetrievalSource")
