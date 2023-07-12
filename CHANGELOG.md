@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.7.1
+- JSONSCHEMA pinned to ~4.17.3 (implying <4.18.0 releases) for now, until we can figure out why the 4.18.0 causes the severe workflow schema access bug
+
 ## v3.7.0
 - implementation of reasoner-validator issue #86 in which explicit validation error KP/ARA sources are reported in the validation. This change is sufficiently disruptive to the code methods and representation that 'minor' release of the repository is incremented to 3.7.
 - to avoid confusion with new 'source' reporting, the pre-3.7 provenance 'sources' variable is renamed to 'target_provenance' and the variable localized directly into the BiolinkValidator constructor and included as parameter for pertinent high level method calls
