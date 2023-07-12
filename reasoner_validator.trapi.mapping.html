@@ -51,7 +51,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.mapping.MappingValidator.check_dangling_references"><code class="docutils literal notranslate"><span class="pre">MappingValidator.check_dangling_references()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.mapping.MappingValidator.messages"><code class="docutils literal notranslate"><span class="pre">MappingValidator.messages</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.mapping.MappingValidator.prefix"><code class="docutils literal notranslate"><span class="pre">MappingValidator.prefix</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.mapping.MappingValidator.sources"><code class="docutils literal notranslate"><span class="pre">MappingValidator.sources</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.mapping.MappingValidator.strict_validation"><code class="docutils literal notranslate"><span class="pre">MappingValidator.strict_validation</span></code></a></li>
 </ul>
 </li>
@@ -137,13 +136,13 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 </p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_critical</span></code>()</p></td>
-<td><p>Get copy of all recorded critical error messages.</p></td>
+<td><p>Get copy of all recorded 'critical' error messages.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_errors</span></code>()</p></td>
-<td><p>Get copy of all recorded error messages.</p></td>
+<td><p>Get copy of all recorded 'error' messages.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_info</span></code>()</p></td>
-<td><p>Get copy of all recorded information messages.</p></td>
+<td><p>Get copy of all recorded 'information' messages.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_message_type</span></code>(code)</p></td>
 <td><p>Get type of message code.</p></td>
@@ -160,7 +159,7 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 </p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_warnings</span></code>()</p></td>
-<td><p>Get copy of all recorded warning messages.</p></td>
+<td><p>Get copy of all recorded 'warning' messages.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_critical</span></code>()</p></td>
 <td><p>Predicate to detect any recorded critical error messages.</p></td>
@@ -196,8 +195,8 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>(code, **message)</p></td>
-<td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters) :param code:  :param message: named parameters representing extra (str-formatted) context for the given code message :return: None (internally record the validation message)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>(code[, source_trail])</p></td>
+<td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_case_has_validation_errors</span></code>(tag, case)</p></td>
 <td><p>Check if test case has validation errors.</p></td>
@@ -206,7 +205,7 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <td><p>Export ValidationReporter contents as a Python dictionary (including TRAPI version, Biolink Model version and messages) :return: Dict</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_biolink</span></code>()</p></td>
-<td><p>Predicate to check if the Biolink (version) is tagged to 'suppress&quot; compliance validation.</p></td>
+<td><p>Predicate to check if the Biolink (version) is tagged to 'suppress' compliance validation.</p></td>
 </tr>
 </tbody>
 </table>
@@ -224,17 +223,12 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.mapping.MappingValidator.messages">
-<span class="sig-name descname"><span class="pre">messages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#reasoner_validator.trapi.mapping.MappingValidator.messages" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">messages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MESSAGE_CATALOG</span></em><a class="headerlink" href="#reasoner_validator.trapi.mapping.MappingValidator.messages" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.mapping.MappingValidator.prefix">
 <span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#reasoner_validator.trapi.mapping.MappingValidator.prefix" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reasoner_validator.trapi.mapping.MappingValidator.sources">
-<span class="sig-name descname"><span class="pre">sources</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#reasoner_validator.trapi.mapping.MappingValidator.sources" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">

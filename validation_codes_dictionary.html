@@ -173,6 +173,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-edge-predicate-deprecated">warning.query_graph.edge.predicate.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-edge-predicate-non-canonical">warning.query_graph.edge.predicate.non_canonical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-category-deprecated">warning.knowledge_graph.node.category.deprecated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-category-abstract-or-mixin">warning.knowledge_graph.node.category.abstract_or_mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-id-unmapped-prefix">warning.knowledge_graph.node.id.unmapped_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-predicate-deprecated">warning.knowledge_graph.edge.predicate.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-predicate-non-canonical">warning.knowledge_graph.edge.predicate.non_canonical</a></li>
@@ -911,6 +912,12 @@
 <p><strong>Message:</strong> Node has deprecated category</p>
 <p><strong>Context:</strong> node_id, identifier</p>
 <p><strong>Description:</strong> Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?</p>
+</section>
+<section id="warning-knowledge-graph-node-category-abstract-or-mixin">
+<h3>warning.knowledge_graph.node.category.abstract_or_mixin<a class="headerlink" href="#warning-knowledge-graph-node-category-abstract-or-mixin" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Node has a abstract or mixin category</p>
+<p><strong>Context:</strong> node_id, identifier</p>
+<p><strong>Description:</strong> Node category is abstract or a mixin in the current model. Please consider selecting a more specific, concrete Biolink Model category?</p>
 </section>
 <section id="warning-knowledge-graph-node-id-unmapped-prefix">
 <h3>warning.knowledge_graph.node.id.unmapped_prefix<a class="headerlink" href="#warning-knowledge-graph-node-id-unmapped-prefix" title="Permalink to this heading"></a></h3>

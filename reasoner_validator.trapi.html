@@ -51,7 +51,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.is_valid_trapi_query"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.is_valid_trapi_query()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.messages"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.messages</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.prefix"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.prefix</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.sources"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.sources</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.strict_validation"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.strict_validation</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.validate"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.validate()</span></code></a></li>
 </ul>
@@ -151,13 +150,13 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 </p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_critical</span></code>()</p></td>
-<td><p>Get copy of all recorded critical error messages.</p></td>
+<td><p>Get copy of all recorded 'critical' error messages.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_errors</span></code>()</p></td>
-<td><p>Get copy of all recorded error messages.</p></td>
+<td><p>Get copy of all recorded 'error' messages.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_info</span></code>()</p></td>
-<td><p>Get copy of all recorded information messages.</p></td>
+<td><p>Get copy of all recorded 'information' messages.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_message_type</span></code>(code)</p></td>
 <td><p>Get type of message code.</p></td>
@@ -174,7 +173,7 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 </p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_warnings</span></code>()</p></td>
-<td><p>Get copy of all recorded warning messages.</p></td>
+<td><p>Get copy of all recorded 'warning' messages.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_critical</span></code>()</p></td>
 <td><p>Predicate to detect any recorded critical error messages.</p></td>
@@ -213,8 +212,8 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>(code, **message)</p></td>
-<td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters) :param code:  :param message: named parameters representing extra (str-formatted) context for the given code message :return: None (internally record the validation message)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>(code[, source_trail])</p></td>
+<td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_case_has_validation_errors</span></code>(tag, case)</p></td>
 <td><p>Check if test case has validation errors.</p></td>
@@ -226,7 +225,7 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 <td><p>Validate instance against schema.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_biolink</span></code>()</p></td>
-<td><p>Predicate to check if the Biolink (version) is tagged to 'suppress&quot; compliance validation.</p></td>
+<td><p>Predicate to check if the Biolink (version) is tagged to 'suppress' compliance validation.</p></td>
 </tr>
 </tbody>
 </table>
@@ -257,17 +256,12 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPISchemaValidator.messages">
-<span class="sig-name descname"><span class="pre">messages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.messages" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">messages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MESSAGE_CATALOG</span></em><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.messages" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPISchemaValidator.prefix">
 <span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.prefix" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPISchemaValidator.sources">
-<span class="sig-name descname"><span class="pre">sources</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.sources" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
