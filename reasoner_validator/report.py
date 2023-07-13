@@ -1,6 +1,7 @@
 """Error and Warning Reporting Module"""
 from typing import Optional, Dict, List
 from sys import stdout
+from importlib import metadata
 from io import StringIO
 import copy
 
@@ -471,10 +472,10 @@ class ValidationReporter:
                 print(title, file=file)
 
         print(
-            "Validation against TRAPI " +
-            f"'{str(self.trapi_version if self.trapi_version is not None else 'Default')}' version " +
-            "and Biolink Model " +
-            f"'{str(self.biolink_version if self.biolink_version is not None else 'Default')}' version.",
+            f"Reasoner Validator version '{metadata.version('reasoner-validator')}' validating against "
+            f"TRAPI schema version '{str(self.trapi_version if self.trapi_version is not None else 'Default')}' " +
+            "and Biolink Model version " +
+            f"'{str(self.biolink_version if self.biolink_version is not None else 'Default')}'.\n",
             file=file
         )
 

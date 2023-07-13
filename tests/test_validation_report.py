@@ -405,7 +405,7 @@ def test_messages():
     reporter1.dump(title="My KP Validation Report", id_rows=1, msg_rows=1, compact_format=True, file=stderr)
 
     validation_report: str = reporter1.dumps(id_rows=2, msg_rows=3)
-    assert validation_report.startswith("Validation against TRAPI")
+    assert validation_report.startswith("Reasoner Validator")
 
 
 def test_validator_method():

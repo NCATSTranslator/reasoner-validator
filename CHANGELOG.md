@@ -4,6 +4,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 
 ## 3.7.2
 - biolink:InformationContentEntity added to exceptions only triggering a 'warning', not an 'error' validation message.
+- Added the reasoner-validator version semver to the validation dump(s)
 
 ## 3.7.1
 - JSONSCHEMA pinned to ~4.17.3 (implying <4.18.0 releases) for now, until we can figure out why the 4.18.0 causes the severe workflow schema access bug
