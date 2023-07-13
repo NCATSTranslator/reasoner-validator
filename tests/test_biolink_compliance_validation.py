@@ -11,7 +11,7 @@ from bmt import Toolkit
 from linkml_runtime.linkml_model import SlotDefinition
 
 from reasoner_validator import TRAPISchemaValidator
-from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0_BETA
+from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0_BETA, LATEST_TRAPI_RELEASE
 from reasoner_validator.biolink import (
     TRAPIGraphType,
     BiolinkValidator,
@@ -955,7 +955,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
 
 
 @pytest.mark.parametrize(
-    "query",
+    "edge_data,validation_code",
     [
         # (
         #         "mock_edge",  # mock data has dumb edges: don't worry about the S-P-O, just the attributes
@@ -965,7 +965,6 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
         (
             # Query 0. 'attributes' key missing in edge record is None
             {},
-            get_ara_test_case(),
             # "Edge has no 'attributes' key!"
             "error.knowledge_graph.edge.attribute.missing"
         ),
@@ -974,7 +973,6 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             {
                 "attributes": None
             },
-            get_ara_test_case(),
             # "Edge has empty attributes!"
             "error.knowledge_graph.edge.attribute.empty"
         ),
@@ -983,56 +981,36 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
             {
                 "attributes": []
             },
-            get_ara_test_case(),
             # "Edge has empty attributes!"
             "error.knowledge_graph.edge.attribute.empty"
-        ),
+        )
     ]
 )
-def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(query: Tuple):
-    validator = BiolinkValidator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
-        trapi_version=TRAPI_1_3_0,
-        biolink_version=LATEST_BIOLINK_MODEL_VERSION,
-        target_provenance=query[1]
-    )
-    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
-    check_messages(validator, query[2])
+def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge_data: Dict, validation_code: str):
+    validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph, trapi_version=TRAPI_1_3_0)
+    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=edge_data)
+    check_messages(validator, validation_code)
 
 
 @pytest.mark.parametrize(
-    "query",
+    "edge_data",
     [
-        # These tests should all pass in TRAPI releases >= 1.4.0-beta
-        # (
-        #         "mock_edge",  # mock data has dumb edges: don't worry about the S-P-O, just the attributes
-        #         "mock_context",
-        #         "AssertError_message"
-        # ),   # set 3rd argument to AssertError message if test edge should 'fail'; otherwise, empty string (for pass)
+        # These tests should all pass in TRAPI releases 'default' >= 1.4.0-beta
         (
             # Query 0. 'attributes' key missing in edge record is None
-            {},
-            get_ara_test_case(),
-            # "Edge has no 'attributes' key!"
-            ""
+            {}
         ),
         (
             # Query 1. Empty attributes
             {
                 "attributes": None
-            },
-            get_ara_test_case(),
-            # "Edge has empty attributes!"
-            ""
+            }
         ),
         (
             # Query 2. Empty attributes
             {
                 "attributes": []
-            },
-            get_ara_test_case(),
-            # "Edge has empty attributes!" Allowed
-            ""
+            }
         ),
         (
             # Query 3. EDAM-DATA:2526 ought to have an acceptable namespace
@@ -1043,22 +1021,29 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(query: Tuple):
                         "value": "some-value"
                     }
                 ]
-            },
-            get_ara_test_case(),
-            # "Edge has an acceptable namespace prefix
-            ""
+            }
+        ),
+        (
+            # Query 4. Validating terms in the ATTRIBUTE_TYPE_ID_INCLUSIONS list
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:knowledge_level",
+                        "value": "knowledge_assertion"
+                    },
+                    {
+                        "attribute_type_id": "biolink:agent_type",
+                        "value": "manual_agent"
+                    }
+                ]
+            }
         )
-        # CHEMBL.COMPOUND:CHEMBL112--biolink:occurs_together_in_literature_with->NCBIGene:762
     ]
 )
-def test_post_1_4_0_trapi_validate_attributes(query: Tuple):
-    validator = BiolinkValidator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
-        biolink_version=LATEST_BIOLINK_MODEL_VERSION,
-        target_provenance=query[1]
-    )
-    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
-    check_messages(validator, query[2])
+def test_post_1_4_0_trapi_validate_attributes(edge_data: Dict):
+    validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
+    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=edge_data)
+    check_messages(validator, "")
 
 
 @pytest.mark.parametrize(

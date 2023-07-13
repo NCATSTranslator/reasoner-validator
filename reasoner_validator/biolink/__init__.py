@@ -483,6 +483,12 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                 sources=",".join(found_primary_knowledge_source)
             )
 
+    # TODO: 13-July-2023: Certain attribute_type_id's are slated for future implementation in the Biolink Model
+    #                     but not in the current model release; however, some teams have started to use the terms.
+    #                     We therefore put them on a special "inclusion list" (like the CATEGORY_INCLUSIONS below)
+    #                     to permit them to pass through the validation without any complaints.
+    ATTRIBUTE_TYPE_ID_INCLUSIONS = ["biolink:knowledge_level", "biolink:agent_type"]
+
     def validate_attributes(
             self,
             edge_id: str,
@@ -604,77 +610,84 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                         # 'attribute_type_id' is a CURIE, but how well does it map?
                         prefix = attribute_type_id.split(":", 1)[0]
                         if prefix == 'biolink':
-                            biolink_class = self.validate_element_status(
-                                context="knowledge_graph.edge.attribute.type_id",
-                                identifier=attribute_type_id,
-                                edge_id=edge_id,
-                                source_trail=source_trail
-                            )
-                            if biolink_class:
-                                if not self.bmt.is_association_slot(attribute_type_id):
-                                    self.report(
-                                        code="warning.knowledge_graph.edge.attribute.type_id.not_association_slot",
-                                        identifier=attribute_type_id,
-                                        edge_id=edge_id,
-                                        source_trail=source_trail
-                                    )
+                            # We will skip further validation of terms in the ATTRIBUTE_TYPE_ID_INCLUSIONS list...
+                            if attribute_type_id not in self.ATTRIBUTE_TYPE_ID_INCLUSIONS:
 
-                                else:
-                                    # it is a Biolink 'association_slot' but now, validate what kind?
+                                # ... but further validate everything else...
+                                biolink_class = self.validate_element_status(
+                                    context="knowledge_graph.edge.attribute.type_id",
+                                    identifier=attribute_type_id,
+                                    edge_id=edge_id,
+                                    source_trail=source_trail
+                                )
+                                if biolink_class:
+                                    if not self.bmt.is_association_slot(attribute_type_id):
+                                        self.report(
+                                            code="warning.knowledge_graph.edge.attribute.type_id.not_association_slot",
+                                            identifier=attribute_type_id,
+                                            edge_id=edge_id,
+                                            source_trail=source_trail
+                                        )
+                                        # if not a Biolink 'association_slot', at least, check if
+                                        # the 'attribute_type_id' has a namespace (prefix) known to Biolink.
+                                        # We won't call it a hard error, but issue a warning
+                                        if not self.bmt.get_element_by_prefix(attribute_type_id):
+                                            self.report(
+                                                code="warning.knowledge_graph.edge." +
+                                                     "attribute.type_id.non_biolink_prefix",
+                                                identifier=attribute_type_id,
+                                                edge_id=edge_id,
+                                                source_trail=source_trail
+                                            )
+                                    else:
+                                        # attribute_type_id is a Biolink 'association_slot': validate it further...
 
-                                    # TODO: only check knowledge_source provenance here for now.
-                                    #       Are there other association_slots to be validated here too?
+                                        # TODO: only check knowledge_source provenance here for now.
+                                        #       Are there other association_slots to be validated here too?
+                                        #       For example, once new terms with defined value ranges are published
+                                        #       in the Biolink Model, then perhaps 'value' validation will be feasible.
 
-                                    # Edge provenance tags only recorded in Edge attributes prior to TRAPI 1.4.0-beta
-                                    if not self.minimum_required_trapi_version("1.4.0-beta"):
+                                        # Edge provenance tags only recorded in
+                                        # Edge attributes prior to TRAPI 1.4.0-beta
+                                        if not self.minimum_required_trapi_version("1.4.0-beta"):
 
-                                        if attribute_type_id not in \
-                                                [
-                                                    "biolink:aggregator_knowledge_source",
-                                                    "biolink:primary_knowledge_source",
+                                            if attribute_type_id not in \
+                                                    [
+                                                        "biolink:aggregator_knowledge_source",
+                                                        "biolink:primary_knowledge_source",
 
-                                                    # Note: deprecated since Biolink release 3.0.2
-                                                    #       but this is probably caught above in the
-                                                    #       'validate_element_status' method predicate
-                                                    "biolink:original_knowledge_source"
+                                                        # Note: deprecated since Biolink release 3.0.2
+                                                        #       but this is probably caught above in the
+                                                        #       'validate_element_status' method predicate
+                                                        "biolink:original_knowledge_source"
 
-                                                ]:
+                                                    ]:
 
-                                            # TODO: not interested here in any other
-                                            #       attribute_type_id's at this moment
-                                            continue
+                                                # TODO: not interested here in any other
+                                                #       attribute_type_id's at this moment
+                                                continue
 
-                                        # ... now, check the infores values against various expectations
-                                        for infores in value:
-                                            if not infores.startswith("infores:"):
-                                                self.report(
-                                                    code="error.knowledge_graph.edge.provenance.infores.missing",
-                                                    identifier=str(infores),
-                                                    edge_id=edge_id,
-                                                    source_trail=source_trail
-                                                )
-                                            else:
-                                                if attribute_type_id == "biolink:primary_knowledge_source":
-                                                    found_primary_knowledge_source.append(infores)
+                                            # ... now, check the infores values against various expectations
+                                            for infores in value:
+                                                if not infores.startswith("infores:"):
+                                                    self.report(
+                                                        code="error.knowledge_graph.edge.provenance.infores.missing",
+                                                        identifier=str(infores),
+                                                        edge_id=edge_id,
+                                                        source_trail=source_trail
+                                                    )
+                                                else:
+                                                    if attribute_type_id == "biolink:primary_knowledge_source":
+                                                        found_primary_knowledge_source.append(infores)
 
-                                                if ara_source and \
-                                                        attribute_type_id == "biolink:aggregator_knowledge_source" and \
-                                                        infores == ara_source:
-                                                    found_ara_knowledge_source = True
-                                                elif kp_source and \
-                                                        attribute_type_id == kp_source_type and \
-                                                        infores == kp_source:
-                                                    found_kp_knowledge_source = True
-
-                        # if not a Biolink 'association_slot', at least, check if the 'attribute_type_id' has a
-                        # namespace (prefix) known to Biolink. We won't call it a hard error, but issue a warning
-                        elif not self.bmt.get_element_by_prefix(attribute_type_id):
-                            self.report(
-                                code="warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix",
-                                identifier=attribute_type_id,
-                                edge_id=edge_id,
-                                source_trail=source_trail
-                            )
+                                                    if ara_source and \
+                                                       attribute_type_id == "biolink:aggregator_knowledge_source" and \
+                                                       infores == ara_source:
+                                                        found_ara_knowledge_source = True
+                                                    elif kp_source and \
+                                                            attribute_type_id == kp_source_type and \
+                                                            infores == kp_source:
+                                                        found_kp_knowledge_source = True
 
             # Edge provenance tags only recorded in Edge attributes prior to TRAPI 1.4.0-beta
             if not self.minimum_required_trapi_version("1.4.0-beta") and self.validate_biolink():

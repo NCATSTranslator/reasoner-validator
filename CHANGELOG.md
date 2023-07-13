@@ -2,8 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.7.3
+- Adding special override list for 'attribute_type_id' exceptions to stop error messages. This will apply to terms scheduled for implementation in a near term future Biolink Model release, but not yet out the door (but implemented proactively by early adopters within the Translator consortium). The initial list of such terms are the pre-Biolink Model version 3.5.0 terms 'biolink:knowledge_level' and 'biolink:agent_type'
+
 ## 3.7.2
-- biolink:InformationContentEntity added to exceptions only triggering a 'warning', not an 'error' validation message.
+- 'biolink:InformationContentEntity' added to exceptions only triggering a 'warning', not an 'error' validation message.
 - Added the reasoner-validator version semver to the validation dump(s)
 
 ## 3.7.1
