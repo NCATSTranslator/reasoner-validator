@@ -341,7 +341,10 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_graph_node" title="reasoner_validator.biolink.BiolinkValidator.validate_graph_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_node</span></code></a>(node_id, slots)</p></td>
 <td><p>Validate slot properties (mainly 'categories') of a node.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_predicate" title="reasoner_validator.biolink.BiolinkValidator.validate_predicate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_predicate</span></code></a>(edge_id, predicate[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_infores" title="reasoner_validator.biolink.BiolinkValidator.validate_infores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_infores</span></code></a>(context, edge_id, identifier)</p></td>
+<td><p>Validate that the specified identifier is a well-formed Infores CURIE.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_predicate" title="reasoner_validator.biolink.BiolinkValidator.validate_predicate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_predicate</span></code></a>(edge_id, predicate[, ...])</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param edge_id<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str, identifier of the edge whose predicate is being validated</p>
@@ -349,19 +352,19 @@
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_provenance" title="reasoner_validator.biolink.BiolinkValidator.validate_provenance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_provenance</span></code></a>(edge_id, ara_source, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_provenance" title="reasoner_validator.biolink.BiolinkValidator.validate_provenance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_provenance</span></code></a>(edge_id, ara_source, ...)</p></td>
 <td><p>Validates ARA and KP infores knowledge sources based on surveyed Edge slots (recorded in edge &quot;attributes&quot; pre-1.4.0; in &quot;sources&quot;, post-1.4.0).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints" title="reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_constraints</span></code></a>(edge_id, edge)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints" title="reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_constraints</span></code></a>(edge_id, edge)</p></td>
 <td><p>Validate Query Edge Qualifier Constraints.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_entry" title="reasoner_validator.biolink.BiolinkValidator.validate_qualifier_entry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_entry</span></code></a>(context, edge_id, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_entry" title="reasoner_validator.biolink.BiolinkValidator.validate_qualifier_entry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_entry</span></code></a>(context, edge_id, ...)</p></td>
 <td><p>Validate Qualifier Entry (JSON Object).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifiers" title="reasoner_validator.biolink.BiolinkValidator.validate_qualifiers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifiers</span></code></a>(edge_id, edge)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifiers" title="reasoner_validator.biolink.BiolinkValidator.validate_qualifiers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifiers</span></code></a>(edge_id, edge)</p></td>
 <td><p>Validate Knowledge Edge Qualifiers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_sources" title="reasoner_validator.biolink.BiolinkValidator.validate_sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_sources</span></code></a>(edge_id, edge)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_sources" title="reasoner_validator.biolink.BiolinkValidator.validate_sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_sources</span></code></a>(edge_id, edge)</p></td>
 <td><p>Validate (TRAPI 1.4.0-beta ++) Edge.sources provenance.</p></td>
 </tr>
 </tbody>
@@ -377,10 +380,7 @@
 <tr class="row-odd"><td><p><strong>set_nodes</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>validate_infores</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>validate_input_edge_node</strong></p></td>
+<tr class="row-even"><td><p><strong>validate_input_edge_node</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -585,7 +585,22 @@ but are not considered ‘concrete’, thus the method returns None.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_infores">
 <span class="sig-name descname"><span class="pre">validate_infores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_infores" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Validate that the specified identifier is a well-formed Infores CURIE.
+Note that here we also now accept that the identifier can
+be a semi-colon delimited list of such infores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> – reporting context as specified by a validation code prefix</p></li>
+<li><p><strong>edge_id</strong> – specific edge validated, for the purpose of reporting validation context</p></li>
+<li><p><strong>identifier</strong> – candidate (list of) infores curie(s) to be validated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_input_edge_node">

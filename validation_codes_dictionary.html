@@ -146,10 +146,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-missing">error.knowledge_graph.edge.sources.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-empty">error.knowledge_graph.edge.sources.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-not-array">error.knowledge_graph.edge.sources.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-missing">error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-not-curie">error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-invalid">error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-unknown">error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-empty">error.knowledge_graph.edge.sources.retrieval_source.resource_id.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-missing">error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-not-curie">error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.not_curie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-invalid">error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-unknown">error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.unknown</a></li>
@@ -770,17 +772,23 @@
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Value of the ‘sources’ property in Knowledge Graph edge must be an array of RetrievalSource entries!</p>
 </section>
+<section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-missing">
+<h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.missing<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> RetrievalSource ‘resource_id’ identifier is missing!</p>
+<p><strong>Context:</strong> edge_id</p>
+<p><strong>Description:</strong> A RetrievalSource ‘resource_id’ value should not be None or empty!</p>
+</section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-not-curie">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-not-curie" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Infores value is not a valid well-formed CURIE</p>
+<p><strong>Message:</strong> One (or more) Infores value(s) is not a valid well-formed CURIE</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A ‘retrieval_source.resource_id’ value must be a well-formed infores CURIE!</p>
+<p><strong>Description:</strong> A RetrievalSource ‘resource_id’ Infores value must be a well-formed CURIE!</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-invalid">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-invalid" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Invalid Infores namespace</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A ‘retrieval_source.resource_id’ Infores CURIE must come from the Infores namespace!</p>
+<p><strong>Description:</strong> A RetrievalSource ‘resource_id’ Infores CURIE must come from the Infores namespace!</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-unknown">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-unknown" title="Permalink to this heading"></a></h3>
@@ -794,17 +802,23 @@
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Value of the ‘resource_id’ property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty Infores identifier!</p>
 </section>
+<section id="error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-missing">
+<h3>error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.missing<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> A RetrievalSource ‘upstream_resource_ids’ identifier is missing!</p>
+<p><strong>Context:</strong> edge_id</p>
+<p><strong>Description:</strong> A RetrievalSource ‘upstream_resource_ids’ value should not be None or empty!</p>
+</section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-not-curie">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-not-curie" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Infores value is not a valid well-formed CURIE</p>
+<p><strong>Message:</strong> One (or more) Infores value(s) is not a valid well-formed CURIE</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A ‘retrieval_source.upstream_resource_ids’ values must be a well-formed Infores CURIE!</p>
+<p><strong>Description:</strong> A RetrievalSource ‘upstream_resource_ids’ Infores value must be a well-formed CURIE!</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-invalid">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.invalid<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-invalid" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Invalid Infores namespace</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A ‘retrieval_source.upstream_resource_ids’ Infores CURIEs must come from the Infores namespace!</p>
+<p><strong>Description:</strong> A RetrievalSource ‘upstream_resource_ids’ Infores CURIE must come from the Infores namespace!</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-unknown">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.unknown<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-unknown" title="Permalink to this heading"></a></h3>

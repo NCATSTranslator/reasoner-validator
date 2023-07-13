@@ -712,13 +712,21 @@
 
 **Description:** Value of the 'sources' property in Knowledge Graph edge must be an array of RetrievalSource entries!
 
+### error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.missing
+
+**Message:** RetrievalSource 'resource_id' identifier is missing!
+
+**Context:** edge_id
+
+**Description:** A RetrievalSource 'resource_id' value should not be None or empty!
+
 ### error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie
 
-**Message:** Infores value is not a valid well-formed CURIE
+**Message:** One (or more) Infores value(s) is not a valid well-formed CURIE
 
 **Context:** edge_id, identifier
 
-**Description:** A 'retrieval_source.resource_id' value must be a well-formed infores CURIE!
+**Description:** A RetrievalSource 'resource_id' Infores value must be a well-formed CURIE!
 
 ### error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid
 
@@ -726,7 +734,7 @@
 
 **Context:** edge_id, identifier
 
-**Description:** A 'retrieval_source.resource_id' Infores CURIE must come from the Infores namespace!
+**Description:** A RetrievalSource 'resource_id' Infores CURIE must come from the Infores namespace!
 
 ### error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown
 
@@ -744,13 +752,21 @@
 
 **Description:** Value of the 'resource_id' property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty Infores identifier!
 
+### error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.missing
+
+**Message:** A RetrievalSource 'upstream_resource_ids' identifier is missing!
+
+**Context:** edge_id
+
+**Description:** A RetrievalSource 'upstream_resource_ids' value should not be None or empty!
+
 ### error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.not_curie
 
-**Message:** Infores value is not a valid well-formed CURIE
+**Message:** One (or more) Infores value(s) is not a valid well-formed CURIE
 
 **Context:** edge_id, identifier
 
-**Description:** A 'retrieval_source.upstream_resource_ids' values must be a well-formed Infores CURIE!
+**Description:** A RetrievalSource 'upstream_resource_ids' Infores value must be a well-formed CURIE!
 
 ### error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.invalid
 
@@ -758,7 +774,7 @@
 
 **Context:** edge_id, identifier
 
-**Description:** A 'retrieval_source.upstream_resource_ids' Infores CURIEs must come from the Infores namespace!
+**Description:** A RetrievalSource 'upstream_resource_ids' Infores CURIE must come from the Infores namespace!
 
 ### error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.unknown
 
