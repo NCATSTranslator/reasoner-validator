@@ -628,17 +628,6 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                                             edge_id=edge_id,
                                             source_trail=source_trail
                                         )
-                                        # if not a Biolink 'association_slot', at least, check if
-                                        # the 'attribute_type_id' has a namespace (prefix) known to Biolink.
-                                        # We won't call it a hard error, but issue a warning
-                                        if not self.bmt.get_element_by_prefix(attribute_type_id):
-                                            self.report(
-                                                code="warning.knowledge_graph.edge." +
-                                                     "attribute.type_id.non_biolink_prefix",
-                                                identifier=attribute_type_id,
-                                                edge_id=edge_id,
-                                                source_trail=source_trail
-                                            )
                                     else:
                                         # attribute_type_id is a Biolink 'association_slot': validate it further...
 
@@ -688,6 +677,18 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                                                             attribute_type_id == kp_source_type and \
                                                             infores == kp_source:
                                                         found_kp_knowledge_source = True
+
+                        # if not a Biolink model defined attribute term, at least, check if
+                        # the 'attribute_type_id' has a namespace (prefix) known to Biolink.
+                        # We won't call it a hard error, but issue a warning
+                        elif not self.bmt.get_element_by_prefix(attribute_type_id):
+                            self.report(
+                                code="warning.knowledge_graph.edge." +
+                                     "attribute.type_id.non_biolink_prefix",
+                                identifier=attribute_type_id,
+                                edge_id=edge_id,
+                                source_trail=source_trail
+                            )
 
             # Edge provenance tags only recorded in Edge attributes prior to TRAPI 1.4.0-beta
             if not self.minimum_required_trapi_version("1.4.0-beta") and self.validate_biolink():
