@@ -547,18 +547,23 @@ error:
         retrieval_source:
           resource_id:
             infores:
+              missing:
+                $message: "RetrievalSource 'resource_id' identifier is missing!"
+                $context:
+                  - edge_id
+                $description: "A RetrievalSource 'resource_id' value should not be None or empty!"
               not_curie:
-                $message: "Infores value is not a valid well-formed CURIE"
+                $message: "One (or more) Infores value(s) is not a valid well-formed CURIE"
                 $context:
                   - edge_id
                   - identifier
-                $description: "A 'retrieval_source.resource_id' value must be a well-formed infores CURIE!"
+                $description: "A RetrievalSource 'resource_id' Infores value must be a well-formed CURIE!"
               invalid:
                 $message: "Invalid Infores namespace"
                 $context:
                   - edge_id
                   - identifier
-                $description: "A 'retrieval_source.resource_id' Infores CURIE must come from the Infores namespace!"
+                $description: "A RetrievalSource 'resource_id' Infores CURIE must come from the Infores namespace!"
               unknown:
                 $message: "Unregistered infores"
                 $context:
@@ -572,18 +577,23 @@ error:
               $description: "Value of the 'resource_id' property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty Infores identifier!"
           upstream_resource_ids:
             infores:
+              missing:
+                $message: "A RetrievalSource 'upstream_resource_ids' identifier is missing!"
+                $context:
+                  - edge_id
+                $description: "A RetrievalSource 'upstream_resource_ids' value should not be None or empty!"
               not_curie:
-                $message: "Infores value is not a valid well-formed CURIE"
+                $message: "One (or more) Infores value(s) is not a valid well-formed CURIE"
                 $context:
                   - edge_id
                   - identifier
-                $description: "A 'retrieval_source.upstream_resource_ids' values must be a well-formed Infores CURIE!"
+                $description: "A RetrievalSource 'upstream_resource_ids' Infores value must be a well-formed CURIE!"
               invalid:
                 $message: "Invalid Infores namespace"
                 $context:
                   - edge_id
                   - identifier
-                $description: "A 'retrieval_source.upstream_resource_ids' Infores CURIEs must come from the Infores namespace!"
+                $description: "A RetrievalSource 'upstream_resource_ids' Infores CURIE must come from the Infores namespace!"
               unknown:
                 $message: "Unregistered Infores"
                 $context:

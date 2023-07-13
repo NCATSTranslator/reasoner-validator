@@ -1575,6 +1575,51 @@ def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
     )
 
 
+# This tests identifiers within a RetrievalSource and is only done for the context of
+# 'resource_id' identifiers but the equivalent functionality assumed for 'upstream_resource_ids'
+@pytest.mark.parametrize(
+    "identifier,validation_code",
+    [
+        (   # Query 0: valid single 'infores' curie
+            "infores:molepro",
+            ""  # this shouldn't be an error
+        ),
+        (   # Query 1: semicolon list of 'infores' curies is also accepted
+            "infores:molepro; infores:arax",
+            ""  # this shouldn't be an error
+        ),
+        (   # Query 2: an empty value for the identifier will be caught
+            "",
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.missing"
+        ),
+        (   # Query 3: all the entries of an infores list of identifiers must be non-empty strings?
+            "infores:molepro; ",
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.missing"
+        ),
+        (   # Query 4: an identifier which is not a CURIE
+            "arax",
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie"
+        ),
+        (   # Query 5: all entries in a list must be a CURIE
+            "infores:molepro; arax",
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie"
+        ),
+        (   # Query 6: any curie given must be from the 'infores:' namespace
+            "NCBIGene:12345",
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid"
+        ),
+        (   # Query 7: all curies given in a curie must be from the 'infores:' namespace
+            "infores:molepro; NCBIGene:12345",
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid"
+        )
+    ]
+)
+def test_validate_infores(identifier: str, validation_code: str):
+    validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
+    validator.validate_infores("resource_id", "test_validate_infores", identifier)
+    check_messages(validator, validation_code)
+
+
 @pytest.mark.parametrize(
     "query",
     [
@@ -1831,7 +1876,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
 # Validate TRAPI Knowledge Graph #
 ##################################
 @pytest.mark.parametrize(
-    "query",
+    "biolink_version,graph_data,validation_code",
     [
         (
             LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
@@ -2822,11 +2867,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         )
     ]
 )
-def test_check_biolink_model_compliance_of_knowledge_graph(query: Tuple):
+def test_check_biolink_model_compliance_of_knowledge_graph(
+        biolink_version: str, graph_data: Dict, validation_code: str):
     validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
-        graph=query[1], biolink_version=query[0]
+        graph=graph_data, biolink_version=biolink_version
     )
-    check_messages(validator, query[2])
+    check_messages(validator, validation_code)
 
 
 MESSAGE_EDGE_WITHOUT_ATTRIBUTES = {

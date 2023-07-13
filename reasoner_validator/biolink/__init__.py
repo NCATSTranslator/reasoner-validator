@@ -838,8 +838,42 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                     )
 
     def validate_infores(self, context: str, edge_id: str, identifier: str) -> bool:
+        """
+        Validate that the specified identifier is a well-formed Infores CURIE.
+        Note that here we also now accept that the identifier can
+        be a semi-colon delimited list of such infores.
+
+        :param context: reporting context as specified by a validation code prefix
+        :param edge_id: specific edge validated, for the purpose of reporting validation context
+        :param identifier: candidate (list of) infores curie(s) to be validated.
+        :return:
+        """
         code_prefix: str = f"error.knowledge_graph.edge.sources.retrieval_source.{context}.infores"
-        if not is_curie(identifier):
+
+        # sanity check...
+        if not identifier:
+            # identifier itself is None or empty string
+            self.report(
+                code=f"{code_prefix}.missing",
+                edge_id=edge_id
+            )
+            return False
+
+        # For uniform processing here, we treat every identifier
+        # as a potential list (even if only a list of one entry),
+        ids: list[str] = [token.strip() for token in identifier.split(";")]
+        if not all([i for i in ids]):
+            # if the identifier is a semi-colon delimited array,
+            # then at least one of the entries is None or empty...
+            self.report(
+                code=f"{code_prefix}.missing",
+                identifier=identifier,
+                edge_id=edge_id
+            )
+            return False
+
+        if not all([is_curie(i) for i in ids]):
+            # ... or at least one of the entries is not a CURIE...
             self.report(
                 code=f"{code_prefix}.not_curie",
                 identifier=identifier,
@@ -847,8 +881,8 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             )
             return False
 
-        if not identifier.startswith("infores:"):
-            # not sure how absolute the need is for this to be an Infores. We'll be lenient for now?
+        if not all([i.startswith("infores:") for i in ids]):
+            # ... or at least one of the entries is not a CURIE...
             self.report(
                 code=f"{code_prefix}.invalid",
                 identifier=identifier,
