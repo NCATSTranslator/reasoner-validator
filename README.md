@@ -113,7 +113,7 @@ All paths here are relative to the root project directory.
 First install the documentation-specific dependencies.
 
 ```bash
-poetry install --extras docs
+poetry install --extras docs  # or poetry install --all-extras
 ```
 
 The validation codes MarkDown file should first be regenerated if needed (i.e. if it was revised):
@@ -167,7 +167,7 @@ The request body consists of JSON data structure with two top level tag:
 First install the web-specific dependencies.
 
 ```bash
-poetry install --extras web
+poetry install --extras web  # or poetry install --all-extras
 ```
 
 The service may be run directly as a Python module. The web services module may be directly run, as follows. 
