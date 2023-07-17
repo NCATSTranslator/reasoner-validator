@@ -802,6 +802,18 @@
 
 **Description:** The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable
 
+### warning.trapi.response.schema_version.missing
+
+**Message:** TRAPI Response is missing its TRAPI schema version
+
+**Description:** The TRAPI Response should specify its TRAPI version compliance.
+
+### warning.trapi.response.biolink_version.missing
+
+**Message:** TRAPI Response is missing its Biolink Model version
+
+**Description:** The TRAPI Response should specify its Biolink Model version compliance.
+
 ### warning.trapi.response.knowledge_graph.empty
 
 **Message:** Response returned an empty Message Knowledge Graph?

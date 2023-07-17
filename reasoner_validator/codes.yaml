@@ -615,6 +615,14 @@ warning:
           $context:
             - identifier
           $description:  "The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable"
+      schema_version:
+        missing:
+          $message: "TRAPI Response is missing its TRAPI schema version"
+          $description:  "The TRAPI Response should specify its TRAPI version compliance."
+      biolink_version:
+        missing:
+          $message: "TRAPI Response is missing its Biolink Model version"
+          $description:  "The TRAPI Response should specify its Biolink Model version compliance."
       knowledge_graph:
         empty:
           $message: "Response returned an empty Message Knowledge Graph?"
