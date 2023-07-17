@@ -2,6 +2,7 @@
 Version-specific Biolink Model semantic validation of knowledge graph components.
 """
 from typing import Optional, Any, Dict, List, Tuple, Set
+from sys import stderr
 from enum import Enum
 from functools import lru_cache
 from urllib.error import HTTPError
@@ -93,6 +94,7 @@ class BMTWrapper:
             self.resolved_biolink_version = self.bmt.get_model_version()
         else:
             self.resolved_biolink_version = "suppress"
+        print(f"\nBiolink Model Toolkit Wrapper set to TRAPI Version: '{self.resolved_biolink_version}'", file=stderr)
 
     def get_resolved_biolink_version(self) -> Optional[str]:
         return self.resolved_biolink_version

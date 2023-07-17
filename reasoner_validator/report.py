@@ -1,6 +1,6 @@
 """Error and Warning Reporting Module"""
 from typing import Optional, Dict, List
-from sys import stdout
+from sys import stdout, stderr
 from importlib import metadata
 from io import StringIO
 import copy
@@ -76,8 +76,11 @@ class ValidationReporter:
         :type strict_validation: Optional[bool] = None
         """
         self.prefix: str = prefix if prefix else ""
+
         self.trapi_version = get_latest_version(trapi_version) \
             if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
+        print(f"\nValidationReporter set to TRAPI Version: '{self.trapi_version}'", file=stderr)
+
         self.biolink_version = biolink_version
         self.strict_validation: Optional[bool] = strict_validation
         self.messages: MESSAGE_CATALOG = {
