@@ -160,6 +160,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#warning">Warning</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-status-unknown">warning.trapi.response.status.unknown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-schema-version-missing">warning.trapi.response.schema_version.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-biolink-version-missing">warning.trapi.response.biolink_version.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-knowledge-graph-empty">warning.trapi.response.knowledge_graph.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-results-empty">warning.trapi.response.results.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-workflow-runner-parameters-null">warning.trapi.response.workflow.runner_parameters.null</a></li>
@@ -840,6 +842,16 @@
 <p><strong>Message:</strong> TRAPI Response has unrecognized status code</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> The TRAPI Response status code should be one of a standardized set of short codes, e.g. Success, QueryNotTraversable, KPsNotAvailable</p>
+</section>
+<section id="warning-trapi-response-schema-version-missing">
+<h3>warning.trapi.response.schema_version.missing<a class="headerlink" href="#warning-trapi-response-schema-version-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> TRAPI Response is missing its TRAPI schema version</p>
+<p><strong>Description:</strong> The TRAPI Response should specify its TRAPI version compliance.</p>
+</section>
+<section id="warning-trapi-response-biolink-version-missing">
+<h3>warning.trapi.response.biolink_version.missing<a class="headerlink" href="#warning-trapi-response-biolink-version-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> TRAPI Response is missing its Biolink Model version</p>
+<p><strong>Description:</strong> The TRAPI Response should specify its Biolink Model version compliance.</p>
 </section>
 <section id="warning-trapi-response-knowledge-graph-empty">
 <h3>warning.trapi.response.knowledge_graph.empty<a class="headerlink" href="#warning-trapi-response-knowledge-graph-empty" title="Permalink to this heading"></a></h3>
