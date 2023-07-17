@@ -102,10 +102,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-invalid">error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-empty">error.knowledge_graph.nodes.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edges-empty">error.knowledge_graph.edges.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-id-missing">error.knowledge_graph.node.id.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-missing">error.knowledge_graph.node.category.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-not-a-category">error.knowledge_graph.node.category.not_a_category</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-unknown">error.knowledge_graph.node.category.unknown</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-id-missing">error.knowledge_graph.node.id.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-missing-categories">error.knowledge_graph.node.missing_categories</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-ids-not-array">error.knowledge_graph.node.ids.not_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-empty-ids">error.knowledge_graph.node.empty_ids</a></li>
@@ -508,6 +508,12 @@
 <p><strong>Message:</strong> No edges found!</p>
 <p><strong>Description:</strong> Knowledge graph in TRAPI messages must have a ‘edges’ key and non-empty associated value!</p>
 </section>
+<section id="error-knowledge-graph-node-id-missing">
+<h3>error.knowledge_graph.node.id.missing<a class="headerlink" href="#error-knowledge-graph-node-id-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Node identifier is missing for node</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> Knowledge graph node must have a ‘id’ key with a non-empty associated value!</p>
+</section>
 <section id="error-knowledge-graph-node-category-missing">
 <h3>error.knowledge_graph.node.category.missing<a class="headerlink" href="#error-knowledge-graph-node-category-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Category is missing for node</p>
@@ -525,12 +531,6 @@
 <p><strong>Message:</strong> Node has unknown category</p>
 <p><strong>Context:</strong> node_id, identifier</p>
 <p><strong>Description:</strong> Category specified in knowledge graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!</p>
-</section>
-<section id="error-knowledge-graph-node-id-missing">
-<h3>error.knowledge_graph.node.id.missing<a class="headerlink" href="#error-knowledge-graph-node-id-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Node identifier is missing for node</p>
-<p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Knowledge graph node must have a ‘id’ key with a non-empty associated value!</p>
 </section>
 <section id="error-knowledge-graph-node-missing-categories">
 <h3>error.knowledge_graph.node.missing_categories<a class="headerlink" href="#error-knowledge-graph-node-missing-categories" title="Permalink to this heading"></a></h3>
