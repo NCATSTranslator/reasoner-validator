@@ -360,6 +360,14 @@
 
 **Description:** Knowledge graph in TRAPI messages must have a 'edges' key and non-empty associated value!
 
+### error.knowledge_graph.node.id.missing
+
+**Message:** Node identifier is missing for node
+
+**Context:** identifier
+
+**Description:** Knowledge graph node must have a 'id' key with a non-empty associated value!
+
 ### error.knowledge_graph.node.category.missing
 
 **Message:** Category is missing for node
@@ -383,14 +391,6 @@
 **Context:** node_id, identifier
 
 **Description:** Category specified in knowledge graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!
-
-### error.knowledge_graph.node.id.missing
-
-**Message:** Node identifier is missing for node
-
-**Context:** identifier
-
-**Description:** Knowledge graph node must have a 'id' key with a non-empty associated value!
 
 ### error.knowledge_graph.node.missing_categories
 

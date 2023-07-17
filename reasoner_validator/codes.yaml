@@ -284,6 +284,12 @@ error:
         $message: "No edges found!"
         $description: "Knowledge graph in TRAPI messages must have a 'edges' key and non-empty associated value!"
     node:
+      id:
+        missing:
+          $message: "Node identifier is missing for node"
+          $context:
+            - identifier
+          $description: "Knowledge graph node must have a 'id' key with a non-empty associated value!"
       category:
         missing:
           $message: "Category is missing for node"
@@ -302,12 +308,6 @@ error:
             - node_id
             - identifier
           $description: "Category specified in knowledge graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!"
-      id:
-        missing:
-          $message: "Node identifier is missing for node"
-          $context:
-            - identifier
-          $description: "Knowledge graph node must have a 'id' key with a non-empty associated value!"
       missing_categories:
         $message: "Categories are missing for node"
         $context:

@@ -20,6 +20,7 @@ from reasoner_validator.biolink import (
     check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph
 )
+from tests import SIMPLE_SAMPLE_NODES, SAMPLE_NODES_WITH_ATTRIBUTES
 from tests.test_validation_report import check_messages
 
 logger = logging.getLogger(__name__)
@@ -1884,29 +1885,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             # Query 0: Sample full valid TRAPI Knowledge Graph
             {
                 # Sample nodes
-                'nodes': {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                        "attributes": [
-                            {
-                                "attribute_source": "infores:chembl",
-                                "attribute_type_id": "biolink:highest_FDA_approval_status",
-                                "attributes": [],
-                                "original_attribute_name": "max_phase",
-                                "value": "FDA Clinical Research Phase 2",
-                                "value_type_id": "biolink:FDA_approval_status_enum"
-                            }
-                        ]
-                    }
-                },
+                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 # Sample edge
                 'edges': {
                    "edge_1": {
@@ -1964,13 +1943,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 3: Empty edges - caught by missing 'edges' dictionary
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    }
-                }
+                "nodes": SIMPLE_SAMPLE_NODES
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No edges found!"
             "error.knowledge_graph.edges.empty"
@@ -1979,13 +1952,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 4 Empty edges dictionary
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {}
             },
             # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - No edges found!"
@@ -2022,7 +1989,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             {
                 "nodes": {
                     "NCBIGene:29974": {
-                       "categories": "biolink:Gene"
+                        "categories": "biolink:Gene"
                     }
                 },
                 "edges": {
@@ -2050,7 +2017,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             {
                 "nodes": {
                     "UniProtKB:Q14191": {
-                       "categories": ["biolink:GeneProductMixin"]
+                        "categories": ["biolink:GeneProductMixin"]
                     },
                     "CHEBI:18420": {
                         "name": "Magnesium",
@@ -2081,9 +2048,9 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             {
                 "nodes": {
                     "NCBIGene:29974": {
-                       "categories": [
+                        "categories": [
                            "biolink:NonsenseCategory"
-                       ]
+                        ]
                     }
                 },
                 "edges": {
@@ -2110,9 +2077,9 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             {
                 "nodes": {
                     "NCBIGene:29974": {
-                       "categories": [
+                        "categories": [
                            "biolink:BiologicalEntity"
-                       ]
+                        ]
                     }
                 },
                 "edges": {
@@ -2141,10 +2108,10 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             {
                 "nodes": {
                     "NCBIGene:29974": {
-                       "categories": [
+                        "categories": [
                            "biolink:Entity",
                            "biolink:Gene"
-                       ]
+                        ]
                     }
                 },
                 "edges": {
@@ -2177,10 +2144,10 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             {
                 "nodes": {
                     "NCBIGene:29974": {
-                       "categories": [
+                        "categories": [
                            "biolink:GeneOrGeneProduct",
                            "biolink:Gene"
-                       ]
+                        ]
                     }
                 },
                 "edges": {
@@ -2214,12 +2181,14 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         #             "CHEBI:27300": {  # Vitamin D
         #                "categories": [
         #                    "biolink:Nutrient"
-        #                ]
+        #                ],
+        #                "description": "Vitamin D"
         #             },
         #             "Orphanet:120464": {  # Vitamin D Receptor
         #                "categories": [
         #                    "biolink:Protein"
-        #                ]
+        #                ],
+        #                "description": "Vitamin D Receptor"
         #             }
         #         },
         #         "edges": {
@@ -2240,9 +2209,10 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             {
                 "nodes": {
                     "FOO:1234": {
-                       "categories": [
+                        "categories": [
                            "biolink:Gene"
-                       ],
+                        ],
+                        "description": "Hong Kong Fooey"
                     },
                     "NCBIGene:29974": {
                         "categories": [
@@ -2278,13 +2248,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 13: missing or empty subject, predicate, object values
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         # "subject": "",
@@ -2309,19 +2273,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 14: 'subject' id is missing from the nodes catalog
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:12345",
@@ -2344,19 +2296,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 15: predicate is unknown
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
@@ -2379,19 +2319,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 16: predicate is invalid - may be a valid Biolink element but is not a predicate
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
@@ -2416,15 +2344,17 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             {
                 "nodes": {
                     "HGNC:3059": {
-                       "categories": [
+                        "categories": [
                            "biolink:Gene"
-                       ]
+                        ],
+                        "description": "heparin binding EGF like growth factor"
                     },
                     "HGNC:391": {
                         "name": "AKT serine/threonine kinase 1",
                         "categories": [
                             "biolink:Gene"
                         ],
+                        "description": "AKT serine/threonine kinase 1"
                     }
                 },
                 "edges": {
@@ -2451,15 +2381,17 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             {
                 "nodes": {
                     "PMID:1234": {
-                       "categories": [
+                        "categories": [
                            "biolink:InformationContentEntity"
-                       ]
+                        ],
+                        "description": "Some kind of journal article"
                     },
                     "ORCID:56789": {
-                        "name": "cytosine",
+                        "name": "Somebody Great!",
                         "categories": [
                             "biolink:Agent"
                         ],
+                        "description": "a great person"
                     }
                 },
                 "edges": {
@@ -2484,19 +2416,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 19: predicate is non-canonical
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
@@ -2519,19 +2439,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 20: 'object' id is missing from the nodes catalog
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
@@ -2555,19 +2463,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 21: attribute 'attribute_type_id' is missing
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
@@ -2590,19 +2486,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 22: attribute 'value' is missing?
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
@@ -2625,19 +2509,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 23: 'attribute_type_id' is not a CURIE
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
@@ -2660,19 +2532,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 24: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
@@ -2696,19 +2556,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 25: 'attribute_type_id' has a 'biolink' CURIE prefix and is an association_slot, so it should pass
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
@@ -2733,19 +2581,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 26: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
@@ -2771,15 +2607,16 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                 # Sample nodes
                 'nodes': {
                     "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
+                        "categories": [
+                            "biolink:Gene"
+                        ]
                     },
                     "PUBCHEM.COMPOUND:597": {
                         "name": "cytosine",
                         "categories": [
-                            "biolink:SmallMolecule"  # Not valid in the latest model?
+                            "biolink:SmallMolecule"   # Not valid in the latest model?
                         ],
+                        "description": "Cytosine nucleotide"
                     }
                 },
                 # Sample edge
@@ -2793,22 +2630,10 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             },
             "error.knowledge_graph.node.category.unknown"
         ),
-        (   # Query 28:  #'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
+        (   # Query 28:  # 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
@@ -2833,19 +2658,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             # Query 29: 'attribute_type_id' is not a 'biolink:association_slot'
             #           (biolink:synonym is a node property) but...
             {
-                "nodes": {
-                    "NCBIGene:29974": {
-                       "categories": [
-                           "biolink:Gene"
-                       ]
-                    },
-                    "PUBCHEM.COMPOUND:597": {
-                        "name": "cytosine",
-                        "categories": [
-                            "biolink:SmallMolecule"
-                        ],
-                    }
-                },
+                "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
                     "edge_1": {
                         "subject": "NCBIGene:29974",
@@ -2876,19 +2689,7 @@ def test_check_biolink_model_compliance_of_knowledge_graph(
 
 
 MESSAGE_EDGE_WITHOUT_ATTRIBUTES = {
-    "nodes": {
-        "NCBIGene:29974": {
-            "categories": [
-                "biolink:Gene"
-            ]
-        },
-        "PUBCHEM.COMPOUND:597": {
-            "name": "cytosine",
-            "categories": [
-                "biolink:SmallMolecule"
-            ],
-        }
-    },
+    "nodes": SIMPLE_SAMPLE_NODES,
     "edges": {
         "edge_1": {
             "subject": "NCBIGene:29974",

@@ -15,7 +15,7 @@ import pytest
 from reasoner_validator import TRAPIResponseValidator
 from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_2
 
-from tests import PATCHED_140_SCHEMA_FILEPATH
+from tests import PATCHED_140_SCHEMA_FILEPATH, SAMPLE_NODES_WITH_ATTRIBUTES
 from tests.test_validation_report import check_messages
 
 
@@ -37,31 +37,6 @@ _TEST_QG_1 = {
         }
     }
 }
-
-# Sample nodes
-_TEST_NODES_1 = {
-        "NCBIGene:29974": {
-           "categories": [
-               "biolink:Gene"
-           ]
-        },
-        "PUBCHEM.COMPOUND:597": {
-            "name": "cytosine",
-            "categories": [
-                "biolink:SmallMolecule"
-            ],
-            "attributes": [
-                {
-                    "attribute_source": "infores:chembl",
-                    "attribute_type_id": "biolink:highest_FDA_approval_status",
-                    "attributes": [],
-                    "original_attribute_name": "max_phase",
-                    "value": "FDA Clinical Research Phase 2",
-                    "value_type_id": "biolink:FDA_approval_status_enum"
-                }
-            ]
-        }
-    }
 
 # Sample edge 1
 _TEST_EDGES_1 = {
@@ -93,7 +68,7 @@ _TEST_EDGES_1 = {
     }
 
 _TEST_KG_1 = {
-    "nodes": _TEST_NODES_1,
+    "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
     "edges": _TEST_EDGES_1
 }
 
@@ -130,7 +105,7 @@ _TEST_EDGES_2 = {
     }
 
 _TEST_KG_2 = {
-    "nodes": _TEST_NODES_1,
+    "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
     "edges": _TEST_EDGES_2
 }
 
@@ -225,7 +200,7 @@ _TEST_EDGES_4 = {
 
 
 _TEST_KG_4 = {
-    "nodes": _TEST_NODES_1,
+    "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
     "edges": _TEST_EDGES_4
 }
 

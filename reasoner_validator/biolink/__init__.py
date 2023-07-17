@@ -11,6 +11,7 @@ from pprint import PrettyPrinter
 from bmt import Toolkit, utils
 from linkml_runtime.linkml_model import ClassDefinition, Element
 
+from reasoner_validator.message import MESSAGE_CATALOG
 from reasoner_validator.sri.util import is_curie
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.versioning import SemVer, SemVerError
@@ -157,7 +158,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         :type trapi_version: Optional[str] or None
         :param biolink_version: caller specified Biolink Model version (default: None, which takes the BMT 'latest')
         :type biolink_version: Optional[str] or None
-        :param target_provenance: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+        :param target_provenance: Dictionary of context identifying the ARA and KP for provenance attribute validation
         :type target_provenance: Optional[Dict[str,str]]
         """
         BMTWrapper.__init__(self, biolink_version=biolink_version)
@@ -185,7 +186,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             logger.error(f"minimum_required_biolink_version() error: {str(sve)}")
             return False
 
-    def get_result(self) -> Tuple[str, Optional[Dict[str, Dict[str, Optional[List[Dict[str, str]]]]]]]:
+    def get_result(self) -> Tuple[str, MESSAGE_CATALOG]:
         """
         Get result of validation.
 
@@ -209,11 +210,11 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             # TODO: this will fail for an earlier TRAPI data schema version
             #       which didn't use the tag 'categories' for nodes...
             #       probably no longer relevant to the community?
-            if 'categories' in slots:
-                if not isinstance(slots["categories"], List):
-                    self.report(code="error.knowledge_graph.node.categories.not_array", identifier=node_id)
-                else:
-                    if self.validate_biolink():
+            if self.validate_biolink():
+                if 'categories' in slots:
+                    if not isinstance(slots["categories"], List):
+                        self.report(code="error.knowledge_graph.node.categories.not_array", identifier=node_id)
+                    else:
                         # Biolink Validation of node, if not suppressed
                         categories = slots["categories"]
                         node_prefix_mapped: bool = False
@@ -249,14 +250,14 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                                 identifier=node_id,
                                 categories=str(categories)
                             )
-            else:
-                self.report(
-                    code="error.knowledge_graph.node.category.missing",
-                    context=self.graph_type.value, identifier=node_id
-                )
+                else:
+                    self.report(
+                        code="error.knowledge_graph.node.category.missing",
+                        identifier=node_id
+                    )
 
-            # TODO: Do we need to (or can we) validate here, any other
-            #       Knowledge Graph node fields? Perhaps not yet?
+                # TODO: Do we need to (or can we) validate here, any other
+                #       Knowledge Graph node fields? Perhaps not yet?
 
         else:  # Query Graph node validation
 
@@ -421,7 +422,8 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                 if not kp_source.startswith("infores:"):
                     kp_source = f"infores:{kp_source}"
             kp_source_type = self.target_provenance['kp_source_type'] \
-                if 'kp_source_type' in self.target_provenance and self.target_provenance['kp_source_type'] else 'aggregator'
+                if 'kp_source_type' in self.target_provenance and self.target_provenance['kp_source_type'] \
+                else 'aggregator'
             kp_source_type = f"biolink:{kp_source_type}_knowledge_source"
 
         return ara_source, kp_source, kp_source_type
@@ -512,7 +514,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         sources: Dict[str, List[str]] = dict()
 
         # we only report errors about missing or empty edge attributes if TRAPI 1.3.0 or earlier,
-        # and Biolink Validation is not suppressed, since we can't fully validate provenance)
+        # and Biolink Validation is not suppressed, since we can't fully validate provenance and
         # since earlier TRAPI releases are minimally expected to record provenance attributes
         # we only report this for TRAPI < 1.4 when Biolink Validation is done given that
         # without Biolink validation, provenance cannot be reliably assessed
@@ -841,7 +843,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         """
         Validate that the specified identifier is a well-formed Infores CURIE.
         Note that here we also now accept that the identifier can
-        be a semi-colon delimited list of such infores.
+        be a semicolon delimited list of such infores.
 
         :param context: reporting context as specified by a validation code prefix
         :param edge_id: specific edge validated, for the purpose of reporting validation context
@@ -863,7 +865,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         # as a potential list (even if only a list of one entry),
         ids: list[str] = [token.strip() for token in identifier.split(";")]
         if not all([i for i in ids]):
-            # if the identifier is a semi-colon delimited array,
+            # if the identifier is a semicolon delimited array,
             # then at least one of the entries is None or empty...
             self.report(
                 code=f"{code_prefix}.missing",
