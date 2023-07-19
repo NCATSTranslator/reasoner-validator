@@ -185,14 +185,19 @@ in a dictionary looking something like the following (as an example):
     }
 
 
-Every message has a 'code' and optional context-specific parameters which correspond to
+
+Every message has a 'code', message scope and optional context-specific parameters which correspond to
 named fields in the Python string templates found in the `reasoner_validator package 'codes.yaml' file <https://github.com/NCATSTranslator/reasoner-validator/blob/master/reasoner_validator/codes.yaml>`_.
+
+A human readable page with the codes is `here <validation_codes_dictionary.html>`_.
 
 Note that the trapi_version parameter to the TRAPIResponseValidator can also be a local path to a .yaml TRAPI schema file, which is read in and used as the validation standard. In such a case, though, it is necessary to encode the TRAPI version as a suffix to the root filename, e.g. my_trapi_schema_1.4.0-beta5.yaml. Note that the TRAPI version suffix to the root file name is assumed to be delimited by a leading underscore character. The simplistic parsing of this version is as follows:
 
 .. code-block:: python
+
     root_path: str = string.replace(".yaml", "")
     semver_string = root_path.split("_")[-1]
+
 
 Python API
 ----------
@@ -217,7 +222,7 @@ Running Validation against an ARS UUID Result(*) or using a Local TRAPI Request 
 
 A local script trapi_validator.py is available to run TRAPI Response validation against either a PK (UUID)
 indexed query result of the Biomedical Knowledge Translator "Autonomous Relay System" (ARS), a local JSON Response
-text file or a locally triggered _ad hoc_ query Request against an directly specified TRAPI endpoint.
+text file or a locally triggered query Request against an directly specified TRAPI endpoint.
 
 Note that it is best run within a **`poetry shell`** created by **`poetry install`**.
 
