@@ -247,9 +247,14 @@ in a dictionary looking something like the following (as an example):</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Every message has a ‘code’ and optional context-specific parameters which correspond to
+<p>Every message has a ‘code’, message scope and optional context-specific parameters which correspond to
 named fields in the Python string templates found in the <a class="reference external" href="https://github.com/NCATSTranslator/reasoner-validator/blob/master/reasoner_validator/codes.yaml">reasoner_validator package ‘codes.yaml’ file</a>.</p>
+<p>A human readable page with the codes is <a class="reference external" href="validation_codes_dictionary.html">here</a>.</p>
 <p>Note that the trapi_version parameter to the TRAPIResponseValidator can also be a local path to a .yaml TRAPI schema file, which is read in and used as the validation standard. In such a case, though, it is necessary to encode the TRAPI version as a suffix to the root filename, e.g. my_trapi_schema_1.4.0-beta5.yaml. Note that the TRAPI version suffix to the root file name is assumed to be delimited by a leading underscore character. The simplistic parsing of this version is as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">root_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">semver_string</span> <span class="o">=</span> <span class="n">root_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
 <section id="python-api">
 <h2>Python API<a class="headerlink" href="#python-api" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
@@ -317,7 +322,7 @@ named fields in the Python string templates found in the <a class="reference ext
 <h1>Running Validation against an ARS UUID Result(*) or using a Local TRAPI Request Query<a class="headerlink" href="#running-validation-against-an-ars-uuid-result-or-using-a-local-trapi-request-query" title="Permalink to this heading"></a></h1>
 <p>A local script trapi_validator.py is available to run TRAPI Response validation against either a PK (UUID)
 indexed query result of the Biomedical Knowledge Translator “Autonomous Relay System” (ARS), a local JSON Response
-text file or a locally triggered _ad <a href="#id1"><span class="problematic" id="id2">hoc_</span></a> query Request against an directly specified TRAPI endpoint.</p>
+text file or a locally triggered query Request against an directly specified TRAPI endpoint.</p>
 <p>Note that it is best run within a <strong>`poetry shell`</strong> created by <strong>`poetry install`</strong>.</p>
 <p>For script usage, type:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./trapi_validator.py<span class="w"> </span>--help
