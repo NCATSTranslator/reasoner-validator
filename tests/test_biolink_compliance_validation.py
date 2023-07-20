@@ -32,7 +32,7 @@ pp = PrettyPrinter(indent=4)
 # we don't pretend to totally support Biolink Models any earlier than 3.1.1.
 # If earlier biolink model compliance testing is desired,
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
-LATEST_BIOLINK_MODEL_VERSION = "3.2.0"
+LATEST_BIOLINK_MODEL_VERSION = "3.5.2"
 
 # special case of signalling suppression of validation
 SUPPRESS_BIOLINK_MODEL_VALIDATION = "suppress"
@@ -1216,7 +1216,7 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 7. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
+            # Query 7. An attribute_type_id is not a well-formed CURIE? Should fail?
             {
                 "attributes": [
                     {
@@ -1224,8 +1224,8 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
                         "value": "infores:aragorn"
                     },
                     {
-                        "attribute_type_id": "biolink:primary_knowledge_source",
-                        "value": "infores:panther"
+                        "attribute_type_id": "biolink:stoichiometry",
+                        "value": 2
                     },
                     {
                         "attribute_type_id": "non_a_curie",
@@ -1236,44 +1236,6 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
             get_ara_test_case(),
             # "is not a well-formed CURIE!"
             "error.knowledge_graph.edge.attribute.type_id.not_curie"
-        ),
-        (
-            # Query 8. kp type is 'primary'. Should pass?
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:aragorn"
-                    },
-                    {
-                        "attribute_type_id": "biolink:primary_knowledge_source",
-                        "value": "infores:panther"
-                    }
-                ]
-            },
-            get_ara_test_case(),
-            ""
-        ),
-        (
-            # Query 9. Is complete and should pass?
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:aragorn"
-                    },
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:panther"
-                    },
-                    {
-                        "attribute_type_id": "biolink:primary_knowledge_source",
-                        "value": "infores:my-primary-ks"
-                    }
-                ]
-            },
-            get_ara_test_case({"kp_source_type": "aggregator"}),
-            ""
         )
     ]
 )
@@ -1895,21 +1857,9 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                        "attributes": [
                            {
                                "attribute_source": "infores:hmdb",
-                               "attribute_type_id": "biolink:primary_knowledge_source",
+                               "attribute_type_id": "biolink:stoichiometry",
+                               "value": 2,
                                "attributes": [],
-                               "description": "MolePro's HMDB target transformer",
-                               "original_attribute_name": "biolink:primary_knowledge_source",
-                               "value": "infores:hmdb",
-                               "value_type_id": "biolink:InformationResource"
-                           },
-                           {
-                               "attribute_source": "infores:hmdb",
-                               "attribute_type_id": "biolink:aggregator_knowledge_source",
-                               "attributes": [],
-                               "description": "Molecular Data Provider",
-                               "original_attribute_name": "biolink:aggregator_knowledge_source",
-                               "value": "infores:molepro",
-                               "value_type_id": "biolink:InformationResource"
                            }
                         ],
                        "sources": [
@@ -1970,7 +1920,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -1997,7 +1952,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2029,7 +1989,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "UniProtKB:Q14191",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "CHEBI:18420",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2058,7 +2023,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2073,7 +2043,8 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 9: unknown category specified
+            # Query 9: issue a warning about an 'inclusion list' abstract or mixin category
+            #          iff they are specified as the only (most specific) category
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -2087,7 +2058,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2097,12 +2073,47 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Node has deprecated category!"
+            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Node has an abstract or mixin category!"
             "warning.knowledge_graph.node.category.abstract_or_mixin"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 10: abstract category in Knowledge Graphs? Itself ignored now during validation,
+            # Query 10: ignore 'included' abstract or mixin categories which are
+            #           only specified as parents to concrete child instances
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                        "categories": [
+                            "biolink:BiologicalEntity",
+                            "biolink:Gene"
+                        ]
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:physically_interacts_with",
+                        "object": "NCBIGene:29974",
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
+                    }
+                }
+            },
+            ""  # this should pass without error?
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 11: abstract category in Knowledge Graphs? Itself ignored now during validation,
             #          although if at least one 'concrete' class is not given, other related
             #          validation errors (e.g. 'unmapped_prefix'?) may be reported?
             {
@@ -2121,8 +2132,8 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "object": "NCBIGene:29974",
                         "attributes": [
                             {
-                                "attribute_type_id": "biolink:primary_knowledge_source",
-                                "value": "infores:my-kp"
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
                             }
                         ],
                         "sources": [
@@ -2138,7 +2149,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 11: mixin category in Knowledge Graphs? Itself ignored now during validation,
+            # Query 12: mixin category in Knowledge Graphs? Itself ignored now during validation,
             #          although if at least one 'concrete' class is not given with id_prefix mappings,
             #          other related validation errors (e.g. 'unmapped_prefix'?) may be reported?
             {
@@ -2157,8 +2168,8 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "object": "NCBIGene:29974",
                         "attributes": [
                             {
-                                "attribute_type_id": "biolink:primary_knowledge_source",
-                                "value": "infores:my-kp"
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
                             }
                         ],
                         "sources": [
@@ -2205,7 +2216,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         # ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 12: invalid node CURIE prefix namespace, for specified category
+            # Query 13: invalid node CURIE prefix namespace, for specified category
             {
                 "nodes": {
                     "FOO:1234": {
@@ -2227,8 +2238,8 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "object": "NCBIGene:29974",
                         "attributes": [
                             {
-                                "attribute_type_id": "biolink:primary_knowledge_source",
-                                "value": "infores:my-kp"
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
                             }
                         ],
                         "sources": [
@@ -2246,7 +2257,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 13: missing or empty subject, predicate, object values
+            # Query 14 missing or empty subject, predicate, object values
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2254,7 +2265,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         # "subject": "",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "NCBIGene:29974",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2271,7 +2287,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 14: 'subject' id is missing from the nodes catalog
+            # Query 15: 'subject' id is missing from the nodes catalog
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2279,7 +2295,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:12345",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2294,7 +2315,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 15: predicate is unknown
+            # Query 16: predicate is unknown
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2302,7 +2323,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:unknown_predicate",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2317,7 +2343,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 16: predicate is invalid - may be a valid Biolink element but is not a predicate
+            # Query 17: predicate is invalid - may be a valid Biolink element but is not a predicate
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2325,7 +2351,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:has_unit",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2340,7 +2371,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 17: predicate is a mixin - not allowed in Knowledge Graphs
+            # Query 18: predicate is a mixin - not allowed in Knowledge Graphs
             {
                 "nodes": {
                     "HGNC:3059": {
@@ -2362,7 +2393,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "HGNC:3059",
                         "predicate": "biolink:increases_amount_or_activity_of",
                         "object": "HGNC:391",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2377,7 +2413,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 18: predicate is abstract - not allowed in Knowledge Graphs
+            # Query 19: predicate is abstract - not allowed in Knowledge Graphs
             {
                 "nodes": {
                     "PMID:1234": {
@@ -2399,7 +2435,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "PMID:1234",
                         "predicate": "biolink:contributor",
                         "object": "ORCID:56789",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2414,7 +2455,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 19: predicate is non-canonical
+            # Query 20: predicate is non-canonical
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2422,7 +2463,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:affected_by",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2437,7 +2483,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 20: 'object' id is missing from the nodes catalog
+            # Query 21: 'object' id is missing from the nodes catalog
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2445,7 +2491,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:678",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2461,7 +2512,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 21: attribute 'attribute_type_id' is missing
+            # Query 22: attribute 'attribute_type_id' is missing
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2484,7 +2535,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 22: attribute 'value' is missing?
+            # Query 23: attribute 'value' is missing?
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2492,7 +2543,12 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:knowledge_source"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                # "value": 2
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2507,7 +2563,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 23: 'attribute_type_id' is not a CURIE
+            # Query 24: 'attribute_type_id' is not a CURIE
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2530,7 +2586,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 24: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
+            # Query 25: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2554,7 +2610,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 25: 'attribute_type_id' has a 'biolink' CURIE prefix and is an association_slot, so it should pass
+            # Query 26: 'attribute_type_id' has a 'biolink' CURIE prefix and is an association_slot, so it should pass
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2563,8 +2619,14 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
                         "attributes": [
-                            {"attribute_type_id": "biolink:negated", "value": "some value"},
-                            {"attribute_type_id": "biolink:primary_knowledge_source", "value": "infores:hmdb"}
+                            {
+                                "attribute_type_id": "biolink:negated",
+                                "value": "some value"
+                            },
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
                         ],
                         "sources": [
                             {
@@ -2579,7 +2641,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 26: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
+            # Query 27: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2601,7 +2663,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             # f"has a CURIE prefix namespace unknown to Biolink!"
             "warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix"
         ),
-        (   # Query 27:  # An earlier Biolink Model won't recognize a category not found in its specified release
+        (   # Query 28:  # An earlier Biolink Model won't recognize a category not found in its specified release
             "1.8.2",
             {
                 # Sample nodes
@@ -2630,7 +2692,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
             },
             "error.knowledge_graph.node.category.unknown"
         ),
-        (   # Query 28:  # 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
+        (   # Query 29:  # 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -2655,7 +2717,7 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 29: 'attribute_type_id' is not a 'biolink:association_slot'
+            # Query 30: 'attribute_type_id' is not a 'biolink:association_slot'
             #           (biolink:synonym is a node property) but...
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -2681,7 +2743,8 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
     ]
 )
 def test_check_biolink_model_compliance_of_knowledge_graph(
-        biolink_version: str, graph_data: Dict, validation_code: str):
+        biolink_version: str, graph_data: Dict, validation_code: str
+):
     validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
         graph=graph_data, biolink_version=biolink_version
     )
