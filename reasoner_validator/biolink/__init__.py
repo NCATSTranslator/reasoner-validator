@@ -209,10 +209,10 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         logger.debug(f"{node_id}: {str(slots)}")
 
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
-            # TODO: this will fail for an earlier TRAPI data schema version
-            #       which didn't use the tag 'categories' for nodes...
-            #       probably no longer relevant to the community?
             if self.validate_biolink():
+                # TODO: this will fail for an earlier TRAPI data schema version
+                #       which didn't use the tag 'categories' for nodes...
+                #       But this earlier TRAPI release is no longer relevant to the community?
                 if 'categories' in slots:
                     if not isinstance(slots["categories"], List):
                         self.report(code="error.knowledge_graph.node.categories.not_array", identifier=node_id)
@@ -221,8 +221,9 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                         categories = slots["categories"]
                         node_prefix_mapped: bool = False
                         concrete_category_found: bool = False
+                        included_category: Optional[str] = None
                         for category in categories:
-                            category: Optional[ClassDefinition] = \
+                            concrete_category: Optional[ClassDefinition] = \
                                 self.validate_category(
                                     context="knowledge_graph",
                                     node_id=node_id,
@@ -231,20 +232,34 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                             # Only 'concrete' (non-abstract, non-mixin, preferably,
                             # non-deprecated) categories are of interest here,
                             # since only they will have associated namespaces
-                            if category:
+                            if concrete_category:
                                 concrete_category_found: bool = True
                                 possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
-                                if possible_subject_categories and category.name in possible_subject_categories:
+                                if possible_subject_categories and \
+                                        concrete_category.name in possible_subject_categories:
                                     node_prefix_mapped = True
                                     # don't need to search any more categories
                                     break
+                            else:
+                                # See above note about CATEGORY_INCLUSIONS
+                                if category in self.CATEGORY_INCLUSIONS:
+                                    included_category = category
 
                         if not concrete_category_found:
-                            self.report(
-                                code="error.knowledge_graph.node.categories.not_concrete",
-                                identifier=node_id,
-                                categories=str(categories)
-                            )
+                            # Although we didn't find any concrete categories, maybe
+                            # we instead saw one of the 'included' abstract/mixin categories
+                            if included_category is not None:
+                                self.report(
+                                    code=f"warning.knowledge_graph.node.category.abstract_or_mixin",
+                                    identifier=concrete_category_found,
+                                    node_id=node_id
+                                )
+                            else:
+                                self.report(
+                                    code="error.knowledge_graph.node.categories.not_concrete",
+                                    identifier=node_id,
+                                    categories=str(categories)
+                                )
 
                         if not node_prefix_mapped:
                             self.report(
@@ -1343,15 +1358,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                         node_id=node_id
                     )
                 if biolink_class.abstract or self.bmt.is_mixin(category):
-                    # See above note about CATEGORY_INCLUSIONS
-                    if context == "knowledge_graph" and category in self.CATEGORY_INCLUSIONS:
-                        self.report(
-                            code=f"warning.{context}.node.category.abstract_or_mixin",
-                            identifier=category,
-                            node_id=node_id
-                        )
-                    else:
-                        biolink_class = None
+                    biolink_class = None
                 elif not self.bmt.is_category(category):
                     self.report(
                         code=f"error.{context}.node.category.not_a_category",

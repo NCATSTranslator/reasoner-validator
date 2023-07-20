@@ -4,6 +4,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 
 ## 3.7.5
 - Added TRAPI Response schema version and biolink version validation warning codes
+- Warning about 'biolink:BiologicalCategory' and 'biolink:InformationContentEntity' are not issued if these categories are parent categories of concrete category instances specified in the 'categories' list
 
 ## 3.7.4
 - resolves reasoner-validator issue 89 by validating semicolon delimited strings of infores
