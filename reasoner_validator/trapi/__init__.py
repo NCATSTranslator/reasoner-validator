@@ -1,6 +1,7 @@
 """TRAPI Validation Functions."""
 from json import dumps
 from typing import Optional, Dict, List
+from sys import stderr
 from os.path import isfile
 import copy
 from functools import lru_cache
@@ -250,10 +251,13 @@ class TRAPISchemaValidator(ValidationReporter):
         trapi_version : str
             version of component to validate against
         """
+        self.trapi_version = get_latest_version(trapi_version) \
+            if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
+        print(f"\nTRAPISchemaValidator set to TRAPI Version: '{self.trapi_version}'", file=stderr)
         ValidationReporter.__init__(
             self,
             prefix="TRAPI Validation",
-            trapi_version=trapi_version
+            trapi_version=self.trapi_version
         )
 
     def validate(self, instance, component):

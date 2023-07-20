@@ -77,11 +77,11 @@ class ValidationReporter:
         """
         self.prefix: str = prefix if prefix else ""
 
-        self.trapi_version = get_latest_version(trapi_version) \
-            if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
-        print(f"\nValidationReporter set to TRAPI Version: '{self.trapi_version}'", file=stderr)
-
+        # TODO: does this class need to set two version variables
+        #       or should they remain closer to point of usage?
+        self.trapi_version = trapi_version
         self.biolink_version = biolink_version
+
         self.strict_validation: Optional[bool] = strict_validation
         self.messages: MESSAGE_CATALOG = {
             "critical": dict(),

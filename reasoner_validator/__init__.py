@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 RESULT_TEST_DATA_SAMPLE_SIZE = 10
 
 
-class TRAPIResponseValidator(ValidationReporter):
+class TRAPIResponseValidator(TRAPISchemaValidator):
     """
     TRAPI Validator is an overall wrapper class for validating
     conformance of TRAPI Responses to TRAPI and the Biolink Model.
@@ -156,7 +156,7 @@ class TRAPIResponseValidator(ValidationReporter):
         :type max_kg_edges: int
         :param max_results: target sample number of results to validate (default: 0 for 'use all results').
         :type max_results: int
-        :param target_provenance: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+        :param target_provenance: Dictionary of context identifying the ARA and KP for provenance attribute validation
         :type target_provenance: Dict
 
         :returns: Validator cataloging "information", "warning" and "error" messages (could be empty)
@@ -325,7 +325,7 @@ class TRAPIResponseValidator(ValidationReporter):
         :param edges_limit: integer maximum number of edges to be validated in the knowledge graph. A value of zero
                             triggers validation of all edges in the knowledge graph (Default: 0 - use all edges)
         :type edges_limit: int
-        :param target_provenance: Dictionary of validation context identifying the ARA and KP for provenance attribute validation
+        :param target_provenance: Dictionary of context identifying the ARA and KP for provenance attribute validation
         :type target_provenance: Dict
 
         :return: bool, False, if validation errors
