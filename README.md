@@ -295,6 +295,7 @@ Summary of earlier releases and current Change Log is [here](CHANGELOG.md).
 
 ## Code Limitations (implied Future Work?)
 
+- The release of the reasoner-validator after v2.2.0 will not likely be able to (reliably, if at all) validate TRAPI JSON data models prior to 1.3.0
 - Biolink Model release <= 2.4.8 versus 3.0.0 validation: the reasoner-validator uses the Biolink Model Toolkit. As it happens, the toolkit is not backwards compatible with at least one Biolink Model structural change from release 2.#.# to 3.#.#: the tagging of 'canonical' predicates. That is, the 0.8.10++ toolkit reports canonical <= 2.4.8 model predicates as 'non-canonical'.
 - This release of the Reasoner Validator Web Service will detect TRAPI 1.0.* releases but doesn't strive to be completely backwards compatible with them (considering that TRAPI 1.0.* is totally irrelevant now). 
 - The web service validation doesn't do deep validation of the Results part of a TRAPI Message
