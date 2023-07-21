@@ -1418,7 +1418,7 @@ def qualifier_validator(
             },
             "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
         ),
-        (  # Query 13 - 'qualifier_type_id' property value is valid but abstract
+        (  # Query 13 - 'qualifier_type_id' property is valid but abstract
             {
                 'qualifier_constraints': [
                     {
@@ -1769,6 +1769,26 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
                     {
                         'qualifier_type_id': "biolink:object_direction_qualifier",
                         'qualifier_value': "upregulated"
+                    }
+                ]
+            },
+            ""    # this particular use case should pass
+        ),
+        (   # Query 12 - qualifier_type_id 'object_aspect_qualifier' is a valid Biolink qualifier type and
+            #            'synthesis' is a valid corresponding 'permissible value' enum 'qualifier_value', but
+            #            only within the context of a specific subclass of biolink:Association, i.e.
+            #
+            #                 biolink:GeneToDiseaseOrPhenotypicFeatureAssociation
+            #                     slot_usage:
+            #                        subject aspect qualifier:
+            #                            range: GeneOrGeneProductOrChemicalEntityAspectEnum
+            #
+            #            which has 'synthesis' as an allowable qualifier value
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:object_aspect_qualifier",
+                        'qualifier_value': "synthesis"
                     }
                 ]
             },
