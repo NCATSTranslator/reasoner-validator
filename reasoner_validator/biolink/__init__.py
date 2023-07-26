@@ -775,7 +775,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
             context: str,
             edge_id: str,
             qualifiers: List[Dict[str, str]],
-            associations: Optional[List[str]]
+            associations: Optional[List[str]] = None
     ):
         """
         Validate Qualifier Entry (JSON Object).
@@ -785,7 +785,8 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                         - knowledge graph edge qualifiers (knowledge_graph.edge.qualifiers)
         :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param qualifiers: List[Dict[str, str]], of qualifier entries to be validated.
-        :param associations: Optional[List[str]], Biolink association subclasses possibly related to the current edge.
+        :param associations: Optional[List[str]] = None,
+                             Biolink association subclasses possibly related to the current edge.
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
         for qualifier in qualifiers:
@@ -809,12 +810,11 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
 
                 # A Query Graph miss on qualifier_value is less an issue since there may not be enough
                 # context to resolve the 'qualifier_value'; whereas a Knowledge Graph miss is more severe
-                # TODO: however, we somehow need to leverage TRAPI MetaEdge.association metadata here?
                 elif context.startswith("knowledge_graph") and \
                         not self.bmt.validate_qualifier(
                             qualifier_type_id=qualifier_type_id,
                             qualifier_value=qualifier_value,
-                            # associations=associations
+                            associations=associations
                         ):
                     self.report(
                         code=f"error.{context}.qualifier.value.unresolved",
@@ -867,15 +867,13 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
     def validate_qualifier_constraints(
             self,
             edge_id: str,
-            edge: Dict,
-            associations: Optional[List[str]] = None
+            edge: Dict
     ):
         """
         Validate Query Edge Qualifier Constraints.
 
         :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param edge: Dict, the edge object associated with some attributes are expected to be found
-        :param associations: Optional[List[str]], Biolink association subclasses possibly related to the current edge.
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
         # Edge qualifiers will only be seen in Biolink 3 data,
@@ -902,8 +900,7 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                     self.validate_qualifier_entry(
                         context="query_graph.edge.qualifier_constraints.qualifier_set",
                         edge_id=edge_id,
-                        qualifiers=qualifier_set,
-                        associations=associations
+                        qualifiers=qualifier_set
                     )
 
     def validate_infores(self, context: str, edge_id: str, identifier: str) -> bool:
@@ -1244,21 +1241,6 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
 
         object_id = edge['object'] if 'object' in edge else None
 
-        # We need to look up the biolink:Association subclass
-        # matching the subject and object categories of the edge
-        # I think this is necessary for both QEdges and KG Edges(?)
-        #
-        subject_categories: Optional[List[str]] = self.get_node_categories(node_id=subject_id)
-        object_categories: Optional[List[str]] = self.get_node_categories(node_id=object_id)
-        # associations: Optional[List[str]] = self.bmt.get_associations(
-        #     subject_categories=subject_categories,  # Optional[List[str]]
-        #     predicates=predicates,                  # Optional[List[str]]
-        #     object_categories=object_categories,    # Optional[List[str]]
-        #     specific=True                      # bool, default: False?
-        # )
-        # TODO: implement full implementation (above) to replace this stub assignment
-        associations: Optional[List[str]] = None
-
         edge_id = f"{str(subject_id)}--{edge_label}->{str(object_id)}"
 
         context: str = self.graph_type.name.lower()
@@ -1273,6 +1255,19 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         # and (Biolink) edge qualifiers (or qualifier_constraints)
         source_trail: Optional[str] = None
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
+
+            associations: Optional[List[str]] = None
+            if self.validate_biolink():
+                # We need to look up the biolink:Association subclass
+                # matching the subject and object categories of the edge
+                subject_categories: Optional[List[str]] = self.get_node_categories(node_id=subject_id)
+                object_categories: Optional[List[str]] = self.get_node_categories(node_id=object_id)
+                associations = self.bmt.get_associations(
+                    subject_categories=subject_categories,
+                    predicates=predicates,
+                    object_categories=object_categories,
+                    formatted=True
+                )
 
             # Edge "qualifiers" field is only recorded as an
             # Edge property, from TRAPI 1.3.0-beta onwards
@@ -1293,13 +1288,14 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
                 # and the resulting source_trail returned, for further external reporting purposes
                 source_trail = self.validate_attributes(edge_id=edge_id, edge=edge)
         else:
+            # NOT a Knowledge Graph edge validation
             self.validate_attribute_constraints(edge_id=edge_id, edge=edge)
 
             # Edge "qualifiers" field is only recorded as an
             # Edge property, from TRAPI 1.3.0-beta onwards
             # We don't care about 'source_trail' here, for the Query Graph edges
             if self.minimum_required_trapi_version("1.3.0-beta"):
-                self.validate_qualifier_constraints(edge_id=edge_id, edge=edge, associations=associations)
+                self.validate_qualifier_constraints(edge_id=edge_id, edge=edge)
 
         # Validate Subject node
         if not subject_id:
