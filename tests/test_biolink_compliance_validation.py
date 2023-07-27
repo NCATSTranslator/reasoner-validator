@@ -1253,15 +1253,17 @@ def test_latest_validate_attributes(query: Tuple):
 def qualifier_validator(
         tested_method,
         edge_model: str,
-        query: Tuple[Dict, str],
+        edge: Dict,
+        message: str,
         trapi_version: Optional[str] = None,
-        biolink_version: Optional[str] = LATEST_BIOLINK_MODEL_VERSION
+        biolink_version: Optional[str] = LATEST_BIOLINK_MODEL_VERSION,
+        **kwargs
 ):
     # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     # Sanity check: does TRAPI validation catch this first?
     trapi_validator = TRAPISchemaValidator(trapi_version=trapi_version)
     # Wrap Qualifiers inside a small mock QEdge
-    mock_edge: Dict = deepcopy(query[0])
+    mock_edge: Dict = deepcopy(edge)
     mock_edge["subject"] = "mock_subject"
 
     if trapi_validator.minimum_required_trapi_version(TRAPI_1_4_0_BETA):
@@ -1292,13 +1294,14 @@ def qualifier_validator(
         tested_method(
             validator,
             edge_id=f"{tested_method.__name__} unit test",
-            edge=query[0]
+            edge=edge,
+            **kwargs
         )
-    check_messages(validator, query[1])
+    check_messages(validator, message)
 
 
 @pytest.mark.parametrize(
-    "query",
+    "edge,message",
     [
         (  # Query 0 - no 'qualifier_constraints' key - since nullable: true, this should pass
             {},
@@ -1418,7 +1421,7 @@ def qualifier_validator(
             },
             "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
         ),
-        (  # Query 13 - 'qualifier_type_id' property value is valid but abstract
+        (  # Query 13 - 'qualifier_type_id' property is valid but abstract
             {
                 'qualifier_constraints': [
                     {
@@ -1529,12 +1532,13 @@ def qualifier_validator(
         )
     ]
 )
-def test_validate_qualifier_constraints(query: Tuple[Dict, str]):
+def test_validate_qualifier_constraints(edge: Dict, message: str):
     # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
-        query=query
+        edge=edge,
+        message=message
     )
 
 
@@ -1584,7 +1588,7 @@ def test_validate_infores(identifier: str, validation_code: str):
 
 
 @pytest.mark.parametrize(
-    "query",
+    "edge,message",
     [
         (   # Query 0 - 'qualifier_type_id' is the special qualifier case 'biolink:qualified_predicate'
             #            an incorrect value, which is not a Biolink predicate,  but...
@@ -1623,11 +1627,12 @@ def test_validate_infores(identifier: str, validation_code: str):
         )
     ]
 )
-def test_biolink_validation_suppressed_validate_qualifier_constraints(query: Tuple[Dict, str]):
+def test_biolink_validation_suppressed_validate_qualifier_constraints(edge: Dict, message: str):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
-        query=query,
+        edge=edge,
+        message=message,
         biolink_version="suppress"
     )
 
@@ -1647,7 +1652,7 @@ QC_QS_NOT_A_CURIE = {
 
 
 @pytest.mark.parametrize(
-    "query",
+    "trapi_version,edge,message",
     [
         (  # Query 0 - 'qualifier_type_id' value not a Biolink CURIE - seen as 'unknown' in TRAPI < 1.4.0-beta
             TRAPI_1_3_0,
@@ -1661,17 +1666,18 @@ QC_QS_NOT_A_CURIE = {
         )
     ]
 )
-def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict, str]):
+def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edge: Dict, message: str):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
-        query=query[1:],
-        trapi_version=query[0]
+        edge=edge,
+        message=message,
+        trapi_version=trapi_version
     )
 
 
 @pytest.mark.parametrize(
-    "query",
+    "edge,message",
     [
         (  # Query 0 - no 'qualifiers' key - since nullable: true, this should pass
             {},
@@ -1793,11 +1799,83 @@ def test_validate_biolink_curie_in_qualifier_constraints(query: Tuple[str, Dict,
         # )
     ]
 )
-def test_validate_qualifiers(query: Tuple):
+def test_validate_qualifiers(edge: Dict, message: str):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
-        query=query
+        edge=edge,
+        message=message
+    )
+
+
+@pytest.mark.parametrize(
+    "edge,associations,message",
+    [
+        (   # Query 0 - qualifier_type_id 'dubject_aspect_qualifier' is a valid Biolink qualifier type and
+            #            'synthesis' is a valid corresponding 'permissible value' enum 'qualifier_value', but
+            #            only within the context of a specific subclass of biolink:Association, i.e.
+            #
+            #                 gene to disease or phenotypic feature association
+            #                     slot_usage:
+            #                        subject aspect qualifier:
+            #                            range: GeneOrGeneProductOrChemicalEntityAspectEnum
+            #
+            #            which has 'synthesis' as an allowable qualifier value
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:subject_aspect_qualifier",
+                        'qualifier_value': "synthesis"
+                    }
+                ]
+            },
+            ["biolink:GeneToDiseaseOrPhenotypicFeatureAssociation"],  # associations: Optional[List[str]]
+            ""   # this particular use case should pass
+        ),
+        (   # Query 1 - This example is identical to the above but we know that it must fail if the
+            #      biolink:Association context of the edge is not given to the qualifier validator as a parameter
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:subject_aspect_qualifier",
+                        'qualifier_value': "synthesis"
+                    }
+                ]
+            },
+
+            None,  # associations: Optional[List[str]]
+
+            "error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved"
+        ),
+        (   # Query 2 -  another example of a 'qualifier_type_id' resolvable only within
+            #            the context of a specific subclass of biolink:Association, i.e.
+            #
+            #                 biolink:ChemicalAffectsGeneAssociation
+            #                     slot_usage:
+            #                        object aspect qualifier:
+            #                            range: GeneOrGeneProductOrChemicalPartQualifierEnum
+            #
+            #            which has 'promoter' as an allowable qualifier value
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:object_aspect_qualifier",
+                        'qualifier_value': "promoter"
+                    }
+                ]
+            },
+            ["biolink:ChemicalAffectsGeneAssociation"],  # associations: Optional[List[str]]
+            ""   # this particular use case should pass
+        )
+    ]
+)
+def test_validate_qualifiers_with_association(edge: Dict, associations: Optional[List[str]], message: str):
+    qualifier_validator(
+        tested_method=BiolinkValidator.validate_qualifiers,
+        edge_model="Edge",
+        edge=edge,
+        message=message,
+        associations=associations
     )
 
 
@@ -1812,7 +1890,7 @@ Q_NOT_A_CURIE = {
 
 
 @pytest.mark.parametrize(
-    "query",
+    "trapi_version,edge,message",
     [
         (  # Query 0 - 'qualifier_type_id' value not a Biolink CURIE - seen as 'unknown' in TRAPI < 1.4.0-beta
                 TRAPI_1_3_0,
@@ -1826,12 +1904,13 @@ Q_NOT_A_CURIE = {
         )
     ]
 )
-def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
+def test_validate_biolink_curie_in_qualifiers(trapi_version: str, edge: Dict, message: str):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
-        query=query[1:],
-        trapi_version=query[0]
+        edge=edge,
+        message=message,
+        trapi_version=trapi_version
     )
 
 
@@ -2743,7 +2822,9 @@ def test_validate_biolink_curie_in_qualifiers(query: Tuple[str, Dict, str]):
     ]
 )
 def test_check_biolink_model_compliance_of_knowledge_graph(
-        biolink_version: str, graph_data: Dict, validation_code: str
+        biolink_version: str,
+        graph_data: Dict,
+        validation_code: str
 ):
     validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
         graph=graph_data, biolink_version=biolink_version
