@@ -86,7 +86,7 @@ class BMTWrapper:
             self.biolink_version = self.bmt.get_model_version()
         else:
             self.biolink_version = "suppress"
-        print(f"\nBiolink Model Toolkit Wrapper set to TRAPI Version: '{self.biolink_version}'", file=stderr)
+        print(f"\nResolved Biolink Model Version: '{self.biolink_version}'", file=stderr)
 
     def get_biolink_version(self) -> str:
         """
