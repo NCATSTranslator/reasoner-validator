@@ -301,7 +301,7 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs
 
 
 @pytest.mark.parametrize(
-    "query",
+    "response",
     [
         (   # Query 0 - No "workflow" key in TRAPI Response
             {
@@ -406,9 +406,9 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs
         )
     ]
 )
-def test_sanitize_trapi_query(query: Tuple):
+def test_sanitize_trapi_query(response: Dict):
     validator: TRAPIResponseValidator = TRAPIResponseValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
-    response: Dict = validator.sanitize_trapi_response(response=query[0])
+    response: Dict = validator.sanitize_trapi_response(response=response)
     dump(response, stderr, indent=4)
 
 
@@ -435,7 +435,7 @@ TEST_GRAPH: Dict = {
 
 
 @pytest.mark.parametrize(
-    "query",
+    "edges_limit,number_of_nodes_returned,number_of_edges_returned",
     [
         (   # Query 0 - unlimited sample whole graph
             0,  # edges_limit
@@ -454,12 +454,12 @@ TEST_GRAPH: Dict = {
         )
     ]
 )
-def test_sample_graph(query: Tuple[int, int, int]):
+def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of_edges_returned: int):
     validator: TRAPIResponseValidator = TRAPIResponseValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
-    kg_sample: Dict = validator.sample_graph(graph=TEST_GRAPH, edges_limit=query[0])
+    kg_sample: Dict = validator.sample_graph(graph=TEST_GRAPH, edges_limit=edges_limit)
     assert kg_sample
-    assert len(kg_sample["nodes"]) == query[1]
-    assert len(kg_sample["edges"]) == query[2]
+    assert len(kg_sample["nodes"]) == number_of_nodes_returned
+    assert len(kg_sample["edges"]) == number_of_edges_returned
 
 
 @pytest.mark.parametrize(
