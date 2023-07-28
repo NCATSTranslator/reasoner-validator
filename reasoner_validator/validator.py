@@ -6,8 +6,6 @@ from reasoner_validator.biolink import (
     check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph,
     BMTWrapper,
-    TRAPISchemaValidator,
-    check_trapi_validator,
     BiolinkValidator
 )
 

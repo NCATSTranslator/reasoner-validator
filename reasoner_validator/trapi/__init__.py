@@ -360,6 +360,7 @@ class TRAPISchemaValidator(ValidationReporter):
                   f"'{str(self.get_trapi_version() if self.get_trapi_version() is not None else 'Default')}'"
         return header
 
+
 def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPISchemaValidator:
     """
     Checks schema compliance of a Query component against a given TRAPI version.
