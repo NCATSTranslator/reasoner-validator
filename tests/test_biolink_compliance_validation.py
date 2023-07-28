@@ -12,13 +12,13 @@ from linkml_runtime.linkml_model import SlotDefinition
 
 from reasoner_validator import TRAPI_1_3_0, TRAPI_1_4_0_BETA
 from reasoner_validator.biolink import (
-    TRAPIGraphType,
     BiolinkValidator,
     get_biolink_model_toolkit,
     check_biolink_model_compliance_of_input_edge,
     check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph
 )
+from reasoner_validator.trapi import TRAPIGraphType
 from tests import SIMPLE_SAMPLE_NODES, SAMPLE_NODES_WITH_ATTRIBUTES
 from tests.test_validation_report import check_messages
 

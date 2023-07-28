@@ -12,8 +12,9 @@ from copy import deepcopy
 
 import pytest
 
-from reasoner_validator.validator import TRAPIResponseValidator
 from reasoner_validator import TRAPI_1_3_0, TRAPI_1_4_2
+from reasoner_validator.validator import TRAPIResponseValidator
+from reasoner_validator.trapi import TRAPIGraphType
 
 from tests import PATCHED_140_SCHEMA_FILEPATH, SAMPLE_NODES_WITH_ATTRIBUTES
 from tests.test_validation_report import check_messages
@@ -406,7 +407,7 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs
     ]
 )
 def test_sanitize_trapi_query(query: Tuple):
-    validator: TRAPIResponseValidator = TRAPIResponseValidator()
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
     response: Dict = validator.sanitize_trapi_response(response=query[0])
     dump(response, stderr, indent=4)
 

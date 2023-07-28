@@ -3,7 +3,6 @@ Version-specific Biolink Model semantic validation of knowledge graph components
 """
 from typing import Optional, Any, Dict, List, Tuple
 from sys import stderr
-from enum import Enum
 from functools import lru_cache
 from urllib.error import HTTPError
 from pprint import PrettyPrinter
@@ -15,7 +14,7 @@ from linkml_runtime.linkml_model import ClassDefinition, Element
 from reasoner_validator.sri.util import is_curie
 from reasoner_validator.versioning import SemVer, SemVerError
 from reasoner_validator.message import MESSAGE_CATALOG
-from reasoner_validator.trapi import TRAPISchemaValidator
+from reasoner_validator.trapi import TRAPISchemaValidator, TRAPIGraphType
 
 import logging
 logger = logging.getLogger(__name__)
@@ -76,13 +75,6 @@ def get_biolink_model_toolkit(biolink_version: Optional[str] = None) -> Toolkit:
     # 'latest' default Biolink Model
     # version of given Toolkit returned
     return Toolkit()
-
-
-class TRAPIGraphType(Enum):
-    """ Enum type of Biolink Model compliant graph data being validated."""
-    Input_Edge = "Input Edge"
-    Query_Graph = "Query Graph"
-    Knowledge_Graph = "Knowledge Graph"
 
 
 class BMTWrapper:

@@ -13,7 +13,7 @@ from reasoner_validator.biolink import (
 # in various parts TRAPI Query Response.Message
 from reasoner_validator.trapi import (
     check_trapi_validity,
-    TRAPISchemaValidator
+    TRAPISchemaValidator, TRAPIGraphType
 )
 from reasoner_validator import (
     TRAPI_1_3_0_SEMVER,
@@ -43,6 +43,7 @@ class TRAPIResponseValidator(BiolinkValidator):
     """
     def __init__(
             self,
+            graph_type: TRAPIGraphType,
             prefix: Optional[str] = None,
             trapi_version: Optional[str] = None,
             biolink_version: Optional[str] = None,
@@ -50,19 +51,19 @@ class TRAPIResponseValidator(BiolinkValidator):
             suppress_empty_data_warnings: bool = False
     ):
         """
-        :param trapi_version: version of component against which to validate the message (mandatory, no default)
-        :type trapi_version: str
-        :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
-                                validated (Default: if None, use the Biolink Model Toolkit default version).
-        :type biolink_version: Optional[str] = None
-        :param strict_validation: if True, some tests validate as 'error'; None or False, simply issue a 'warning'
-        :type strict_validation: Optional[bool] = None
-        :param suppress_empty_data_warnings: validation normally reports empty Message query graph, knowledge graph
-                       and results as warnings. This flag suppresses the reporting of such warnings (default: False).
-        :type suppress_empty_data_warnings: bool
+        :param graph_type: TRAPIGraphType, type of graph data being validated
+        :param prefix: named context of the BiolinkValidator, used as a prefix in validation messages.
+        :param trapi_version: str, version of component against which to validate the message (mandatory, no default)
+        :param biolink_version: Optional[str] = None, Biolink Model (SemVer) release against which the knowledge graph
+                                is to be validated (Default: if None, use the Biolink Model Toolkit default version).
+        :param strict_validation: bool = False, if True, some tests validate as 'error'; False, simply issue a 'warning'
+        :param suppress_empty_data_warnings: bool = False, validation normally reports empty Message query graph,
+                                knowledge graph and results as warnings. This flag suppresses the reporting
+                                of such warnings (default: False).
         """
         BiolinkValidator.__init__(
             self,
+            graph_type=graph_type,
             prefix=prefix if prefix else "Validate TRAPI Response",
             trapi_version=trapi_version,
             biolink_version=biolink_version,

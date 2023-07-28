@@ -1,4 +1,5 @@
 """TRAPI Validation Functions."""
+from enum import Enum
 from json import dumps
 from typing import Optional, Dict, List
 from sys import stderr
@@ -211,6 +212,13 @@ def openapi_to_jsonschema(schema, version: str) -> None:
 
     if schema.pop("nullable", False):
         fix_nullable(schema)
+
+
+class TRAPIGraphType(Enum):
+    """ Enum type of Biolink Model compliant graph data being validated."""
+    Input_Edge = "Input Edge"
+    Query_Graph = "Query Graph"
+    Knowledge_Graph = "Knowledge Graph"
 
 
 class TRAPISchemaValidator(ValidationReporter):
