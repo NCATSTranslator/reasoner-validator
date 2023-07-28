@@ -1,24 +1,29 @@
 from typing import Optional, List, Dict
 
 from bmt import Toolkit
-from reasoner_validator.trapi.biolink import (
+
+from reasoner_validator.biolink import (
     check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph,
     BMTWrapper,
+    TRAPISchemaValidator,
+    check_trapi_validator,
     BiolinkValidator
 )
 
 # Maximum number of data points to scrutinize
 # in various parts TRAPI Query Response.Message
 from reasoner_validator.trapi import (
-    TRAPI_1_3_0_SEMVER,
-    TRAPI_1_4_0_SEMVER,
-    TRAPI_1_4_0_BETA3_SEMVER,
-    TRAPI_1_4_0_BETA4_SEMVER,
-    LATEST_TRAPI_MAJOR_RELEASE_SEMVER,
-    LATEST_TRAPI_RELEASE,
     check_trapi_validity,
     TRAPISchemaValidator
+)
+from reasoner_validator import (
+    TRAPI_1_3_0_SEMVER,
+    TRAPI_1_4_0_BETA3_SEMVER,
+    TRAPI_1_4_0_BETA4_SEMVER,
+    TRAPI_1_4_0_SEMVER,
+    LATEST_TRAPI_RELEASE,
+    LATEST_TRAPI_MAJOR_RELEASE_SEMVER
 )
 from reasoner_validator.trapi.mapping import MappingValidator, check_node_edge_mappings
 from reasoner_validator.versioning import SemVer, SemVerError
@@ -40,6 +45,7 @@ class TRAPIResponseValidator(BiolinkValidator):
     """
     def __init__(
             self,
+            prefix: Optional[str] = None,
             trapi_version: Optional[str] = None,
             biolink_version: Optional[str] = None,
             strict_validation: bool = False,
@@ -57,9 +63,9 @@ class TRAPIResponseValidator(BiolinkValidator):
                        and results as warnings. This flag suppresses the reporting of such warnings (default: False).
         :type suppress_empty_data_warnings: bool
         """
-        TRAPISchemaValidator.__init__(
+        BiolinkValidator.__init__(
             self,
-            prefix="Validate TRAPI Response",
+            prefix=prefix if prefix else "Validate TRAPI Response",
             trapi_version=trapi_version,
             biolink_version=biolink_version,
             strict_validation=strict_validation

@@ -15,7 +15,6 @@ from reasoner_validator.message import (
     MESSAGE_PARAMETERS
 )
 from reasoner_validator.validation_codes import CodeDictionary
-from reasoner_validator.versioning import SemVer, SemVerError
 
 import logging
 logger = logging.getLogger(__name__)
@@ -55,33 +54,15 @@ class ValidationReporter:
         "critical": "critical"
     }
 
-    def __init__(
-            self,
-            prefix: Optional[str] = None,
-            trapi_version: Optional[str] = None,
-            biolink_version: Optional[str] = None,
-            strict_validation: bool = False
-    ):
+    def __init__(self, prefix: Optional[str] = None, strict_validation: bool = False):
         """
         :param prefix: named context of the Validator, used as a prefix in validation messages.
         :type prefix: str
-        :param trapi_version: version of TRAPI schema against which to validate the message.
-                              Could be a TRAPI release SemVer or a Git branch identifier.
-        :type trapi_version: Optional[str] = None
-        :param biolink_version: Optional[str], Biolink Model (SemVer) release against which
-                                               the knowledge graph is being validated (Default: None).
-        :type biolink_version: Optional[str] = None
         :param strict_validation: if True, abstract and mixin elements validate as 'error';
                                   if None or False, just issue a 'warning'
         :type strict_validation: Optional[bool] = None
         """
         self.prefix: str = prefix if prefix else ""
-
-        # TODO: does this class need to set two version variables
-        #       or should they remain closer to point of usage?
-        self.trapi_version: Optional[str] = trapi_version
-        self.biolink_version: Optional[str] = biolink_version
-
         self.strict_validation: Optional[bool] = strict_validation
         self.messages: MESSAGE_CATALOG = {
             "critical": dict(),
@@ -92,38 +73,33 @@ class ValidationReporter:
 
     def get_trapi_version(self) -> str:
         """
-        :return: str, TRAPI (SemVer) version currently targeted by the ValidationReporter.
+        :return: TRAPI version currently tracked by the ValidationReporter.
+        :rtype biolink_version: str
         """
-        return self.trapi_version
+        raise NotImplementedError("ValidatorReport expects messaging subclass to implement get_trapi_version()")
 
-    def minimum_required_trapi_version(self, version: str) -> bool:
+    def reset_trapi_version(self, version: str):
         """
-        :param version: simple 'major.minor.patch' TRAPI schema release SemVer
-        :return: True if current version is equal to, or newer than, a targeted 'minimum_version'
+        Reset TRAPI version tracked by the ValidationReporter.
+        :param version: new version
+        :return: None
         """
-        try:
-            current: SemVer = SemVer.from_string(self.trapi_version)
-            target: SemVer = SemVer.from_string(version)
-            return current >= target
-        except SemVerError as sve:
-            logger.error(f"minimum_required_trapi_version() error: {str(sve)}")
-            return False
+        raise NotImplementedError("ValidatorReport expects messaging subclass to implement reset_trapi_version()")
 
     def get_biolink_version(self) -> str:
         """
-        :return: Biolink Model version currently targeted by the ValidationReporter.
+        :return: Biolink Model version currently tracked by the ValidationReporter.
         :rtype biolink_version: str
         """
-        return self.biolink_version
+        raise NotImplementedError("ValidatorReport expects messaging subclass to implement get_biolink_version()")
 
-    def validate_biolink(self) -> bool:
+    def reset_biolink_version(self, version: str):
         """
-        Predicate to check if the Biolink (version) is
-        tagged to 'suppress' compliance validation.
-
-        :return: bool, returns 'True' if Biolink Validation is expected.
+        Reset Biolink Model version tracked by the ValidationReporter.
+        :param version: new version
+        :return: None
         """
-        return self.biolink_version is None or self.biolink_version.lower() != "suppress"
+        raise NotImplementedError("ValidatorReport expects messaging subclass to implement reset_biolink_version()")
 
     def is_strict_validation(self) -> bool:
         """
@@ -340,10 +316,10 @@ class ValidationReporter:
 
         # First come, first serve... We only overwrite
         # empty versions in the parent reporter
-        if not self.trapi_version:
-            self.trapi_version = reporter.trapi_version
-        if not self.biolink_version:
-            self.biolink_version = reporter.biolink_version
+        if not self.get_trapi_version():
+            self.reset_trapi_version(reporter.get_trapi_version())
+        if not self.get_biolink_version():
+            self.reset_biolink_version(reporter.get_biolink_version())
 
     def to_dict(self) -> Dict:
         """
@@ -352,8 +328,8 @@ class ValidationReporter:
         :return: Dict
         """
         return {
-            "trapi_version": self.trapi_version,
-            "biolink_version": self.biolink_version,
+            "trapi_version": self.get_trapi_version(),
+            "biolink_version": self.get_biolink_version(),
             "messages": self.get_messages()
         }
 
@@ -475,10 +451,10 @@ class ValidationReporter:
                 print(title, file=file)
 
         print(
-            f"Reasoner Validator version '{metadata.version('reasoner-validator')}' validating against "
-            f"TRAPI schema version '{str(self.trapi_version if self.trapi_version is not None else 'Default')}' " +
+            f"Reasoner Validator version '{metadata.version('reasoner-validator')}' validating against TRAPI version "
+            f"'{str(self.get_trapi_version() if self.get_trapi_version() is not None else 'Default')}' " +
             "and Biolink Model version " +
-            f"'{str(self.biolink_version if self.biolink_version is not None else 'Default')}'.\n",
+            f"'{str(self.get_biolink_version() if self.get_biolink_version() is not None else 'Default')}'.\n",
             file=file
         )
 

@@ -25,10 +25,10 @@ import json
 import argparse
 
 from bmt import Toolkit
-from reasoner_validator.trapi.biolink.validator import TRAPIResponseValidator, check_trapi_validity
+from reasoner_validator.validator import TRAPIResponseValidator, check_trapi_validity
 from reasoner_validator.trapi import call_trapi
 from reasoner_validator.versioning import get_latest_version
-from reasoner_validator.trapi.biolink import get_biolink_model_toolkit
+from reasoner_validator.biolink import get_biolink_model_toolkit
 from reasoner_validator.report import ValidationReporter
 
 ARS_HOSTS = [

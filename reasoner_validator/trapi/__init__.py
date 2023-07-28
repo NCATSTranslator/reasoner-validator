@@ -11,6 +11,12 @@ import requests
 
 from yaml import load, CLoader as Loader
 
+from reasoner_validator import (
+    TRAPI_1_4_0_BETA_SEMVER,
+    TRAPI_1_4_0_BETA3_SEMVER,
+    TRAPI_1_4_0_BETA4_SEMVER,
+    TRAPI_1_4_0_SEMVER
+)
 from reasoner_validator.report import ValidationReporter
 from reasoner_validator.trapi.mapping import check_node_edge_mappings
 from reasoner_validator.versioning import (
@@ -23,33 +29,6 @@ from reasoner_validator.versioning import (
 
 import logging
 logger = logging.getLogger(__name__)
-
-TRAPI_1_3_0_SEMVER = SemVer.from_string("v1.3.0")
-TRAPI_1_3_0: str = str(TRAPI_1_3_0_SEMVER)
-
-TRAPI_1_4_0_BETA_SEMVER = SemVer.from_string("v1.4.0-beta")
-TRAPI_1_4_0_BETA = str(TRAPI_1_4_0_BETA_SEMVER)
-
-TRAPI_1_4_0_BETA2_SEMVER = SemVer.from_string("v1.4.0-beta2")
-TRAPI_1_4_0_BETA3_SEMVER = SemVer.from_string("v1.4.0-beta3")
-TRAPI_1_4_0_BETA4_SEMVER = SemVer.from_string("v1.4.0-beta4")
-
-TRAPI_1_4_0_SEMVER = SemVer.from_string("v1.4.0")
-TRAPI_1_4_0: str = str(TRAPI_1_4_0_SEMVER)
-
-# patch version to fix 'auxiliary_graphs' model in 1.4.0
-TRAPI_1_4_1_SEMVER = SemVer.from_string("v1.4.1")
-TRAPI_1_4_1: str = str(TRAPI_1_4_1_SEMVER)
-
-# patch version to fix '#components/schemas/AuxiliaryGraph' bug
-TRAPI_1_4_2_SEMVER = SemVer.from_string("v1.4.2")
-TRAPI_1_4_2: str = str(TRAPI_1_4_2_SEMVER)
-
-LATEST_TRAPI_RELEASE_SEMVER: SemVer = TRAPI_1_4_2_SEMVER
-LATEST_TRAPI_RELEASE: str = TRAPI_1_4_2
-
-LATEST_TRAPI_MAJOR_RELEASE_SEMVER: SemVer = SemVer.from_string("v1.4", core_fields=['major', 'minor'])
-LATEST_TRAPI_MAJOR_RELEASE: str = str(LATEST_TRAPI_MAJOR_RELEASE_SEMVER)
 
 # For testing, set TRAPI API query POST timeouts to 10 minutes == 600 seconds
 DEFAULT_TRAPI_POST_TIMEOUT = 600.0
@@ -218,7 +197,7 @@ def openapi_to_jsonschema(schema, version: str) -> None:
             mapped_semver and
             not (TRAPI_1_4_0_BETA4_SEMVER >= mapped_semver >= TRAPI_1_4_0_BETA_SEMVER)
     ) and "allOf" in schema:
-        # September 1, 2022 hacky patch to rewrite 'allOf'
+        # 2022 September 1 hacky patch to rewrite 'allOf'
         # tagged schemata, in TRAPI 1.3.0 or earlier, to 'oneOf'
         schema["oneOf"] = schema.pop("allOf")
 
@@ -248,10 +227,9 @@ class TRAPISchemaValidator(ValidationReporter):
         """
         TRAPI Validator constructor.
 
-        Parameters
-        ----------
-        trapi_version : str
-            version of component to validate against
+        :param prefix: str named context of the TRAPISchemaValidator, used as a prefix in validation messages.
+        :param trapi_version: str, version of component to validate against
+        :param strict_validation: bool, applies stricter constraints on Biolink class term semantics
         """
         self.trapi_version = get_latest_version(trapi_version) \
             if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
@@ -259,9 +237,50 @@ class TRAPISchemaValidator(ValidationReporter):
         ValidationReporter.__init__(
             self,
             prefix=prefix if prefix is not None else "TRAPI Validation",
-            trapi_version=self.trapi_version,
             strict_validation=strict_validation
         )
+
+    def get_trapi_version(self) -> str:
+        """
+        :return: str, TRAPI (SemVer) version currently targeted by the TRAPISchemaValidator.
+        """
+        return self.trapi_version
+
+    def reset_trapi_version(self, version: str):
+        """
+        Reset TRAPI version tracked by the TRAPISchemaValidator.
+        :param version: new version
+        :return: None
+        """
+        self.trapi_version = version
+
+    def get_biolink_version(self) -> str:
+        """
+        :return: Biolink Model version currently tracked by the TRAPISchemaValidator.
+        :rtype biolink_version: str
+        """
+        raise NotImplementedError("TRAPISchemaValidator expects subclass to implement get_biolink_version()")
+
+    def reset_biolink_version(self, version: str):
+        """
+        Reset Biolink Model version tracked by the ValidationReporter.
+        :param version: new version
+        :return: None
+        """
+        raise NotImplementedError("TRAPISchemaValidator expects subclass to implement reset_biolink_version()")
+
+    def minimum_required_trapi_version(self, version: str) -> bool:
+        """
+        :param version: simple 'major.minor.patch' TRAPI schema release SemVer
+        :return: True if current version is equal to, or newer than, a targeted 'minimum_version'
+        """
+        try:
+            current: SemVer = SemVer.from_string(self.trapi_version)
+            target: SemVer = SemVer.from_string(version)
+            return current >= target
+        except SemVerError as sve:
+            logger.error(f"minimum_required_trapi_version() error: {str(sve)}")
+            return False
 
     def validate(self, instance, component):
         """Validate instance against schema.

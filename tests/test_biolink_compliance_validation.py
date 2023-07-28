@@ -10,8 +10,8 @@ import pytest
 from bmt import Toolkit
 from linkml_runtime.linkml_model import SlotDefinition
 
-from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0_BETA, TRAPISchemaValidator
-from reasoner_validator.trapi.biolink import (
+from reasoner_validator import TRAPI_1_3_0, TRAPI_1_4_0_BETA
+from reasoner_validator.biolink import (
     TRAPIGraphType,
     BiolinkValidator,
     get_biolink_model_toolkit,
@@ -1250,6 +1250,7 @@ def test_latest_validate_attributes(query: Tuple):
 
 
 def qualifier_validator(
+        graph_type: TRAPIGraphType,
         tested_method,
         edge_model: str,
         edge: Dict,
@@ -1258,14 +1259,18 @@ def qualifier_validator(
         biolink_version: Optional[str] = LATEST_BIOLINK_MODEL_VERSION,
         **kwargs
 ):
-    # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
-    # Sanity check: does TRAPI validation catch this first?
-    trapi_validator = TRAPISchemaValidator(trapi_version=trapi_version)
+    # TODO: to review: which of the validation tests that
+    #       may be overridden by earlier TRAPI validation
+    validator = BiolinkValidator(
+        graph_type=graph_type,
+        trapi_version=trapi_version,
+        biolink_version=biolink_version
+    )
     # Wrap Qualifiers inside a small mock QEdge
     mock_edge: Dict = deepcopy(edge)
     mock_edge["subject"] = "mock_subject"
 
-    if trapi_validator.minimum_required_trapi_version(TRAPI_1_4_0_BETA):
+    if validator.minimum_required_trapi_version(TRAPI_1_4_0_BETA):
         # not testing Edge semantics here but rather, the qualifiers,
         # but from 1.4.0-beta(2) onwards, we also need
         # a non-null predicate and the new 'sources' field here!
@@ -1278,18 +1283,12 @@ def qualifier_validator(
         ]
 
     mock_edge["object"] = "mock_object"
-    trapi_validator.is_valid_trapi_query(mock_edge, edge_model)
+    validator.is_valid_trapi_query(mock_edge, edge_model)
     # TODO: not sure if simple errors should be fully displaced
     #       by 'critical' errors or rather, just complement them
-    if trapi_validator.has_critical():
-        validator = trapi_validator
+    if validator.has_critical():
+        validator = validator
     else:
-        # if you get this far,then attempt additional Biolink Validation
-        validator = BiolinkValidator(
-            graph_type=TRAPIGraphType.Query_Graph,
-            trapi_version=trapi_version,
-            biolink_version=biolink_version
-        )
         tested_method(
             validator,
             edge_id=f"{tested_method.__name__} unit test",
@@ -1534,6 +1533,7 @@ def qualifier_validator(
 def test_validate_qualifier_constraints(edge: Dict, message: str):
     # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     qualifier_validator(
+        graph_type=TRAPIGraphType.Query_Graph,
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
         edge=edge,
@@ -1628,6 +1628,7 @@ def test_validate_infores(identifier: str, validation_code: str):
 )
 def test_biolink_validation_suppressed_validate_qualifier_constraints(edge: Dict, message: str):
     qualifier_validator(
+        graph_type=TRAPIGraphType.Query_Graph,
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
         edge=edge,
@@ -1667,6 +1668,7 @@ QC_QS_NOT_A_CURIE = {
 )
 def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edge: Dict, message: str):
     qualifier_validator(
+        graph_type=TRAPIGraphType.Query_Graph,
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
         edge=edge,
@@ -1779,8 +1781,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
             },
             ""    # this particular use case should pass
         ),
-        # (   # This use case was discussed with Sierra on 11 April 2023 and
-        #     # decided to be out-of-scope of enum values for is_permissible_value_of_enum()
+        # (   # This use case was discussed with Sierra on 11 April 2023 and )
+        #     # decided to be out-of-scope of enum values for is_permissible_value_of_enum
         #
         #     # Query ## - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
         #     #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'.
@@ -1800,6 +1802,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
 )
 def test_validate_qualifiers(edge: Dict, message: str):
     qualifier_validator(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         edge=edge,
@@ -1831,7 +1834,7 @@ def test_validate_qualifiers(edge: Dict, message: str):
             ["biolink:GeneToDiseaseOrPhenotypicFeatureAssociation"],  # associations: Optional[List[str]]
             ""   # this particular use case should pass
         ),
-        (   # Query 1 - This example is identical to the above but we know that it must fail if the
+        (   # Query 1 - This example is identical to the above, but we know that it must fail if the
             #      biolink:Association context of the edge is not given to the qualifier validator as a parameter
             {
                 'qualifiers': [
@@ -1870,6 +1873,7 @@ def test_validate_qualifiers(edge: Dict, message: str):
 )
 def test_validate_qualifiers_with_association(edge: Dict, associations: Optional[List[str]], message: str):
     qualifier_validator(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         edge=edge,
@@ -1905,6 +1909,7 @@ Q_NOT_A_CURIE = {
 )
 def test_validate_biolink_curie_in_qualifiers(trapi_version: str, edge: Dict, message: str):
     qualifier_validator(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         edge=edge,
@@ -2359,8 +2364,6 @@ def test_validate_biolink_curie_in_qualifiers(trapi_version: str, edge: Dict, me
                 }
             },
             # ditto for predicate and object... but identical code pattern thus we only test missing subject id here
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'None--biolink:interacts_with->NCBIGene:29974' " +
-            # "has a missing or empty 'subject' slot value!"
             "error.knowledge_graph.edge.subject.missing"
         ),
         (

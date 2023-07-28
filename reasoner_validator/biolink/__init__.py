@@ -12,7 +12,7 @@ from pprint import PrettyPrinter
 from bmt import Toolkit, utils
 from linkml_runtime.linkml_model import ClassDefinition, Element
 
-from reasoner_validator.trapi.biolink.validator import TRAPISchemaValidator
+from reasoner_validator.validator import TRAPISchemaValidator
 from reasoner_validator.message import MESSAGE_CATALOG
 from reasoner_validator.sri.util import is_curie
 from reasoner_validator.versioning import SemVer, SemVerError
@@ -91,13 +91,25 @@ class BMTWrapper:
         if biolink_version != "suppress":
             # Here, the Biolink Model version is validated, and the relevant Toolkit pulled.
             self.bmt = get_biolink_model_toolkit(biolink_version=biolink_version)
-            self.resolved_biolink_version = self.bmt.get_model_version()
+            self.biolink_version = self.bmt.get_model_version()
         else:
-            self.resolved_biolink_version = "suppress"
-        print(f"\nBiolink Model Toolkit Wrapper set to TRAPI Version: '{self.resolved_biolink_version}'", file=stderr)
+            self.biolink_version = "suppress"
+        print(f"\nBiolink Model Toolkit Wrapper set to TRAPI Version: '{self.biolink_version}'", file=stderr)
 
-    def get_resolved_biolink_version(self) -> Optional[str]:
-        return self.resolved_biolink_version
+    def get_biolink_version(self) -> str:
+        """
+        :return: Biolink Model version currently targeted by the ValidationReporter.
+        :rtype biolink_version: str
+        """
+        return self.biolink_version
+
+    def reset_biolink_version(self, version: str):
+        """
+        Reset Biolink Model version tracked by the ValidationReporter.
+        :param version: new version
+        :return: None
+        """
+        self.biolink_version = version
 
     def get_bmt(self) -> Optional[Toolkit]:
         return self.bmt
@@ -146,6 +158,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     def __init__(
         self,
         graph_type: TRAPIGraphType,
+        prefix: Optional[str] = None,
         trapi_version: Optional[str] = None,
         biolink_version: Optional[str] = None,
         target_provenance: Optional[Dict[str, str]] = None,
@@ -154,25 +167,47 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         Biolink Validator constructor.
 
-        :param graph_type: type of graph data being validated
-        :type graph_type: TRAPIGraphType
-        :param trapi_version: caller specified Biolink Model version (default: None, which takes the TRAPI 'latest')
-        :type trapi_version: Optional[str] or None
-        :param biolink_version: caller specified Biolink Model version (default: None, which takes the BMT 'latest')
-        :type biolink_version: Optional[str] or None
-        :param target_provenance: Dictionary of context identifying the ARA and KP for provenance attribute validation
-        :type target_provenance: Optional[Dict[str,str]]
+        :param graph_type: TRAPIGraphType, type of graph data being validated
+        :param prefix: named context of the BiolinkValidator, used as a prefix in validation messages.
+        :param trapi_version:  Optional[str], caller specified Biolink Model version (default: None, use TRAPI 'latest')
+        :param biolink_version: Optional[str], caller specified Biolink Model version (default: None, use BMT 'latest')
+        :param target_provenance: Optional[Dict[str,str]], Dictionary of context ARA and KP for provenance validation
+        :param strict_validation: bool, applies stricter constraints on Biolink class term semantics
         """
         BMTWrapper.__init__(self, biolink_version=biolink_version)
         TRAPISchemaValidator.__init__(
             self,
-            prefix=f"Biolink Validation of {graph_type.value}",
+            prefix=prefix if prefix else f"Biolink Validation of {graph_type.value}",
             trapi_version=trapi_version,
             strict_validation=strict_validation
         )
         self.target_provenance: Optional[Dict] = target_provenance
         self.graph_type: TRAPIGraphType = graph_type
         self.nodes: Dict[str, List[str]] = dict()
+
+    def get_biolink_version(self) -> str:
+        """
+        :return: Biolink Model version currently tracked by the TRAPISchemaValidator.
+        :rtype biolink_version: str
+        """
+        return BMTWrapper.get_biolink_version(self)
+
+    def reset_biolink_version(self, version: str):
+        """
+        Reset Biolink Model version tracked by the ValidationReporter.
+        :param version: new version
+        :return: None
+        """
+        BMTWrapper.reset_biolink_version(self, version)
+
+    def validate_biolink(self) -> bool:
+        """
+        Predicate to check if the Biolink (version) is
+        tagged to 'suppress' compliance validation.
+
+        :return: bool, returns 'True' if Biolink Validation is expected.
+        """
+        return self.biolink_version is not None and self.biolink_version.lower() != "suppress"
 
     def minimum_required_biolink_version(self, version: str) -> bool:
         """
@@ -767,7 +802,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             return  # nullable: true... an empty 'attribute_constraints' array is ok?
         else:
             # TODO: not yet sure what else to do here (if anything...yet)
-            attribute_constraints: List = edge['attribute_constraints']
+            # attribute_constraints: List = edge['attribute_constraints']
+            pass
 
     def validate_qualifier_entry(
             self,
@@ -1228,7 +1264,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         # edge data fields to be validated...
         subject_id = edge['subject'] if 'subject' in edge else None
 
-        predicates = predicate = None
+        predicates: Optional[List[str]]
+        predicate: Optional[str] = None
         if self.graph_type is TRAPIGraphType.Knowledge_Graph:
             predicate = edge['predicate'] if 'predicate' in edge else None
             edge_label = predicate

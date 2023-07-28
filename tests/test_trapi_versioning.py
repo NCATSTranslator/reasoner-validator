@@ -4,7 +4,8 @@ from typing import Dict, Optional
 import pytest
 
 from reasoner_validator.versioning import get_latest_version
-from reasoner_validator.trapi import LATEST_TRAPI_RELEASE, load_schema, TRAPIAccessError
+from reasoner_validator.trapi import load_schema, TRAPIAccessError
+from reasoner_validator import LATEST_TRAPI_RELEASE
 from tests import PATCHED_140_SCHEMA_FILEPATH, BROKEN_SCHEMA_FILEPATH
 
 

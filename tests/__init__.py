@@ -3,11 +3,7 @@ from sys import stderr
 from os.path import abspath, dirname, sep
 from copy import deepcopy
 
-from reasoner_validator.trapi import (
-    TRAPI_1_3_0,
-    LATEST_TRAPI_MAJOR_RELEASE,
-    LATEST_TRAPI_RELEASE
-)
+from reasoner_validator import TRAPI_1_3_0, LATEST_TRAPI_RELEASE, LATEST_TRAPI_MAJOR_RELEASE
 
 TESTS_DIRECTORY = abspath(dirname(__file__))
 print(f"Test Directory: {TESTS_DIRECTORY}", file=stderr)

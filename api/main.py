@@ -12,7 +12,7 @@ from bmt import Toolkit
 
 from reasoner_validator.trapi import TRAPISchemaValidator
 from reasoner_validator.versioning import get_latest_version
-from reasoner_validator.trapi.biolink.validator import TRAPIResponseValidator
+from reasoner_validator.validator import TRAPIResponseValidator
 
 default_toolkit: Toolkit = Toolkit()
 DEFAULT_BIOLINK_MODEL_VERSION = default_toolkit.get_model_version()
