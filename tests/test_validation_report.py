@@ -445,7 +445,7 @@ def test_validator_method():
 
 
 @pytest.mark.parametrize(
-    "query",
+    "tag,case,result",
     [
         (
             'validation',
@@ -464,20 +464,20 @@ def test_validator_method():
             True
         ),
         (
-                'validation',
-                {
-                    "validation": {
-                        "trapi_version": "1.3",
-                        "biolink_version": "2.4.7",
-                        "messages": {
-                            "information": {},
-                            "warnings": {},
-                            "errors": {""},
-                            "critical": {}
-                        }
+            'validation',
+            {
+                "validation": {
+                    "trapi_version": "1.3",
+                    "biolink_version": "2.4.7",
+                    "messages": {
+                        "information": {},
+                        "warnings": {},
+                        "errors": {""},
+                        "critical": {}
                     }
-                },
-                True
+                }
+            },
+            True
         ),
         (
             "validation",
@@ -509,6 +509,6 @@ def test_validator_method():
         ),
     ]
 )
-def test_has_validation_errors(query: Tuple):
+def test_has_validation_errors(tag: str, case: Dict, result: bool):
     reporter = ValidationReporter()
-    assert reporter.test_case_has_validation_errors(tag=query[0], case=query[1]) == query[2]
+    assert reporter.test_case_has_validation_errors(tag=tag, case=case) == result
