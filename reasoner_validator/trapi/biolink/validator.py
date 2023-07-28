@@ -1,8 +1,7 @@
 from typing import Optional, List, Dict
 
 from bmt import Toolkit
-from reasoner_validator.report import ValidationReporter
-from reasoner_validator.biolink import (
+from reasoner_validator.trapi.biolink import (
     check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph,
     BMTWrapper,
@@ -34,7 +33,7 @@ logger = logging.getLogger(__name__)
 RESULT_TEST_DATA_SAMPLE_SIZE = 10
 
 
-class TRAPIResponseValidator(TRAPISchemaValidator):
+class TRAPIResponseValidator(BiolinkValidator):
     """
     TRAPI Validator is an overall wrapper class for validating
     conformance of TRAPI Responses to TRAPI and the Biolink Model.
@@ -58,7 +57,7 @@ class TRAPIResponseValidator(TRAPISchemaValidator):
                        and results as warnings. This flag suppresses the reporting of such warnings (default: False).
         :type suppress_empty_data_warnings: bool
         """
-        ValidationReporter.__init__(
+        TRAPISchemaValidator.__init__(
             self,
             prefix="Validate TRAPI Response",
             trapi_version=trapi_version,
@@ -156,8 +155,6 @@ class TRAPIResponseValidator(TRAPISchemaValidator):
         :param target_provenance: Dictionary of context identifying the ARA and KP for provenance attribute validation
         :type target_provenance: Dict
 
-        :returns: Validator cataloging "information", "warning" and "error" messages (could be empty)
-        :rtype: ValidationReporter
         """
         if not (response and "message" in response):
             if not self.suppress_empty_data_warnings:
@@ -296,7 +293,7 @@ class TRAPIResponseValidator(TRAPISchemaValidator):
                     biolink_validator = check_biolink_model_compliance_of_query_graph(
                         graph=query_graph,
                         biolink_version=self.biolink_version,
-                        # the ValidationReporter calling this function *might*
+                        # the TRAPIResponseValidator calling this function *might*
                         # have an explicit strict_validation override (if not None)
                         strict_validation=self.strict_validation
                     )
@@ -374,7 +371,7 @@ class TRAPIResponseValidator(TRAPISchemaValidator):
                             trapi_version=self.trapi_version,
                             biolink_version=self.biolink_version,
                             target_provenance=target_provenance,
-                            # the ValidationReporter calling this function *might*
+                            # the TRAPIResponseValidator calling this function *might*
                             # have an explicit strict_validation override (if not None)
                             strict_validation=self.strict_validation
                         )

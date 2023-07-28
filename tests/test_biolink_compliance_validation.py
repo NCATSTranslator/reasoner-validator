@@ -11,7 +11,7 @@ from bmt import Toolkit
 from linkml_runtime.linkml_model import SlotDefinition
 
 from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0_BETA, TRAPISchemaValidator
-from reasoner_validator.biolink import (
+from reasoner_validator.trapi.biolink import (
     TRAPIGraphType,
     BiolinkValidator,
     get_biolink_model_toolkit,

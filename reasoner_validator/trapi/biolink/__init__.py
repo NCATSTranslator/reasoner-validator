@@ -12,7 +12,7 @@ from pprint import PrettyPrinter
 from bmt import Toolkit, utils
 from linkml_runtime.linkml_model import ClassDefinition, Element
 
-from reasoner_validator.validator import TRAPISchemaValidator
+from reasoner_validator.trapi.biolink.validator import TRAPISchemaValidator
 from reasoner_validator.message import MESSAGE_CATALOG
 from reasoner_validator.sri.util import is_curie
 from reasoner_validator.versioning import SemVer, SemVerError
