@@ -1593,12 +1593,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         :param reporter: second BiolinkValidator
         """
-        assert isinstance(reporter, BiolinkValidator)
         TRAPISchemaValidator.merge(self, reporter)
 
         # First come, first serve... We only overwrite
         # empty versions in the parent reporter
-        if not self.get_biolink_version():
+        if isinstance(reporter, BiolinkValidator) and not self.get_biolink_version():
             self.reset_biolink_version(reporter.get_biolink_version())
 
     def to_dict(self) -> Dict:

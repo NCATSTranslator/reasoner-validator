@@ -342,15 +342,12 @@ class TRAPISchemaValidator(ValidationReporter):
 
         :param reporter: second TRAPISchemaValidator
         """
-        assert isinstance(reporter, TRAPISchemaValidator)
         ValidationReporter.merge(self, reporter)
 
         # First come, first serve... We only overwrite
         # empty versions in the parent reporter
-        if not self.get_trapi_version():
+        if isinstance(reporter, TRAPISchemaValidator) and not self.get_trapi_version():
             self.reset_trapi_version(reporter.get_trapi_version())
-        if not self.get_biolink_version():
-            self.reset_biolink_version(reporter.get_biolink_version())
 
     def to_dict(self) -> Dict:
         """
