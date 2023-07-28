@@ -205,7 +205,7 @@ def test_unknown_message_code():
 
 
 def test_message_report():
-    reporter = ValidationReporter(prefix="First Validation Report", trapi_version=TEST_TRAPI_VERSION)
+    reporter = ValidationReporter(prefix="First Validation Report")
     reporter.report(code="info.compliant")
     reporter.report(
         code="info.input_edge.predicate.abstract",
@@ -226,9 +226,7 @@ def test_message_report():
 
 def test_messages():
     # Loading and checking a first reporter
-    reporter1 = ValidationReporter(prefix="1st Test Message Set", trapi_version=TEST_TRAPI_VERSION)
-    assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
-    assert reporter1.get_biolink_version() is None
+    reporter1 = ValidationReporter(prefix="1st Test Message Set")
     assert not reporter1.has_messages()
     reporter1.report("info.compliant")
     assert reporter1.has_messages()
@@ -243,11 +241,7 @@ def test_messages():
     assert reporter1.has_errors()
 
     # Testing merging of messages from a second reporter
-    reporter2 = ValidationReporter(
-        prefix="2nd Test Message Set",
-        biolink_version=TEST_BIOLINK_VERSION
-    )
-    assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
+    reporter2 = ValidationReporter(prefix="2nd Test Message Set")
     reporter2.report(
         code="info.query_graph.edge.predicate.mixin",
         identifier="biolink:this_is_a_mixin",
@@ -256,15 +250,11 @@ def test_messages():
     reporter2.report("warning.trapi.response.results.empty")
     reporter2.report("error.knowledge_graph.edges.empty")
     reporter1.merge(reporter2)
-    assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
-    assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION
-    
+
     # No prefix...
     reporter3 = ValidationReporter()
     reporter3.report("error.trapi.response.query_graph.missing")
     reporter1.merge(reporter3)
-    assert reporter1.get_trapi_version() == TEST_TRAPI_VERSION
-    assert reporter1.get_biolink_version() == TEST_BIOLINK_VERSION
 
     # testing addition a few raw batch messages
     new_messages: MESSAGE_CATALOG = {
@@ -354,8 +344,6 @@ def test_messages():
     assert "CRITICAL - Trapi: Schema validation error" in critical
 
     obj = reporter1.to_dict()
-    assert obj["trapi_version"] == TEST_TRAPI_VERSION
-    assert obj["biolink_version"] == TEST_BIOLINK_VERSION
     assert "messages" in obj
     assert "critical" in obj["messages"]
     assert "critical.trapi.validation" in obj["messages"]["critical"]
@@ -409,11 +397,7 @@ def test_messages():
 
 def test_validator_method():
 
-    reporter = ValidationReporter(
-        prefix="Test Validator Method",
-        trapi_version=TEST_TRAPI_VERSION,
-        biolink_version=TEST_BIOLINK_VERSION
-    )
+    reporter = ValidationReporter(prefix="Test Validator Method")
 
     test_data: Dict = {
         "some key": "some value"

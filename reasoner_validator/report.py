@@ -71,36 +71,6 @@ class ValidationReporter:
             "information": dict()
         }
 
-    def get_trapi_version(self) -> str:
-        """
-        :return: TRAPI version currently tracked by the ValidationReporter.
-        :rtype biolink_version: str
-        """
-        raise NotImplementedError("ValidatorReport expects messaging subclass to implement get_trapi_version()")
-
-    def reset_trapi_version(self, version: str):
-        """
-        Reset TRAPI version tracked by the ValidationReporter.
-        :param version: new version
-        :return: None
-        """
-        raise NotImplementedError("ValidatorReport expects messaging subclass to implement reset_trapi_version()")
-
-    def get_biolink_version(self) -> str:
-        """
-        :return: Biolink Model version currently tracked by the ValidationReporter.
-        :rtype biolink_version: str
-        """
-        raise NotImplementedError("ValidatorReport expects messaging subclass to implement get_biolink_version()")
-
-    def reset_biolink_version(self, version: str):
-        """
-        Reset Biolink Model version tracked by the ValidationReporter.
-        :param version: new version
-        :return: None
-        """
-        raise NotImplementedError("ValidatorReport expects messaging subclass to implement reset_biolink_version()")
-
     def is_strict_validation(self) -> bool:
         """
         :return: bool, value of validation strictness set in the ValidationReporter.
@@ -314,24 +284,12 @@ class ValidationReporter:
         # new coded messages also need to be merged!
         self.add_messages(reporter.get_messages())
 
-        # First come, first serve... We only overwrite
-        # empty versions in the parent reporter
-        if not self.get_trapi_version():
-            self.reset_trapi_version(reporter.get_trapi_version())
-        if not self.get_biolink_version():
-            self.reset_biolink_version(reporter.get_biolink_version())
-
     def to_dict(self) -> Dict:
         """
-        Export ValidationReporter contents as a Python dictionary
-        (including TRAPI version, Biolink Model version and messages)
+        Export ValidationReporter message contents as a Python dictionary.
         :return: Dict
         """
-        return {
-            "trapi_version": self.get_trapi_version(),
-            "biolink_version": self.get_biolink_version(),
-            "messages": self.get_messages()
-        }
+        return {"messages": self.get_messages()}
 
     def apply_validation(self, validation_method, *args, **kwargs) -> bool:
         """
@@ -408,6 +366,25 @@ class ValidationReporter:
         else:
             return False
 
+    def report_header(self, title: Optional[str], compact_format: bool) -> str:
+        header: str = ""
+        if title is not None:
+
+            if not compact_format:
+                header += "\n"
+
+            if not title:
+                title = f"Validation Report"
+                title += f" for '{self.prefix}'" if self.prefix else ""
+
+            if not compact_format:
+                header += f"\n\033[4m{title}\033[0m\n"
+            else:
+                # compact also ignores underlining
+                header += f"{title}\n"
+        header += f"Reasoner Validator version '{metadata.version('reasoner-validator')}'"
+        return header
+
     def dump(
             self,
             title: Optional[str] = "",
@@ -434,29 +411,7 @@ class ValidationReporter:
         assert id_rows >= 0, "dump(): 'id_rows' argument must be positive or equal to zero"
         assert msg_rows >= 0, "dump(): 'pm_rows' argument must be positive or equal to zero"
 
-        if title is not None:
-
-            if not compact_format:
-                print(file=file)
-
-            if not title:
-                title = f"Validation Report"
-                title += f" for '{self.prefix}'" if self.prefix else ""
-
-            if not compact_format:
-                print(f"\n\033[4m{title}\033[0m", file=file)
-                print(file=file)
-            else:
-                # compact also ignores underlining
-                print(title, file=file)
-
-        print(
-            f"Reasoner Validator version '{metadata.version('reasoner-validator')}' validating against TRAPI version "
-            f"'{str(self.get_trapi_version() if self.get_trapi_version() is not None else 'Default')}' " +
-            "and Biolink Model version " +
-            f"'{str(self.get_biolink_version() if self.get_biolink_version() is not None else 'Default')}'.\n",
-            file=file
-        )
+        print(self.report_header(title, compact_format), file=file)
 
         if self.has_messages():
 

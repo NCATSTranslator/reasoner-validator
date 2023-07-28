@@ -254,21 +254,6 @@ class TRAPISchemaValidator(ValidationReporter):
         """
         self.trapi_version = version
 
-    def get_biolink_version(self) -> str:
-        """
-        :return: Biolink Model version currently tracked by the TRAPISchemaValidator.
-        :rtype biolink_version: str
-        """
-        raise NotImplementedError("TRAPISchemaValidator expects subclass to implement get_biolink_version()")
-
-    def reset_biolink_version(self, version: str):
-        """
-        Reset Biolink Model version tracked by the ValidationReporter.
-        :param version: new version
-        :return: None
-        """
-        raise NotImplementedError("TRAPISchemaValidator expects subclass to implement reset_biolink_version()")
-
     def minimum_required_trapi_version(self, version: str) -> bool:
         """
         :param version: simple 'major.minor.patch' TRAPI schema release SemVer
@@ -342,6 +327,38 @@ class TRAPISchemaValidator(ValidationReporter):
                 reason=reason
             )
 
+    def merge(self, reporter):
+        """
+        Merge all messages and metadata from a second TRAPISchemaValidator,
+        into the calling TRAPISchemaValidator instance.
+
+        :param reporter: second TRAPISchemaValidator
+        """
+        assert isinstance(reporter, TRAPISchemaValidator)
+        ValidationReporter.merge(self, reporter)
+
+        # First come, first serve... We only overwrite
+        # empty versions in the parent reporter
+        if not self.get_trapi_version():
+            self.reset_trapi_version(reporter.get_trapi_version())
+        if not self.get_biolink_version():
+            self.reset_biolink_version(reporter.get_biolink_version())
+
+    def to_dict(self) -> Dict:
+        """
+        Export TRAPISchemaValidator contents as a Python dictionary
+        (including TRAPI version and parent class dictionary content)
+        :return: Dict
+        """
+        dictionary = ValidationReporter.to_dict(self)
+        dictionary["trapi_version"] = self.get_trapi_version()
+        return dictionary
+
+    def report_header(self, title: Optional[str], compact_format: bool) -> str:
+        header: str = ValidationReporter.report_header(self, title, compact_format)
+        header += f" validating against TRAPI version " \
+                  f"'{str(self.get_trapi_version() if self.get_trapi_version() is not None else 'Default')}'"
+        return header
 
 def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPISchemaValidator:
     """

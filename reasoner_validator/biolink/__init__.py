@@ -1594,6 +1594,37 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     # print(f"{str(edge)}", flush=True)
                     self.validate_graph_edge(edge)
 
+    def merge(self, reporter):
+        """
+        Merge all messages and metadata from a second BiolinkValidator,
+        into the calling TRAPISchemaValidator instance.
+
+        :param reporter: second BiolinkValidator
+        """
+        assert isinstance(reporter, BiolinkValidator)
+        TRAPISchemaValidator.merge(self, reporter)
+
+        # First come, first serve... We only overwrite
+        # empty versions in the parent reporter
+        if not self.get_biolink_version():
+            self.reset_biolink_version(reporter.get_biolink_version())
+
+    def to_dict(self) -> Dict:
+        """
+        Export BiolinkValidator contents as a Python dictionary
+        (including Biolink version and parent class dictionary content).
+        :return: Dict
+        """
+        dictionary = TRAPISchemaValidator.to_dict(self)
+        dictionary["biolink_version"] = self.get_biolink_version()
+        return dictionary
+
+    def report_header(self, title: Optional[str], compact_format: bool) -> str:
+        header: str = TRAPISchemaValidator.report_header(self, title, compact_format)
+        header += "and Biolink Model version " \
+                  f"'{str(self.get_biolink_version() if self.get_biolink_version() is not None else 'Default')}'.\n"
+        return header
+
 
 def check_biolink_model_compliance_of_input_edge(
         edge: Dict[str, str],
