@@ -303,107 +303,96 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs
 @pytest.mark.parametrize(
     "response",
     [
-        (   # Query 0 - No "workflow" key in TRAPI Response
-            {
-                "message": {}
-            },
-        ),
-        (   # Query 1 - Null "workflow" key value
-            {
-                "message": {},
-                "workflow": None
-            },
-        ),
-        (  # Query 2 - Null "workflow" key list
-            {
-                "message": {},
-                "workflow": []
-            },
-        ),
-        (  # Query 3 - "runner_parameters" is Null
-            {
-                "message": {},
-                "workflow": [
-                    {
-                        "runner_parameters": None,
-                        "id": "sort_results_score",
-                        "parameters": {"ascending_or_descending": "ascending"}
-                    }
-                ]
-            },
-        ),
-        (  # Query 4 - "parameters" is Null
-            {
-                "message": {},
-                "workflow": [
-                    {"runner_parameters": {"allowlist": ["infores:aragorn"]}, "id": "lookup", "parameters": None}
-                ]
-            },
-        ),
-        (  # Query 5 - both "parameters" and "runner_parameters" are Null
-            {
-                "message": {},
-                "workflow": [
-                    {"runner_parameters": None, "id": "lookup", "parameters": None}
-                ]
-            },
-        ),
-        (   # Query 6 - Now, we patch the Message itself when it is not empty - knowledge graph is nullable
-            {
-                "message": {
-                    "knowledge_graph": None
+        # Query 0 - No "workflow" key in TRAPI Response
+        {
+            "message": {}
+        },
+        # Query 1 - Null "workflow" key value
+        {
+            "message": {},
+            "workflow": None
+        },
+        # Query 2 - Null "workflow" key list
+        {
+            "message": {},
+            "workflow": []
+        },
+        # Query 3 - "runner_parameters" is Null
+        {
+            "message": {},
+            "workflow": [
+                {
+                    "runner_parameters": None,
+                    "id": "sort_results_score",
+                    "parameters": {"ascending_or_descending": "ascending"}
                 }
-            },
-        ),
-        (   # Query 7 - Now, we patch the Message itself when it is not empty
-            {
-                "message": {
-                    "knowledge_graph": {
-                        "nodes": {},
-                        "edges": {}
-                    }
+            ]
+        },
+        # Query 4 - "parameters" is Null
+        {
+            "message": {},
+            "workflow": [
+                {"runner_parameters": {"allowlist": ["infores:aragorn"]}, "id": "lookup", "parameters": None}
+            ]
+        },
+        # Query 5 - both "parameters" and "runner_parameters" are Null
+        {
+            "message": {},
+            "workflow": [
+                {"runner_parameters": None, "id": "lookup", "parameters": None}
+            ]
+        },
+        # Query 6 - Now, we patch the Message itself when it is not empty - knowledge graph is nullable
+        {
+            "message": {
+                "knowledge_graph": None
+            }
+        },
+        # Query 7 - Now, we patch the Message itself when it is not empty
+        {
+            "message": {
+                "knowledge_graph": {
+                    "nodes": {},
+                    "edges": {}
                 }
-            },
-        ),
-        (   # Query 8 - Now, we patch the Message itself when it is not empty
-            {
-                "message": {
-                    "knowledge_graph": {
-                        "nodes": {},
-                        "edges": {}
-                    }
+            }
+        },
+        # Query 8 - Now, we patch the Message itself when it is not empty
+        {
+            "message": {
+                "knowledge_graph": {
+                    "nodes": {},
+                    "edges": {}
                 }
-            },
-        ),
-        (   # Query 9 - Now, we patch the "Message.knowledge_edge.sources" itself when it is not empty
-            {
-                "message": {
-                    "knowledge_graph": {
-                        "nodes": {},
-                        "edges": {
-                            "alice-in-wonderland": {
-                                 "subject": "tweedle-dee",
-                                 "predicate": "and",
-                                 "object": "tweedle-dum",
-                                 "sources": [
-                                     {
-                                         "resource_id": "infores:rabbit-hole",
-                                         "resource_role": "primary_knowledge_source"
-                                     }
-                                 ]
-                            }
+            }
+        },
+        # Query 9 - Now, we patch the "Message.knowledge_edge.sources" itself when it is not empty
+        {
+            "message": {
+                "knowledge_graph": {
+                    "nodes": {},
+                    "edges": {
+                        "alice-in-wonderland": {
+                             "subject": "tweedle-dee",
+                             "predicate": "and",
+                             "object": "tweedle-dum",
+                             "sources": [
+                                 {
+                                     "resource_id": "infores:rabbit-hole",
+                                     "resource_role": "primary_knowledge_source"
+                                 }
+                             ]
                         }
                     }
                 }
-            },
-        ),
-        (   # Query 10 - Now, we patch the Message itself when it is not empty
-            {
-                "message": {
-                    "auxiliary_graphs": None
-                }
-            },
-        )
+            }
+        },
+        # Query 10 - Now, we patch the Message itself when it is not empty
+        {
+            "message": {
+                "auxiliary_graphs": None
+            }
+        }
     ]
 )
 def test_sanitize_trapi_query(response: Dict):
