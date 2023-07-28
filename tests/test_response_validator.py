@@ -455,7 +455,7 @@ TEST_GRAPH: Dict = {
     ]
 )
 def test_sample_graph(query: Tuple[int, int, int]):
-    validator: TRAPIResponseValidator = TRAPIResponseValidator()
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
     kg_sample: Dict = validator.sample_graph(graph=TEST_GRAPH, edges_limit=query[0])
     assert kg_sample
     assert len(kg_sample["nodes"]) == query[1]
@@ -463,7 +463,7 @@ def test_sample_graph(query: Tuple[int, int, int]):
 
 
 @pytest.mark.parametrize(
-    "query",
+    "response,trapi_version,biolink_version,target_provenance,strict_validation,message",
     [
         (   # Query 0 - Completely empty Response.Message
             {
@@ -987,14 +987,22 @@ def test_sample_graph(query: Tuple[int, int, int]):
         )
     ]
 )
-def test_check_biolink_model_compliance_of_trapi_response(query: Tuple):
+def test_check_biolink_model_compliance_of_trapi_response(
+        response: Dict,
+        trapi_version: str,
+        biolink_version: str,
+        target_provenance: Dict,
+        strict_validation: bool,
+        message: str
+):
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
-        trapi_version=query[1],
-        biolink_version=query[2],
-        strict_validation=query[4]
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        trapi_version=trapi_version,
+        biolink_version=biolink_version,
+        strict_validation=strict_validation
     )
-    validator.check_compliance_of_trapi_response(response=query[0], target_provenance=query[3])
-    check_messages(validator, query[5], no_errors=True)
+    validator.check_compliance_of_trapi_response(response=response, target_provenance=target_provenance)
+    check_messages(validator, message, no_errors=True)
 
 
 @pytest.mark.parametrize(
@@ -1154,6 +1162,7 @@ def test_check_biolink_model_compliance_of_trapi_response_suppressing_empty_data
         response, trapi_version, biolink_version, sources, strict_validation, code
 ):
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
         trapi_version=trapi_version,
         biolink_version=biolink_version,
         strict_validation=strict_validation,
@@ -1180,6 +1189,6 @@ sample_kg_edge_abstract_predicate = sample_kg["edges"]["df87ff82"]["predicate"] 
     ]
 )
 def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(response: Dict):
-    validator: TRAPIResponseValidator = TRAPIResponseValidator()
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
     validator.check_compliance_of_trapi_response(response=response)
     validator.dump()
