@@ -1,6 +1,6 @@
 """Error and Warning Reporting Module"""
 from typing import Optional, Dict, List
-from sys import stdout, stderr
+from sys import stdout
 from importlib import metadata
 from io import StringIO
 import copy
@@ -15,7 +15,7 @@ from reasoner_validator.message import (
     MESSAGE_PARAMETERS
 )
 from reasoner_validator.validation_codes import CodeDictionary
-from reasoner_validator.versioning import SemVer, SemVerError, get_latest_version
+from reasoner_validator.versioning import SemVer, SemVerError
 
 import logging
 logger = logging.getLogger(__name__)
@@ -65,11 +65,11 @@ class ValidationReporter:
         """
         :param prefix: named context of the Validator, used as a prefix in validation messages.
         :type prefix: str
-        :param trapi_version: version of component against which to validate the message.
+        :param trapi_version: version of TRAPI schema against which to validate the message.
                               Could be a TRAPI release SemVer or a Git branch identifier.
-        :type trapi_version: Optional[str], target version of TRAPI upon which the validation is attempted
-        :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
-                                validated (Default: if None, use the Biolink Model Toolkit default version).
+        :type trapi_version: Optional[str] = None
+        :param biolink_version: Optional[str], Biolink Model (SemVer) release against which
+                                               the knowledge graph is being validated (Default: None).
         :type biolink_version: Optional[str] = None
         :param strict_validation: if True, abstract and mixin elements validate as 'error';
                                   if None or False, just issue a 'warning'
@@ -79,8 +79,8 @@ class ValidationReporter:
 
         # TODO: does this class need to set two version variables
         #       or should they remain closer to point of usage?
-        self.trapi_version = trapi_version
-        self.biolink_version = biolink_version
+        self.trapi_version: Optional[str] = trapi_version
+        self.biolink_version: Optional[str] = biolink_version
 
         self.strict_validation: Optional[bool] = strict_validation
         self.messages: MESSAGE_CATALOG = {

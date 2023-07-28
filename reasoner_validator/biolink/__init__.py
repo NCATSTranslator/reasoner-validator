@@ -12,9 +12,9 @@ from pprint import PrettyPrinter
 from bmt import Toolkit, utils
 from linkml_runtime.linkml_model import ClassDefinition, Element
 
+from reasoner_validator.validator import TRAPISchemaValidator
 from reasoner_validator.message import MESSAGE_CATALOG
 from reasoner_validator.sri.util import is_curie
-from reasoner_validator.report import ValidationReporter
 from reasoner_validator.versioning import SemVer, SemVerError
 
 import logging
@@ -139,9 +139,9 @@ class BMTWrapper:
         return None
 
 
-class BiolinkValidator(ValidationReporter, BMTWrapper):
+class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     """
-    Wrapper class for Biolink Model validation.
+    Wrapper class for Biolink Model validation of a TRAPI message.
     """
     def __init__(
         self,
@@ -164,11 +164,10 @@ class BiolinkValidator(ValidationReporter, BMTWrapper):
         :type target_provenance: Optional[Dict[str,str]]
         """
         BMTWrapper.__init__(self, biolink_version=biolink_version)
-        ValidationReporter.__init__(
+        TRAPISchemaValidator.__init__(
             self,
             prefix=f"Biolink Validation of {graph_type.value}",
             trapi_version=trapi_version,
-            biolink_version=self.get_resolved_biolink_version(),
             strict_validation=strict_validation
         )
         self.target_provenance: Optional[Dict] = target_provenance

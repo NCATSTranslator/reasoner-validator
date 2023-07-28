@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from typing import Optional, List, Dict
-from reasoner_validator import TRAPIResponseValidator
+from reasoner_validator.validator import TRAPIResponseValidator
 
 SAMPLE_RESPONSE = {
     "schema_version": "1.4.1",

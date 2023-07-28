@@ -49,7 +49,7 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
 
     #!/usr/bin/env python
     from typing import Optional, List, Dict
-    from reasoner_validator import TRAPIResponseValidator
+    from reasoner_validator.validator import TRAPIResponseValidator
     from reasoner_validator import MESSAGE_CATALOG
 
     SAMPLE_RESPONSE = {

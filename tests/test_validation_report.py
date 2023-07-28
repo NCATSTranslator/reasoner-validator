@@ -247,7 +247,6 @@ def test_messages():
         prefix="2nd Test Message Set",
         biolink_version=TEST_BIOLINK_VERSION
     )
-    assert reporter2.get_trapi_version() == TEST_TRAPI_VERSION
     assert reporter2.get_biolink_version() == TEST_BIOLINK_VERSION
     reporter2.report(
         code="info.query_graph.edge.predicate.mixin",

@@ -10,8 +10,7 @@ import pytest
 from bmt import Toolkit
 from linkml_runtime.linkml_model import SlotDefinition
 
-from reasoner_validator import TRAPISchemaValidator
-from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0_BETA, LATEST_TRAPI_RELEASE
+from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0_BETA, TRAPISchemaValidator
 from reasoner_validator.biolink import (
     TRAPIGraphType,
     BiolinkValidator,
@@ -359,7 +358,7 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
 
 
 @pytest.mark.parametrize(
-    "query",
+    "biolink_version,graph",
     [
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -424,13 +423,13 @@ def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
         )
     ]
 )
-def test_conservation_of_query_graph(query: Tuple):
+def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
     """
     This test checks for internal glitch where the query graph is somehow deleted
     """
-    original_graph: Dict = deepcopy(query[1])
-    check_biolink_model_compliance_of_query_graph(graph=query[1], biolink_version=query[0])
-    assert query[1] == original_graph
+    original_graph: Dict = deepcopy(graph)
+    check_biolink_model_compliance_of_query_graph(graph=graph, biolink_version=biolink_version)
+    assert graph == original_graph
 
 
 @pytest.mark.parametrize(

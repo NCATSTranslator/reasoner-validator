@@ -1,6 +1,6 @@
 from typing import Dict
 
-from reasoner_validator import ValidationReporter
+from reasoner_validator.report import ValidationReporter
 
 
 class MappingValidator(ValidationReporter):

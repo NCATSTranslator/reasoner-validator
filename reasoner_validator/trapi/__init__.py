@@ -241,7 +241,9 @@ class TRAPISchemaValidator(ValidationReporter):
     """
     def __init__(
             self,
-            trapi_version: Optional[str] = None
+            prefix: Optional[str] = None,
+            trapi_version: Optional[str] = None,
+            strict_validation: bool = False
     ):
         """
         TRAPI Validator constructor.
@@ -256,8 +258,9 @@ class TRAPISchemaValidator(ValidationReporter):
         print(f"\nTRAPISchemaValidator set to TRAPI Version: '{self.trapi_version}'", file=stderr)
         ValidationReporter.__init__(
             self,
-            prefix="TRAPI Validation",
-            trapi_version=self.trapi_version
+            prefix=prefix if prefix is not None else "TRAPI Validation",
+            trapi_version=self.trapi_version,
+            strict_validation=strict_validation
         )
 
     def validate(self, instance, component):
