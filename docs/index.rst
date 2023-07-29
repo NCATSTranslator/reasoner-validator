@@ -251,7 +251,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
         # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed 'schema_version'.
         # This modifies slightly the interpretation of this parameter, as follows:
         # If the following trapi_version parameter is given, then it overrides the TRAPI Response 'schema_version';
-        # Otherwise, the TRAPI Response 'schema_version' (not 'latest') becomes the default validation version.
+        # Otherwise, a TRAPI 1.4.0 Response embedded 'schema_version' (not 'latest') becomes the default validation version.
 
         trapi_version="1.4.2",
 
@@ -260,7 +260,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
         # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed 'biolink_version'.
         # This modifies slightly the interpretation of this parameter, as follows:
         # If the 'biolink_version' given here is assumed, which overrides the TRAPI Response stated 'biolink_version';
-        # Otherwise, the TRAPI Response stated 'biolink_version' (not BMT) becomes the default validation version.
+        # Otherwise, a TRAPI 1.4.0 Response embedded 'biolink_version' (not BMT) becomes the default validation version.
         # The biolink_version may also be set to the string 'suppress', in which case, most Biolink Model validation is NOT done during the validation of a TRAPI Response.
 
         biolink_version="3.5.0",
