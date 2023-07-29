@@ -176,6 +176,18 @@ class TRAPIResponseValidator(BiolinkValidator):
             # ... also, nothing more here to validate?
             return
 
+        # TODO: how do I handle the TRAPI Response versions here after
+        #      the TRAPIResponseValidator values have already been set?
+        #      i.e. resolving https://github.com/NCATSTranslator/reasoner-validator/issues/87
+        #      (remember to fix the main documentation about this!!)
+        # TODO: maybe need to tag the TRAPIResponseValidator to know when
+        #       it originally assumed 'default' values, not user overrides?
+        if "schema_version" in response and response["schema_version"]:
+            pass
+
+        if "biolink_version" in response and response["biolink_version"]:
+            pass
+
         response = self.sanitize_trapi_response(response)
 
         trapi_validator: TRAPISchemaValidator = check_trapi_validity(
