@@ -74,6 +74,25 @@ def test_minimum_required_biolink_version():
     assert not validator.minimum_required_biolink_version("2.4.8")
 
 
+def test_message():
+    reporter = BiolinkValidator(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        prefix="Test Message",
+        trapi_version="v1.3",
+        biolink_version="v3.5.2"
+    )
+    assert reporter.get_trapi_version() == "v1.3.0"
+
+    # Note: BMT is a bit tricky in resolving Biolink Model versions:
+    # the version is reported without the 'v' prefix of the Github release!
+    assert reporter.get_biolink_version() == "3.5.2"
+
+    assert not reporter.has_messages()
+    reporter.report("info.compliant")
+    assert reporter.has_messages()
+    reporter.dump()
+
+
 def test_inverse_predicate():
     tk: Toolkit = get_biolink_model_toolkit("2.2.0")
     predicate = tk.get_element("biolink:related_to")

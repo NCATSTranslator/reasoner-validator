@@ -8,7 +8,7 @@ import pytest
 from jsonschema.exceptions import ValidationError
 
 from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema, load_schema
-
+from reasoner_validator import LATEST_TRAPI_RELEASE
 from tests import LATEST_TEST_RELEASES, PRE_1_4_0_TEST_VERSIONS, ALL_TEST_VERSIONS
 
 
@@ -89,6 +89,15 @@ def test_load_master_schema():
     """Test load_schema('master')."""
     schema = load_schema("master")
     assert schema, "TRAPI Schema for ('master') branch is not available?"
+
+
+def test_message():
+    reporter = TRAPISchemaValidator(prefix="Test Message", trapi_version="v1.4")
+    assert reporter.get_trapi_version() == LATEST_TRAPI_RELEASE
+    assert not reporter.has_messages()
+    reporter.report("info.compliant")
+    assert reporter.has_messages()
+    reporter.dump()
 
 
 @pytest.mark.parametrize(

@@ -322,8 +322,7 @@ class ValidationReporter:
         # The 'case' dictionary object could have a format something like this:
         #
         #     tag: {
-        #         "trapi_version": "1.3",
-        #         "biolink_version": "3.0.2",
+        #         ...
         #         "messages": {
         #             "information": [],
         #             "warnings": [
@@ -382,6 +381,10 @@ class ValidationReporter:
             else:
                 # compact also ignores underlining
                 header += f"{title}\n"
+
+        if not compact_format:
+            header += "\n"
+
         header += f"Reasoner Validator version '{metadata.version('reasoner-validator')}'"
         return header
 
@@ -411,7 +414,7 @@ class ValidationReporter:
         assert id_rows >= 0, "dump(): 'id_rows' argument must be positive or equal to zero"
         assert msg_rows >= 0, "dump(): 'pm_rows' argument must be positive or equal to zero"
 
-        print(self.report_header(title, compact_format), file=file)
+        print(f"{self.report_header(title, compact_format)}.\n", file=file)
 
         if self.has_messages():
 

@@ -451,8 +451,6 @@ def test_validator_method():
             'validation',
             {
                 "validation": {
-                    "trapi_version": "1.3",
-                    "biolink_version": "2.4.7",
                     "messages": {
                         "information": {},
                         "warnings": {},
@@ -467,8 +465,6 @@ def test_validator_method():
             'validation',
             {
                 "validation": {
-                    "trapi_version": "1.3",
-                    "biolink_version": "2.4.7",
                     "messages": {
                         "information": {},
                         "warnings": {},
@@ -483,8 +479,6 @@ def test_validator_method():
             "validation",
             {
                 "validation": {
-                    "trapi_version": "1.3",
-                    "biolink_version": "2.4.7",
                     "messages": {
                         "information": {},
                         "warnings": {
