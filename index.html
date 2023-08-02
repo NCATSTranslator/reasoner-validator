@@ -113,7 +113,7 @@ poetry<span class="w"> </span>shell
 <p>Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValidator class wrapper as follows (sample script):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">from</span> <span class="nn">reasoner_validator</span> <span class="kn">import</span> <span class="n">TRAPIResponseValidator</span>
+<span class="kn">from</span> <span class="nn">reasoner_validator.validator</span> <span class="kn">import</span> <span class="n">TRAPIResponseValidator</span>
 <span class="kn">from</span> <span class="nn">reasoner_validator</span> <span class="kn">import</span> <span class="n">MESSAGE_CATALOG</span>
 
 <span class="n">SAMPLE_RESPONSE</span> <span class="o">=</span> <span class="p">{</span>
@@ -259,12 +259,10 @@ named fields in the Python string templates found in the <a class="reference ext
 <h2>Python API<a class="headerlink" href="#python-api" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.html">TRAPI Response Validation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.html#reasoner_validator.TRAPIResponseValidator"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="reasoner_validator.html">TRAPI Response Validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reasoner_validator.trapi.html">TRAPI Schema Validation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.TRAPIAccessError"><code class="docutils literal notranslate"><span class="pre">TRAPIAccessError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.TRAPIGraphType"><code class="docutils literal notranslate"><span class="pre">TRAPIGraphType</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.TRAPISchemaValidator"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.call_trapi"><code class="docutils literal notranslate"><span class="pre">call_trapi()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.check_trapi_validity"><code class="docutils literal notranslate"><span class="pre">check_trapi_validity()</span></code></a></li>
@@ -283,7 +281,6 @@ named fields in the Python string templates found in the <a class="reference ext
 <li class="toctree-l1"><a class="reference internal" href="reasoner_validator.biolink.html">Biolink Validation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.BMTWrapper"><code class="docutils literal notranslate"><span class="pre">BMTWrapper</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.BiolinkValidator"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.TRAPIGraphType"><code class="docutils literal notranslate"><span class="pre">TRAPIGraphType</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.check_biolink_model_compliance_of_input_edge"><code class="docutils literal notranslate"><span class="pre">check_biolink_model_compliance_of_input_edge()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.check_biolink_model_compliance_of_knowledge_graph"><code class="docutils literal notranslate"><span class="pre">check_biolink_model_compliance_of_knowledge_graph()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.check_biolink_model_compliance_of_query_graph"><code class="docutils literal notranslate"><span class="pre">check_biolink_model_compliance_of_query_graph()</span></code></a></li>
@@ -341,7 +338,7 @@ text file or a locally triggered query Request against an directly specified TRA
     # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed &#39;schema_version&#39;.
     # This modifies slightly the interpretation of this parameter, as follows:
     # If the following trapi_version parameter is given, then it overrides the TRAPI Response &#39;schema_version&#39;;
-    # Otherwise, the TRAPI Response &#39;schema_version&#39; (not &#39;latest&#39;) becomes the default validation version.
+    # Otherwise, a TRAPI 1.4.0 Response embedded &#39;schema_version&#39; (not &#39;latest&#39;) becomes the default validation version.
 
     trapi_version=&quot;1.4.2&quot;,
 
@@ -350,7 +347,8 @@ text file or a locally triggered query Request against an directly specified TRA
     # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed &#39;biolink_version&#39;.
     # This modifies slightly the interpretation of this parameter, as follows:
     # If the &#39;biolink_version&#39; given here is assumed, which overrides the TRAPI Response stated &#39;biolink_version&#39;;
-    # Otherwise, the TRAPI Response stated &#39;biolink_version&#39; (not BMT) becomes the default validation version.
+    # Otherwise, a TRAPI 1.4.0 Response embedded &#39;biolink_version&#39; (not BMT) becomes the default validation version.
+    # The biolink_version may also be set to the string &#39;suppress&#39;, in which case, most Biolink Model validation is NOT done during the validation of a TRAPI Response.
 
     biolink_version=&quot;3.5.0&quot;,
 
@@ -366,8 +364,8 @@ text file or a locally triggered query Request against an directly specified TRA
 </div>
 <p>The request body consists of JSON data structure with two top level tag:</p>
 <ul class="simple">
-<li><p>An <strong>optional</strong> <cite>trapi_version</cite> tag can be given a value of the TRAPI version against which the message will be validated, expressed as a SemVer string (defaults to ‘latest’ if omitted; partial SemVer strings are resolved to their ‘latest’ minor and patch releases).</p></li>
-<li><p>An <strong>optional</strong> <cite>biolink_version</cite> tag can be given a value of the Biolink Model version against which the message knowledge graph semantic contents will be validated, expressed as a SemVer string (defaults to ‘latest’ Biolink Model Toolkit supported version, if omitted).</p></li>
+<li><p>An <strong>optional</strong> <cite>trapi_version</cite> tag can be given a value of the TRAPI version against which the message will be validated, expressed as a SemVer string (if omitted, defaults to ‘latest’ otherwise; partial SemVer strings are resolved to their ‘latest’ minor and patch releases).</p></li>
+<li><p>An <strong>optional</strong> <cite>biolink_version</cite> tag can be given a value of the Biolink Model version against which the message knowledge graph semantic contents will be validated, expressed as a SemVer string (if omitted defaults to ‘latest’ Biolink Model Toolkit supported version otherwise). Special string value “suppress” disables Biolink Model validation of the TRAPI Response.</p></li>
 <li><p>An <strong>optional</strong> <cite>sources</cite> with an object dictionary (example shown) specifying the ARA and KP sources involved in the TRAPI call (specified by infores CURIE) and the expected KP provenance source type, i.e. ‘primary’ implies that the KP is tagged as a ‘biolink:primary_knowledge_source’. Optional in that the root “sources” or any of the subsidiary tags may be omitted (default to None)</p></li>
 <li><p>An <strong>optional</strong> <cite>strict_validation</cite> flag (default: None or ‘false’). If ‘true’ then follow strict validation rules, such as treating as ‘error’ states the use of <cite>category</cite>, <cite>predicate</cite> and <cite>attribute_type_id</cite> that are of type <cite>abstract</cite> or <cite>mixin</cite>  as errors.</p></li>
 <li><p>A <strong>mandatory</strong> <cite>response</cite> tag should have as its value the complete TRAPI <strong>Response</strong> JSON data structure to be validated (see example below).</p></li>
