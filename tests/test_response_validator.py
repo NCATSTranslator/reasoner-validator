@@ -205,7 +205,7 @@ _TEST_KG_4 = {
     "edges": _TEST_EDGES_4
 }
 
-# From Implementation Guidlines circa June 2023
+# From Implementation Guidelines circa June 2023
 _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
     "message": {
         "query_graph": {
@@ -299,6 +299,13 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
 _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
 _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
 
+# original TRAPI schema.. changing the 'schema_version' may generate errors
+_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
+_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION["schema_version"] = "1.3.0"
+
+# original TRAPI schema.. changing the 'biolink_version' may generate errors
+_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
+_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION["biolink_version"] = "2.4.8"
 
 @pytest.mark.parametrize(
     "response",
@@ -973,6 +980,25 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             None,
             True,
             ""   # this filtered workflow spec should pass
+        ),
+        (   # Query 27 - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
+            #            guidelines...) but add the 'schema_version' just for fun and profit
+            _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION,
+            None,
+            "3.0.0",
+            None,
+            True,
+            "critical.trapi.validation"   # trying to validate a 1.4.2 schema against 1.3.0 will fail!
+        ),
+        (   # Query 28 - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
+            #            guidelines...) but explicitly specify the 'biolink_version == 2.5.8' just for fun and profit
+            _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION,
+            TRAPI_1_4_2,
+            None,
+            None,
+            True,
+            # Validation with 2.4.8 generates a warning
+            "warning.knowledge_graph.edge.predicate.non_canonical"
         )
     ]
 )

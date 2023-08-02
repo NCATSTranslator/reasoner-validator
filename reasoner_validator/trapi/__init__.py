@@ -239,6 +239,9 @@ class TRAPISchemaValidator(ValidationReporter):
         :param trapi_version: str, version of component to validate against
         :param strict_validation: bool, applies stricter constraints on Biolink class term semantics
         """
+        self.default_trapi: bool = False
+        if trapi_version is None:
+            self.default_trapi = True
         self.trapi_version = get_latest_version(trapi_version) \
             if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
         print(f"\nTRAPISchemaValidator set to TRAPI Version: '{self.trapi_version}'", file=stderr)

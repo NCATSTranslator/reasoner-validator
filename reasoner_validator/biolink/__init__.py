@@ -80,8 +80,11 @@ def get_biolink_model_toolkit(biolink_version: Optional[str] = None) -> Toolkit:
 class BMTWrapper:
     def __init__(self, biolink_version: Optional[str] = None):
         self.bmt: Optional[Toolkit] = None
+        self.default_biolink: bool = False
         if biolink_version != "suppress":
             # Here, the Biolink Model version is validated, and the relevant Toolkit pulled.
+            if biolink_version is None:
+                self.default_biolink = True
             self.bmt = get_biolink_model_toolkit(biolink_version=biolink_version)
             self.biolink_version = self.bmt.get_model_version()
         else:

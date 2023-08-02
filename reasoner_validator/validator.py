@@ -6,7 +6,8 @@ from reasoner_validator.biolink import (
     check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph,
     BMTWrapper,
-    BiolinkValidator
+    BiolinkValidator,
+    get_biolink_model_toolkit
 )
 
 # Maximum number of data points to scrutinize
@@ -24,7 +25,7 @@ from reasoner_validator import (
     LATEST_TRAPI_MAJOR_RELEASE_SEMVER
 )
 from reasoner_validator.trapi.mapping import MappingValidator, check_node_edge_mappings
-from reasoner_validator.versioning import SemVer, SemVerError
+from reasoner_validator.versioning import SemVer, SemVerError, get_latest_version
 from reasoner_validator.sri.util import get_aliases
 
 import logging
@@ -176,17 +177,15 @@ class TRAPIResponseValidator(BiolinkValidator):
             # ... also, nothing more here to validate?
             return
 
-        # TODO: how do I handle the TRAPI Response versions here after
-        #      the TRAPIResponseValidator values have already been set?
-        #      i.e. resolving https://github.com/NCATSTranslator/reasoner-validator/issues/87
-        #      (remember to fix the main documentation about this!!)
-        # TODO: maybe need to tag the TRAPIResponseValidator to know when
-        #       it originally assumed 'default' values, not user overrides?
+        # TRAPI JSON specified versions override default versions
         if "schema_version" in response and response["schema_version"]:
-            pass
+            if self.default_trapi:
+                self.trapi_version = get_latest_version(response["schema_version"])
 
         if "biolink_version" in response and response["biolink_version"]:
-            pass
+            if self.default_biolink:
+                self.bmt = get_biolink_model_toolkit(biolink_version=response["biolink_version"])
+                self.biolink_version = self.bmt.get_model_version()
 
         response = self.sanitize_trapi_response(response)
 
