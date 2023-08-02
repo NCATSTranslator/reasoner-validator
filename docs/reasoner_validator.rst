@@ -1,7 +1,7 @@
 TRAPI Response Validation
 =========================
 
-.. automodule:: reasoner_validator
+.. automodule:: reasoner_validator.validator
    :members:
    :undoc-members:
    :show-inheritance:
