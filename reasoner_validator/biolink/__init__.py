@@ -152,7 +152,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     """
     def __init__(
         self,
-        graph_type: TRAPIGraphType,
+        graph_type: Optional[TRAPIGraphType] = None,
         prefix: Optional[str] = None,
         trapi_version: Optional[str] = None,
         biolink_version: Optional[str] = None,
@@ -162,7 +162,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         Biolink Validator constructor.
 
-        :param graph_type: TRAPIGraphType, type of graph data being validated
+        :param graph_type: Optional[TRAPIGraphType] == None, type of graph data being validated (if already known)
         :param prefix: named context of the BiolinkValidator, used as a prefix in validation messages.
         :param trapi_version:  Optional[str], caller specified Biolink Model version (default: None, use TRAPI 'latest')
         :param biolink_version: Optional[str], caller specified Biolink Model version (default: None, use BMT 'latest')

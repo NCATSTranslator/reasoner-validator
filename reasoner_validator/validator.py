@@ -44,7 +44,6 @@ class TRAPIResponseValidator(BiolinkValidator):
     """
     def __init__(
             self,
-            graph_type: TRAPIGraphType,
             prefix: Optional[str] = None,
             trapi_version: Optional[str] = None,
             biolink_version: Optional[str] = None,
@@ -52,7 +51,6 @@ class TRAPIResponseValidator(BiolinkValidator):
             suppress_empty_data_warnings: bool = False
     ):
         """
-        :param graph_type: TRAPIGraphType, type of graph data being validated
         :param prefix: named context of the BiolinkValidator, used as a prefix in validation messages.
         :param trapi_version: str, version of component against which to validate the message (mandatory, no default)
         :param biolink_version: Optional[str] = None, Biolink Model (SemVer) release against which the knowledge graph
@@ -64,7 +62,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         """
         BiolinkValidator.__init__(
             self,
-            graph_type=graph_type,
+            # graph_type=None  # not yet resolved
             prefix=prefix if prefix else "Validate TRAPI Response",
             trapi_version=trapi_version,
             biolink_version=biolink_version,

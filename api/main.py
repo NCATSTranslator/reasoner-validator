@@ -99,7 +99,6 @@ async def validate(query: Query):
         suppress_empty_data_warnings=suppress_empty_data_warnings
     )
     validator.check_compliance_of_trapi_response(
-        # TODO the TRAPI Response may also contain embedded schema_version and biolink_version?
         response=query.response,
         max_kg_edges=max_kg_edges,
         max_results=max_results,

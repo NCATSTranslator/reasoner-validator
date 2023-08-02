@@ -403,7 +403,7 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION["biolink_version"] = "2.4.8"
     ]
 )
 def test_sanitize_trapi_query(response: Dict):
-    validator: TRAPIResponseValidator = TRAPIResponseValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
+    validator: TRAPIResponseValidator = TRAPIResponseValidator()
     response: Dict = validator.sanitize_trapi_response(response=response)
     dump(response, stderr, indent=4)
 
@@ -451,7 +451,7 @@ TEST_GRAPH: Dict = {
     ]
 )
 def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of_edges_returned: int):
-    validator: TRAPIResponseValidator = TRAPIResponseValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
+    validator: TRAPIResponseValidator = TRAPIResponseValidator()
     kg_sample: Dict = validator.sample_graph(graph=TEST_GRAPH, edges_limit=edges_limit)
     assert kg_sample
     assert len(kg_sample["nodes"]) == number_of_nodes_returned
@@ -1011,7 +1011,6 @@ def test_check_biolink_model_compliance_of_trapi_response(
         message: str
 ):
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
         trapi_version=trapi_version,
         biolink_version=biolink_version,
         strict_validation=strict_validation
@@ -1177,7 +1176,6 @@ def test_check_biolink_model_compliance_of_trapi_response_suppressing_empty_data
         response, trapi_version, biolink_version, sources, strict_validation, code
 ):
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
         trapi_version=trapi_version,
         biolink_version=biolink_version,
         strict_validation=strict_validation,
@@ -1204,6 +1202,6 @@ sample_kg_edge_abstract_predicate = sample_kg["edges"]["df87ff82"]["predicate"] 
     ]
 )
 def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(response: Dict):
-    validator: TRAPIResponseValidator = TRAPIResponseValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
+    validator: TRAPIResponseValidator = TRAPIResponseValidator()
     validator.check_compliance_of_trapi_response(response=response)
     validator.dump()
