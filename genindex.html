@@ -10,10 +10,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -133,6 +132,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reasoner_validator.trapi.html#reasoner_validator.trapi.call_trapi">call_trapi() (in module reasoner_validator.trapi)</a>
 </li>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator.case_edge_bindings">case_edge_bindings() (reasoner_validator.validator.TRAPIResponseValidator static method)</a>
+</li>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator.case_input_found_in_response">case_input_found_in_response() (reasoner_validator.validator.TRAPIResponseValidator method)</a>
+</li>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator.case_node_found">case_node_found() (reasoner_validator.validator.TRAPIResponseValidator static method)</a>
+</li>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator.case_result_found">case_result_found() (reasoner_validator.validator.TRAPIResponseValidator method)</a>
+</li>
       <li><a href="reasoner_validator.biolink.html#reasoner_validator.biolink.BiolinkValidator.CATEGORY_INCLUSIONS">CATEGORY_INCLUSIONS (reasoner_validator.biolink.BiolinkValidator attribute)</a>
 </li>
       <li><a href="reasoner_validator.biolink.html#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance">check_biolink_model_compliance() (reasoner_validator.biolink.BiolinkValidator method)</a>
@@ -143,12 +150,14 @@
         <li><a href="reasoner_validator.biolink.html#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge">(reasoner_validator.biolink.BiolinkValidator method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reasoner_validator.biolink.html#reasoner_validator.biolink.check_biolink_model_compliance_of_knowledge_graph">check_biolink_model_compliance_of_knowledge_graph() (in module reasoner_validator.biolink)</a>
 </li>
       <li><a href="reasoner_validator.biolink.html#reasoner_validator.biolink.check_biolink_model_compliance_of_query_graph">check_biolink_model_compliance_of_query_graph() (in module reasoner_validator.biolink)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator.check_compliance_of_trapi_response">check_compliance_of_trapi_response() (reasoner_validator.validator.TRAPIResponseValidator method)</a>
+</li>
       <li><a href="reasoner_validator.trapi.mapping.html#reasoner_validator.trapi.mapping.MappingValidator.check_dangling_references">check_dangling_references() (reasoner_validator.trapi.mapping.MappingValidator method)</a>
 </li>
       <li><a href="reasoner_validator.trapi.mapping.html#reasoner_validator.trapi.mapping.check_node_edge_mappings">check_node_edge_mappings() (in module reasoner_validator.trapi.mapping)</a>
@@ -275,11 +284,17 @@
 </li>
       <li><a href="reasoner_validator.report.html#reasoner_validator.report.ValidationReporter.has_errors">has_errors() (reasoner_validator.report.ValidationReporter method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reasoner_validator.report.html#reasoner_validator.report.ValidationReporter.has_information">has_information() (reasoner_validator.report.ValidationReporter method)</a>
 </li>
       <li><a href="reasoner_validator.report.html#reasoner_validator.report.ValidationReporter.has_messages">has_messages() (reasoner_validator.report.ValidationReporter method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph">has_valid_knowledge_graph() (reasoner_validator.validator.TRAPIResponseValidator method)</a>
+</li>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator.has_valid_query_graph">has_valid_query_graph() (reasoner_validator.validator.TRAPIResponseValidator method)</a>
+</li>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator.has_valid_results">has_valid_results() (reasoner_validator.validator.TRAPIResponseValidator method)</a>
 </li>
       <li><a href="reasoner_validator.report.html#reasoner_validator.report.ValidationReporter.has_warnings">has_warnings() (reasoner_validator.report.ValidationReporter method)</a>
 </li>
@@ -296,6 +311,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reasoner_validator.biolink.html#reasoner_validator.biolink.BMTWrapper.is_symmetric">is_symmetric() (reasoner_validator.biolink.BMTWrapper method)</a>
+</li>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator.is_trapi_1_4">is_trapi_1_4() (reasoner_validator.validator.TRAPIResponseValidator method)</a>
 </li>
       <li><a href="reasoner_validator.trapi.html#reasoner_validator.trapi.TRAPISchemaValidator.is_valid_trapi_query">is_valid_trapi_query() (reasoner_validator.trapi.TRAPISchemaValidator method)</a>
 </li>
@@ -357,8 +374,6 @@
     module
 
       <ul>
-        <li><a href="reasoner_validator.html#module-reasoner_validator">reasoner_validator</a>
-</li>
         <li><a href="reasoner_validator.biolink.html#module-reasoner_validator.biolink">reasoner_validator.biolink</a>
 </li>
         <li><a href="reasoner_validator.report.html#module-reasoner_validator.report">reasoner_validator.report</a>
@@ -368,6 +383,8 @@
         <li><a href="reasoner_validator.trapi.mapping.html#module-reasoner_validator.trapi.mapping">reasoner_validator.trapi.mapping</a>
 </li>
         <li><a href="reasoner_validator.validation_codes.html#module-reasoner_validator.validation_codes">reasoner_validator.validation_codes</a>
+</li>
+        <li><a href="reasoner_validator.html#module-reasoner_validator.validator">reasoner_validator.validator</a>
 </li>
         <li><a href="reasoner_validator.versioning.html#module-reasoner_validator.versioning">reasoner_validator.versioning</a>
 </li>
@@ -417,13 +434,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    reasoner_validator
-
-      <ul>
-        <li><a href="reasoner_validator.html#module-reasoner_validator">module</a>
-</li>
-      </ul></li>
-      <li>
     reasoner_validator.biolink
 
       <ul>
@@ -456,6 +466,13 @@
 
       <ul>
         <li><a href="reasoner_validator.validation_codes.html#module-reasoner_validator.validation_codes">module</a>
+</li>
+      </ul></li>
+      <li>
+    reasoner_validator.validator
+
+      <ul>
+        <li><a href="reasoner_validator.html#module-reasoner_validator.validator">module</a>
 </li>
       </ul></li>
   </ul></td>
@@ -493,14 +510,20 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator.sample_graph">sample_graph() (reasoner_validator.validator.TRAPIResponseValidator static method)</a>
+</li>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator.sample_results">sample_results() (reasoner_validator.validator.TRAPIResponseValidator static method)</a>
+</li>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator.sanitize_trapi_response">sanitize_trapi_response() (reasoner_validator.validator.TRAPIResponseValidator method)</a>
+</li>
       <li><a href="reasoner_validator.versioning.html#reasoner_validator.versioning.SemVer">SemVer (class in reasoner_validator.versioning)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reasoner_validator.versioning.html#reasoner_validator.versioning.SemVerError">SemVerError</a>
 </li>
       <li><a href="reasoner_validator.versioning.html#reasoner_validator.versioning.SemVerUnderspecified">SemVerUnderspecified</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reasoner_validator.biolink.html#reasoner_validator.biolink.BiolinkValidator.set_nodes">set_nodes() (reasoner_validator.biolink.BiolinkValidator method)</a>
 </li>
       <li><a href="reasoner_validator.trapi.mapping.html#reasoner_validator.trapi.mapping.MappingValidator.strict_validation">strict_validation (reasoner_validator.trapi.mapping.MappingValidator attribute)</a>
@@ -530,6 +553,8 @@
       <li><a href="reasoner_validator.trapi.html#reasoner_validator.trapi.TRAPIAccessError">TRAPIAccessError</a>
 </li>
       <li><a href="reasoner_validator.trapi.html#reasoner_validator.trapi.TRAPIGraphType">TRAPIGraphType (class in reasoner_validator.trapi)</a>
+</li>
+      <li><a href="reasoner_validator.html#reasoner_validator.validator.TRAPIResponseValidator">TRAPIResponseValidator (class in reasoner_validator.validator)</a>
 </li>
       <li><a href="reasoner_validator.trapi.html#reasoner_validator.trapi.TRAPISchemaValidator">TRAPISchemaValidator (class in reasoner_validator.trapi)</a>
 </li>
