@@ -41,8 +41,8 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-#bmt = "^1.1.0"
-bmt = { git = "https://github.com/biolink/biolink-model-toolkit.git" }
+bmt = "^1.1.1"
+#bmt = { git = "https://github.com/biolink/biolink-model-toolkit.git" }
 
 # jsonschema needs to be pinned to <= 4.18.0 for now,
 # since 4.18.0 appeared to break something for the
