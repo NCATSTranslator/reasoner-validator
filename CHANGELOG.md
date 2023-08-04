@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.7.6
+- TRAPI qualifier validation enhanced by use of biolink:Association subclass slot_usage driven constraints (leveraging novel Biolink Model Toolkit 1.1.1 methods)
+- Validation made TRAPI Response (TRAPI) schema_version and biolink_version aware, taking precedence over default (non-overridden) values of these version parameters.
+
+
 ## 3.7.5
 - Added TRAPI Response schema version and biolink version validation warning codes
 - Warning about 'biolink:BiologicalCategory' and 'biolink:InformationContentEntity' are not issued if these categories are parent categories of concrete category instances specified in the 'categories' list
