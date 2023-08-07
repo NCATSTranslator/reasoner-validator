@@ -129,7 +129,7 @@ in a dictionary looking something like the following (as an example):
     messages: Dict[str, List[Dict[str,str]]] = {
         "information": {
             "info.excluded": {
-                # source scope of the validation error ("global" or some knowledge source path string
+                # source scope of the validation error ("global" or some knowledge source path string)
                 "global": {
                     # the uniquely discriminating 'identifier' here is the edge_id
                     "(ZFIN:ZDB-GENE-060825-345$biolink:Gene)--[biolink:active_in]->(GO:0042645$biolink:CellularComponent)": None
@@ -246,24 +246,24 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 .. code-block:: json
 
     {
-        # If the TRAPI version is omitted or set to None, then the 'latest' TRAPI version is used.
+        "_comment": "If the TRAPI version is omitted or set to None, then the 'latest' TRAPI version is used.
 
         # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed 'schema_version'.
         # This modifies slightly the interpretation of this parameter, as follows:
         # If the following trapi_version parameter is given, then it overrides the TRAPI Response 'schema_version';
-        # Otherwise, a TRAPI 1.4.0 Response embedded 'schema_version' (not 'latest') becomes the default validation version.
+        # Otherwise, a TRAPI 1.4.0 Response embedded 'schema_version' (not 'latest') becomes the default validation version."
 
-        trapi_version="1.4.2",
+        "trapi_version": "1.4.2",
 
-        # If the Biolink Model version is omitted or set to None, then the current Biolink Model Toolkit is used.
+        "_comment": "If the Biolink Model version is omitted or set to None, then the current Biolink Model Toolkit is used.
 
         # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed 'biolink_version'.
         # This modifies slightly the interpretation of this parameter, as follows:
         # If the 'biolink_version' given here is assumed, which overrides the TRAPI Response stated 'biolink_version';
         # Otherwise, a TRAPI 1.4.0 Response embedded 'biolink_version' (not BMT) becomes the default validation version.
-        # The biolink_version may also be set to the string 'suppress', in which case, most Biolink Model validation is NOT done during the validation of a TRAPI Response.
+        # The biolink_version may also be set to the string 'suppress', in which case, most Biolink Model validation is NOT done during the validation of a TRAPI Response."
 
-        biolink_version="3.5.0",
+        "biolink_version": "3.5.0",
 
         "sources": {
             "ara_source": "infores:aragorn",
