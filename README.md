@@ -150,7 +150,7 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
     "kp_source_type": "primary"
   },
   "strict_validation": true,
-  "response": {<some full JSON object of a TRAPI query Response...>}
+  "response": "{<some full JSON object of a TRAPI query Response...>}"
 }
 ```
 
@@ -230,27 +230,30 @@ one should typically get a response body something like the following JSON valid
   "trapi_version": "1.4.1",
   "biolink_version": "3.2.1",
   "messages": {
-    # some categories of messages may be absent, hence, empty dictionaries
+    "_comment": "some categories of messages may be absent, hence, empty dictionaries",
     "critical": {},
     "errors": {
       "error.knowledge_graph.node.category.missing": {
-          # this message template does not have any additional parameters
-          # other than identifier hence it just has the unique identifier 
-          # value as a dictionary key, with associated value None
-           "MONDO:0005148": None
+          "_comment": "source scope of the validation error ('global' or some knowledge source path string)",
+          "global": {
+              "_comment": "this message template does not have any additional parameters other than identifier hence it just has the unique identifier  value as a dictionary key, with associated value None",
+               "MONDO:0005148": null            
+          }
         }
     },
     "warnings": {
-      # validation code
+      "_comment": "validation code",
       "warning.knowledge_graph.node.unmapped_prefix": {
-          # template identifier field value
-          "CHEBI:6801": [  
-              {
-                # additional message template field values, if applicable
-                "categories": "['biolink:Drug']"  
-              }
-          ]
-          
+          "global": {
+              "_comment": "template identifier field value",
+              "CHEBI:6801": [  
+                  {
+                    "_comment": "additional message template field values, if applicable",
+                    "categories": "['biolink:Drug']"  
+                  }
+              ]       
+          }
+
         }
     },
     "information": {},

@@ -2,10 +2,14 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.8.0
+- Internal class hierarchy restructured for logical clarity in recent releases, formally highlighted in this release
+- Most visible TRAPIResponseValidator class (previously) moved from the **`reasoner_validator.__init__.py`** package module, into its own  **`reasoner_validator.validator`** module
+- Some documentation repair
+
 ## 3.7.6
 - TRAPI qualifier validation enhanced by use of biolink:Association subclass slot_usage driven constraints (leveraging novel Biolink Model Toolkit 1.1.1 methods)
-- Validation made TRAPI Response (TRAPI) schema_version and biolink_version aware, taking precedence over default (non-overridden) values of these version parameters.
-
+- Validation made TRAPI Response (TRAPI) **`schema_version`** and **`biolink_version`** aware, taking precedence over default (non-overridden) values of these version parameters.
 
 ## 3.7.5
 - Added TRAPI Response schema version and biolink version validation warning codes
