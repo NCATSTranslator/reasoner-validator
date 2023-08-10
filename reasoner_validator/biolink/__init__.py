@@ -156,7 +156,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         trapi_version: Optional[str] = None,
         biolink_version: Optional[str] = None,
         target_provenance: Optional[Dict[str, str]] = None,
-        strict_validation: bool = False
+        strict_validation: bool = True
     ):
         """
         Biolink Validator constructor.
@@ -165,7 +165,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param trapi_version:  Optional[str], caller specified Biolink Model version (default: None, use TRAPI 'latest')
         :param biolink_version: Optional[str], caller specified Biolink Model version (default: None, use BMT 'latest')
         :param target_provenance: Optional[Dict[str,str]], Dictionary of context ARA and KP for provenance validation
-        :param strict_validation: bool, applies stricter constraints on Biolink class term semantics
+        :param strict_validation: bool, applies stricter constraints on Biolink class term semantics (Default: True)
         """
         BMTWrapper.__init__(self, biolink_version=biolink_version)
         TRAPISchemaValidator.__init__(
@@ -594,6 +594,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         # be undefined here, since we can't figure it out without attributes!
         if 'attributes' not in edge:
             if self.validate_biolink() and not self.minimum_required_trapi_version("1.4.0-beta"):
+                # Note: Only an error for earlier TRAPI versions
+                # since attributes are 'nullable: True' for TRAPI 1.4.0
                 self.report(
                     code="error.knowledge_graph.edge.attribute.missing",
                     identifier=edge_id,
@@ -601,6 +603,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 )
         elif not edge['attributes']:
             if self.validate_biolink() and not self.minimum_required_trapi_version("1.4.0-beta"):
+                # Note: Only an error for earlier TRAPI versions
+                # since attributes are 'nullable: True' for TRAPI 1.4.0
                 self.report(
                     code="error.knowledge_graph.edge.attribute.empty",
                     identifier=edge_id,
@@ -801,7 +805,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             context: str,
             edge_id: str,
             qualifiers: List[Dict[str, str]],
-            associations: Optional[List[str]] = None
+            associations: Optional[List[str]] = None,
+            source_trail: Optional[str] = None
     ):
         """
         Validate Qualifier Entry (JSON Object).
@@ -813,6 +818,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param qualifiers: List[Dict[str, str]], of qualifier entries to be validated.
         :param associations: Optional[List[str]] = None,
                              Biolink association subclasses possibly related to the current edge.
+        :param source_trail, Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
+                             Defaults to "global" if not specified.
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
         for qualifier in qualifiers:
@@ -822,6 +829,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 if not self.bmt.is_qualifier(name=qualifier_type_id):
                     self.report(
                         code=f"error.{context}.qualifier.type_id.unknown",
+                        source_trail=source_trail,
                         identifier=qualifier_type_id,
                         edge_id=edge_id
                     )
@@ -830,6 +838,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         # special case of qualifier must have Biolink predicates as values
                         self.report(
                             code=f"error.{context}.qualifier.value.not_a_predicate",
+                            source_trail=source_trail,
                             identifier=qualifier_value,
                             edge_id=edge_id
                         )
@@ -844,6 +853,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         ):
                     self.report(
                         code=f"error.{context}.qualifier.value.unresolved",
+                        source_trail=source_trail,
                         identifier=qualifier_value,
                         edge_id=edge_id,
                         qualifier_type_id=qualifier_type_id
@@ -853,6 +863,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 logger.error(f"BMT validate_qualifier Exception: {str(e)}")
                 self.report(
                     code=f"error.{context}.qualifier.invalid",
+                    source_trail=source_trail,
                     identifier=edge_id,
                     qualifier_type_id=qualifier_type_id,
                     qualifier_value=qualifier_value,
@@ -863,7 +874,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             self,
             edge_id: str,
             edge: Dict,
-            associations: Optional[List[str]] = None
+            associations: Optional[List[str]] = None,
+            source_trail: Optional[str] = None
     ):
         """
         Validate Knowledge Edge Qualifiers.
@@ -871,6 +883,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param edge: Dict, the edge object associated with some attributes are expected to be found
         :param associations: Optional[List[str]], Biolink association subclasses possibly related to the current edge.
+        :param source_trail, Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
+                             Defaults to "global" if not specified.
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
         # Edge qualifiers will only be seen in Biolink 3 data,
@@ -887,7 +901,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 context="knowledge_graph.edge.qualifiers",
                 edge_id=edge_id,
                 qualifiers=qualifiers,
-                associations=associations
+                associations=associations,
+                source_trail=source_trail
             )
 
     def validate_qualifier_constraints(
@@ -1320,7 +1335,13 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # Edge "qualifiers" field is only recorded as an
             # Edge property, from TRAPI 1.3.0-beta onwards
             if self.minimum_required_trapi_version("1.3.0-beta"):
-                self.validate_qualifiers(edge_id=edge_id, edge=edge, associations=associations)
+                self.validate_qualifiers(
+                    edge_id=edge_id,
+                    edge=edge,
+                    associations=associations,
+                    source_trail=source_trail
+                )
+
         else:
             # NOT a Knowledge Graph edge validation
             self.validate_attribute_constraints(edge_id=edge_id, edge=edge)
@@ -1630,7 +1651,7 @@ def check_biolink_model_compliance_of_knowledge_graph(
     trapi_version: Optional[str] = None,
     biolink_version: Optional[str] = None,
     target_provenance: Optional[Dict] = None,
-    strict_validation: Optional[bool] = None
+    strict_validation: bool = True
 ) -> BiolinkValidator:
     """
     Strict validation of a TRAPI-schema compliant Message Knowledge Graph against a designated Biolink Model release.
@@ -1646,7 +1667,7 @@ def check_biolink_model_compliance_of_knowledge_graph(
     :param target_provenance: Dictionary of validation context identifying the ARA and KP for provenance validation
     :type target_provenance: Dict
     :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
-    :type strict_validation: Optional[bool] = None; defaults to 'True' if not set
+    :type strict_validation: bool = True; applies strict Biolink Model validation on elements used in graphs
 
     :returns: Biolink Model validator cataloging validation messages (maybe empty)
     :rtype: BiolinkValidator

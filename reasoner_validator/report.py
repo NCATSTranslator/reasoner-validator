@@ -58,13 +58,15 @@ class ValidationReporter:
     def get_message_type_tag(cls, message_type: str):
         return cls._message_type_tag[message_type]
 
-    def __init__(self, prefix: Optional[str] = None, strict_validation: bool = False):
+    def __init__(
+            self,
+            prefix: Optional[str] = None,
+            strict_validation: bool = True
+    ):
         """
-        :param prefix: named context of the Validator, used as a prefix in validation messages.
-        :type prefix: str
-        :param strict_validation: if True, abstract and mixin elements validate as 'error';
-                                  if None or False, just issue a 'warning'
-        :type strict_validation: Optional[bool] = None
+        :param prefix: Optional[str] =  None, named context of the Validator, used as a prefix in validation messages.
+        :param strict_validation: bool = True, if True, abstract and mixin elements validate as 'error';
+                                  if False, just issue a 'warning'
         """
         self.prefix: str = prefix if prefix else ""
         self.strict_validation: bool = strict_validation

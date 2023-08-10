@@ -230,7 +230,7 @@ class TRAPISchemaValidator(ValidationReporter):
             self,
             prefix: Optional[str] = None,
             trapi_version: Optional[str] = None,
-            strict_validation: bool = False
+            strict_validation: bool = True
     ):
         """
         TRAPI Validator constructor.
