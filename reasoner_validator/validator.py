@@ -201,7 +201,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         # Sequentially validate the Query Graph, Knowledge Graph then validate
         # the Results (which rely on the validity of the other two components)
         elif self.has_valid_query_graph(message) and \
-                self.has_valid_knowledge_graph(message, max_kg_edges, target_provenance):
+                self.has_valid_knowledge_graph(message, max_kg_edges):
             self.has_valid_results(message, max_results)
 
     @staticmethod
@@ -311,19 +311,14 @@ class TRAPIResponseValidator(BiolinkValidator):
     def has_valid_knowledge_graph(
             self,
             message: Dict,
-            edges_limit: int = 0,
-            target_provenance: Optional[Dict] = None
+            edges_limit: int = 0
     ) -> bool:
         """
         Validate a TRAPI Knowledge Graph.
 
-        :param message: input message expected to contain the 'knowledge_graph'
-        :type message: Dict
-        :param edges_limit: integer maximum number of edges to be validated in the knowledge graph. A value of zero
+        :param message: Dict, input message expected to contain the 'knowledge_graph'
+        :param edges_limit: int, integer maximum number of edges to be validated in the knowledge graph. A value of zero
                             triggers validation of all edges in the knowledge graph (Default: 0 - use all edges)
-        :type edges_limit: int
-        :param target_provenance: Dictionary of context identifying the ARA and KP for provenance attribute validation
-        :type target_provenance: Dict
 
         :return: bool, False, if validation errors
         """
@@ -368,18 +363,10 @@ class TRAPIResponseValidator(BiolinkValidator):
                 if self.validate_biolink():
                     # Conduct validation of Biolink Model compliance of the
                     # Knowledge Graph, if Biolink validation not suppressed...
-                    biolink_validator: BiolinkValidator = \
-                        check_biolink_model_compliance_of_knowledge_graph(
-                            graph=kg_sample,
-                            trapi_version=self.trapi_version,
-                            biolink_version=self.biolink_version,
-                            target_provenance=target_provenance,
-                            # the TRAPIResponseValidator calling this function *might*
-                            # have an explicit strict_validation override (if not None)
-                            strict_validation=self.strict_validation
-                        )
-                    if biolink_validator.has_messages():
-                        self.merge(biolink_validator)
+                    self.check_biolink_model_compliance(
+                        graph=kg_sample,
+                        graph_type=TRAPIGraphType.Knowledge_Graph
+                    )
 
         # Only 'error' but not 'info' nor 'warning'
         # messages invalidate the overall Message
