@@ -11,13 +11,8 @@ from bmt import Toolkit
 from linkml_runtime.linkml_model import SlotDefinition
 
 from reasoner_validator import TRAPI_1_3_0, TRAPI_1_4_0_BETA
-from reasoner_validator.biolink import (
-    BiolinkValidator,
-    get_biolink_model_toolkit,
-    check_biolink_model_compliance_of_input_edge,
-    check_biolink_model_compliance_of_query_graph,
-    check_biolink_model_compliance_of_knowledge_graph
-)
+from reasoner_validator.biolink import BiolinkValidator, get_biolink_model_toolkit
+
 from reasoner_validator.trapi import TRAPIGraphType
 from tests import SIMPLE_SAMPLE_NODES, SAMPLE_NODES_WITH_ATTRIBUTES
 from tests.test_validation_report import check_messages
@@ -38,7 +33,7 @@ SUPPRESS_BIOLINK_MODEL_VALIDATION = "suppress"
 
 
 def test_set_default_biolink_versioned_global_environment():
-    validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
+    validator = BiolinkValidator()
     model_version = validator.get_biolink_version()
     print(
         f"\nBiolinkValidator set to (default) Biolink Model version: '{str(model_version)}'",
@@ -48,10 +43,7 @@ def test_set_default_biolink_versioned_global_environment():
 
 
 def test_set_specific_biolink_versioned_global_environment():
-    validator = BiolinkValidator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
-        biolink_version="1.8.2"
-    )
+    validator = BiolinkValidator(biolink_version="1.8.2")
     model_version = validator.get_biolink_version()
     print(
         f"\nBiolinkValidator set to (explicit) Biolink Model version: '{str(model_version)}'",
@@ -62,10 +54,7 @@ def test_set_specific_biolink_versioned_global_environment():
 
 def test_minimum_required_biolink_version():
     # Setting Validator to BLM release 2.2.0
-    validator = BiolinkValidator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
-        biolink_version="2.2.0"
-    )
+    validator = BiolinkValidator(biolink_version="2.2.0")
     # 2.2.0 >= 1.8.2 - True!
     assert validator.minimum_required_biolink_version("1.8.2")
     # 2.2.0 >= 2.2.0 - True!
@@ -75,12 +64,7 @@ def test_minimum_required_biolink_version():
 
 
 def test_message():
-    reporter = BiolinkValidator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
-        prefix="Test Message",
-        trapi_version="v1.3",
-        biolink_version="v3.5.2"
-    )
+    reporter = BiolinkValidator(prefix="Test Message", trapi_version="v1.3", biolink_version="v3.5.2")
     assert reporter.get_trapi_version() == "v1.3.0"
 
     # Note: BMT is a bit tricky in resolving Biolink Model versions:
@@ -115,7 +99,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
 
 
 @pytest.mark.parametrize(
-    "query",
+    "biolink_version,edge,code",
     [
         (   # Query 0 - Valid edge object
             LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
@@ -376,9 +360,10 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         )
     ]
 )
-def test_check_biolink_model_compliance_of_input_edge(query: Tuple):
-    validator: BiolinkValidator = check_biolink_model_compliance_of_input_edge(edge=query[1], biolink_version=query[0])
-    check_messages(validator, query[2])
+def test_check_biolink_model_compliance_of_input_edge(biolink_version: str, edge: Dict, code: str):
+    validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version)
+    validator.check_biolink_model_compliance_of_input_edge(edge=edge)
+    check_messages(validator, code)
 
 
 @pytest.mark.parametrize(
@@ -452,12 +437,13 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
     This test checks for internal glitch where the query graph is somehow deleted
     """
     original_graph: Dict = deepcopy(graph)
-    check_biolink_model_compliance_of_query_graph(graph=graph, biolink_version=biolink_version)
+    validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version)
+    validator.check_biolink_model_compliance(graph=graph, graph_type=TRAPIGraphType.Query_Graph)
     assert graph == original_graph
 
 
 @pytest.mark.parametrize(
-    "query",
+    "biolink_version,query_graph,code",
     [
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -936,10 +922,13 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         )
     ]
 )
-def test_check_biolink_model_compliance_of_query_graph(query: Tuple):
-    validator: BiolinkValidator = \
-        check_biolink_model_compliance_of_query_graph(graph=query[1], biolink_version=query[0])
-    check_messages(validator, query[2])
+def test_check_biolink_model_compliance_of_query_graph(query_graph: Dict, biolink_version: str, code: str):
+    validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version)
+    validator.check_biolink_model_compliance(
+        graph=query_graph,
+        graph_type=TRAPIGraphType.Query_Graph
+    )
+    check_messages(validator, code)
 
 
 TEST_ARA_CASE_TEMPLATE = {
@@ -1011,7 +1000,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
     ]
 )
 def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge_data: Dict, validation_code: str):
-    validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph, trapi_version=TRAPI_1_3_0)
+    validator = BiolinkValidator(trapi_version=TRAPI_1_3_0)
     validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=edge_data)
     check_messages(validator, validation_code)
 
@@ -1065,7 +1054,7 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge_data: Dict, v
     ]
 )
 def test_post_1_4_0_trapi_validate_attributes(edge_data: Dict):
-    validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
+    validator = BiolinkValidator()
     validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=edge_data)
     check_messages(validator, "")
 
@@ -1143,7 +1132,6 @@ def test_post_1_4_0_trapi_validate_attributes(edge_data: Dict):
 def test_pre_1_4_0_validate_provenance(query: Tuple):
     """TRAPI pre-1.4.0 releases recorded provenance in attributes. This unit test checks for this"""
     validator = BiolinkValidator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
         trapi_version=TRAPI_1_3_0,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
         target_provenance=query[1]
@@ -1264,7 +1252,6 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
 )
 def test_latest_validate_attributes(query: Tuple):
     validator = BiolinkValidator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
         # trapi_version="latest",
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
         target_provenance=query[1]
@@ -1273,20 +1260,22 @@ def test_latest_validate_attributes(query: Tuple):
     check_messages(validator, query[2])
 
 
+SAMPLE_SOURCE_TRAIL = "infores:chebi -> infores:molepro -> infores:arax"
+
+
 def qualifier_validator(
-        graph_type: TRAPIGraphType,
         tested_method,
         edge_model: str,
         edge: Dict,
         message: str,
         trapi_version: Optional[str] = None,
         biolink_version: Optional[str] = LATEST_BIOLINK_MODEL_VERSION,
+        source_trail: Optional[str] = None,
         **kwargs
 ):
     # TODO: to review: which of the validation tests that
     #       may be overridden by earlier TRAPI validation
     validator = BiolinkValidator(
-        graph_type=graph_type,
         trapi_version=trapi_version,
         biolink_version=biolink_version
     )
@@ -1301,8 +1290,22 @@ def qualifier_validator(
         mock_edge["predicate"] = "biolink:related_to"
         mock_edge["sources"] = [
             {
-                "resource_id": "infores:molepro",
+                "resource_id": "infores:chebi",
                 "resource_role": "primary_knowledge_source"
+            },
+            {
+                "resource_id": "infores:molepro",
+                "resource_role": "aggregator_knowledge_source",
+                "upstream_resource_ids": [
+                    "infores:chebi"
+                ]
+            },
+            {
+                "resource_id": "infores:arax",
+                "resource_role": "aggregator_knowledge_source",
+                "upstream_resource_ids": [
+                    "infores:molepro"
+                ]
             }
         ]
 
@@ -1319,7 +1322,11 @@ def qualifier_validator(
             edge=edge,
             **kwargs
         )
-    check_messages(validator, message)
+    check_messages(
+        validator,
+        message,
+        source_trail=source_trail
+    )
 
 
 @pytest.mark.parametrize(
@@ -1557,7 +1564,6 @@ def qualifier_validator(
 def test_validate_qualifier_constraints(edge: Dict, message: str):
     # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     qualifier_validator(
-        graph_type=TRAPIGraphType.Query_Graph,
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
         edge=edge,
@@ -1605,7 +1611,7 @@ def test_validate_qualifier_constraints(edge: Dict, message: str):
     ]
 )
 def test_validate_infores(identifier: str, validation_code: str):
-    validator = BiolinkValidator(graph_type=TRAPIGraphType.Knowledge_Graph)
+    validator = BiolinkValidator()
     validator.validate_infores("resource_id", "test_validate_infores", identifier)
     check_messages(validator, validation_code)
 
@@ -1652,7 +1658,6 @@ def test_validate_infores(identifier: str, validation_code: str):
 )
 def test_biolink_validation_suppressed_validate_qualifier_constraints(edge: Dict, message: str):
     qualifier_validator(
-        graph_type=TRAPIGraphType.Query_Graph,
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
         edge=edge,
@@ -1692,7 +1697,6 @@ QC_QS_NOT_A_CURIE = {
 )
 def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edge: Dict, message: str):
     qualifier_validator(
-        graph_type=TRAPIGraphType.Query_Graph,
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
         edge=edge,
@@ -1702,41 +1706,47 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
 
 
 @pytest.mark.parametrize(
-    "edge,message",
+    "edge,message,source_trail",
     [
         (  # Query 0 - no 'qualifiers' key - since nullable: true, this should pass
             {},
+            "",
             ""
         ),
         (  # Query 1 - 'qualifiers' value is nullable: true, this should pass
             {
                 'qualifiers': None
             },
+            "",
             ""
         ),
         (  # Query 2 - 'qualifiers' value is not an array - invalidated by TRAPI schema
             {
                 'qualifiers': {}
             },
-            "critical.trapi.validation"
+            "critical.trapi.validation",
+            "global"
         ),
         (  # Query 3 - empty 'qualifiers' array value - since nullable: true, this should pass
             {
                 'qualifiers': []
             },
-            ""
+            "",
+            "global"
         ),
         (  # Query 4 - empty 'qualifier_set' entry - invalidated by TRAPI schema
             {
                 'qualifiers': [{}]
             },
-            "critical.trapi.validation"
+            "critical.trapi.validation",
+            "global"
         ),
         (  # Query 5 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
             {
                 'qualifiers': [[]]
             },
-            "critical.trapi.validation"
+            "critical.trapi.validation",
+            "global"
         ),
         (  # Query 6 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
             {
@@ -1747,7 +1757,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                     }
                 ]
             },
-            "critical.trapi.validation"
+            "critical.trapi.validation",
+            "global"
         ),
         (  # Query 7 - 'qualifier_type_id' property value is unknown
             {
@@ -1758,7 +1769,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                     }
                 ]
             },
-            "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown"
+            "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown",
+            SAMPLE_SOURCE_TRAIL
         ),
         (  # Query 8 - 'qualifier_type_id' property value is valid but abstract
             {
@@ -1770,7 +1782,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             # "info.query_graph.edge.qualifier.abstract"
-            "error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved"
+            "error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved",
+            SAMPLE_SOURCE_TRAIL
         ),
         (  # Query 9 - 'qualifier_type_id' property value is not a Biolink qualifier term
             {
@@ -1781,7 +1794,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                     }
                 ]
             },
-            "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown"
+            "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown",
+            SAMPLE_SOURCE_TRAIL
         ),
         (  # Query 10 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
             {
@@ -1791,7 +1805,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                     }
                 ]
             },
-            "critical.trapi.validation"
+            "critical.trapi.validation",
+            "global"
         ),
         (   # Query 11 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
             #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
@@ -1803,7 +1818,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                     }
                 ]
             },
-            ""    # this particular use case should pass
+            "",   # this particular use case should pass,
+            ""
         ),
         # (   # This use case was discussed with Sierra on 11 April 2023 and )
         #     # decided to be out-of-scope of enum values for is_permissible_value_of_enum
@@ -1820,22 +1836,23 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
         #             }
         #         ]
         #     },
+        #     "",
         #     ""
         # )
     ]
 )
-def test_validate_qualifiers(edge: Dict, message: str):
+def test_validate_qualifiers(edge: Dict, message: str, source_trail: str):
     qualifier_validator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         edge=edge,
-        message=message
+        message=message,
+        source_trail=source_trail
     )
 
 
 @pytest.mark.parametrize(
-    "edge,associations,message",
+    "edge,associations,message,source_trail",
     [
         (   # Query 0 - qualifier_type_id 'dubject_aspect_qualifier' is a valid Biolink qualifier type and
             #            'synthesis' is a valid corresponding 'permissible value' enum 'qualifier_value', but
@@ -1856,7 +1873,8 @@ def test_validate_qualifiers(edge: Dict, message: str):
                 ]
             },
             ["biolink:GeneToDiseaseOrPhenotypicFeatureAssociation"],  # associations: Optional[List[str]]
-            ""   # this particular use case should pass
+            "",   # this particular use case should pass
+            ""
         ),
         (   # Query 1 - This example is identical to the above, but we know that it must fail if the
             #      biolink:Association context of the edge is not given to the qualifier validator as a parameter
@@ -1870,8 +1888,8 @@ def test_validate_qualifiers(edge: Dict, message: str):
             },
 
             None,  # associations: Optional[List[str]]
-
-            "error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved"
+            "error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved",
+            SAMPLE_SOURCE_TRAIL
         ),
         (   # Query 2 -  another example of a 'qualifier_type_id' resolvable only within
             #            the context of a specific subclass of biolink:Association, i.e.
@@ -1891,18 +1909,24 @@ def test_validate_qualifiers(edge: Dict, message: str):
                 ]
             },
             ["biolink:ChemicalAffectsGeneAssociation"],  # associations: Optional[List[str]]
-            ""   # this particular use case should pass
+            "",   # this particular use case should pass
+            ""
         )
     ]
 )
-def test_validate_qualifiers_with_association(edge: Dict, associations: Optional[List[str]], message: str):
+def test_validate_qualifiers_with_association(
+        edge: Dict,
+        associations: Optional[List[str]],
+        message: str,
+        source_trail: str
+):
     qualifier_validator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         edge=edge,
         message=message,
-        associations=associations
+        associations=associations,
+        source_trail=source_trail
     )
 
 
@@ -1931,9 +1955,12 @@ Q_NOT_A_CURIE = {
         )
     ]
 )
-def test_validate_biolink_curie_in_qualifiers(trapi_version: str, edge: Dict, message: str):
+def test_validate_biolink_curie_in_qualifiers(
+        trapi_version: str,
+        edge: Dict,
+        message: str
+):
     qualifier_validator(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         edge=edge,
@@ -2852,9 +2879,8 @@ def test_check_biolink_model_compliance_of_knowledge_graph(
         graph_data: Dict,
         validation_code: str
 ):
-    validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
-        graph=graph_data, biolink_version=biolink_version
-    )
+    validator = BiolinkValidator(biolink_version=biolink_version)
+    validator.check_biolink_model_compliance(graph=graph_data, graph_type=TRAPIGraphType.Knowledge_Graph)
     check_messages(validator, validation_code)
 
 
@@ -2874,22 +2900,22 @@ MESSAGE_EDGE_WITHOUT_ATTRIBUTES = {
 def test_pre_trapi_1_4_0_validate_attributes():
     # message edges must have at least some 'provenance' attributes
     edge_without_attributes = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
-    validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
-        graph=edge_without_attributes,
+    validator = BiolinkValidator(
         trapi_version=TRAPI_1_3_0,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION
     )
+    validator.check_biolink_model_compliance(graph=edge_without_attributes, graph_type=TRAPIGraphType.Knowledge_Graph)
     check_messages(validator, "error.knowledge_graph.edge.attribute.missing")
 
 
 def test_suppress_biolink_validation_pre_trapi_1_4_0_validate_attributes():
     # message edges must have at least some 'provenance' attributes
     edge_without_attributes = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
-    validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
-        graph=edge_without_attributes,
+    validator = BiolinkValidator(
         trapi_version=TRAPI_1_3_0,
         biolink_version=SUPPRESS_BIOLINK_MODEL_VALIDATION
     )
+    validator.check_biolink_model_compliance(graph=edge_without_attributes, graph_type=TRAPIGraphType.Knowledge_Graph)
     check_messages(validator, "")
 
 
@@ -3043,11 +3069,8 @@ def test_latest_trapi_validate_sources(sources: bool, validation_code: str):
     if sources is not None:
         edge = sample_message["edges"]["edge_1"]
         edge["sources"] = sources
-    validator: BiolinkValidator = check_biolink_model_compliance_of_knowledge_graph(
-        graph=sample_message,
-        # trapi_version="latest",  # 1.4.0++
-        biolink_version=LATEST_BIOLINK_MODEL_VERSION
-    )
+    validator = BiolinkValidator(biolink_version=LATEST_BIOLINK_MODEL_VERSION)
+    validator.check_biolink_model_compliance(graph=sample_message, graph_type=TRAPIGraphType.Knowledge_Graph)
     check_messages(validator, validation_code)
 
 
@@ -3066,7 +3089,7 @@ def test_latest_trapi_validate_sources(sources: bool, validation_code: str):
 )
 def test_is_symmetric(predicate, result):
     # we assume the default is a late version which has proper inverse
-    validator: BiolinkValidator = BiolinkValidator(TRAPIGraphType.Knowledge_Graph, biolink_version=None)
+    validator: BiolinkValidator = BiolinkValidator(biolink_version=None)
     assert validator.is_symmetric(predicate) == result
 
 
@@ -3086,5 +3109,5 @@ def test_is_symmetric(predicate, result):
 )
 def test_get_inverse_predicate(predicate, inverse):
     # we assume the default is a late version which has proper inverse
-    validator: BiolinkValidator = BiolinkValidator(TRAPIGraphType.Knowledge_Graph, biolink_version=None)
+    validator: BiolinkValidator = BiolinkValidator(biolink_version=None)
     assert validator.get_inverse_predicate(predicate) == inverse

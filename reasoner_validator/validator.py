@@ -3,7 +3,6 @@ from typing import Optional, List, Dict
 from bmt import Toolkit
 
 from reasoner_validator.biolink import (
-    check_biolink_model_compliance_of_query_graph,
     check_biolink_model_compliance_of_knowledge_graph,
     BMTWrapper,
     BiolinkValidator,
@@ -47,6 +46,7 @@ class TRAPIResponseValidator(BiolinkValidator):
             prefix: Optional[str] = None,
             trapi_version: Optional[str] = None,
             biolink_version: Optional[str] = None,
+            target_provenance: Optional[Dict[str, str]] = None,
             strict_validation: bool = False,
             suppress_empty_data_warnings: bool = False
     ):
@@ -62,10 +62,10 @@ class TRAPIResponseValidator(BiolinkValidator):
         """
         BiolinkValidator.__init__(
             self,
-            # graph_type=None  # not yet resolved
             prefix=prefix if prefix else "Validate TRAPI Response",
             trapi_version=trapi_version,
             biolink_version=biolink_version,
+            target_provenance=target_provenance,
             strict_validation=strict_validation
         )
         self._is_trapi_1_4: Optional[bool] = None
@@ -131,8 +131,7 @@ class TRAPIResponseValidator(BiolinkValidator):
             self,
             response: Optional[Dict],
             max_kg_edges: int = 0,
-            max_results: int = 0,
-            target_provenance: Optional[Dict] = None
+            max_results: int = 0
     ):
         """
         One stop validation of all components of a TRAPI-schema compliant
@@ -304,17 +303,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                 if self.validate_biolink():
                     # Conduct validation of Biolink Model compliance
                     # of the Query Graph, if not suppressed...
-                    biolink_validator = check_biolink_model_compliance_of_query_graph(
-                        graph=query_graph,
-                        biolink_version=self.biolink_version,
-                        # the TRAPIResponseValidator calling this function *might*
-                        # have an explicit strict_validation override (if not None)
-                        strict_validation=self.strict_validation
-                    )
-                    if biolink_validator.has_messages():
-                        self.merge(biolink_validator)
-                        # 'info' and 'warning' messages do
-                        # not fully invalidate the query_graph
+                    self.check_biolink_model_compliance(query_graph, graph_type=TRAPIGraphType.Query_Graph)
 
         # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
         return False if self.has_errors() else True
@@ -392,7 +381,8 @@ class TRAPIResponseValidator(BiolinkValidator):
                     if biolink_validator.has_messages():
                         self.merge(biolink_validator)
 
-        # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
+        # Only 'error' but not 'info' nor 'warning'
+        # messages invalidate the overall Message
         return False if self.has_errors() else True
 
     def has_valid_results(self, message: Dict, sample_size: int = 0) -> bool:

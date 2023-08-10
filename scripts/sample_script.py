@@ -52,6 +52,14 @@ validator = TRAPIResponseValidator(
     # then the current Biolink Model Toolkit default release applies.
     biolink_version="3.2.6",
 
+    # 'target_provenance' is set to trigger checking of
+    # expected edge knowledge source provenance
+    target_provenance={
+        "ara_source": "infores:molepro",
+        "kp_source": "infores:hmdb",
+        "kp_source_type": "primary"
+    },
+
     # Optional flag: if omitted or set to 'False', we let the system decide the
     # default validation strictness by validation context unless we override it here
     strict_validation=False
@@ -63,18 +71,7 @@ validator = TRAPIResponseValidator(
 # TRAPI.Message JSON schema model component of the TRAPI Response (not the full TRAPI Response...yet)
 
 # this method validates a complete TRAPI Response JSON result
-validator.check_compliance_of_trapi_response(
-
-    response=SAMPLE_RESPONSE,
-
-    # 'target_provenance' is set to trigger checking of
-    # expected edge knowledge source provenance
-    target_provenance={
-        "ara_source": "infores:molepro",
-        "kp_source": "infores:hmdb",
-        "kp_source_type": "primary"
-    }
-)
+validator.check_compliance_of_trapi_response(response=SAMPLE_RESPONSE)
 
 # Messages are retrieved from the validator object as follows:
 messages: Dict[

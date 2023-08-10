@@ -13,8 +13,12 @@ TEST_TRAPI_VERSION = get_latest_version(ValidationReporter.DEFAULT_TRAPI_VERSION
 TEST_BIOLINK_VERSION = "2.4.8"
 
 
-def check_messages(validator: ValidationReporter, code, no_errors: bool = False):
-    messages: Dict[str, Dict[str, Optional[Dict[str, Optional[List[Dict[str, str]]]]]]] = validator.get_messages()
+def check_messages(
+        validator: ValidationReporter,
+        code: str, no_errors: bool = False,
+        source_trail: Optional[str] = None
+):
+    messages: MESSAGE_CATALOG = validator.get_messages()
     if code:
         # print("code is:", code)
         # print("message_type", message_type)
@@ -30,6 +34,9 @@ def check_messages(validator: ValidationReporter, code, no_errors: bool = False)
             assert any([warning_code == code for warning_code in messages['warnings']])
         elif message_type == "info":
             assert any([info_code == code for info_code in messages['information']])
+        if source_trail:
+            mtt: str = validator.get_message_type_tag(message_type)
+            assert source_trail in messages[mtt][code].keys()
     else:
         if no_errors:
             # just don't want any 'critical' (errors) nor 'errors'; 'information' and 'warnings' are ok?

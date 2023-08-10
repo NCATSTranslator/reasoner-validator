@@ -1013,9 +1013,10 @@ def test_check_biolink_model_compliance_of_trapi_response(
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=trapi_version,
         biolink_version=biolink_version,
-        strict_validation=strict_validation
+        strict_validation=strict_validation,
+        target_provenance=target_provenance
     )
-    validator.check_compliance_of_trapi_response(response=response, target_provenance=target_provenance)
+    validator.check_compliance_of_trapi_response(response=response)
     check_messages(validator, message, no_errors=True)
 
 
@@ -1178,10 +1179,11 @@ def test_check_biolink_model_compliance_of_trapi_response_suppressing_empty_data
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=trapi_version,
         biolink_version=biolink_version,
+        target_provenance=sources,
         strict_validation=strict_validation,
         suppress_empty_data_warnings=True
     )
-    validator.check_compliance_of_trapi_response(response=response, target_provenance=sources)
+    validator.check_compliance_of_trapi_response(response=response)
     check_messages(validator, code, no_errors=True)
 
 

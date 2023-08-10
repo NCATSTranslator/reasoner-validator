@@ -47,12 +47,16 @@ class ValidationReporter:
     # specifically 1.3.0, as of September 1st, 2022
     DEFAULT_TRAPI_VERSION = "1"
 
-    _message_type_name: Dict[str, str] = {
+    _message_type_tag: Dict[str, str] = {
         "info": "information",
         "warning": "warnings",
         "error": "errors",
         "critical": "critical"
     }
+
+    @classmethod
+    def get_message_type_tag(cls, message_type: str):
+        return cls._message_type_tag[message_type]
 
     def __init__(self, prefix: Optional[str] = None, strict_validation: bool = False):
         """
@@ -63,7 +67,7 @@ class ValidationReporter:
         :type strict_validation: Optional[bool] = None
         """
         self.prefix: str = prefix if prefix else ""
-        self.strict_validation: Optional[bool] = strict_validation
+        self.strict_validation: bool = strict_validation
         self.messages: MESSAGE_CATALOG = {
             "critical": dict(),
             "errors": dict(),
@@ -171,15 +175,15 @@ class ValidationReporter:
         assert CodeDictionary.get_code_entry(code) is not None, f"ValidationReporter.report: unknown code '{code}'"
 
         message_type_id = self.get_message_type(code)
-        message_type = self._message_type_name[message_type_id]
-        if code not in self.messages[message_type]:
-            self.messages[message_type][code] = dict()
+        message_type_tag = self.get_message_type_tag(message_type_id)
+        if code not in self.messages[message_type_tag]:
+            self.messages[message_type_tag][code] = dict()
 
         # Set current scope of validation message
-        if source_trail is not None and source_trail not in self.messages[message_type][code]:
-            scope = self.messages[message_type][code][source_trail] = dict()
+        if source_trail is not None and source_trail not in self.messages[message_type_tag][code]:
+            scope = self.messages[message_type_tag][code][source_trail] = dict()
         else:
-            scope = self.messages[message_type][code]["global"] = dict()
+            scope = self.messages[message_type_tag][code]["global"] = dict()
 
         if message:
             # If a message has any parameters, then one of them is
