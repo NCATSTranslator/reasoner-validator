@@ -1316,12 +1316,24 @@ def qualifier_validator(
     if validator.has_critical():
         validator = validator
     else:
-        tested_method(
-            validator,
-            edge_id=f"{tested_method.__name__} unit test",
-            edge=edge,
-            **kwargs
-        )
+        # some tested_method may not have a formal
+        # 'source_trail' parameter, so to be safe...
+        if source_trail is not None:
+            tested_method(
+                validator,
+                edge_id=f"{tested_method.__name__} unit test",
+                edge=edge,
+                source_trail=source_trail,
+                **kwargs
+            )
+        else:
+            tested_method(
+                validator,
+                edge_id=f"{tested_method.__name__} unit test",
+                edge=edge,
+                **kwargs
+            )
+
     check_messages(
         validator,
         message,
@@ -1854,7 +1866,7 @@ def test_validate_qualifiers(edge: Dict, message: str, source_trail: str):
 @pytest.mark.parametrize(
     "edge,associations,message,source_trail",
     [
-        (   # Query 0 - qualifier_type_id 'dubject_aspect_qualifier' is a valid Biolink qualifier type and
+        (   # Query 0 - qualifier_type_id 'subject_aspect_qualifier' is a valid Biolink qualifier type and
             #            'synthesis' is a valid corresponding 'permissible value' enum 'qualifier_value', but
             #            only within the context of a specific subclass of biolink:Association, i.e.
             #
@@ -2523,7 +2535,7 @@ def test_validate_biolink_curie_in_qualifiers(
                 "edges": {
                     "edge_1": {
                         "subject": "HGNC:3059",
-                        "predicate": "biolink:increases_amount_or_activity_of",
+                        "predicate": "biolink:interacts_with",
                         "object": "HGNC:391",
                         "attributes": [
                             {
