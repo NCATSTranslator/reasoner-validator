@@ -214,8 +214,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject_id': 'PMID:1234',
                 'object_id': 'ORCID:56789'
             },
-            # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:contributor' is abstract."
-            "info.input_edge.predicate.abstract"
+            # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:contributor' is abstract."
+            "error.input_edge.predicate.abstract"
         ),
         (   # Query 10 - Predicate is a mixin
             LATEST_BIOLINK_MODEL_VERSION,
@@ -226,8 +226,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject_id': 'NDC:50090‑0766',  # Metformin
                 'object_id': 'GO:0006094'  # Gluconeogenesis
             },
-            # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:decreases_amount_or_activity_of' is a mixin."
-            "info.input_edge.predicate.mixin"
+            # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:decreases_amount_or_activity_of' is a mixin."
+            "error.input_edge.predicate.mixin"
         ),
         (   # Query 11 - Unknown predicate element
             LATEST_BIOLINK_MODEL_VERSION,
@@ -360,8 +360,43 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         )
     ]
 )
-def test_check_biolink_model_compliance_of_input_edge(biolink_version: str, edge: Dict, code: str):
+def test_check_biolink_model_default_compliance_of_input_edge(biolink_version: str, edge: Dict, code: str):
     validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version)
+    validator.check_biolink_model_compliance_of_input_edge(edge=edge)
+    check_messages(validator, code)
+
+
+@pytest.mark.parametrize(
+    "biolink_version,edge,code",
+    [
+        (   # Query 0 - Predicate is abstract - strict_validation == False
+            LATEST_BIOLINK_MODEL_VERSION,
+            {
+                'subject_category': 'biolink:InformationContentEntity',
+                'object_category': 'biolink:Agent',
+                'predicate': 'biolink:contributor',
+                'subject_id': 'PMID:1234',
+                'object_id': 'ORCID:56789'
+            },
+            # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:contributor' is abstract."
+            "info.input_edge.predicate.abstract"
+        ),
+        (   # Query 1 - Predicate is a mixin
+            LATEST_BIOLINK_MODEL_VERSION,
+            {
+                'subject_category': 'biolink:Drug',
+                'object_category': 'biolink:BiologicalProcess',
+                'predicate': 'biolink:decreases_amount_or_activity_of',
+                'subject_id': 'NDC:50090‑0766',  # Metformin
+                'object_id': 'GO:0006094'  # Gluconeogenesis
+            },
+            # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:decreases_amount_or_activity_of' is a mixin."
+            "info.input_edge.predicate.mixin"
+        )
+    ]
+)
+def test_check_biolink_model_non_strict_compliance_of_input_edge(biolink_version: str, edge: Dict, code: str):
+    validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version, strict_validation=False)
     validator.check_biolink_model_compliance_of_input_edge(edge=edge)
     check_messages(validator, code)
 
@@ -873,7 +908,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 }
             },
             # f"{QUERY_GRAPH_PREFIX}: INFO - Predicate element 'biolink:increases_amount_or_activity_of' is a mixin."
-            "info.query_graph.edge.predicate.mixin"
+            "error.query_graph.edge.predicate.mixin"
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
@@ -922,8 +957,42 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         )
     ]
 )
-def test_check_biolink_model_compliance_of_query_graph(query_graph: Dict, biolink_version: str, code: str):
+def test_check_biolink_model_default_compliance_of_query_graph(query_graph: Dict, biolink_version: str, code: str):
     validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version)
+    validator.check_biolink_model_compliance(
+        graph=query_graph,
+        graph_type=TRAPIGraphType.Query_Graph
+    )
+    check_messages(validator, code)
+
+
+@pytest.mark.parametrize(
+    "biolink_version,query_graph,code",
+    [
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 0: Query edge predicate is a mixin - non-strict validation
+            {
+                "nodes": {
+                    "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:increases_amount_or_activity_of"],
+                        "object": "IRS1"
+                    }
+                }
+            },
+            "info.query_graph.edge.predicate.mixin"
+        )
+    ]
+)
+def test_check_biolink_model_non_strict_compliance_of_query_graph(query_graph: Dict, biolink_version: str, code: str):
+    validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version, strict_validation=False)
     validator.check_biolink_model_compliance(
         graph=query_graph,
         graph_type=TRAPIGraphType.Query_Graph
