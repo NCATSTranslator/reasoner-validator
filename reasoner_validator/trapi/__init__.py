@@ -244,7 +244,9 @@ class TRAPISchemaValidator(ValidationReporter):
             self.default_trapi = True
         self.trapi_version = get_latest_version(trapi_version) \
             if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
-        print(f"\nTRAPISchemaValidator set to TRAPI Version: '{self.trapi_version}'", file=stderr)
+
+        logger.info(f"\nTRAPISchemaValidator set to TRAPI Version: '{self.trapi_version}'")
+        
         ValidationReporter.__init__(
             self,
             prefix=prefix if prefix is not None else "TRAPI Validation",
