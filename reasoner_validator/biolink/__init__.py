@@ -14,7 +14,8 @@ from linkml_runtime.linkml_model import ClassDefinition, Element
 from reasoner_validator.sri.util import is_curie
 from reasoner_validator.versioning import SemVer, SemVerError
 from reasoner_validator.message import MESSAGE_CATALOG
-from reasoner_validator.trapi import TRAPISchemaValidator, TRAPIGraphType
+from reasoner_validator.trapi import TRAPISchemaValidator
+from reasoner_validator.report import TRAPIGraphType
 
 import logging
 logger = logging.getLogger(__name__)
@@ -157,7 +158,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         trapi_version: Optional[str] = None,
         biolink_version: Optional[str] = None,
         target_provenance: Optional[Dict[str, str]] = None,
-        strict_validation: bool = True
+        strict_validation: Optional[bool] = None
     ):
         """
         Biolink Validator constructor.
@@ -166,7 +167,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param trapi_version:  Optional[str], caller specified Biolink Model version (default: None, use TRAPI 'latest')
         :param biolink_version: Optional[str], caller specified Biolink Model version (default: None, use BMT 'latest')
         :param target_provenance: Optional[Dict[str,str]], Dictionary of context ARA and KP for provenance validation
-        :param strict_validation: bool, applies stricter constraints on Biolink class term semantics (Default: True)
+        :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
+                                  'info' message; A value of 'None' uses the default value for specific graph contexts.
+
         """
         BMTWrapper.__init__(self, biolink_version=biolink_version)
         TRAPISchemaValidator.__init__(
@@ -403,6 +406,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
     def validate_element_status(
             self,
+            graph_type: TRAPIGraphType,
             context: str,
             identifier: str,
             edge_id: str,
@@ -411,6 +415,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.
 
+        :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
         :param context: str, parsing context (e.g. 'Node')
         :param identifier: str, name of the putative Biolink element ('class')
         :param edge_id: str, identifier of enclosing edge containing the element (e.g. the 'edge_id')
@@ -438,7 +443,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # return None - a deprecated term is not treated as a failure but just as a warning
 
         if element.abstract:
-            if self.strict_validation:
+            if self.is_strict_validation(graph_type):
                 self.report(
                     code=f"error.{context}.abstract",
                     source_trail=source_trail,
@@ -456,7 +461,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         elif self.bmt.is_mixin(identifier):
             # A mixin cannot be instantiated ...
-            if self.strict_validation:
+            if self.is_strict_validation(graph_type):
                 self.report(
                     code=f"error.{context}.mixin",
                     source_trail=source_trail,
@@ -563,6 +568,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
     def validate_attributes(
             self,
+            graph_type: TRAPIGraphType,
             edge_id: str,
             edge: Dict,
             source_trail: Optional[str] = None
@@ -571,6 +577,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         Validate Knowledge Edge Attributes. For TRAPI 1.3.0, may also return an ordered audit trail of Edge provenance
         infores-specified knowledge sources, as parsed in from the list of attributes (returns 'None' otherwise).
 
+        :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
         :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param edge: Dict, the edge object associated with some attributes are expected to be found
         :param source_trail: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
@@ -691,6 +698,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
                                 # ... but further validate everything else...
                                 biolink_class = self.validate_element_status(
+                                    graph_type=graph_type,
                                     context="knowledge_graph.edge.attribute.type_id",
                                     identifier=attribute_type_id,
                                     edge_id=edge_id,
@@ -1172,7 +1180,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param predicate: str, putative Biolink Model predicate to be validated
         :param source_trail: str, putative Biolink Model predicate to be validated
         :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
-        :return:
+        :return: None (validation communicated via class instance of method)
         """
         graph_type_context: str = graph_type.name.lower()
         if graph_type_context != "input_edge":
@@ -1181,6 +1189,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         # Validate the putative predicate as *not* being abstract, deprecated or a mixin
         biolink_class = self.validate_element_status(
+            graph_type=graph_type,
             context=context,
             identifier=predicate,
             edge_id=edge_id,
@@ -1314,11 +1323,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
                 # ...then the 'validate_sources' computed 'source_trail' is communicated
                 #    to 'validate_attributes' for use in attribute validation reporting
-                self.validate_attributes(edge_id=edge_id, edge=edge, source_trail=source_trail)
+                self.validate_attributes(graph_type=graph_type, edge_id=edge_id, edge=edge, source_trail=source_trail)
             else:
                 # For TRAPI 1.3.0, the 'sources' are discovered internally by 'validate_attributes'
                 # and the resulting source_trail returned, for further external reporting purposes
-                source_trail = self.validate_attributes(edge_id=edge_id, edge=edge)
+                source_trail = self.validate_attributes(graph_type=graph_type, edge_id=edge_id, edge=edge)
 
             associations: Optional[List[str]] = None
             if self.validate_biolink():
@@ -1645,46 +1654,3 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         header += "and Biolink Model version " \
                   f"'{str(self.get_biolink_version() if self.get_biolink_version() is not None else 'Default')}'"
         return header
-
-
-def check_biolink_model_compliance_of_knowledge_graph(
-    graph: Dict,
-    trapi_version: Optional[str] = None,
-    biolink_version: Optional[str] = None,
-    target_provenance: Optional[Dict] = None,
-    strict_validation: bool = True
-) -> BiolinkValidator:
-    """
-    Strict validation of a TRAPI-schema compliant Message Knowledge Graph against a designated Biolink Model release.
-
-    :param graph: knowledge graph to be validated.
-    :type graph: Dict
-    :param trapi_version: TRAPI schema (SemVer) release against which the knowledge graph is to be
-                            validated (Default: if None, use the latest available version).
-    :type trapi_version: Optional[str] = None
-    :param biolink_version: Biolink Model (SemVer) release against which the knowledge graph is to be
-                            validated (Default: if None, use the Biolink Model Toolkit default version).
-    :type biolink_version: Optional[str] = None
-    :param target_provenance: Dictionary of validation context identifying the ARA and KP for provenance validation
-    :type target_provenance: Dict
-    :param strict_validation: if True, abstract and mixin elements validate as 'error'; False, issue 'info' message.
-    :type strict_validation: bool = True; applies strict Biolink Model validation on elements used in graphs
-
-    :returns: Biolink Model validator cataloging validation messages (maybe empty)
-    :rtype: BiolinkValidator
-    """
-    # One typically will want stringent validation for Knowledge Graphs; however,
-    # the strict_validation flag is set to a default of 'True' only if it is NOT set
-    if strict_validation is None:
-        # Knowledge Graphs generally ought NOT to use
-        # abstract and mixins in TRAPI Responses (and Requests)
-        strict_validation = True
-
-    validator = BiolinkValidator(
-        trapi_version=trapi_version,
-        biolink_version=biolink_version,
-        target_provenance=target_provenance,
-        strict_validation=strict_validation
-    )
-    validator.check_biolink_model_compliance(graph, graph_type=TRAPIGraphType.Knowledge_Graph)
-    return validator

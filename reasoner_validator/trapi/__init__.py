@@ -1,8 +1,6 @@
 """TRAPI Validation Functions."""
-from enum import Enum
 from json import dumps
 from typing import Optional, Dict, List
-from sys import stderr
 from os.path import isfile
 import copy
 from functools import lru_cache
@@ -214,13 +212,6 @@ def openapi_to_jsonschema(schema, version: str) -> None:
         fix_nullable(schema)
 
 
-class TRAPIGraphType(Enum):
-    """ Enum type of Biolink Model compliant graph data being validated."""
-    Input_Edge = "Input Edge"
-    Query_Graph = "Query Graph"
-    Knowledge_Graph = "Knowledge Graph"
-
-
 class TRAPISchemaValidator(ValidationReporter):
     """
     TRAPI Validator is a wrapper class for validating
@@ -230,14 +221,16 @@ class TRAPISchemaValidator(ValidationReporter):
             self,
             prefix: Optional[str] = None,
             trapi_version: Optional[str] = None,
-            strict_validation: bool = True
+            strict_validation: Optional[bool] = None
     ):
         """
         TRAPI Validator constructor.
 
         :param prefix: str named context of the TRAPISchemaValidator, used as a prefix in validation messages.
         :param trapi_version: str, version of component to validate against
-        :param strict_validation: bool, applies stricter constraints on Biolink class term semantics
+        :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
+                                  'info' message; A value of 'None' uses the default value for specific graph contexts.
+
         """
         self.default_trapi: bool = False
         if trapi_version is None:
@@ -246,7 +239,7 @@ class TRAPISchemaValidator(ValidationReporter):
             if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
 
         logger.info(f"\nTRAPISchemaValidator set to TRAPI Version: '{self.trapi_version}'")
-        
+
         ValidationReporter.__init__(
             self,
             prefix=prefix if prefix is not None else "TRAPI Validation",

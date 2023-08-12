@@ -3,7 +3,6 @@ from typing import Optional, List, Dict
 from bmt import Toolkit
 
 from reasoner_validator.biolink import (
-    check_biolink_model_compliance_of_knowledge_graph,
     BMTWrapper,
     BiolinkValidator,
     get_biolink_model_toolkit
@@ -13,8 +12,9 @@ from reasoner_validator.biolink import (
 # in various parts TRAPI Query Response.Message
 from reasoner_validator.trapi import (
     check_trapi_validity,
-    TRAPISchemaValidator, TRAPIGraphType
+    TRAPISchemaValidator
 )
+from reasoner_validator.report import TRAPIGraphType
 from reasoner_validator import (
     TRAPI_1_3_0_SEMVER,
     TRAPI_1_4_0_BETA3_SEMVER,
@@ -47,7 +47,7 @@ class TRAPIResponseValidator(BiolinkValidator):
             trapi_version: Optional[str] = None,
             biolink_version: Optional[str] = None,
             target_provenance: Optional[Dict[str, str]] = None,
-            strict_validation: bool = False,
+            strict_validation: Optional[bool] = None,
             suppress_empty_data_warnings: bool = False
     ):
         """
@@ -55,7 +55,8 @@ class TRAPIResponseValidator(BiolinkValidator):
         :param trapi_version: str, version of component against which to validate the message (mandatory, no default)
         :param biolink_version: Optional[str] = None, Biolink Model (SemVer) release against which the knowledge graph
                                 is to be validated (Default: if None, use the Biolink Model Toolkit default version).
-        :param strict_validation: bool = False, if True, some tests validate as 'error'; False, simply issue a 'warning'
+        :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
+                                  'info' message; A value of 'None' uses the default value for specific graph contexts.
         :param suppress_empty_data_warnings: bool = False, validation normally reports empty Message query graph,
                                 knowledge graph and results as warnings. This flag suppresses the reporting
                                 of such warnings (default: False).
@@ -147,16 +148,11 @@ class TRAPIResponseValidator(BiolinkValidator):
         * Results: a list of (annotated) node and edge bindings pointing into the Knowledge Graph, to represent the
                    specific answers (subgraphs) satisfying the query graph constraints.
 
-        :param response: Query.Response to be validated.
-        :type response: Optional[Dict]
-        :param max_kg_edges: integer maximum number of edges to be validated from the
-                                     knowledge graph of the response. A value of zero triggers validation
-                                      of all edges in the knowledge graph (Default: 0 - use all edges)
-        :type max_kg_edges: int
-        :param max_results: target sample number of results to validate (default: 0 for 'use all results').
-        :type max_results: int
-        :param target_provenance: Dictionary of context identifying the ARA and KP for provenance attribute validation
-        :type target_provenance: Dict
+        :param response: Optional[Dict], Query.Response to be validated.
+        :param max_kg_edges: int, maximum number of edges to be validated from the
+                                  knowledge graph of the response. A value of zero triggers validation
+                                  of all edges in the knowledge graph (Default: 0 - use all edges)
+        :param max_results: int, target sample number of results to validate (default: 0 for 'use all results').
 
         """
         if not (response and "message" in response):

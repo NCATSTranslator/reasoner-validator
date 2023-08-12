@@ -14,7 +14,7 @@ import pytest
 
 from reasoner_validator import TRAPI_1_3_0, TRAPI_1_4_2
 from reasoner_validator.validator import TRAPIResponseValidator
-from reasoner_validator.trapi import TRAPIGraphType
+from reasoner_validator.report import TRAPIGraphType
 
 from tests import PATCHED_140_SCHEMA_FILEPATH, SAMPLE_NODES_WITH_ATTRIBUTES
 from tests.test_validation_report import check_messages

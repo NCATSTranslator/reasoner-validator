@@ -1,4 +1,5 @@
 """Error and Warning Reporting Module"""
+from enum import Enum
 from typing import Optional, Dict, List
 from sys import stdout
 from importlib import metadata
@@ -36,6 +37,13 @@ def _output(json, flat=False):
     return dumps(json, cls=ReportJsonEncoder, sort_keys=False, indent=None if flat else 4)
 
 
+class TRAPIGraphType(Enum):
+    """ Enum type of Biolink Model compliant graph data being validated."""
+    Input_Edge = "Input Edge"
+    Query_Graph = "Query Graph"
+    Knowledge_Graph = "Knowledge Graph"
+
+
 class ValidationReporter:
     """
     General wrapper for managing validation status messages: information, warnings, errors and 'critical' (errors).
@@ -61,15 +69,15 @@ class ValidationReporter:
     def __init__(
             self,
             prefix: Optional[str] = None,
-            strict_validation: bool = True
+            strict_validation: Optional[bool] = None
     ):
         """
         :param prefix: Optional[str] =  None, named context of the Validator, used as a prefix in validation messages.
-        :param strict_validation: bool = True, if True, abstract and mixin elements validate as 'error';
-                                  if False, just issue a 'warning'
+        :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
+                                  'info' message; A value of 'None' uses the default value for specific graph contexts.
         """
         self.prefix: str = prefix if prefix else ""
-        self.strict_validation: bool = strict_validation
+        self.strict_validation: Optional[bool] = strict_validation
         self.messages: MESSAGE_CATALOG = {
             "critical": dict(),
             "errors": dict(),
@@ -77,11 +85,22 @@ class ValidationReporter:
             "information": dict()
         }
 
-    def is_strict_validation(self) -> bool:
+    def is_strict_validation(self, graph_type: TRAPIGraphType) -> bool:
         """
+        Predicate to test if strict validation is to be applied. If the internal
+        'strict_validation' flag is not set (i.e. None), then graph_type is
+        to resolve strictness based on TRAPI graph type context.
+
+        :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
         :return: bool, value of validation strictness set in the ValidationReporter.
         """
-        return self.strict_validation
+        if self.strict_validation is None:
+            if graph_type == TRAPIGraphType.Knowledge_Graph:
+                return True
+            else:
+                return False
+        else:
+            return self.strict_validation
 
     def has_messages(self) -> bool:
         """Predicate to detect any recorded validation messages.

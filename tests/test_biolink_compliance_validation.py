@@ -13,7 +13,7 @@ from linkml_runtime.linkml_model import SlotDefinition
 from reasoner_validator import TRAPI_1_3_0, TRAPI_1_4_0_BETA
 from reasoner_validator.biolink import BiolinkValidator, get_biolink_model_toolkit
 
-from reasoner_validator.trapi import TRAPIGraphType
+from reasoner_validator.report import TRAPIGraphType
 from tests import SIMPLE_SAMPLE_NODES, SAMPLE_NODES_WITH_ATTRIBUTES
 from tests.test_validation_report import check_messages
 
@@ -205,7 +205,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             # "'binds' is deprecated?"  # in Biolink 3.1.1
             "warning.input_edge.predicate.deprecated"
         ),
-        (   # Query 9 - Predicate is abstract
+        (   # Query 9 - Predicate is abstract; default 'strict_validation' == False for input_edge
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:InformationContentEntity',
@@ -214,10 +214,10 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject_id': 'PMID:1234',
                 'object_id': 'ORCID:56789'
             },
-            # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:contributor' is abstract."
-            "error.input_edge.predicate.abstract"
+            # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:contributor' is abstract."
+            "info.input_edge.predicate.abstract"
         ),
-        (   # Query 10 - Predicate is a mixin
+        (   # Query 10 - Predicate is a mixin; default 'strict_validation' == False for input_edge
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:Drug',
@@ -226,8 +226,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'subject_id': 'NDC:50090‑0766',  # Metformin
                 'object_id': 'GO:0006094'  # Gluconeogenesis
             },
-            # f"{INPUT_EDGE_PREFIX}: ERROR - Predicate element 'biolink:decreases_amount_or_activity_of' is a mixin."
-            "error.input_edge.predicate.mixin"
+            # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:decreases_amount_or_activity_of' is a mixin."
+            "info.input_edge.predicate.mixin"
         ),
         (   # Query 11 - Unknown predicate element
             LATEST_BIOLINK_MODEL_VERSION,
@@ -891,7 +891,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 23: Query edge predicate is a mixin
+            # Query 23: Query edge predicate is a mixin; default 'strict_validation' == False for query graphs
             {
                 "nodes": {
                     "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
@@ -908,7 +908,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 }
             },
             # f"{QUERY_GRAPH_PREFIX}: INFO - Predicate element 'biolink:increases_amount_or_activity_of' is a mixin."
-            "error.query_graph.edge.predicate.mixin"
+            "info.query_graph.edge.predicate.mixin"
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
@@ -1037,7 +1037,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
 
 
 @pytest.mark.parametrize(
-    "edge_data,validation_code",
+    "edge,code",
     [
         # (
         #         "mock_edge",  # mock data has dumb edges: don't worry about the S-P-O, just the attributes
@@ -1068,14 +1068,18 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
         )
     ]
 )
-def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge_data: Dict, validation_code: str):
+def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge: Dict, code: str):
     validator = BiolinkValidator(trapi_version=TRAPI_1_3_0)
-    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=edge_data)
-    check_messages(validator, validation_code)
+    validator.validate_attributes(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        edge_id="test_validate_attributes unit test",
+        edge=edge
+    )
+    check_messages(validator, code)
 
 
 @pytest.mark.parametrize(
-    "edge_data",
+    "edge",
     [
         # These tests should all pass in TRAPI releases 'default' >= 1.4.0-beta
         (
@@ -1122,14 +1126,18 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge_data: Dict, v
         )
     ]
 )
-def test_post_1_4_0_trapi_validate_attributes(edge_data: Dict):
+def test_post_1_4_0_trapi_validate_attributes(edge: Dict):
     validator = BiolinkValidator()
-    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=edge_data)
+    validator.validate_attributes(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        edge_id="test_validate_attributes unit test",
+        edge=edge
+    )
     check_messages(validator, "")
 
 
 @pytest.mark.parametrize(
-    "query",
+    "edge,target_provenance,code",
     [
         (
             # Query 0. Missing ARA knowledge source provenance?
@@ -1198,19 +1206,23 @@ def test_post_1_4_0_trapi_validate_attributes(edge_data: Dict):
         )
     ]
 )
-def test_pre_1_4_0_validate_provenance(query: Tuple):
+def test_pre_1_4_0_validate_provenance(edge: Dict, target_provenance: Optional[Dict[str, str]], code: str):
     """TRAPI pre-1.4.0 releases recorded provenance in attributes. This unit test checks for this"""
     validator = BiolinkValidator(
         trapi_version=TRAPI_1_3_0,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
-        target_provenance=query[1]
+        target_provenance=target_provenance
     )
-    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
-    check_messages(validator, query[2])
+    validator.validate_attributes(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        edge_id="test_validate_attributes unit test",
+        edge=edge
+    )
+    check_messages(validator, code)
 
 
 @pytest.mark.parametrize(
-    "query",
+    "edge,target_provenance,code",
     [
         (
             # Query 0. Attributes are not a proper array
@@ -1319,14 +1331,18 @@ def test_pre_1_4_0_validate_provenance(query: Tuple):
         )
     ]
 )
-def test_latest_validate_attributes(query: Tuple):
+def test_latest_validate_attributes(edge: Dict, target_provenance: Optional[Dict[str, str]], code: str):
     validator = BiolinkValidator(
         # trapi_version="latest",
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
-        target_provenance=query[1]
+        target_provenance=target_provenance
     )
-    validator.validate_attributes(edge_id="test_validate_attributes unit test", edge=query[0])
-    check_messages(validator, query[2])
+    validator.validate_attributes(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        edge_id="test_validate_attributes unit test",
+        edge=edge
+    )
+    check_messages(validator, code)
 
 
 SAMPLE_SOURCE_TRAIL = "infores:chebi -> infores:molepro -> infores:arax"
