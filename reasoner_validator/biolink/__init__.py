@@ -1286,6 +1286,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         # logger.debug(edge)
         # edge data fields to be validated...
         subject_id = edge['subject'] if 'subject' in edge else None
+        subject_categories: Optional[List[str]] = self.get_node_categories(node_id=subject_id)
 
         predicates: Optional[List[str]]
         predicate: Optional[str] = None
@@ -1299,8 +1300,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             edge_label = str(predicates)
 
         object_id = edge['object'] if 'object' in edge else None
+        object_categories: Optional[List[str]] = self.get_node_categories(node_id=object_id)
 
-        edge_id = f"{str(subject_id)}--{edge_label}->{str(object_id)}"
+        edge_id = f"{str(subject_id)}[{'|'.join(subject_categories) if subject_categories else 'None'}]" +\
+                  f"--{edge_label}->" +\
+                  f"{str(object_id)}[{'|'.join(object_categories) if object_categories else 'None'}]"
 
         context: str = graph_type.name.lower()
 
@@ -1333,8 +1337,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             if self.validate_biolink():
                 # We need to look up the biolink:Association subclass
                 # matching the subject and object categories of the edge
-                subject_categories: Optional[List[str]] = self.get_node_categories(node_id=subject_id)
-                object_categories: Optional[List[str]] = self.get_node_categories(node_id=object_id)
                 associations = self.bmt.get_associations(
                     subject_categories=subject_categories,
                     predicates=predicates,
@@ -1558,7 +1560,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         else:
             object_curie = None
 
-        edge_id = f"{str(subject_curie)}--{predicate}->{str(object_curie)}"
+        edge_id = f"{str(subject_curie)}[{str(subject_category_curie)}]" + \
+                  f"--{predicate}->{str(object_curie)}[{str(object_category_curie)}]"
 
         self.validate_input_edge_node(
             context='Subject',
