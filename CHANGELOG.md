@@ -2,6 +2,13 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.8.1
+- Generally repaired validation 'sources' ('source_trail') context recording to cover all applicable validation message cases (especially, edge 'qualifier' validation); tested with unit tests
+- TRAPIGraphType class moved up the class/module hierarchy, alongside ValidatorReporter; strict_validation as Optional[bool] wrapped in the is_strict_validation() method which uses graph_type to decide on None default strictness (based on graph type)
+- TRAPI and Biolink Model versions resolved now only reported in logger.info, not stderr
+- only preset target_provenance in validator reporter constructors, not the various method signatures
+- add 'categories' into edge context labels for reports (long lists of categories may be challenging here but ...)
+
 ## 3.8.0
 - Internal class hierarchy restructured for logical clarity in recent releases, formally highlighted in this release
 - Most visible TRAPIResponseValidator class (previously) moved from the **`reasoner_validator.__init__.py`** package module, into its own  **`reasoner_validator.validator`** module

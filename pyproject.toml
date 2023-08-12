@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "reasoner-validator"
-version = "3.8.0"
+version = "3.8.1"
 description = "Validation tools for Reasoner API"
 authors = [
     "Richard Bruskiewich <richard.bruskiewich@delphinai.com>",
