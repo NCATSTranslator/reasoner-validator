@@ -159,13 +159,8 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code>()</p></td>
 <td><p>Predicate to detect any recorded warning messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>()</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">return<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool, value of validation strictness set in the ValidationReporter.</p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>(graph_type)</p></td>
+<td><p>Predicate to test if strict validation is to be applied.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code>(reporter)</p></td>
 <td><p>Merge all messages and metadata from a second ValidationReporter, into the calling ValidationReporter instance.</p></td>
@@ -186,7 +181,10 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <tr class="row-odd"><td><p><strong>check_dangling_references</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>report_header</strong></p></td>
+<tr class="row-even"><td><p><strong>get_message_type_tag</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>report_header</strong></p></td>
 <td></td>
 </tr>
 </tbody>

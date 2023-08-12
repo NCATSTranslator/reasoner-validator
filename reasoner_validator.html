@@ -98,7 +98,7 @@
 <span id="trapi-response-validation"></span><h1>TRAPI Response Validation<a class="headerlink" href="#module-reasoner_validator.validator" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.validator.</span></span><span class="sig-name descname"><span class="pre">TRAPIResponseValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trapi_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_validation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress_empty_data_warnings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.validator.</span></span><span class="sig-name descname"><span class="pre">TRAPIResponseValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trapi_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_provenance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_validation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suppress_empty_data_warnings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="reasoner_validator.biolink.html#reasoner_validator.biolink.BiolinkValidator" title="reasoner_validator.biolink.BiolinkValidator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BiolinkValidator</span></code></a></p>
 <p>TRAPI Validator is an overall wrapper class for validating
 conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
@@ -126,7 +126,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.case_result_found" title="reasoner_validator.validator.TRAPIResponseValidator.case_result_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">case_result_found</span></code></a>(subject_id, object_id, ...)</p></td>
 <td><p>Validate that test case S--P-&gt;O edge is found bound to the Results? :param subject_id: str, subject node (CURIE) identifier :param object_id:  str, subject node (CURIE) identifier :param edge_id:  str, subject node (CURIE) identifier :param results: List of (TRAPI-version specific) Result objects :param trapi_version: str, target TRAPI version of the Response being validated :return: bool, True if case S-P-O edge was found in the results</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_biolink_model_compliance</span></code>(graph)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_biolink_model_compliance</span></code>(graph, graph_type)</p></td>
 <td><p>Validate a TRAPI-schema compliant Message graph-like data structure against the currently active Biolink Model Toolkit model version.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_biolink_model_compliance_of_input_edge</span></code>(edge)</p></td>
@@ -222,7 +222,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_messages</span></code>()</p></td>
 <td><p>Predicate to detect any recorded validation messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph" title="reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_valid_knowledge_graph</span></code></a>(message[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph" title="reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_valid_knowledge_graph</span></code></a>(message[, edges_limit])</p></td>
 <td><p>Validate a TRAPI Knowledge Graph.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_query_graph" title="reasoner_validator.validator.TRAPIResponseValidator.has_valid_query_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_valid_query_graph</span></code></a>(message)</p></td>
@@ -234,13 +234,8 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code>()</p></td>
 <td><p>Predicate to detect any recorded warning messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>()</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">return<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool, value of validation strictness set in the ValidationReporter.</p>
-</dd>
-</dl>
-</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>(graph_type)</p></td>
+<td><p>Predicate to test if strict validation is to be applied.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_symmetric</span></code>(name)</p></td>
 <td><p>Checks if a given element identified by name, is a symmetric (predicate) slot.</p></td>
@@ -300,7 +295,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attribute_constraints</span></code>(edge_id, edge)</p></td>
 <td><p>Validate Query Edge Attributes.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attributes</span></code>(edge_id, edge[, ...])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attributes</span></code>(graph_type, edge_id, edge)</p></td>
 <td><p>Validate Knowledge Edge Attributes.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_biolink</span></code>()</p></td>
@@ -309,19 +304,19 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_category</span></code>(context, node_id, category)</p></td>
 <td><p>Validate a Biolink category.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_element_status</span></code>(context, identifier, ...)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_element_status</span></code>(graph_type, context, ...)</p></td>
 <td><p>Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_edge</span></code>(edge)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_edge</span></code>(edge, graph_type)</p></td>
 <td><p>Validate slot properties of a relationship ('biolink:Association') edge.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_node</span></code>(node_id, slots)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_node</span></code>(node_id, slots, graph_type)</p></td>
 <td><p>Validate slot properties (mainly 'categories') of a node.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_infores</span></code>(context, edge_id, identifier)</p></td>
 <td><p>Validate that the specified identifier is a well-formed Infores CURIE.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_predicate</span></code>(edge_id, predicate[, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_predicate</span></code>(edge_id, predicate, ...)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param edge_id<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str, identifier of the edge whose predicate is being validated</p>
@@ -351,13 +346,16 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-odd"><td><p><strong>get_bmt</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>is_trapi_1_4</strong></p></td>
+<tr class="row-even"><td><p><strong>get_message_type_tag</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>report_header</strong></p></td>
+<tr class="row-odd"><td><p><strong>is_trapi_1_4</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>validate_input_edge_node</strong></p></td>
+<tr class="row-even"><td><p><strong>report_header</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>validate_input_edge_node</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -425,7 +423,7 @@ with expected categories, in the “nodes” catalog.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.check_compliance_of_trapi_response">
-<span class="sig-name descname"><span class="pre">check_compliance_of_trapi_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_kg_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_provenance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_compliance_of_trapi_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_kg_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="Permalink to this definition"></a></dt>
 <dd><p>One stop validation of all components of a TRAPI-schema compliant
 Query.Response, including its Message against a designated Biolink Model release.
 The high level structure of a Query.Response is described in
@@ -447,15 +445,11 @@ The high level structure of a Query.Response is described in
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>response</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>]</em>) – Query.Response to be validated.</p></li>
-<li><p><strong>max_kg_edges</strong> (<em>int</em>) – <p>integer maximum number of edges to be validated from the
-knowledge graph of the response. A value of zero triggers validation</p>
-<blockquote>
-<div><p>of all edges in the knowledge graph (Default: 0 - use all edges)</p>
-</div></blockquote>
-</p></li>
-<li><p><strong>max_results</strong> (<em>int</em>) – target sample number of results to validate (default: 0 for ‘use all results’).</p></li>
-<li><p><strong>target_provenance</strong> (<em>Dict</em>) – Dictionary of context identifying the ARA and KP for provenance attribute validation</p></li>
+<li><p><strong>response</strong> – Optional[Dict], Query.Response to be validated.</p></li>
+<li><p><strong>max_kg_edges</strong> – int, maximum number of edges to be validated from the
+knowledge graph of the response. A value of zero triggers validation
+of all edges in the knowledge graph (Default: 0 - use all edges)</p></li>
+<li><p><strong>max_results</strong> – int, target sample number of results to validate (default: 0 for ‘use all results’).</p></li>
 </ul>
 </dd>
 </dl>
@@ -463,15 +457,14 @@ knowledge graph of the response. A value of zero triggers validation</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph">
-<span class="sig-name descname"><span class="pre">has_valid_knowledge_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_provenance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">has_valid_knowledge_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph" title="Permalink to this definition"></a></dt>
 <dd><p>Validate a TRAPI Knowledge Graph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>message</strong> (<em>Dict</em>) – input message expected to contain the ‘knowledge_graph’</p></li>
-<li><p><strong>edges_limit</strong> (<em>int</em>) – integer maximum number of edges to be validated in the knowledge graph. A value of zero
+<li><p><strong>message</strong> – Dict, input message expected to contain the ‘knowledge_graph’</p></li>
+<li><p><strong>edges_limit</strong> – int, integer maximum number of edges to be validated in the knowledge graph. A value of zero
 triggers validation of all edges in the knowledge graph (Default: 0 - use all edges)</p></li>
-<li><p><strong>target_provenance</strong> (<em>Dict</em>) – Dictionary of context identifying the ARA and KP for provenance attribute validation</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
