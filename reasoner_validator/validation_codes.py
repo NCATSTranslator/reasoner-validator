@@ -31,7 +31,7 @@ class CodeDictionary:
         if not cls.code_dictionary:
             # Open the file and load the file
             with open(cls.CODE_DICTIONARY_FILE, mode='r') as f:
-                cls.code_dictionary = load(f, Loader=BaseLoader)
+                cls.code_dictionary = load(f, Loader=Loader)
         return cls.code_dictionary
 
     @classmethod

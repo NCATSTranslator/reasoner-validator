@@ -826,13 +826,13 @@
 
 **Description:** Empty Results is allowed but merits a boundary response warning?
 
-### warning.trapi.response.workflow.runner_parameters.null
+### warning.trapi.response.workflow.runner_parameters.missing
 
 **Message:** TRAPI Response.workflow.runner_parameters property is missing?
 
 **Description:** If a 'runner_parameters' property value is given for a workflow step specification, it should not be null. This field will be ignored?
 
-### warning.trapi.response.workflow.parameters.null
+### warning.trapi.response.workflow.parameters.missing
 
 **Message:** TRAPI Response.workflow.parameters property is missing?
 

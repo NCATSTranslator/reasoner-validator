@@ -107,12 +107,12 @@ class TRAPIResponseValidator(BiolinkValidator):
             workflow_steps: List[Dict] = response['workflow']
             for step in workflow_steps:
                 if 'runner_parameters' in step and not step['runner_parameters']:
-                    self.report("warning.trapi.response.workflow.runner_parameters.null")
+                    self.report("warning.trapi.response.workflow.runner_parameters.missing")
                     step.pop('runner_parameters')
                 if 'parameters' in step and not step['parameters']:
                     # There are some workflow types that have mandatory need for 'parameters'
                     # but this should be caught in a later schema validation step
-                    self.report("warning.trapi.response.workflow.parameters.null")
+                    self.report("warning.trapi.response.workflow.parameters.missing")
                     step.pop('parameters')
         return response
 
