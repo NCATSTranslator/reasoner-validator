@@ -214,15 +214,15 @@ def test_unknown_message_code():
         CodeDictionary.display(code="foo.bar")
 
 
-def test_message_report():
-    reporter = ValidationReporter(prefix="First Validation Report")
-    reporter.report(code="info.compliant")
-    reporter.report(
+def test_global_sourced_validation_message_report():
+    reporter1 = ValidationReporter(prefix="First Validation Report")
+    reporter1.report(code="info.compliant")
+    reporter1.report(
         code="info.input_edge.predicate.abstract",
         identifier="biolink:contributor",
         edge_id="a->biolink:contributor->b"
     )
-    report: MESSAGE_CATALOG = reporter.get_messages()
+    report: MESSAGE_CATALOG = reporter1.get_messages()
     assert 'information' in report
     assert len(report['information']) > 0
 
@@ -232,6 +232,28 @@ def test_message_report():
         displayed.extend(scoped_messages["global"])
     assert "INFO - Compliant: Biolink Model-compliant TRAPI Message" in displayed
     assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate" in displayed
+
+
+def test_source_trail_scoped_validation_message_report():
+    reporter2 = ValidationReporter(prefix="Second Validation Report")
+    reporter2.report(
+        code="error.knowledge_graph.edge.predicate.abstract",
+        identifier="biolink:contributor",
+        edge_id="Richard->biolink:contributor->Translator",
+        source_trail="infores:sri"
+    )
+    reporter2.report(
+        code="error.knowledge_graph.edge.predicate.abstract",
+        identifier="biolink:contributor",
+        edge_id="Tim->biolink:contributor->Translator",
+        source_trail="infores:sri"
+    )
+    report: MESSAGE_CATALOG = reporter2.get_messages()
+    assert 'errors' in report
+    assert len(report['errors']) > 0
+    assert "error.knowledge_graph.edge.predicate.abstract" in report['errors']
+    assert "infores:sri" in report['errors']['error.knowledge_graph.edge.predicate.abstract']
+    assert "global" not in report['errors']['error.knowledge_graph.edge.predicate.abstract']
 
 
 def test_messages():
