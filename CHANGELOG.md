@@ -3,7 +3,9 @@
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
 ## 3.8.3
-- Fixed TRAPI release management to cache TRAPI GitHub code release and branch tags locally, to avoid Git API overload
+- Fixed TRAPI release management to cache TRAPI GitHub code release and branch tags locally - in a **versions.yaml** file - to avoid Git API calling denial of service issues; Small **scripts/trapi_release.py** utility script provided to update the **versions.yaml** file, as periodically necessary.
+- YAML file management tech debt cleaned up a tiny bit. Tweaked a couple of validation codes for this reason.
+- Added DEVELOPER_NOTES.md to guide uniform project release management (especially, of the esoteric bits of the project like TRAPI release and validation code updates)
 
 ## 3.8.2
 - Removed `check_trapi_validity()` standalone API method to enforce a two-step process of instantiating a `TRAPISchemaValidator` instance then calling its `is_valid_trapi_query()` method.
