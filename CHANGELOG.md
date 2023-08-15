@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.8.3
+- Fixed TRAPI release management to cache TRAPI GitHub code release and branch tags locally, to avoid Git API overload
+
 ## 3.8.2
 - Removed `check_trapi_validity()` standalone API method to enforce a two-step process of instantiating a `TRAPISchemaValidator` instance then calling its `is_valid_trapi_query()` method.
 - Spurious leading newline removed from TRAPI and Biolink Model validation version reporting log messages

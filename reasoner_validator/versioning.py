@@ -1,51 +1,10 @@
 """Utilities."""
-from typing import NamedTuple, Optional, List
-from os import environ
-from os.path import join, abspath, dirname
+from typing import NamedTuple, Optional, List, Dict
 from re import sub, compile
-import requests
-# try:
-#     from yaml import CLoader as Loader
-# except ImportError:
-#     from yaml import Loader
+from reasoner_validator.github import get_versions
 
 
-# Undocumented possible local environmental variable
-# override of the ReasonerAPI schema access endpoint
-GIT_ORG = environ.setdefault('GIT_ORGANIZATION', "NCATSTranslator")
-GIT_REPO = environ.setdefault('GIT_REPOSITORY', "ReasonerAPI")
-
-VERSION_CACHE_FILE: str = abspath(join(dirname(__file__), "versions.yaml"))
-
-versions: List[str] = list()
-branches: List[str] = list()
-
-
-# def _get_code_dictionary(cls) -> Dict:
-#     if not cls.code_dictionary:
-#         # Open the file and load the file
-#         with open(cls.CODE_DICTIONARY_FILE, mode='r') as f:
-#             cls.code_dictionary = load(f, Loader=BaseLoader)
-#     return cls.code_dictionary
-
-def get_releases(refresh: bool = False):
-    global versions, branches
-    if refresh:
-        # TODO: save these values in a local file cache
-        with open(VERSION_CACHE_FILE, "w") as version_cache:
-            response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/releases")
-            release_data = response.json()
-            versions = [release["tag_name"] for release in release_data]
-
-            response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/branches")
-            branch_data = response.json()
-            branches = [
-                branch["name"] for branch in branch_data
-            ]
-
-    with open(VERSION_CACHE_FILE, "r") as version_cache:
-        pass
-
+_versions: Dict = get_versions()
 
 # This is modified version of a standard SemVer regex which
 # takes into account the possibility of capturing a non-numeric prefix
@@ -312,15 +271,15 @@ def get_latest_version(release_tag: Optional[str]) -> Optional[str]:
         return None
     elif release_tag.lower().endswith(".yaml"):
         return release_tag
-    elif release_tag in branches:
+    elif release_tag in _versions["branches"]:
         # cases in which a branch name is
         # given instead of a release number
         return release_tag
     else:
         # strip any prefix from the release tag to ensure that
         # only the SemVer part is used for the latest version lookup
-        release = sub(r'^[^0-9]+', '', release_tag)
-        latest: SemVer = _latest.get(release, None)
+        release_tag = sub(r'^[^0-9]+', '', release_tag)
+        latest: SemVer = _latest.get(release_tag, None)
         return str(latest) if latest else None
 
 
@@ -331,7 +290,7 @@ def _set_preferred_version(release_tag: str, target_release: SemVer):
         _latest[release_tag] = target_release
 
 
-for version in versions:
+for release in _versions["releases"]:
 
     prefix: str = ""
     major: Optional[int] = None
@@ -341,7 +300,7 @@ for version in versions:
     # buildmetadata: Optional[str] = None
 
     try:
-        prefix, major, minor, patch, prerelease, buildmetadata = SemVer.from_string(version)
+        prefix, major, minor, patch, prerelease, buildmetadata = SemVer.from_string(release)
     except SemVerError as err:
         print("\nWARNING:", err)
         continue
@@ -354,7 +313,7 @@ for version in versions:
         prerelease=prerelease
     )
 
-    if str(candidate_release) in versions:
+    if str(candidate_release) in _versions["releases"]:
         _set_preferred_version(f"{major}", candidate_release)
         _set_preferred_version(f"{major}.{minor}", candidate_release)
         _set_preferred_version(f"{major}.{minor}.{patch}", candidate_release)

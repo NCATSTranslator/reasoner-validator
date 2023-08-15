@@ -7,8 +7,7 @@ import pytest
 
 from jsonschema.exceptions import ValidationError
 
-from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema, load_schema
-from reasoner_validator import LATEST_TRAPI_RELEASE
+from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema, load_schema, LATEST_TRAPI_RELEASE
 from tests import LATEST_TEST_RELEASES, PRE_1_4_0_TEST_VERSIONS, ALL_TEST_VERSIONS
 
 

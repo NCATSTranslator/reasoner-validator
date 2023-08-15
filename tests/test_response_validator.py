@@ -12,7 +12,7 @@ from copy import deepcopy
 
 import pytest
 
-from reasoner_validator import TRAPI_1_3_0, TRAPI_1_4_2
+from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_2
 from reasoner_validator.validator import TRAPIResponseValidator
 from reasoner_validator.report import TRAPIGraphType
 

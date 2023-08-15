@@ -9,14 +9,8 @@ from reasoner_validator.biolink import (
 )
 
 from reasoner_validator.report import TRAPIGraphType
-from reasoner_validator import (
-    TRAPI_1_3_0_SEMVER,
-    TRAPI_1_4_0_BETA3_SEMVER,
-    TRAPI_1_4_0_BETA4_SEMVER,
-    TRAPI_1_4_0_SEMVER,
-    LATEST_TRAPI_RELEASE,
-    LATEST_TRAPI_MAJOR_RELEASE_SEMVER
-)
+from reasoner_validator.trapi import TRAPI_1_3_0_SEMVER, TRAPI_1_4_0_BETA3_SEMVER, TRAPI_1_4_0_BETA4_SEMVER, \
+    TRAPI_1_4_0_SEMVER, LATEST_TRAPI_RELEASE, LATEST_TRAPI_MAJOR_RELEASE_SEMVER
 from reasoner_validator.trapi.mapping import MappingValidator, check_node_edge_mappings
 from reasoner_validator.versioning import SemVer, SemVerError, get_latest_version
 from reasoner_validator.sri.util import get_aliases
