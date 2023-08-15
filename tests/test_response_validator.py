@@ -307,6 +307,7 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION["schema_version"] = "1.3.0"
 _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
 _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION["biolink_version"] = "2.4.8"
 
+
 @pytest.mark.parametrize(
     "response",
     [
@@ -585,9 +586,8 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             None,
             None,
             False,
-            # "Validate TRAPI Response: ERROR - the "Response.Message.Results" field
-            # is not TRAPI schema validated since it has the wrong format!"
-            "critical.trapi.validation"
+            # "Validate TRAPI Response: ERROR - Response returned a non-array Message.Results!
+            "error.trapi.response.results.not_array"
         ),
         (
             # Query 8 - Partly empty Response.Message with a modest but workable query and

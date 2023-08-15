@@ -385,9 +385,7 @@ class TRAPIResponseValidator(BiolinkValidator):
 
             elif not isinstance(results, List):
                 # The Message.results should be an array of Result objects
-                # TODO: Is this test unnecessary, since TRAPI schema
-                #       validation (below) should normally catch this?
-                self.report(code="error.trapi.response.results.non_array")
+                self.report(code="error.trapi.response.results.not_array")
 
             else:
                 # Validate a subsample of a non-empty Message.results component.

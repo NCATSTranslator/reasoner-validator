@@ -86,7 +86,7 @@
 
 **Description:** TRAPI Response should generally have a TRAPI request message Request key value in its reply.
 
-### error.trapi.response.results.non_array
+### error.trapi.response.results.not_array
 
 **Message:** Response returned a non-array Message.Results!
 

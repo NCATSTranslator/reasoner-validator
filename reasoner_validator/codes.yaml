@@ -70,7 +70,7 @@ error:
         missing:
           $message: "TRAPI Message is missing its Results component!"
           $description: "TRAPI Response should generally have a TRAPI request message Request key value in its reply."
-        non_array:
+        not_array:
           $message: "Response returned a non-array Message.Results!"
           $description: "TRAPI Message.Results must be an array data type (even if empty)"
         missing_bindings:
