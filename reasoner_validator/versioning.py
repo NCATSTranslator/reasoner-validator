@@ -1,12 +1,13 @@
 """Utilities."""
 from typing import NamedTuple, Optional, List
 from os import environ
+from os.path import join, abspath, dirname
 from re import sub, compile
 import requests
-try:
-    from yaml import CLoader as Loader
-except ImportError:
-    from yaml import Loader
+# try:
+#     from yaml import CLoader as Loader
+# except ImportError:
+#     from yaml import Loader
 
 
 # Undocumented possible local environmental variable
@@ -14,15 +15,37 @@ except ImportError:
 GIT_ORG = environ.setdefault('GIT_ORGANIZATION', "NCATSTranslator")
 GIT_REPO = environ.setdefault('GIT_REPOSITORY', "ReasonerAPI")
 
-response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/releases")
-release_data = response.json()
-versions = [release["tag_name"] for release in release_data]
+VERSION_CACHE_FILE: str = abspath(join(dirname(__file__), "versions.yaml"))
 
-response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/branches")
-branch_data = response.json()
-branches = [
-    branch["name"] for branch in branch_data
-]
+versions: List[str] = list()
+branches: List[str] = list()
+
+
+# def _get_code_dictionary(cls) -> Dict:
+#     if not cls.code_dictionary:
+#         # Open the file and load the file
+#         with open(cls.CODE_DICTIONARY_FILE, mode='r') as f:
+#             cls.code_dictionary = load(f, Loader=BaseLoader)
+#     return cls.code_dictionary
+
+def get_releases(refresh: bool = False):
+    global versions, branches
+    if refresh:
+        # TODO: save these values in a local file cache
+        with open(VERSION_CACHE_FILE, "w") as version_cache:
+            response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/releases")
+            release_data = response.json()
+            versions = [release["tag_name"] for release in release_data]
+
+            response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/branches")
+            branch_data = response.json()
+            branches = [
+                branch["name"] for branch in branch_data
+            ]
+
+    with open(VERSION_CACHE_FILE, "r") as version_cache:
+        pass
+
 
 # This is modified version of a standard SemVer regex which
 # takes into account the possibility of capturing a non-numeric prefix
