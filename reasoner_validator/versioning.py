@@ -3,11 +3,6 @@ from typing import NamedTuple, Optional, List
 from os import environ
 from re import sub, compile
 import requests
-try:
-    from yaml import CLoader as Loader
-except ImportError:
-    from yaml import Loader
-
 
 # Undocumented possible local environmental variable
 # override of the ReasonerAPI schema access endpoint

@@ -8,7 +8,10 @@ from functools import lru_cache
 import jsonschema
 import requests
 
-from yaml import load, CLoader as Loader
+try:
+    from yaml import load, CLoader as Loader
+except ImportError:
+    from yaml import load, Loader
 
 from reasoner_validator import (
     TRAPI_1_4_0_BETA_SEMVER,

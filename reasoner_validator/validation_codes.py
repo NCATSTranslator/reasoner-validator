@@ -2,7 +2,11 @@ import copy
 from os.path import join, abspath, dirname
 from typing import Optional, Any, Dict, List, Tuple, Union, NamedTuple
 
-from yaml import load, BaseLoader
+try:
+    from yaml import load, CLoader as Loader
+except ImportError:
+    from yaml import load, Loader
+
 import logging
 
 from reasoner_validator.message import SCOPED_MESSAGES, IDENTIFIED_MESSAGES
