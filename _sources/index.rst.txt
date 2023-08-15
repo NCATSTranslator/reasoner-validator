@@ -112,14 +112,15 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
     # this method validates a complete TRAPI Response JSON result
     validator.check_compliance_of_trapi_response(response=SAMPLE_RESPONSE)
 
-    # Raw message data is retrieved from the validator object as follows:
-    messages: MESSAGE_CATALOG = validator.get_messages()
+    if validator.has_messages():
+        # Raw message data is retrieved from the validator object as follows:
+        messages: MESSAGE_CATALOG = validator.get_messages()
 
-    # this method dumps a human readable text report of
-    # the validation messages (default) to stdout
-    # See the method signature for options that
-    # allow customization of the text format.
-    validator.dump()
+        # this method dumps a human readable text report of
+        # the validation messages (default) to stdout
+        # See the method signature for options that
+        # allow customization of the text format.
+        validator.dump()
 
 The 'messages' returned are partitioned into 'information', 'warning', 'error' and 'critical' (error) messages
 in a dictionary looking something like the following (as an example):

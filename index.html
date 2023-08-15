@@ -175,14 +175,15 @@ poetry<span class="w"> </span>shell
 <span class="c1"># this method validates a complete TRAPI Response JSON result</span>
 <span class="n">validator</span><span class="o">.</span><span class="n">check_compliance_of_trapi_response</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">SAMPLE_RESPONSE</span><span class="p">)</span>
 
-<span class="c1"># Raw message data is retrieved from the validator object as follows:</span>
-<span class="n">messages</span><span class="p">:</span> <span class="n">MESSAGE_CATALOG</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">get_messages</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">validator</span><span class="o">.</span><span class="n">has_messages</span><span class="p">():</span>
+    <span class="c1"># Raw message data is retrieved from the validator object as follows:</span>
+    <span class="n">messages</span><span class="p">:</span> <span class="n">MESSAGE_CATALOG</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">get_messages</span><span class="p">()</span>
 
-<span class="c1"># this method dumps a human readable text report of</span>
-<span class="c1"># the validation messages (default) to stdout</span>
-<span class="c1"># See the method signature for options that</span>
-<span class="c1"># allow customization of the text format.</span>
-<span class="n">validator</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
+    <span class="c1"># this method dumps a human readable text report of</span>
+    <span class="c1"># the validation messages (default) to stdout</span>
+    <span class="c1"># See the method signature for options that</span>
+    <span class="c1"># allow customization of the text format.</span>
+    <span class="n">validator</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>The ‘messages’ returned are partitioned into ‘information’, ‘warning’, ‘error’ and ‘critical’ (error) messages
@@ -266,7 +267,6 @@ named fields in the Python string templates found in the <a class="reference ext
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.TRAPIAccessError"><code class="docutils literal notranslate"><span class="pre">TRAPIAccessError</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.TRAPISchemaValidator"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.call_trapi"><code class="docutils literal notranslate"><span class="pre">call_trapi()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.check_trapi_validity"><code class="docutils literal notranslate"><span class="pre">check_trapi_validity()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.fix_nullable"><code class="docutils literal notranslate"><span class="pre">fix_nullable()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.load_schema"><code class="docutils literal notranslate"><span class="pre">load_schema()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.map_semver"><code class="docutils literal notranslate"><span class="pre">map_semver()</span></code></a></li>

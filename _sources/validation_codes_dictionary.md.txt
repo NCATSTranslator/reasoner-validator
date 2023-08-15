@@ -46,25 +46,25 @@
 
 **Message:** TRAPI Response missing its Message!
 
-**Description:** TRAPI response should at least have non-empty original TRAPI request Message in its reply.
+**Description:** TRAPI Response should at least have non-empty original TRAPI request Message in its reply.
 
 ### error.trapi.response.query_graph.missing
 
 **Message:** TRAPI Message is missing its Query Graph!
 
-**Description:** TRAPI response should generally have a TRAPI request message Query Graph key value in its reply.
+**Description:** TRAPI Response should generally have a TRAPI request message Query Graph key value in its reply.
 
 ### error.trapi.response.query_graph.empty
 
 **Message:** Response returned an empty Message Query Graph!
 
-**Description:** TRAPI response should at least have non-empty original TRAPI request message Query Graph in its reply.
+**Description:** TRAPI Response should at least have original non-empty TRAPI request message Query Graph in its reply.
 
 ### error.trapi.response.knowledge_graph.missing
 
 **Message:** TRAPI Message is missing its Knowledge Graph component!
 
-**Description:** TRAPI response should generally have a TRAPI request message Knowledge Graph key value in its reply.
+**Description:** TRAPI Response should generally have a TRAPI request message Knowledge Graph key value in its reply.
 
 ### error.trapi.response.knowledge_graph.missing_expected_edge
 
@@ -84,9 +84,9 @@
 
 **Message:** TRAPI Message is missing its Results component!
 
-**Description:** TRAPI response should generally have a TRAPI request message Request key value in its reply.
+**Description:** TRAPI Response should generally have a TRAPI request message Request key value in its reply.
 
-### error.trapi.response.results.non_array
+### error.trapi.response.results.not_array
 
 **Message:** Response returned a non-array Message.Results!
 
@@ -938,7 +938,7 @@
 
 **Message:** Node identifier found unmapped to target categories for node
 
-**Context:** identifier, categories
+**Context:** identifier, node_id
 
 **Description:** Node CURIE identifier namespace not found among any 'id_prefix' slot values in specified categories in the validating Biolink Model version?
 
