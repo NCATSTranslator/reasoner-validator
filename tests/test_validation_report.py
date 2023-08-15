@@ -36,7 +36,10 @@ def check_messages(
             assert any([info_code == code for info_code in messages['information']])
         if source_trail:
             mtt: str = validator.get_message_type_tag(message_type)
-            assert source_trail in messages[mtt][code].keys()
+            source_trail_tags = messages[mtt][code].keys()
+            assert source_trail in source_trail_tags
+            if source_trail != "global":
+                assert "global" not in source_trail_tags
     else:
         if no_errors:
             # just don't want any 'critical' (errors) nor 'errors'; 'information' and 'warnings' are ok?

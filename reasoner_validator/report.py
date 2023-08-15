@@ -201,10 +201,13 @@ class ValidationReporter:
             self.messages[message_type_tag][code] = dict()
 
         # Set current scope of validation message
-        if source_trail is not None and source_trail not in self.messages[message_type_tag][code]:
-            scope = self.messages[message_type_tag][code][source_trail] = dict()
-        else:
-            scope = self.messages[message_type_tag][code]["global"] = dict()
+        if source_trail is None:
+            source_trail = "global"
+
+        if source_trail not in self.messages[message_type_tag][code]:
+            self.messages[message_type_tag][code][source_trail] = dict()
+
+        scope = self.messages[message_type_tag][code][source_trail]
 
         if message:
             # If a message has any parameters, then one of them is

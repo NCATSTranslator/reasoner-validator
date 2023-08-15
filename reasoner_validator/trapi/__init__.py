@@ -238,7 +238,7 @@ class TRAPISchemaValidator(ValidationReporter):
         self.trapi_version = get_latest_version(trapi_version) \
             if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
 
-        logger.info(f"\nTRAPISchemaValidator set to TRAPI Version: '{self.trapi_version}'")
+        logger.info(f"TRAPISchemaValidator set to TRAPI Version: '{self.trapi_version}'")
 
         ValidationReporter.__init__(
             self,
@@ -362,25 +362,3 @@ class TRAPISchemaValidator(ValidationReporter):
         header += f" validating against TRAPI version " \
                   f"'{str(self.get_trapi_version() if self.get_trapi_version() is not None else 'Default')}'"
         return header
-
-
-def check_trapi_validity(instance, trapi_version: str, component: str = "Query") -> TRAPISchemaValidator:
-    """
-    Checks schema compliance of a Query component against a given TRAPI version.
-
-    Parameters
-    ----------
-    instance:
-        Dict, of format {"message": {}}
-    component:
-        str, TRAPI subschema to validate (e.g. 'Query', 'QueryGraph', 'KnowledgeGraph', 'Result'; Default: 'Query')
-    trapi_version:
-        str, version of component to validate against
-
-    Returns
-    -------
-    ValidationReporter catalog of "information", "warnings" or "errors" indexed messages (maybe empty)
-    """
-    trapi_validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    trapi_validator.is_valid_trapi_query(instance, component=component)
-    return trapi_validator

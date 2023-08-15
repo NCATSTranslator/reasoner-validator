@@ -46,18 +46,18 @@ error:
       message:
         empty:
           $message: "TRAPI Response missing its Message!"
-          $description: "TRAPI response should at least have non-empty original TRAPI request Message in its reply."
+          $description: "TRAPI Response should at least have non-empty original TRAPI request Message in its reply."
       query_graph:
         missing:
           $message: "TRAPI Message is missing its Query Graph!"
-          $description: "TRAPI response should generally have a TRAPI request message Query Graph key value in its reply."
+          $description: "TRAPI Response should generally have a TRAPI request message Query Graph key value in its reply."
         empty:
           $message: "Response returned an empty Message Query Graph!"
-          $description: "TRAPI response should at least have non-empty original TRAPI request message Query Graph in its reply."
+          $description: "TRAPI Response should at least have original non-empty TRAPI request message Query Graph in its reply."
       knowledge_graph:
         missing:
           $message: "TRAPI Message is missing its Knowledge Graph component!"
-          $description: "TRAPI response should generally have a TRAPI request message Knowledge Graph key value in its reply."
+          $description: "TRAPI Response should generally have a TRAPI request message Knowledge Graph key value in its reply."
         missing_expected_edge:
           $message: "Knowledge Graph of TRAPI Response Message is missing expected Edge"
           $context:
@@ -69,7 +69,7 @@ error:
       results:
         missing:
           $message: "TRAPI Message is missing its Results component!"
-          $description: "TRAPI response should generally have a TRAPI request message Request key value in its reply."
+          $description: "TRAPI Response should generally have a TRAPI request message Request key value in its reply."
         non_array:
           $message: "Response returned a non-array Message.Results!"
           $description: "TRAPI Message.Results must be an array data type (even if empty)"
@@ -731,7 +731,7 @@ warning:
           $message: "Node identifier found unmapped to target categories for node"
           $context:
             - identifier
-            - categories
+            - node_id
           $description: "Node CURIE identifier namespace not found among any 'id_prefix' slot values in specified categories in the validating Biolink Model version?"
     edge:
       predicate:

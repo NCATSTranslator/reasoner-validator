@@ -8,12 +8,6 @@ from reasoner_validator.biolink import (
     get_biolink_model_toolkit
 )
 
-# Maximum number of data points to scrutinize
-# in various parts TRAPI Query Response.Message
-from reasoner_validator.trapi import (
-    check_trapi_validity,
-    TRAPISchemaValidator
-)
 from reasoner_validator.report import TRAPIGraphType
 from reasoner_validator import (
     TRAPI_1_3_0_SEMVER,
@@ -162,13 +156,21 @@ class TRAPIResponseValidator(BiolinkValidator):
             # nothing more to validate?
             return
 
-        message: Optional[Dict] = response['message']
+        # here, we split the message out from the Response
+        # checking along the way whether it is empty
+        message: Optional[Dict] = response.pop('message')
         if not message:
+            # This is valid TRAPI but reported as an error,
+            # and not interesting for further validation
             if not self.suppress_empty_data_warnings:
                 self.report("error.trapi.response.message.empty")
 
             # ... also, nothing more here to validate?
             return
+
+        # we insert a stub to enable TRAPI validation
+        # of the remainder of the Response
+        response['message'] = {}
 
         # TRAPI JSON specified versions override default versions
         if "schema_version" in response and response["schema_version"]:
@@ -182,13 +184,10 @@ class TRAPIResponseValidator(BiolinkValidator):
 
         response = self.sanitize_trapi_response(response)
 
-        trapi_validator: TRAPISchemaValidator = check_trapi_validity(
-            instance=response,
-            component="Response",
-            trapi_version=self.trapi_version
-        )
-        if trapi_validator.has_messages():
-            self.merge(trapi_validator)
+        self.is_valid_trapi_query(instance=response, component="Response")
+        if self.has_critical():
+            # we abort further processing here due to detected critical global validation errors?
+            return
 
         status: Optional[str] = response['status'] if 'status' in response else None
         if status and status not in ["OK", "Success", "QueryNotTraversable", "KPsNotAvailable"]:
@@ -288,13 +287,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                     self.report(code="error.trapi.response.query_graph.empty")
             else:
                 # Validate the TRAPI compliance of the Query Graph
-                trapi_validator: TRAPISchemaValidator = check_trapi_validity(
-                    instance=query_graph,
-                    component="QueryGraph",
-                    trapi_version=self.trapi_version
-                )
-                if trapi_validator.has_messages():
-                    self.merge(trapi_validator)
+                self.is_valid_trapi_query(instance=query_graph, component="QueryGraph")
 
                 if self.validate_biolink():
                     # Conduct validation of Biolink Model compliance
@@ -348,13 +341,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                 kg_sample = self.sample_graph(graph=knowledge_graph, edges_limit=edges_limit)
 
                 # Verify that the sample of the knowledge graph is TRAPI compliant
-                trapi_validator: TRAPISchemaValidator = check_trapi_validity(
-                    instance=kg_sample,
-                    component="KnowledgeGraph",
-                    trapi_version=self.trapi_version
-                )
-                if trapi_validator.has_messages():
-                    self.merge(trapi_validator)
+                self.is_valid_trapi_query(instance=kg_sample, component="KnowledgeGraph")
 
                 if self.validate_biolink():
                     # Conduct validation of Biolink Model compliance of the
@@ -408,14 +395,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                 for result in results_sample:
 
                     # generally validate against the pertinent schema
-                    trapi_validator: TRAPISchemaValidator = check_trapi_validity(
-                        instance=result,
-                        component="Result",
-                        trapi_version=self.trapi_version
-                    )
-                    if trapi_validator.has_messages():
-                        # Record the error messages associated with the Result set then... don't continue
-                        self.merge(trapi_validator)
+                    self.is_valid_trapi_query(instance=result, component="Result")
 
                     # Maybe some additional TRAPI-release specific non-schematic validation here?
                     if self.is_trapi_1_4():

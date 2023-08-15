@@ -25,7 +25,7 @@ import json
 import argparse
 
 from bmt import Toolkit
-from reasoner_validator.validator import TRAPIResponseValidator, check_trapi_validity
+from reasoner_validator.validator import TRAPIResponseValidator
 from reasoner_validator.trapi import call_trapi
 from reasoner_validator.versioning import get_latest_version
 from reasoner_validator.biolink import get_biolink_model_toolkit
@@ -63,9 +63,13 @@ def get_cli_arguments():
              'a file path (with file extension .yaml) specifying or referencing the target TRAPI schema file.'
     )
     arg_parser.add_argument(
-        '-r', '--response_id', type=str, nargs='?', default=None,
+        '-r', '--ars_response_id', type=str, nargs='?', default=None,
         help='The value of this argument can either be an ARS query PK identifier or '
-             'a file name to JSON file with a previously run query.  Ignored when an --endpoint is given.'
+             'a file name to JSON file with a previously run query.  Ignored when --endpoint or --arax_id are given.'
+    )
+    arg_parser.add_argument(
+        '-a', '--arax_id', type=str, nargs='?', default=None,
+        help='The value of this argument is an ARAX response identifier.  Ignored when an --endpoint is given.'
     )
     arg_parser.add_argument(
         '-e', '--endpoint', type=str, nargs='?', default=None,
@@ -135,7 +139,7 @@ async def direct_trapi_request(
             trapi_request = None
 
         if trapi_request is not None:
-            validator.merge(check_trapi_validity(trapi_request, trapi_version=validator.get_trapi_version()))
+            validator.is_valid_trapi_query(instance=trapi_request, component="Query")
             if validator.has_errors():
                 print(
                     f"Request JSON is not strictly compliant with TRAPI release " +
@@ -157,7 +161,28 @@ async def direct_trapi_request(
                 trapi_response = result['response_json']
 
 
-def retrieve_ars_result(response_id: str, verbose: bool) -> Optional[Dict]:
+def retrieve_trapi_response(host_url: str, response_id: str):
+    try:
+        response_content = requests.get(
+            f"{host_url}{response_id}",
+            headers={'accept': 'application/json'}
+        )
+        if response_content:
+            status_code = response_content.status_code
+            if status_code == 200:
+                print(f"...Result returned from '{host_url}'!")
+        else:
+            status_code = 404
+
+    except Exception as e:
+        print(f"Remote host {host_url} unavailable: Connection attempt to {host_url} triggered an exception: {e}")
+        response_content = None
+        status_code = 404
+
+    return status_code, response_content
+
+
+def retrieve_ars_result(response_id: str, verbose: bool):
 
     global trapi_response
 
@@ -170,23 +195,12 @@ def retrieve_ars_result(response_id: str, verbose: bool) -> Optional[Dict]:
     for ars_host in ARS_HOSTS:
         if verbose:
             print(f"\n...from {ars_host}", end=None)
-        try:
-            response_content = requests.get(
-                f"https://{ars_host}/ars/api/messages/"+response_id,
-                headers={'accept': 'application/json'}
-            )
-            if response_content:
-                status_code = response_content.status_code
-                if status_code == 200:
-                    print(f"...Result returned from '{ars_host}'!")
-                    break
-            else:
-                status_code = 404
 
-        except Exception as e:
-            print(f"Remote host {ars_host} unavailable: Connection attempt to {ars_host} triggered an exception: {e}")
-            response_content = None
-            status_code = 404
+        status_code, response_content = retrieve_trapi_response(
+            host_url=f"https://{ars_host}/ars/api/messages/",
+            response_id=response_id
+        )
+        if status_code != 200:
             continue
 
     if status_code != 200:
@@ -212,6 +226,24 @@ def retrieve_ars_result(response_id: str, verbose: bool) -> Optional[Dict]:
         print("ARS response dictionary is missing 'fields'?")
 
 
+def retrieve_arax_result(response_id: str):
+
+    global trapi_response
+
+    status_code, response_content = retrieve_trapi_response(
+        host_url="https://arax.ncats.io/devED/api/arax/v1.4/response/",
+        response_id=response_id
+    )
+    if status_code == 200:
+        # Unpack the response content into a dict
+        try:
+            trapi_response = response_content.json()
+        except Exception as e:
+            print(f"Cannot decode ARAX Response ID '{response_id}' to a Translator Response, exception: {e}")
+    else:
+        print(f"Unsuccessful HTTP status code '{status_code}' reported for ARAX Response ID '{response_id}'?")
+
+
 def validation_report(validator: TRAPIResponseValidator, args):
 
     def prompt_user(msg: str):
@@ -223,7 +255,7 @@ def validation_report(validator: TRAPIResponseValidator, args):
             return False
 
     show_messages: bool = False
-    if validator.has_errors() or validator.has_warnings():
+    if validator.has_critical() or validator.has_errors() or validator.has_warnings():
         show_messages = prompt_user("Validation errors and/or warnings were reported")
     elif validator.has_information():
         show_messages = prompt_user("No validation errors or warnings, but some information was reported")
@@ -246,25 +278,27 @@ def main():
 
     args = get_cli_arguments()
 
-    # Explicitly resolve the TRAPI release to be used
-    inferred_trapi_version: str = args.trapi_version \
-        if args.trapi_version else ValidationReporter.DEFAULT_TRAPI_VERSION
-    resolved_trapi_version = get_latest_version(inferred_trapi_version)
+    # Override the TRAPI release here if specified
+    resolved_trapi_version: Optional[str] = None
+    if args.trapi_version:
+        resolved_trapi_version = get_latest_version(args.trapi_version)
 
     # Explicitly resolve the Biolink Model version to be used
-    bmt: Toolkit = get_biolink_model_toolkit(biolink_version=args.biolink_version)
-    resolved_biolink_version: str = bmt.get_model_version()
-    if args.verbose:
-        print(
-            f"Validating against TRAPI '{resolved_trapi_version}' and "
-            f"Biolink Model version '{resolved_biolink_version}'"
-        )
+    resolved_biolink_version: Optional[str] = None
+    if args.biolink_version:
+        bmt: Toolkit = get_biolink_model_toolkit(biolink_version=args.biolink_version)
+        resolved_biolink_version: str = bmt.get_model_version()
 
     # Perform a validation on it
     validator = TRAPIResponseValidator(
         trapi_version=resolved_trapi_version,
         biolink_version=resolved_biolink_version
     )
+    if args.verbose:
+        print(
+            f"Validating against TRAPI '{validator.get_trapi_version()}' and " +
+            f"Biolink Model version '{validator.get_biolink_version()}'"
+        )
 
     # Retrieve the TRAPI JSON Response result to be validated
     if args.endpoint:
@@ -286,14 +320,17 @@ def main():
         else:
             print("Need to specific a --local_request JSON input text file (path) argument for your TRAPI endpoint!")
 
-    elif args.response_id:
-        if isfile(args.response_id):
+    elif args.arax_id:
+        retrieve_arax_result(args.arax_id)
+    
+    elif args.ars_response_id:
+        if isfile(args.ars_response_id):
             # The response identifier can just be a local file...
-            with open(args.response_id) as infile:
+            with open(args.ars_response_id) as infile:
                 trapi_response = json.load(infile)
         else:
             # ... unless, it is an ARS PK
-            retrieve_ars_result(response_id=args.response_id, verbose=args.verbose)
+            retrieve_ars_result(response_id=args.ars_response_id, verbose=args.verbose)
 
     else:
         print("Need to specify either an --endpoint/--local_request or a --response_id input argument to proceed!")

@@ -2,6 +2,12 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.8.2
+- Removed `check_trapi_validity()` standalone API method to enforce a two-step process of instantiating a `TRAPISchemaValidator` instance then calling its `is_valid_trapi_query()` method.
+- Spurious leading newline removed from TRAPI and Biolink Model validation version reporting log messages
+- Fixed insidious edge source validation message reporting bug which masked all but the first of edges with a specified validation error
+- Minor tweak to validation codes definitions to reduce duplication in reporting output or clarity of definition
+
 ## 3.8.1
 - Generally repaired validation 'sources' ('source_trail') context recording to cover all applicable validation message cases (especially, edge 'qualifier' validation); tested with unit tests
 - TRAPIGraphType class moved up the class/module hierarchy, alongside ValidatorReporter; strict_validation as Optional[bool] wrapped in the is_strict_validation() method which uses graph_type to decide on None default strictness (based on graph type)

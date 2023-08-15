@@ -91,7 +91,7 @@ class BMTWrapper:
         else:
             self.biolink_version = "suppress"
 
-        logger.info(f"\nResolved Biolink Model Version: '{self.biolink_version}'")
+        logger.info(f"Resolved Biolink Model Version: '{self.biolink_version}'")
 
     def get_biolink_version(self) -> str:
         """
@@ -293,8 +293,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         if not node_prefix_mapped:
                             self.report(
                                 code="warning.knowledge_graph.node.id.unmapped_prefix",
-                                identifier=node_id,
-                                categories=str(categories)
+                                identifier=str(categories),
+                                node_id=node_id
                             )
                 else:
                     self.report(
