@@ -7,6 +7,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 - Spurious leading newline removed from TRAPI and Biolink Model validation version reporting log messages
 - Fixed insidious edge source validation message reporting bug which masked all but the first of edges with a specified validation error
 - Minor tweak to validation codes definitions to reduce duplication in reporting output or clarity of definition
+- Fixed (and extended some) unit test cases related to all of the above.
 
 ## 3.8.1
 - Generally repaired validation 'sources' ('source_trail') context recording to cover all applicable validation message cases (especially, edge 'qualifier' validation); tested with unit tests
