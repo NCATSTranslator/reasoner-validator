@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+
+## 3.8.4
+- Non-destructive TRAPIResponseValidator.check_compliance_of_trapi_response(response) validation of TRAPI Response JSON (release 3.8.3 bug removed Message)
+
 ## 3.8.3
 - Fixed TRAPI release management to cache TRAPI GitHub code release and branch tags locally - in a **versions.yaml** file - to avoid Git API calling denial of service issues; Small **scripts/trapi_release.py** utility script provided to update the **versions.yaml** file, as periodically necessary.
 - YAML file management tech debt cleaned up a tiny bit. Tweaked a couple of validation codes for this reason.

@@ -150,48 +150,55 @@ class TRAPIResponseValidator(BiolinkValidator):
             # nothing more to validate?
             return
 
-        # here, we split the message out from the Response
-        # checking along the way whether it is empty
+        # Here, we split the TRAPI Response.Message out from the other
+        # Response components, to allow for independent TRAPI Schema
+        # validation of those non-Message components versus the Message
+        # itself (checking along the way whether the Message is empty)
         message: Optional[Dict] = response.pop('message')
-        if not message:
-            # This is valid TRAPI but reported as an error,
-            # and not interesting for further validation
+
+        # we insert a stub to enable TRAPI schema
+        # validation of the remainder of the Response
+        response['message'] = {}
+        if message:
+
+            # TRAPI JSON specified versions override default versions
+            if "schema_version" in response and response["schema_version"]:
+                if self.default_trapi:
+                    self.trapi_version = get_latest_version(response["schema_version"])
+
+            if "biolink_version" in response and response["biolink_version"]:
+                if self.default_biolink:
+                    self.bmt = get_biolink_model_toolkit(biolink_version=response["biolink_version"])
+                    self.biolink_version = self.bmt.get_model_version()
+
+            response = self.sanitize_trapi_response(response)
+
+            self.is_valid_trapi_query(instance=response, component="Response")
+            if not self.has_critical():
+
+                status: Optional[str] = response['status'] if 'status' in response else None
+                if status and status not in ["OK", "Success", "QueryNotTraversable", "KPsNotAvailable"]:
+                    self.report("warning.trapi.response.status.unknown", identifier=status)
+
+                # Sequentially validate the Query Graph, Knowledge Graph then validate
+                # the Results (which rely on the validity of the other two components)
+                elif self.has_valid_query_graph(message) and \
+                        self.has_valid_knowledge_graph(message, max_kg_edges):
+                    self.has_valid_results(message, max_results)
+
+            # else:
+            #     we don't validate further if it has
+            #     critical Response level errors
+
+        else:
+            # Empty Message is valid TRAPI but reported as an error
+            # in the validation and not interesting for further validation
             if not self.suppress_empty_data_warnings:
                 self.report("error.trapi.response.message.empty")
 
-            # ... also, nothing more here to validate?
-            return
-
-        # we insert a stub to enable TRAPI validation
-        # of the remainder of the Response
-        response['message'] = {}
-
-        # TRAPI JSON specified versions override default versions
-        if "schema_version" in response and response["schema_version"]:
-            if self.default_trapi:
-                self.trapi_version = get_latest_version(response["schema_version"])
-
-        if "biolink_version" in response and response["biolink_version"]:
-            if self.default_biolink:
-                self.bmt = get_biolink_model_toolkit(biolink_version=response["biolink_version"])
-                self.biolink_version = self.bmt.get_model_version()
-
-        response = self.sanitize_trapi_response(response)
-
-        self.is_valid_trapi_query(instance=response, component="Response")
-        if self.has_critical():
-            # we abort further processing here due to detected critical global validation errors?
-            return
-
-        status: Optional[str] = response['status'] if 'status' in response else None
-        if status and status not in ["OK", "Success", "QueryNotTraversable", "KPsNotAvailable"]:
-            self.report("warning.trapi.response.status.unknown", identifier=status)
-
-        # Sequentially validate the Query Graph, Knowledge Graph then validate
-        # the Results (which rely on the validity of the other two components)
-        elif self.has_valid_query_graph(message) and \
-                self.has_valid_knowledge_graph(message, max_kg_edges):
-            self.has_valid_results(message, max_results)
+        # Reconstitute the original Message
+        # to the Response before returning
+        response['message'] = message
 
     @staticmethod
     def sample_results(results: List, sample_size: int = 0) -> List:

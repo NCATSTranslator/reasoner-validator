@@ -1,7 +1,7 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import Tuple,  Dict
+from typing import  Dict
 from sys import stderr
 
 import logging
@@ -11,6 +11,8 @@ from json import dump
 from copy import deepcopy
 
 import pytest
+
+from dictdiffer import diff
 
 from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_2
 from reasoner_validator.validator import TRAPIResponseValidator
@@ -429,6 +431,16 @@ TEST_GRAPH: Dict = {
     "nodes": SAMPLE_NODES,
     "edges": SAMPLE_EDGES
 }
+
+
+# this unit test checks that the original response object is returned verbatim
+def test_conservation_of_response_object():
+    validator: TRAPIResponseValidator = TRAPIResponseValidator()
+    input_response = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
+    reference_response = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
+    assert input_response == reference_response
+    validator.check_compliance_of_trapi_response(response=input_response)
+    assert not list(diff(input_response, reference_response))
 
 
 @pytest.mark.parametrize(
