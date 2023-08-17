@@ -13,8 +13,9 @@ critical:
       $context:
         - identifier
         - component
+        - json_path
         - reason
-      $description: "Critical JSON Schema validation error reported for specified TRAPI query component."
+      $description: "Critical JSON Schema validation error reported for specified TRAPI query component at a specific JSON path locationy."
     request:
       invalid:
         $message: "Test could not generate a valid TRAPI query request object using identified element"

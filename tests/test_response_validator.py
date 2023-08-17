@@ -982,7 +982,9 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             None,
             None,
             True,
-            ""   # this filtered workflow spec should pass
+            # removal of TRAPI Response sanitization now means
+            # that this code snippet is JSON schema invalid
+            "critical.trapi.validation"
         ),
         (   # Query 26 - We throw a full TRAPI JSON example here (taken directly from the
             #            TRAPI implementation guidelines...) just for fun and profit

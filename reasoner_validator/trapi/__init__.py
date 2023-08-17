@@ -322,6 +322,7 @@ class TRAPISchemaValidator(ValidationReporter):
                 code="critical.trapi.validation",
                 identifier=self.trapi_version,
                 component=component,
+                json_path=e.json_path,
                 reason=reason
             )
 

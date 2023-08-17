@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict
 
+import deprecation
 from bmt import Toolkit
 
 from reasoner_validator.biolink import (
@@ -71,6 +72,10 @@ class TRAPIResponseValidator(BiolinkValidator):
             self._is_trapi_1_4 = True
         return self._is_trapi_1_4
 
+    @deprecation.deprecated(
+        details="This method was a patch for pre-TRAPI 1.4.2 releases" +
+                " (now of limited current interest to the community)"
+    )
     def sanitize_trapi_response(self, response: Dict) -> Dict:
         """
         Some component TRAPI Responses cannot be validated further due to missing tags and None values.
@@ -97,11 +102,13 @@ class TRAPIResponseValidator(BiolinkValidator):
                         source['upstream_resource_ids'] = list()
 
         # 'auxiliary_graphs' (introduced the TRAPI 1.4.0-beta3 pre-releases,
-        # full fixed in the 1.4.1 release) ought to be nullable.
+        # full fixed in the 1.4.2 release) ought to be nullable.
         if TRAPI_1_4_0_SEMVER >= current_version >= TRAPI_1_4_0_BETA3_SEMVER and \
                 ('auxiliary_graphs' not in response['message'] or response['message']['auxiliary_graphs'] is None):
             response['message']['auxiliary_graphs'] = dict()
 
+        # In reality, we are being soft here... we should now simply let the
+        # validation fail if Translator components return ill formed workflow steps
         if 'workflow' in response and response['workflow']:
             # a 'workflow' is a list of steps, which are JSON object specifications
             workflow_steps: List[Dict] = response['workflow']
@@ -171,7 +178,9 @@ class TRAPIResponseValidator(BiolinkValidator):
                     self.bmt = get_biolink_model_toolkit(biolink_version=response["biolink_version"])
                     self.biolink_version = self.bmt.get_model_version()
 
-            response = self.sanitize_trapi_response(response)
+            # 16 August 2023: this response sanitization was put in place for pre-TRAPI 1.4.2 anomalies.
+            # We remove it since 1.4.2 is now the latest standard for enforcement
+            # response = self.sanitize_trapi_response(response)
 
             self.is_valid_trapi_query(instance=response, component="Response")
             if not self.has_critical():

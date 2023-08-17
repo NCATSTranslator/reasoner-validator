@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.8.5
+- Add additional JSON element path context to "critical.trapi.validation" validation messages
+- Remove TRAPI Response JSON sanitization, since TRAPI 1.4.2 is now the 'latest' and desired validation standard
 
 ## 3.8.4
 - Non-destructive TRAPIResponseValidator.check_compliance_of_trapi_response(response) validation of TRAPI Response JSON (release 3.8.3 bug removed Message)
