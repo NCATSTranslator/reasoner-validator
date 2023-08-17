@@ -6,9 +6,9 @@
 
 **Message:** Schema validation error
 
-**Context:** identifier, component, reason
+**Context:** identifier, component, json_path, reason
 
-**Description:** Critical JSON Schema validation error reported for specified TRAPI query component.
+**Description:** Critical JSON Schema validation error reported for specified TRAPI query component at a specific JSON path locationy.
 
 ### critical.trapi.request.invalid
 
