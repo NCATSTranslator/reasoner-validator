@@ -1123,6 +1123,44 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge: Dict, code: 
                     }
                 ]
             }
+        ),
+        # Slipping in a few unit tests of the
+        # "error.knowledge_graph.edge.attribute.value.empty"
+        (
+            # Query 5. Attribute value is explicit boolean 'false'
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:Attribute",
+                        "value": False
+                    }
+                ]
+            },
+            ""   # should pass since 'False' is a valid non-empty attribute value
+        ),
+        (
+            # Query 6. Empty string as attribute value
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:Attribute",
+                        "value": ""
+                    }
+                ]
+            },
+            "error.knowledge_graph.edge.attribute.value.empty"
+        ),
+        (
+            # Query 7. None (JSON 'null'?) as attribute value
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:Attribute",
+                        "value": None
+                    }
+                ]
+            },
+            "error.knowledge_graph.edge.attribute.value.empty"
         )
     ]
 )
