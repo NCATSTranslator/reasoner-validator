@@ -71,21 +71,21 @@ class TRAPIResponseValidator(BiolinkValidator):
             self._is_trapi_1_4 = True
         return self._is_trapi_1_4
 
-    def sanitize_trapi_response(self, response: Dict) -> Dict:
+    def sanitize_trapi_response_message(self, message: Dict) -> Dict:
         """
         Some component TRAPI Responses cannot be validated further due to missing tags and None values.
         This method is a temporary workaround to sanitize the query for additional validation.
 
-        :param response: Dict full TRAPI Response JSON object
+        :param message: Dict full TRAPI Response JSON object
         :return: Dict, response with discretionary removal of content which
                        triggers (temporarily) unwarranted TRAPI validation failures
         """
         # Temporary workaround for "1.4.0-beta4" schema bugs
         current_version: SemVer = SemVer.from_string(self.trapi_version)
         # the message is not empty
-        if 'knowledge_graph' in response['message'] and response['message']['knowledge_graph'] is not None and \
+        if 'knowledge_graph' in message and message['knowledge_graph'] is not None and \
                 TRAPI_1_4_0_BETA4_SEMVER >= current_version != TRAPI_1_3_0_SEMVER:
-            for key, edge in response['message']['knowledge_graph']['edges'].items():
+            for key, edge in message['knowledge_graph']['edges'].items():
                 edge_id = f"{str(edge['subject'])}--{str(edge['predicate'])}->{str(str(edge['object']))}"
                 if 'sources' not in edge or not edge['sources']:
                     self.report("error.knowledge_graph.edge.sources.missing", identifier=edge_id)
@@ -99,9 +99,12 @@ class TRAPIResponseValidator(BiolinkValidator):
         # 'auxiliary_graphs' (introduced the TRAPI 1.4.0-beta3 pre-releases,
         # full fixed in the 1.4.1 release) ought to be nullable.
         if TRAPI_1_4_0_SEMVER >= current_version >= TRAPI_1_4_0_BETA3_SEMVER and \
-                ('auxiliary_graphs' not in response['message'] or response['message']['auxiliary_graphs'] is None):
-            response['message']['auxiliary_graphs'] = dict()
+                ('auxiliary_graphs' not in message or message['auxiliary_graphs'] is None):
+            message['auxiliary_graphs'] = dict()
 
+        return message
+
+    def sanitize_trapi_response_workflow(self, response: Dict) -> Dict:
         if 'workflow' in response and response['workflow']:
             # a 'workflow' is a list of steps, which are JSON object specifications
             workflow_steps: List[Dict] = response['workflow']
@@ -171,7 +174,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                     self.bmt = get_biolink_model_toolkit(biolink_version=response["biolink_version"])
                     self.biolink_version = self.bmt.get_model_version()
 
-            response = self.sanitize_trapi_response(response)
+            response = self.sanitize_trapi_response_workflow(response)
 
             self.is_valid_trapi_query(instance=response, component="Response")
             if not self.has_critical():
@@ -180,11 +183,13 @@ class TRAPIResponseValidator(BiolinkValidator):
                 if status and status not in ["OK", "Success", "QueryNotTraversable", "KPsNotAvailable"]:
                     self.report("warning.trapi.response.status.unknown", identifier=status)
 
-                # Sequentially validate the Query Graph, Knowledge Graph then validate
-                # the Results (which rely on the validity of the other two components)
-                elif self.has_valid_query_graph(message) and \
-                        self.has_valid_knowledge_graph(message, max_kg_edges):
-                    self.has_valid_results(message, max_results)
+                else:
+                    message = self.sanitize_trapi_response_message(message)
+
+                    if self.has_valid_query_graph(message) and self.has_valid_knowledge_graph(message, max_kg_edges):
+                        # Sequentially validate the Query Graph, Knowledge Graph then validate
+                        # the Results (which rely on the validity of the other two components)
+                        self.has_valid_results(message, max_results)
 
             # else:
             #     we don't validate further if it has

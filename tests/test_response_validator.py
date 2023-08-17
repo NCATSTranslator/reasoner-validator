@@ -1,7 +1,7 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import  Dict
+from typing import Dict
 from sys import stderr
 
 import logging
@@ -14,9 +14,8 @@ import pytest
 
 from dictdiffer import diff
 
-from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_2
+from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0_BETA4, TRAPI_1_4_0, TRAPI_1_4_2
 from reasoner_validator.validator import TRAPIResponseValidator
-from reasoner_validator.report import TRAPIGraphType
 
 from tests import PATCHED_140_SCHEMA_FILEPATH, SAMPLE_NODES_WITH_ATTRIBUTES
 from tests.test_validation_report import check_messages
@@ -311,74 +310,39 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION["biolink_version"] = "2.4.8"
 
 
 @pytest.mark.parametrize(
-    "response",
+    "trapi_version,message",
     [
-        # Query 0 - No "workflow" key in TRAPI Response
-        {
-            "message": {}
-        },
-        # Query 1 - Null "workflow" key value
-        {
-            "message": {},
-            "workflow": None
-        },
-        # Query 2 - Null "workflow" key list
-        {
-            "message": {},
-            "workflow": []
-        },
-        # Query 3 - "runner_parameters" is Null
-        {
-            "message": {},
-            "workflow": [
-                {
-                    "runner_parameters": None,
-                    "id": "sort_results_score",
-                    "parameters": {"ascending_or_descending": "ascending"}
-                }
-            ]
-        },
-        # Query 4 - "parameters" is Null
-        {
-            "message": {},
-            "workflow": [
-                {"runner_parameters": {"allowlist": ["infores:aragorn"]}, "id": "lookup", "parameters": None}
-            ]
-        },
-        # Query 5 - both "parameters" and "runner_parameters" are Null
-        {
-            "message": {},
-            "workflow": [
-                {"runner_parameters": None, "id": "lookup", "parameters": None}
-            ]
-        },
-        # Query 6 - Now, we patch the Message itself when it is not empty - knowledge graph is nullable
-        {
-            "message": {
+        # Query 0 - Now, we patch the Message itself when it is not empty - knowledge graph is nullable
+        (
+            TRAPI_1_4_0_BETA4,
+            {
                 "knowledge_graph": None
             }
-        },
-        # Query 7 - Now, we patch the Message itself when it is not empty
-        {
-            "message": {
+        ),
+        # Query 1 - Now, we patch the Message itself when it is not empty
+        (
+            TRAPI_1_4_0_BETA4,
+            {
                 "knowledge_graph": {
                     "nodes": {},
                     "edges": {}
                 }
             }
-        },
-        # Query 8 - Now, we patch the Message itself when it is not empty
-        {
-            "message": {
+        ),
+        # Query 2 - Now, we patch the Message itself when it is not empty
+        (
+            TRAPI_1_4_0_BETA4,
+            {
                 "knowledge_graph": {
                     "nodes": {},
                     "edges": {}
                 }
             }
-        },
-        # Query 9 - Now, we patch the "Message.knowledge_edge.sources" itself when it is not empty
-        {
-            "message": {
+        ),
+        # Query 3 - Now, we patch the "Message.knowledge_edge.sources" itself when it is not empty
+        (
+            TRAPI_1_4_0_BETA4,
+            {
                 "knowledge_graph": {
                     "nodes": {},
                     "edges": {
@@ -396,18 +360,69 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION["biolink_version"] = "2.4.8"
                     }
                 }
             }
-        },
-        # Query 10 - Now, we patch the Message itself when it is not empty
-        {
-            "message": {
+        ),
+        # Query 4 - Now, we patch the Message itself when it is not empty
+        (
+            TRAPI_1_4_0,
+            {
                 "auxiliary_graphs": None
             }
+        )
+    ]
+)
+def test_sanitize_trapi_response_message(trapi_version: str, message: Dict):
+    print("\nBefore sanitize_trapi_response_message(), the Message is:\n", file=stderr)
+    dump(message, stderr, indent=4)
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(trapi_version=trapi_version)
+    message = validator.sanitize_trapi_response_message(message=message)
+    print("\nAfter sanitize_trapi_response_message(), the Message is:\n", file=stderr)
+    dump(message, stderr, indent=4)
+
+
+@pytest.mark.parametrize(
+    "response",
+    [
+        # Query 0 - No "workflow" key in TRAPI Response
+        {
+        },
+        # Query 1 - Null "workflow" key value
+        {
+            "workflow": None
+        },
+        # Query 2 - Null "workflow" key list
+        {
+            "workflow": []
+        },
+        # Query 3 - "runner_parameters" is Null
+        {
+            "workflow": [
+                {
+                    "runner_parameters": None,
+                    "id": "sort_results_score",
+                    "parameters": {"ascending_or_descending": "ascending"}
+                }
+            ]
+        },
+        # Query 4 - "parameters" is Null
+        {
+            "workflow": [
+                {"runner_parameters": {"allowlist": ["infores:aragorn"]}, "id": "lookup", "parameters": None}
+            ]
+        },
+        # Query 5 - both "parameters" and "runner_parameters" are Null
+        {
+            "workflow": [
+                {"runner_parameters": None, "id": "lookup", "parameters": None}
+            ]
         }
     ]
 )
-def test_sanitize_trapi_query(response: Dict):
+def test_sanitize_trapi_response_workflow(response: Dict):
+    print("\nBefore sanitize_trapi_response_workflow(), the Response is:\n", file=stderr)
+    dump(response, stderr, indent=4)
     validator: TRAPIResponseValidator = TRAPIResponseValidator()
-    response: Dict = validator.sanitize_trapi_response(response=response)
+    response = validator.sanitize_trapi_response_workflow(response=response)
+    print("\nAfter sanitize_trapi_response_workflow(), the Response is:\n", file=stderr)
     dump(response, stderr, indent=4)
 
 
