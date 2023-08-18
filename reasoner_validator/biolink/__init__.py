@@ -664,8 +664,13 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         identifier=edge_id,
                         source_trail=source_trail
                     )
-                elif attribute['value'] is None or attribute['value'] == "" or \
+                elif isinstance(attribute['value'], bool) and attribute['value'] is False:
+                    # An attribute value which is a boolean of value 'False' is acceptable...
+                    pass
+
+                elif not attribute['value'] or \
                         str(attribute['value']).upper() in ["N/A", "NONE", "NULL"]:
+                    # ...But not other empty values
                     self.report(
                         code="error.knowledge_graph.edge.attribute.value.empty",
                         identifier=edge_id,

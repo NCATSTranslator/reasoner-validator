@@ -1346,7 +1346,33 @@ def test_pre_1_4_0_validate_provenance(edge: Dict, target_provenance: Optional[D
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 7. An attribute_type_id is not a well-formed CURIE? Should fail?
+            # Query 7. value is the a JSON null (Python None)
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": None
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            "error.knowledge_graph.edge.attribute.value.empty"
+        ),
+        (
+            # Query 8. value is the JSON boolean false (Python bool False)
+            {
+                "attributes": [
+                    {
+                        "attribute_type_id": "biolink:aggregator_knowledge_source",
+                        "value": False
+                    },
+                ]
+            },
+            get_ara_test_case(),
+            ""
+        ),
+        (
+            # Query 9. An attribute_type_id is not a well-formed CURIE? Should fail?
             {
                 "attributes": [
                     {
