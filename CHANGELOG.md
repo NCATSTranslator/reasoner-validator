@@ -3,7 +3,7 @@
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
 ## 3.8.6
-- 'False' attribute values now properly handled
+- 'False' attribute values now properly handled; all other 'empty' values trigger an error message
 
 ## 3.8.5
 - Add additional JSON element path context to "critical.trapi.validation" validation messages
