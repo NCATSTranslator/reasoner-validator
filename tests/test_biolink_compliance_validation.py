@@ -26,7 +26,7 @@ pp = PrettyPrinter(indent=4)
 # we don't pretend to totally support Biolink Models any earlier than 3.1.1.
 # If earlier biolink model compliance testing is desired,
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
-LATEST_BIOLINK_MODEL_VERSION = "3.5.2"
+LATEST_BIOLINK_MODEL_VERSION = "3.5.4"
 
 # special case of signalling suppression of validation
 SUPPRESS_BIOLINK_MODEL_VALIDATION = "suppress"
@@ -2035,7 +2035,7 @@ def test_validate_qualifiers(edge: Dict, message: str, source_trail: str):
             },
             ["biolink:GeneToDiseaseOrPhenotypicFeatureAssociation"],  # associations: Optional[List[str]]
             "",   # this particular use case should pass
-            ""
+            None
         ),
         (   # Query 1 - This example is identical to the above, but we know that it must fail if the
             #      biolink:Association context of the edge is not given to the qualifier validator as a parameter
@@ -2065,13 +2065,38 @@ def test_validate_qualifiers(edge: Dict, message: str, source_trail: str):
                 'qualifiers': [
                     {
                         'qualifier_type_id': "biolink:object_aspect_qualifier",
-                        'qualifier_value': "promoter"
+                        'qualifier_value': "synthesis"
                     }
                 ]
             },
             ["biolink:ChemicalAffectsGeneAssociation"],  # associations: Optional[List[str]]
             "",   # this particular use case should pass
-            ""
+            None
+        ),
+        (   # Query 3 -  another example of a 'qualifier_type_id' resolvable only within
+            #            the context of a specific subclass of biolink:Association, i.e.
+            #
+            #                 biolink:ChemicalAffectsGeneAssociation
+            #                     slot_usage:
+            #                        object aspect qualifier:
+            #                            range: GeneOrGeneProductOrChemicalPartQualifierEnum
+            #
+            #            which has 'promoter' as an allowable qualifier value
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:object_aspect_qualifier",
+                        'qualifier_value': "activity_or_abundance"
+                    }
+                ]
+            },
+            [
+                'biolink:ChemicalGeneInteractionAssociation',
+                'biolink:ChemicalAffectsGeneAssociation',
+                'biolink:ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation'
+            ],   # associations: Optional[List[str]]
+            "",  # this particular use case should pass
+            None   # no source_trail provided
         )
     ]
 )
@@ -2079,7 +2104,7 @@ def test_validate_qualifiers_with_association(
         edge: Dict,
         associations: Optional[List[str]],
         message: str,
-        source_trail: str
+        source_trail: Optional[str]
 ):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifiers,
