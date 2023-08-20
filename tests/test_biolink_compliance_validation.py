@@ -2035,7 +2035,7 @@ def test_validate_qualifiers(edge: Dict, message: str, source_trail: str):
             },
             ["biolink:GeneToDiseaseOrPhenotypicFeatureAssociation"],  # associations: Optional[List[str]]
             "",   # this particular use case should pass
-            None
+            SAMPLE_SOURCE_TRAIL
         ),
         (   # Query 1 - This example is identical to the above, but we know that it must fail if the
             #      biolink:Association context of the edge is not given to the qualifier validator as a parameter
@@ -2071,7 +2071,7 @@ def test_validate_qualifiers(edge: Dict, message: str, source_trail: str):
             },
             ["biolink:ChemicalAffectsGeneAssociation"],  # associations: Optional[List[str]]
             "",   # this particular use case should pass
-            None
+            SAMPLE_SOURCE_TRAIL
         ),
         (   # Query 3 -  another example of a 'qualifier_type_id' resolvable only within
             #            the context of a specific subclass of biolink:Association, i.e.
@@ -2096,7 +2096,7 @@ def test_validate_qualifiers(edge: Dict, message: str, source_trail: str):
                 'biolink:ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation'
             ],   # associations: Optional[List[str]]
             "",  # this particular use case should pass
-            None   # no source_trail provided
+            SAMPLE_SOURCE_TRAIL
         )
     ]
 )
