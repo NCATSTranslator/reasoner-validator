@@ -2,7 +2,7 @@
 Version-specific Biolink Model semantic validation of knowledge graph components.
 """
 from typing import Optional, Any, Dict, List, Tuple
-from sys import stderr
+from numbers import Number
 from functools import lru_cache
 from urllib.error import HTTPError
 from pprint import PrettyPrinter
@@ -664,13 +664,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         identifier=edge_id,
                         source_trail=source_trail
                     )
-                elif isinstance(attribute['value'], bool) and attribute['value'] is False:
-                    # An attribute value which is a boolean of value 'False' is acceptable...
+                elif isinstance(attribute['value'], bool) or isinstance(attribute['value'], Number):
+                    # An attribute value which is a Python bool of value 'False'
+                    # or a numeric value with value zero, is acceptable...
                     pass
 
                 elif not attribute['value'] or \
                         str(attribute['value']).upper() in ["N/A", "NONE", "NULL"]:
-                    # ...But not other empty values
+                    # ...But not other datatype values deemed 'empty'
                     self.report(
                         code="error.knowledge_graph.edge.attribute.value.empty",
                         identifier=edge_id,
