@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.8.8
+- "error.knowledge_graph.edge.attribute.value.empty" should NOT be triggered by numeric zeros either!
+
 ## 3.8.7
 - Puzzling issue with validation of some qualifier values turned out to be a bug in the Biolink Model 3.5.2, resolved in 3.5.3, so fixed unit tests accordingly. This release doesn't have any core functional changes to the code but users of earlier versions should be aware that validation with Biolink Model releases earlier than 3.5.3 may give puzzling qualifier value validation messages.
 

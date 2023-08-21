@@ -24,10 +24,10 @@ For Github-related performance reasons, as of project release v3.8.3, the code c
 
 Steps to properly issue a new project release:
 
-1. Perform any required **codes.yaml** and **versions.yaml** updates (as above)
+1. Perform any required **codes.yaml** and TRAPI **versions.yaml** updates (as above)
 2. Run the unit test suite to ensure that nothing fails. Iterate to fix failures (in the code or in terms of revised unit tests to reflect fresh code designs)
 3. Document release changes in the **CHANGELOG.md**
-4. Update the **`[Tool Poetry]version =`** field in the **pyprojects.yaml**, e.g. "3.8.3"
+4. Update the **`[Tool Poetry]version =`** field in the **pyprojects.yaml**, e.g. "3.8.8"
 5. Run **`poetry update`** (preferably within  **`poetry shell`**)
 6. Commit or pull request merge all files (including the **poetry.lock** file) to **master**
 7. Add the equivalent Git **tag** to **master**. This should be the Semantic Version string from step 4 with an added 'v' prefix, i.e. "v3.8.3".
