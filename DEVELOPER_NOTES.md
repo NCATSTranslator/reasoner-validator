@@ -31,7 +31,7 @@ Steps to properly issue a new project release:
 5. Update the **`[Tool Poetry]version =`** field in the **pyprojects.yaml**, e.g. "3.8.9"
 6. Run **`poetry update`** (preferably within  **`poetry shell`**)
 7. Commit or pull request merge all files (including the **poetry.lock** file) to **master**
-8. Add the equivalent Git **tag** to **master**. This should be the Semantic Version string from step 4 with an added 'v' prefix, i.e. "v3.8.3".
+8. Add the equivalent Git **tag** to **master**. This should be the Semantic Version string from step 4 with an added 'v' prefix, i.e. "v3.8.9".
 9. Push **master** to remote (if not already done with by a pull request in step 6).
 10.  Check if Git Actions for testing and documentation complete successfully.
 11. Create the release using the same release tag, i.e. "v3.8.3".
