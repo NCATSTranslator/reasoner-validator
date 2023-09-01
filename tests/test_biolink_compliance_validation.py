@@ -2952,7 +2952,53 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 25: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
+            # Query 25: 'attribute_type_id' is a Biolink (node) category - not sure yet
+            #           whether or not this reflects "best practices" so issue a warning for now
+            {
+                "nodes": SIMPLE_SAMPLE_NODES,
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:physically_interacts_with",
+                        "object": "PUBCHEM.COMPOUND:597",
+                        "attributes": [{"attribute_type_id": "biolink:OrganismTaxon", "value": "9606"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
+                    }
+                }
+            },
+            "warning.knowledge_graph.edge.attribute.type_id.is_category"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 26: 'attribute_type_id' is a Biolink (edge) predicate - not sure yet
+            #           whether or not this reflects "best practices" so issue a warning for now
+            {
+                "nodes": SIMPLE_SAMPLE_NODES,
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:physically_interacts_with",
+                        "object": "PUBCHEM.COMPOUND:597",
+                        "attributes": [{"attribute_type_id": "biolink:related_to", "value": "something"}],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
+                    }
+                }
+            },
+            "warning.knowledge_graph.edge.attribute.type_id.is_predicate"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 27: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2976,7 +3022,8 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 26: 'attribute_type_id' has a 'biolink' CURIE prefix and is an association_slot, so it should pass
+            # Query 28: 'attribute_type_id' has a 'biolink' CURIE prefix and
+            #           is an association_slot, so it should pass
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3007,7 +3054,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 27: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
+            # Query 29: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3029,7 +3076,7 @@ def test_validate_biolink_curie_in_qualifiers(
             # f"has a CURIE prefix namespace unknown to Biolink!"
             "warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix"
         ),
-        (   # Query 28:  # An earlier Biolink Model won't recognize a category not found in its specified release
+        (   # Query 30:  # An earlier Biolink Model won't recognize a category not found in its specified release
             "1.8.2",
             {
                 # Sample nodes
@@ -3058,7 +3105,7 @@ def test_validate_biolink_curie_in_qualifiers(
             },
             "error.knowledge_graph.node.category.unknown"
         ),
-        (   # Query 29:  # 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
+        (   # Query 31:  # 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3083,7 +3130,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 30: 'attribute_type_id' is not a 'biolink:association_slot'
+            # Query 32: 'attribute_type_id' is not a 'biolink:association_slot'
             #           (biolink:synonym is a node property) but...
             {
                 "nodes": SIMPLE_SAMPLE_NODES,

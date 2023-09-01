@@ -711,7 +711,21 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                     source_trail=source_trail
                                 )
                                 if biolink_class:
-                                    if not self.bmt.is_association_slot(attribute_type_id):
+                                    if self.bmt.is_category(name=biolink_class.name):
+                                        self.report(
+                                            code="warning.knowledge_graph.edge.attribute.type_id.is_category",
+                                            identifier=attribute_type_id,
+                                            edge_id=edge_id,
+                                            source_trail=source_trail
+                                        )
+                                    elif self.bmt.is_predicate(name=biolink_class.name):
+                                        self.report(
+                                            code="warning.knowledge_graph.edge.attribute.type_id.is_predicate",
+                                            identifier=attribute_type_id,
+                                            edge_id=edge_id,
+                                            source_trail=source_trail
+                                        )
+                                    elif not self.bmt.is_association_slot(attribute_type_id):
                                         self.report(
                                             code="warning.knowledge_graph.edge.attribute.type_id.not_association_slot",
                                             identifier=attribute_type_id,

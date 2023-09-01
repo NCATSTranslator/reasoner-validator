@@ -749,6 +749,18 @@ warning:
           $description: "A predicate selected for use in a knowledge graph should preferably be tagged as 'canonical' in the specified Biolink Model release?"
       attribute:
         type_id:
+          is_category:
+            $message: "Edge has an 'attribute_type_id' that is a category"
+            $context:
+              - edge_id
+              - identifier
+            $description: "Edge 'attribute_type_id' value is usually not drawn from the node category hierarchy."
+          is_predicate:
+            $message: "Edge has an 'attribute_type_id' that is a predicate"
+            $context:
+              - edge_id
+              - identifier
+            $description: "Edge 'attribute_type_id' value is usually not drawn from the node predicate hierarchy."
           not_association_slot:
             $message: "Edge has an attribute_type_id that is not an association slot"
             $context:

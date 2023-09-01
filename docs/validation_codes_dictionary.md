@@ -8,7 +8,7 @@
 
 **Context:** identifier, component, json_path, reason
 
-**Description:** Critical JSON Schema validation error reported for specified TRAPI query component at a specific JSON path location.
+**Description:** Critical JSON Schema validation error reported for specified TRAPI query component at a specific JSON path locationy.
 
 ### critical.trapi.request.invalid
 
@@ -957,6 +957,22 @@
 **Context:** edge_id, identifier
 
 **Description:** A predicate selected for use in a knowledge graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
+
+### warning.knowledge_graph.edge.attribute.type_id.is_category
+
+**Message:** Edge has an 'attribute_type_id' that is a category
+
+**Context:** edge_id, identifier
+
+**Description:** Edge 'attribute_type_id' value is usually not drawn from the node category hierarchy.
+
+### warning.knowledge_graph.edge.attribute.type_id.is_predicate
+
+**Message:** Edge has an 'attribute_type_id' that is a predicate
+
+**Context:** edge_id, identifier
+
+**Description:** Edge 'attribute_type_id' value is usually not drawn from the node predicate hierarchy.
 
 ### warning.knowledge_graph.edge.attribute.type_id.not_association_slot
 
