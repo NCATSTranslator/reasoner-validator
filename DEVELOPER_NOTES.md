@@ -28,11 +28,11 @@ Steps to properly issue a new project release:
 2. If the codes.yaml were revised, regenerated the associate code documentation by running the reasoner_validator/validation_codes.py module as a script from t he CLI.
 3. Run the unit test suite to ensure that nothing fails. Iterate to fix failures (in the code or in terms of revised unit tests to reflect fresh code designs)
 4. Document release changes in the **CHANGELOG.md**
-5. Update the **`[Tool Poetry]version =`** field in the **pyprojects.yaml**, e.g. "3.8.9"
+5. Update the **`[Tool Poetry]version =`** field in the **pyprojects.yaml**, e.g. "3.8.10"
 6. Run **`poetry update`** (preferably within  **`poetry shell`**)
 7. Commit or pull request merge all files (including the **poetry.lock** file) to **master**
-8. Add the equivalent Git **tag** to **master**. This should be the Semantic Version string from step 4 with an added 'v' prefix, i.e. "v3.8.9".
+8. Add the equivalent Git **tag** to **master**. This should be the Semantic Version string from step 4 with an added 'v' prefix, i.e. "v3.8.10".
 9. Push **master** to remote (if not already done with by a pull request in step 6).
 10.  Check if Git Actions for testing and documentation complete successfully.
-11. Create the release using the same release tag, i.e. "v3.8.9".
-12. Check if Git Action for package deployment is successful and check if the new version (i.e. "3.8.9") is now visible on **[pypy.org](https://pypi.org/search/?q=reasoner-validator)**
+11. Create the release using the same release tag, i.e. "v3.8.10".
+12. Check if Git Action for package deployment is successful and check if the new version (i.e. "3.8.10") is now visible on **[pypy.org](https://pypi.org/search/?q=reasoner-validator)**
