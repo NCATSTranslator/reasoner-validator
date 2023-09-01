@@ -4,6 +4,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 
 ## 3.8.9
 - 'attribute_type_id' term which are Biolink (node) 'category' or (edge) 'predicate' terms generate a specific warning (not just a 'not an association slot' warning)
+- Knowledge graph edge qualifiers qualifier "value unresolved" validation error demoted to a warning
 
 ## 3.8.8
 - "error.knowledge_graph.edge.attribute.value.empty" should NOT be triggered by numeric zeros either!

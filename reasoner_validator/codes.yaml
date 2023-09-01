@@ -508,13 +508,6 @@ error:
                 - identifier
               $description: "A qualifier qualifier_type_id must be defined in the specified version of Biolink!"
           value:
-            unresolved:
-              $message: "Qualifier_type_id for edge has unresolved qualifier_value"
-              $context:
-                - edge_id
-                - identifier
-                - qualifier_type_id
-              $description: "A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!"
             not_a_predicate:
               $message: "Qualifier_type_id 'biolink:qualified_predicate' for edge has a qualifier_value which is not a Biolink predicate."
               $context:
@@ -712,6 +705,18 @@ warning:
             - edge_id
             - identifier
           $description: "A predicate selected for use in a query graph should preferably be tagged as 'canonical' in the specified Biolink Model release?"
+      qualifier_constraints:
+        qualifier_set:
+          qualifiers:
+            qualifier:
+              value:
+                unresolved:
+                  $message: "The 'qualifier_type_id' for edge has unresolved 'qualifier_value'"
+                  $context:
+                    - edge_id
+                    - identifier
+                    - qualifier_type_id
+                  $description: "A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!"
   knowledge_graph:
     node:
       category:
@@ -747,6 +752,16 @@ warning:
             - edge_id
             - identifier
           $description: "A predicate selected for use in a knowledge graph should preferably be tagged as 'canonical' in the specified Biolink Model release?"
+      qualifiers:
+        qualifier:
+          value:
+            unresolved:
+              $message: "The 'qualifier_type_id' for edge has unresolved 'qualifier_value'"
+              $context:
+                - edge_id
+                - identifier
+                - qualifier_type_id
+              $description: "A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!"
       attribute:
         type_id:
           is_category:

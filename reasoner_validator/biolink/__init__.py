@@ -880,8 +880,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                             qualifier_value=qualifier_value,
                             associations=associations
                         ):
+                    # TODO: to review (as of release  3.8.9) we demoted this validation message to a 'warning',
+                    #       since in most components (Sept 2023), the KP asserted qualifier values are likely
+                    #       reasonable, but the qualifier value curation of the Biolink Model is as yet incomplete
                     self.report(
-                        code=f"error.{context}.qualifier.value.unresolved",
+                        code=f"warning.{context}.qualifier.value.unresolved",
                         source_trail=source_trail,
                         identifier=qualifier_value,
                         edge_id=edge_id,

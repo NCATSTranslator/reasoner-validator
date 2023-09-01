@@ -1990,8 +1990,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                     }
                 ]
             },
-            # "info.query_graph.edge.qualifier.abstract"
-            "error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved",
+            "warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved",
             SAMPLE_SOURCE_TRAIL
         ),
         (  # Query 9 - 'qualifier_type_id' property value is not a Biolink qualifier term
@@ -2097,7 +2096,7 @@ def test_validate_qualifiers(edge: Dict, message: str, source_trail: str):
             },
 
             None,  # associations: Optional[List[str]]
-            "error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved",
+            "warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved",
             SAMPLE_SOURCE_TRAIL
         ),
         (   # Query 2 -  another example of a 'qualifier_type_id' resolvable only within
