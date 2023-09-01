@@ -664,14 +664,6 @@
 
 **Description:** A qualifier qualifier_type_id must be defined in the specified version of Biolink!
 
-### error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved
-
-**Message:** Qualifier_type_id for edge has unresolved qualifier_value
-
-**Context:** edge_id, identifier, qualifier_type_id
-
-**Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
-
 ### error.knowledge_graph.edge.qualifiers.qualifier.value.not_a_predicate
 
 **Message:** Qualifier_type_id 'biolink:qualified_predicate' for edge has a qualifier_value which is not a Biolink predicate.
@@ -918,6 +910,14 @@
 
 **Description:** A predicate selected for use in a query graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
+### warning.query_graph.edge.qualifier_constraints.qualifier_set.qualifiers.qualifier.value.unresolved
+
+**Message:** The 'qualifier_type_id' for edge has unresolved 'qualifier_value'
+
+**Context:** edge_id, identifier, qualifier_type_id
+
+**Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
+
 ### warning.knowledge_graph.node.category.deprecated
 
 **Message:** Node has deprecated category
@@ -957,6 +957,30 @@
 **Context:** edge_id, identifier
 
 **Description:** A predicate selected for use in a knowledge graph should preferably be tagged as 'canonical' in the specified Biolink Model release?
+
+### warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved
+
+**Message:** The 'qualifier_type_id' for edge has unresolved 'qualifier_value'
+
+**Context:** edge_id, identifier, qualifier_type_id
+
+**Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
+
+### warning.knowledge_graph.edge.attribute.type_id.is_category
+
+**Message:** Edge has an 'attribute_type_id' that is a category
+
+**Context:** edge_id, identifier
+
+**Description:** Edge 'attribute_type_id' value is usually not drawn from the node category hierarchy.
+
+### warning.knowledge_graph.edge.attribute.type_id.is_predicate
+
+**Message:** Edge has an 'attribute_type_id' that is a predicate
+
+**Context:** edge_id, identifier
+
+**Description:** Edge 'attribute_type_id' value is usually not drawn from the node predicate hierarchy.
 
 ### warning.knowledge_graph.edge.attribute.type_id.not_association_slot
 

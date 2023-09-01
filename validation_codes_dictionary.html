@@ -139,7 +139,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-not-array">error.knowledge_graph.edge.qualifiers.not_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-empty">error.knowledge_graph.edge.qualifiers.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-type-id-unknown">error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-value-unresolved">error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-value-not-a-predicate">error.knowledge_graph.edge.qualifiers.qualifier.value.not_a_predicate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-invalid">error.knowledge_graph.edge.qualifiers.qualifier.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-missing">error.knowledge_graph.edge.sources.missing</a></li>
@@ -175,11 +174,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-node-ids-unmapped-prefix">warning.query_graph.node.ids.unmapped_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-edge-predicate-deprecated">warning.query_graph.edge.predicate.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-edge-predicate-non-canonical">warning.query_graph.edge.predicate.non_canonical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-edge-qualifier-constraints-qualifier-set-qualifiers-qualifier-value-unresolved">warning.query_graph.edge.qualifier_constraints.qualifier_set.qualifiers.qualifier.value.unresolved</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-category-deprecated">warning.knowledge_graph.node.category.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-category-abstract-or-mixin">warning.knowledge_graph.node.category.abstract_or_mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-id-unmapped-prefix">warning.knowledge_graph.node.id.unmapped_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-predicate-deprecated">warning.knowledge_graph.edge.predicate.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-predicate-non-canonical">warning.knowledge_graph.edge.predicate.non_canonical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-qualifiers-qualifier-value-unresolved">warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-is-category">warning.knowledge_graph.edge.attribute.type_id.is_category</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-is-predicate">warning.knowledge_graph.edge.attribute.type_id.is_predicate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot">warning.knowledge_graph.edge.attribute.type_id.not_association_slot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix">warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated">warning.knowledge_graph.edge.attribute.type_id.deprecated</a></li>
@@ -737,12 +740,6 @@
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> A qualifier qualifier_type_id must be defined in the specified version of Biolink!</p>
 </section>
-<section id="error-knowledge-graph-edge-qualifiers-qualifier-value-unresolved">
-<h3>error.knowledge_graph.edge.qualifiers.qualifier.value.unresolved<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-qualifier-value-unresolved" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Qualifier_type_id for edge has unresolved qualifier_value</p>
-<p><strong>Context:</strong> edge_id, identifier, qualifier_type_id</p>
-<p><strong>Description:</strong> A ‘qualifier_value’ for the specified ‘qualifier_type_id’ of a qualifier likely could not be resolved without knowledge of the edge category!</p>
-</section>
 <section id="error-knowledge-graph-edge-qualifiers-qualifier-value-not-a-predicate">
 <h3>error.knowledge_graph.edge.qualifiers.qualifier.value.not_a_predicate<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-qualifier-value-not-a-predicate" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Qualifier_type_id ‘biolink:qualified_predicate’ for edge has a qualifier_value which is not a Biolink predicate.</p>
@@ -932,6 +929,12 @@
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> A predicate selected for use in a query graph should preferably be tagged as ‘canonical’ in the specified Biolink Model release?</p>
 </section>
+<section id="warning-query-graph-edge-qualifier-constraints-qualifier-set-qualifiers-qualifier-value-unresolved">
+<h3>warning.query_graph.edge.qualifier_constraints.qualifier_set.qualifiers.qualifier.value.unresolved<a class="headerlink" href="#warning-query-graph-edge-qualifier-constraints-qualifier-set-qualifiers-qualifier-value-unresolved" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> The ‘qualifier_type_id’ for edge has unresolved ‘qualifier_value’</p>
+<p><strong>Context:</strong> edge_id, identifier, qualifier_type_id</p>
+<p><strong>Description:</strong> A ‘qualifier_value’ for the specified ‘qualifier_type_id’ of a qualifier likely could not be resolved without knowledge of the edge category!</p>
+</section>
 <section id="warning-knowledge-graph-node-category-deprecated">
 <h3>warning.knowledge_graph.node.category.deprecated<a class="headerlink" href="#warning-knowledge-graph-node-category-deprecated" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node has deprecated category</p>
@@ -961,6 +964,24 @@
 <p><strong>Message:</strong> Edge has non-canonical predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> A predicate selected for use in a knowledge graph should preferably be tagged as ‘canonical’ in the specified Biolink Model release?</p>
+</section>
+<section id="warning-knowledge-graph-edge-qualifiers-qualifier-value-unresolved">
+<h3>warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved<a class="headerlink" href="#warning-knowledge-graph-edge-qualifiers-qualifier-value-unresolved" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> The ‘qualifier_type_id’ for edge has unresolved ‘qualifier_value’</p>
+<p><strong>Context:</strong> edge_id, identifier, qualifier_type_id</p>
+<p><strong>Description:</strong> A ‘qualifier_value’ for the specified ‘qualifier_type_id’ of a qualifier likely could not be resolved without knowledge of the edge category!</p>
+</section>
+<section id="warning-knowledge-graph-edge-attribute-type-id-is-category">
+<h3>warning.knowledge_graph.edge.attribute.type_id.is_category<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-is-category" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge has an ‘attribute_type_id’ that is a category</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> Edge ‘attribute_type_id’ value is usually not drawn from the node category hierarchy.</p>
+</section>
+<section id="warning-knowledge-graph-edge-attribute-type-id-is-predicate">
+<h3>warning.knowledge_graph.edge.attribute.type_id.is_predicate<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-is-predicate" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge has an ‘attribute_type_id’ that is a predicate</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> Edge ‘attribute_type_id’ value is usually not drawn from the node predicate hierarchy.</p>
 </section>
 <section id="warning-knowledge-graph-edge-attribute-type-id-not-association-slot">
 <h3>warning.knowledge_graph.edge.attribute.type_id.not_association_slot<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot" title="Permalink to this heading"></a></h3>
