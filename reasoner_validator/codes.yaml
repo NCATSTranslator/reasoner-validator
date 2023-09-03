@@ -137,6 +137,10 @@ error:
           - identifier
         $description: "Predicate specified in Input Edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!"
   query_graph:
+    nodes:
+      uninformative:
+        $message: "Missing informative node information."
+        $description: "Query graph must have at least one node with identifiers and/or categories available for query!"
     node:
       category:
         missing:
@@ -280,6 +284,9 @@ error:
       empty:
         $message: "No nodes found!"
         $description: "Knowledge graph in TRAPI messages must have a 'nodes' key and non-empty associated value!"
+      uninformative:
+        $message: "Missing informative node information."
+        $description: "All nodes in a knowledge graph must have categories!"
     edges:
       empty:
         $message: "No edges found!"

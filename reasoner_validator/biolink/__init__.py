@@ -181,6 +181,22 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         self.target_provenance: Optional[Dict] = target_provenance
         self.nodes: Dict[str, List[str]] = dict()
 
+        # predicate flag assessing completeness of individual TRAPI Responses
+        self._has_valid_qnode_information: bool = False
+
+    def reset_node_info(self, graph_type: TRAPIGraphType):
+        if graph_type == TRAPIGraphType.Query_Graph:
+            self._has_valid_qnode_information: bool = False
+
+    def has_valid_node_information(self, graph_type: TRAPIGraphType) -> bool:
+        if graph_type == TRAPIGraphType.Query_Graph:
+            return self._has_valid_qnode_information
+        else:
+            return True    # this may change later?
+
+    def reset_edge_info(self, graph_type: TRAPIGraphType):
+        pass
+
     def get_biolink_version(self) -> str:
         """
         :return: Biolink Model version currently tracked by the TRAPISchemaValidator.
@@ -307,7 +323,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         else:  # Query Graph node validation
 
-            has_node_ids: bool
+            has_node_ids: bool = False
+            node_ids: List[str] = list()
             if "ids" in slots and slots["ids"]:
                 has_node_ids = True
                 node_ids = slots["ids"]
@@ -320,16 +337,15 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     # we'll pretend that the ids were mistakenly
                     # just a scalar string, then continue validating
                     node_ids = [str(node_ids)]
-            else:
-                has_node_ids = False
-                node_ids = list()  # a null "ids" value is permitted in QNodes
 
+            has_categories: bool = False
             if "categories" in slots:
                 categories = slots["categories"]
                 if categories:
                     if not isinstance(categories, List):
                         self.report(code="error.query_graph.node.categories.not_array", identifier=node_id)
                     else:
+                        has_categories = True  # assume that we have some categories, even if ill-formed
                         if self.validate_biolink():
                             # Biolink Validation of node, if not suppressed
                             id_prefix_mapped: Dict = {identifier: False for identifier in node_ids}
@@ -362,8 +378,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                     categories=str(categories)
                                 )
 
-                # else:  # null "categories" value is permitted in QNodes by nullable: true
-            # else:  # missing "categories" key is permitted in QNodes by nullable: true
+                # else:  # null "categories" value is permitted in QNodes by nullable: true, has_categories == False
+            # else:  # missing "categories" key is permitted in QNodes by nullable: true, has_categories == False
 
             if 'is_set' in slots:
                 is_set = slots["is_set"]
@@ -372,7 +388,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # else:  # a missing key or null "is_set" value is permitted in QNodes but defaults to 'False'
 
             # constraints  # TODO: how do we validate node constraints?
-            pass
+
+            # Here we record whether we encountered at least
+            # one informative node in the Query Graph
+            if has_node_ids or has_categories:
+                self._has_valid_qnode_information = True
 
     def set_nodes(self, nodes: Dict):
         """
@@ -1637,8 +1657,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # else:  Query Graphs can omit the 'edges' tag
             edges = None
 
+        self.reset_node_info(graph_type=graph_type)
+        self.reset_edge_info(graph_type=graph_type)
         if nodes:
-
             for node_id, details in nodes.items():
                 self.validate_graph_node(node_id, details, graph_type=graph_type)
 
@@ -1650,6 +1671,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 for edge in edges.values():
                     # print(f"{str(edge)}", flush=True)
                     self.validate_graph_edge(edge, graph_type=graph_type)
+
+        if not self.has_valid_node_information(graph_type=graph_type):
+            self.report(code=f"error.{graph_type.label()}.nodes.uninformative")
 
     def merge(self, reporter):
         """

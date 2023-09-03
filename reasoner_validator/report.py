@@ -43,6 +43,9 @@ class TRAPIGraphType(Enum):
     Query_Graph = "Query Graph"
     Knowledge_Graph = "Knowledge Graph"
 
+    def label(self) -> str:
+        return self.value.lower().replace(" ", "_")
+
 
 class ValidationReporter:
     """

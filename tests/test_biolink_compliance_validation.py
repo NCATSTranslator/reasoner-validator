@@ -1,7 +1,7 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import Tuple, Optional, Dict, List
+from typing import Optional, Dict, List
 from sys import stderr
 from copy import deepcopy
 from pprint import PrettyPrinter
@@ -64,12 +64,12 @@ def test_minimum_required_biolink_version():
 
 
 def test_message():
-    reporter = BiolinkValidator(prefix="Test Message", trapi_version="v1.3", biolink_version="v3.5.2")
+    reporter = BiolinkValidator(prefix="Test Message", trapi_version="v1.3", biolink_version="v3.5.4")
     assert reporter.get_trapi_version() == "v1.3.0"
 
     # Note: BMT is a bit tricky in resolving Biolink Model versions:
-    # the version is reported without the 'v' prefix of the Github release!
-    assert reporter.get_biolink_version() == "3.5.2"
+    # the version is reported without the 'v' prefix of the GitHub release!
+    assert reporter.get_biolink_version() == "3.5.4"
 
     assert not reporter.has_messages()
     reporter.report("info.compliant")
@@ -514,11 +514,33 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
             {
                 "nodes": {}
             },
-            ""  # Query Graphs can have empty 'nodes'
+            # Although Query Graphs schema allows for empty 'nodes',
+            # in practice, we need some for practical TRAPI queries
+            "error.query_graph.nodes.uninformative"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 3: Empty edges
+            # Query 3: Uninformative nodes
+            {
+                "nodes": {
+                    "drug": {},
+                    "type-2 diabetes": {}
+
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            # At least one QNode needs to be informative
+            "error.query_graph.nodes.uninformative"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 4: Empty edges
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -532,7 +554,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 4: Empty edges dictionary
+            # Query 5: Empty edges dictionary
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -547,7 +569,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 5: Node "ids" not a List
+            # Query 6: Node "ids" not a List
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": "MONDO:0005148"}
@@ -559,18 +581,36 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 6: Node "ids" is an empty array
+            # Query 7: Only one node with "ids", that are an empty array
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": []}
                 },
                 "edges": {}
             },
+            # although permitted, with the presence of only
+            # one node with empty ids, is uninformative
+            "error.query_graph.nodes.uninformative"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 8: Two nodes, but only one with "ids" that are an empty array
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": []},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {}
+            },
+            # although permitted, with the presence of at least
+            # one node with non-empty contents, will pass
             ""
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 7: Node "categories" not a array
+            # Query 9: Node "categories" not a array
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -584,7 +624,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 8: Node "categories" is an empty array?
+            # Query 10: Node "categories" is an empty array?
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -598,7 +638,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 9: Sample small valid TRAPI Query Graph with null predicates (allowed)
+            # Query 11: Sample small valid TRAPI Query Graph with null predicates (allowed)
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -618,7 +658,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 10: ... but if present, predicates must be an array!
+            # Query 12: ... but if present, predicates must be an array!
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -640,7 +680,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 11: ... but if present, predicates must have at least one predicate in the array
+            # Query 13: ... but if present, predicates must have at least one predicate in the array
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -661,7 +701,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 12: ... but if present, predicates must be valid for the specified Biolink Model version...
+            # Query 14: ... but if present, predicates must be valid for the specified Biolink Model version...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -682,7 +722,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 13: ... but if present, predicates must be valid for the specified Biolink Model version...
+            # Query 15: ... but if present, predicates must be valid for the specified Biolink Model version...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -703,7 +743,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 14: ... and must also be canonical predicates?
+            # Query 16: ... and must also be canonical predicates?
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -724,7 +764,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 15: 'Subject' id used in edge is mandatory
+            # Query 17: 'Subject' id used in edge is mandatory
             {
                 "nodes": {
                     "drug": {
@@ -745,7 +785,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 16: 'Subject' id used in edge is missing from the nodes catalog?
+            # Query 18: 'Subject' id used in edge is missing from the nodes catalog?
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]}
@@ -763,7 +803,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 17: 'Object' id used in edge is mandatory
+            # Query 19: 'Object' id used in edge is mandatory
             {
                 "nodes": {
                     "drug": {
@@ -784,7 +824,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 18: 'Object' id used in edge is missing from the nodes catalog?
+            # Query 20: 'Object' id used in edge is missing from the nodes catalog?
             {
                 "nodes": {
                     "drug": {
@@ -804,7 +844,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 19: Node 'is_set' value is not a boolean
+            # Query 21: Node 'is_set' value is not a boolean
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -826,7 +866,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 20: Unmapped node ids against any of the specified Biolink Model categories
+            # Query 22: Unmapped node ids against any of the specified Biolink Model categories
             {
                 "nodes": {
                     "type-2 diabetes": {
@@ -851,7 +891,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 21: Abstract category in query graph? Simply ignored now during validation...
+            # Query 23: Abstract category in query graph? Simply ignored now during validation...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -871,7 +911,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 22: Mixin category in query graph? Simply ignored now during validation...
+            # Query 24: Mixin category in query graph? Simply ignored now during validation...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -891,7 +931,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 23: Query edge predicate is a mixin; default 'strict_validation' == False for query graphs
+            # Query 25: Query edge predicate is a mixin; default 'strict_validation' == False for query graphs
             {
                 "nodes": {
                     "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
@@ -912,7 +952,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 24: ... but if present, predicates must be valid
+            # Query 26: ... but if present, predicates must be valid
             #           for the specified Biolink Model version, but...
             {
                 "nodes": {
@@ -935,7 +975,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 25: Query edge predicate is a mixin...but...
+            # Query 27: Query edge predicate is a mixin...but...
             {
                 "nodes": {
                     "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
@@ -1394,7 +1434,7 @@ def test_pre_1_4_0_validate_provenance(edge: Dict, target_provenance: Optional[D
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 7. value is the a JSON null (Python None)
+            # Query 7. value is a JSON null (Python None)
             {
                 "attributes": [
                     {
@@ -2952,7 +2992,7 @@ def test_validate_biolink_curie_in_qualifiers(
         (
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 25: 'attribute_type_id' is a Biolink (node) category - not sure yet
-            #           whether or not this reflects "best practices" so issue a warning for now
+            #           whether this reflects "best practices" so issue a warning for now
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2975,7 +3015,7 @@ def test_validate_biolink_curie_in_qualifiers(
         (
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 26: 'attribute_type_id' is a Biolink (edge) predicate - not sure yet
-            #           whether or not this reflects "best practices" so issue a warning for now
+            #           whether this reflects "best practices" so issue a warning for now
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {

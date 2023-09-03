@@ -5,7 +5,7 @@ from sys import stderr
 import pytest
 
 from reasoner_validator.message import MESSAGE_CATALOG, SCOPED_MESSAGES
-from reasoner_validator.report import ValidationReporter
+from reasoner_validator.report import ValidationReporter, TRAPIGraphType
 from reasoner_validator.validation_codes import CodeDictionary
 from reasoner_validator.versioning import get_latest_version
 
@@ -48,6 +48,12 @@ def check_messages(
         else:
             # no expected at all? Assert the absence of such messages?
             assert not validator.has_messages(), f"Unexpected messages seen {messages}"
+
+
+def test_graph_type_label():
+    assert TRAPIGraphType.Input_Edge.label() == "input_edge"
+    assert TRAPIGraphType.Query_Graph.label() == "query_graph"
+    assert TRAPIGraphType.Knowledge_Graph.label() == "knowledge_graph"
 
 
 def test_check_basic_get_code_subtree():
