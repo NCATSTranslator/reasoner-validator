@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.8.11
+- detection of uninformative QNodes (resolve issue#14)
+- Dangling ("unused") nodes detection is fully implemented (complements "edge nodes not in nodes list" detection already in place); resolves issue#74
+
 ## 3.8.10
 - 'attribute_type_id' term which are Biolink (node) 'category' or (edge) 'predicate' terms generate a specific warning (not just a 'not an association slot' warning)
 - Knowledge graph edge qualifiers qualifier "value unresolved" validation error demoted to a warning
