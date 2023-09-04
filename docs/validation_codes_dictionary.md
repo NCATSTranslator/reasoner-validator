@@ -392,13 +392,21 @@
 
 **Description:** Knowledge graph node must have a 'id' key with a non-empty associated value!
 
+### error.knowledge_graph.node.name.missing
+
+**Message:** Name is missing for node
+
+**Context:** identifier
+
+**Description:** Although TRAPI 1.4.0 states 'nullable: True', Translator user interface functionally requires that a non-empty 'name' property value must be specified in a knowledge graph node!
+
 ### error.knowledge_graph.node.category.missing
 
 **Message:** Category is missing for node
 
 **Context:** identifier
 
-**Description:** Category value must be specified in an knowledge graph edge!
+**Description:** Category value must be specified in a knowledge graph node!
 
 ### error.knowledge_graph.node.category.not_a_category
 

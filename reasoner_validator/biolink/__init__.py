@@ -325,6 +325,13 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         identifier=node_id
                     )
 
+                # UI team request (part of issue #35): really need names here
+                if not ("name" in slots and slots["name"]):
+                    self.report(
+                        code="error.knowledge_graph.node.name.missing",
+                        identifier=node_id
+                    )
+
                 # TODO: Do we need to (or can we) validate here, any other
                 #       Knowledge Graph node fields? Perhaps not yet?
 
@@ -1007,7 +1014,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         Validate that the specified identifier is a well-formed Infores CURIE.
         Note that here we also now accept that the identifier can
-        be a semicolon delimited list of such infores.
+        be a semi-colon delimited list of such infores.
 
         :param context: reporting context as specified by a validation code prefix
         :param edge_id: specific edge validated, for the purpose of reporting validation context

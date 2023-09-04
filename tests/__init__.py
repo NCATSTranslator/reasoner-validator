@@ -20,6 +20,7 @@ ALL_TEST_VERSIONS: List[str] = PRE_1_4_0_TEST_VERSIONS + LATEST_TEST_RELEASES
 
 SIMPLE_SAMPLE_NODES = {
     "NCBIGene:29974": {
+        "name": "APOBEC1 complementation factor",
         "categories": [
            "biolink:Gene"
         ]
