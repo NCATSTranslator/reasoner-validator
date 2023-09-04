@@ -106,6 +106,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-dangling">error.knowledge_graph.nodes.dangling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edges-empty">error.knowledge_graph.edges.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-id-missing">error.knowledge_graph.node.id.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-name-missing">error.knowledge_graph.node.name.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-missing">error.knowledge_graph.node.category.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-not-a-category">error.knowledge_graph.node.category.not_a_category</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-unknown">error.knowledge_graph.node.category.unknown</a></li>
@@ -542,11 +543,17 @@
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Knowledge graph node must have a ‘id’ key with a non-empty associated value!</p>
 </section>
+<section id="error-knowledge-graph-node-name-missing">
+<h3>error.knowledge_graph.node.name.missing<a class="headerlink" href="#error-knowledge-graph-node-name-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Name is missing for node</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> Although TRAPI 1.4.0 states ‘nullable: True’, Translator user interface functionally requires that a non-empty ‘name’ property value must be specified in a knowledge graph node!</p>
+</section>
 <section id="error-knowledge-graph-node-category-missing">
 <h3>error.knowledge_graph.node.category.missing<a class="headerlink" href="#error-knowledge-graph-node-category-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Category is missing for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Category value must be specified in an knowledge graph edge!</p>
+<p><strong>Description:</strong> Category value must be specified in a knowledge graph node!</p>
 </section>
 <section id="error-knowledge-graph-node-category-not-a-category">
 <h3>error.knowledge_graph.node.category.not_a_category<a class="headerlink" href="#error-knowledge-graph-node-category-not-a-category" title="Permalink to this heading"></a></h3>
