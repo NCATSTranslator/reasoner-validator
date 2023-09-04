@@ -15,7 +15,8 @@ TEST_BIOLINK_VERSION = "2.4.8"
 
 def check_messages(
         validator: ValidationReporter,
-        code: str, no_errors: bool = False,
+        code: str,
+        no_errors: bool = False,
         source_trail: Optional[str] = None
 ):
     messages: MESSAGE_CATALOG = validator.get_messages()
@@ -180,7 +181,7 @@ def test_message_display():
     assert "INFO - Compliant: Biolink Model-compliant TRAPI Message" in scoped_messages["global"]
 
     scoped_messages = CodeDictionary.display("error.knowledge_graph.nodes.empty", add_prefix=True)
-    assert "ERROR - Knowledge Graph Nodes: No nodes found!" in scoped_messages["global"]
+    assert "ERROR - Knowledge Graph Nodes: No nodes found" in scoped_messages["global"]
 
     scoped_messages = CodeDictionary.display(
         code="info.excluded",

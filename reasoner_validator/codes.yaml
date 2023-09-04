@@ -139,8 +139,11 @@ error:
   query_graph:
     nodes:
       uninformative:
-        $message: "Missing informative node information."
+        $message: "Missing informative node information"
         $description: "Query graph must have at least one node with identifiers and/or categories available for query!"
+      dangling:
+        $message: "Dangling nodes"
+        $description: "At least one query node is unused in the query graph!"
     node:
       category:
         missing:
@@ -282,14 +285,17 @@ error:
   knowledge_graph:
     nodes:
       empty:
-        $message: "No nodes found!"
+        $message: "No nodes found"
         $description: "Knowledge graph in TRAPI messages must have a 'nodes' key and non-empty associated value!"
       uninformative:
-        $message: "Missing informative node information."
+        $message: "Missing informative node information!"
         $description: "All nodes in a knowledge graph must have categories!"
+      dangling:
+        $message: "Dangling nodes"
+        $description: "At least one query node is unused in the knowledge graph!"
     edges:
       empty:
-        $message: "No edges found!"
+        $message: "No edges found"
         $description: "Knowledge graph in TRAPI messages must have a 'edges' key and non-empty associated value!"
     node:
       id:

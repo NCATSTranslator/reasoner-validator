@@ -14,7 +14,12 @@ from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0_BETA
 from reasoner_validator.biolink import BiolinkValidator, get_biolink_model_toolkit
 
 from reasoner_validator.report import TRAPIGraphType
-from tests import SIMPLE_SAMPLE_NODES, SAMPLE_NODES_WITH_ATTRIBUTES
+from tests import (
+    SIMPLE_SAMPLE_NODES,
+    SAMPLE_NODES_WITH_ATTRIBUTES,
+    SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES,
+    SAMPLE_NODES_WITH_UNUSED_NODE
+)
 from tests.test_validation_report import check_messages
 
 logger = logging.getLogger(__name__)
@@ -102,7 +107,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
     "biolink_version,edge,code",
     [
         (   # Query 0 - Valid edge object
-            LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -113,7 +118,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             ""
         ),
         (   # Query 1 - Valid edge object, using original 'subject' and 'object' JSON tags
-            LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -266,7 +271,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "warning.input_edge.predicate.non_canonical"
         ),
         (   # Query 14 - Missing subject
-            LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -290,7 +295,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "warning.input_edge.node.id.unmapped_to_category"
         ),
         (   # Query 16 - missing object
-            LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:AnatomicalEntity',
                 'object_category': 'biolink:AnatomicalEntity',
@@ -550,7 +555,10 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                     }
                 }
             },
-            ""  # Query Graphs can have empty 'edges'
+            # Query Graphs can have empty 'edges'
+            # but since we now detect 'dangling nodes'
+            # we see a 'dangling nodes' error
+            "error.query_graph.nodes.dangling"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -565,7 +573,10 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 },
                 "edges": {}
             },
-            ""  # Query Graphs can have empty 'edges'
+            # Query Graphs can have empty 'edges'
+            # but since we now detect 'dangling nodes'
+            # we see a 'dangling nodes' error
+            "error.query_graph.nodes.dangling"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -586,10 +597,16 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "nodes": {
                     "type-2 diabetes": {"ids": []}
                 },
-                "edges": {}
+                "edges":  {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
             },
             # although permitted, with the presence of only
-            # one node with empty ids, is uninformative
+            # one node with empty ids, the nodes are uninformative
             "error.query_graph.nodes.uninformative"
         ),
         (
@@ -602,43 +619,81 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                         "categories": ["biolink:Drug"]
                     }
                 },
-                "edges": {}
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
             },
-            # although permitted, with the presence of at least
-            # one node with non-empty contents, will pass
-            ""
+            ""   # this should pass since at least one query node is adequately constrained
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 9: Node "categories" not a array
+            # Query 9: Unused node is considered 'dangling'
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": []},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    },
+                    "unused_node": {
+                        "categories": ["biolink:NamedThing"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            "error.query_graph.nodes.dangling"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 10: Node "categories" not a array
             {
                 "nodes": {
                     "NCBIGene:29974": {
                        "categories": "biolink:Gene"
                     }
                 },
-                "edges": {}
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
             },
             # f"{QUERY_GRAPH_PREFIX}: ERROR - Node 'NCBIGene:29974.categories' slot value is not an array!"
             "error.query_graph.node.categories.not_array"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 10: Node "categories" is an empty array?
+            # Query 11: Node "categories" is an empty array?
             {
                 "nodes": {
                     "NCBIGene:29974": {
                        "categories": ["biolink:InvalidCategory"]
                     }
                 },
-                "edges": {}
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
             },
-            # f"{QUERY_GRAPH_PREFIX}: ERROR - Query Graph Node element 'biolink:InvalidCategory' is unknown!"
             "error.query_graph.node.category.unknown"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 11: Sample small valid TRAPI Query Graph with null predicates (allowed)
+            # Query 12: Sample small valid TRAPI Query Graph with null predicates (allowed)
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -658,7 +713,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 12: ... but if present, predicates must be an array!
+            # Query 13: ... but if present, predicates must be an array!
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -680,7 +735,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 13: ... but if present, predicates must have at least one predicate in the array
+            # Query 14: ... but if present, predicates must have at least one predicate in the array
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -701,7 +756,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 14: ... but if present, predicates must be valid for the specified Biolink Model version...
+            # Query 15: ... but if present, predicates must be valid for the specified Biolink Model version...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -722,7 +777,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 15: ... but if present, predicates must be valid for the specified Biolink Model version...
+            # Query 16: ... but if present, predicates must be valid for the specified Biolink Model version...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -743,7 +798,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 16: ... and must also be canonical predicates?
+            # Query 17: ... and must also be canonical predicates?
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -764,7 +819,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 17: 'Subject' id used in edge is mandatory
+            # Query 18: 'Subject' id used in edge is mandatory
             {
                 "nodes": {
                     "drug": {
@@ -785,7 +840,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 18: 'Subject' id used in edge is missing from the nodes catalog?
+            # Query 19: 'Subject' id used in edge is missing from the nodes catalog?
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]}
@@ -803,7 +858,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 19: 'Object' id used in edge is mandatory
+            # Query 20: 'Object' id used in edge is mandatory
             {
                 "nodes": {
                     "drug": {
@@ -824,7 +879,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 20: 'Object' id used in edge is missing from the nodes catalog?
+            # Query 21: 'Object' id used in edge is missing from the nodes catalog?
             {
                 "nodes": {
                     "drug": {
@@ -844,7 +899,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 21: Node 'is_set' value is not a boolean
+            # Query 22: Node 'is_set' value is not a boolean
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -866,7 +921,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 22: Unmapped node ids against any of the specified Biolink Model categories
+            # Query 23: Unmapped node ids against any of the specified Biolink Model categories
             {
                 "nodes": {
                     "type-2 diabetes": {
@@ -891,7 +946,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 23: Abstract category in query graph? Simply ignored now during validation...
+            # Query 24: Abstract category in query graph? Simply ignored now during validation...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -911,7 +966,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 24: Mixin category in query graph? Simply ignored now during validation...
+            # Query 25: Mixin category in query graph? Simply ignored now during validation...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -931,7 +986,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 25: Query edge predicate is a mixin; default 'strict_validation' == False for query graphs
+            # Query 26: Query edge predicate is a mixin; default 'strict_validation' == False for query graphs
             {
                 "nodes": {
                     "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
@@ -952,7 +1007,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 26: ... but if present, predicates must be valid
+            # Query 27: ... but if present, predicates must be valid
             #           for the specified Biolink Model version, but...
             {
                 "nodes": {
@@ -975,7 +1030,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 27: Query edge predicate is a mixin...but...
+            # Query 28: Query edge predicate is a mixin...but...
             {
                 "nodes": {
                     "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
@@ -1119,24 +1174,26 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge: Dict, code: 
 
 
 @pytest.mark.parametrize(
-    "edge",
+    "edge,code",
     [
-        # These tests should all pass in TRAPI releases 'default' >= 1.4.0-beta
         (
             # Query 0. 'attributes' key missing in edge record is None
-            {}
+            {},
+            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
         ),
         (
             # Query 1. Empty attributes
             {
                 "attributes": None
-            }
+            },
+            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
         ),
         (
             # Query 2. Empty attributes
             {
                 "attributes": []
-            }
+            },
+            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
         ),
         (
             # Query 3. EDAM-DATA:2526 ought to have an acceptable namespace
@@ -1147,7 +1204,8 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge: Dict, code: 
                         "value": "some-value"
                     }
                 ]
-            }
+            },
+            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
         ),
         (
             # Query 4. Validating terms in the ATTRIBUTE_TYPE_ID_INCLUSIONS list
@@ -1162,7 +1220,8 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge: Dict, code: 
                         "value": "manual_agent"
                     }
                 ]
-            }
+            },
+            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
         ),
         # Slipping in a few unit tests of the
         # "error.knowledge_graph.edge.attribute.value.empty"
@@ -1252,14 +1311,14 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge: Dict, code: 
         )
     ]
 )
-def test_post_1_4_0_trapi_validate_attributes(edge: Dict):
+def test_post_1_4_0_trapi_validate_attributes(edge: Dict, code: str):
     validator = BiolinkValidator()
     validator.validate_attributes(
         graph_type=TRAPIGraphType.Knowledge_Graph,
         edge_id="test_validate_attributes unit test",
         edge=edge
     )
-    check_messages(validator, "")
+    check_messages(validator, code)
 
 
 @pytest.mark.parametrize(
@@ -2249,34 +2308,14 @@ def test_validate_biolink_curie_in_qualifiers(
     "biolink_version,graph_data,validation_code",
     [
         (
-            LATEST_BIOLINK_MODEL_VERSION,  # Biolink Model Version
+            LATEST_BIOLINK_MODEL_VERSION,
 
             # Query 0: Sample full valid TRAPI Knowledge Graph
             {
                 # Sample nodes
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 # Sample edge
-                'edges': {
-                   "edge_1": {
-                       "subject": "NCBIGene:29974",
-                       "predicate": "biolink:physically_interacts_with",
-                       "object": "PUBCHEM.COMPOUND:597",
-                       "attributes": [
-                           {
-                               "attribute_source": "infores:hmdb",
-                               "attribute_type_id": "biolink:stoichiometry",
-                               "value": 2,
-                               "attributes": [],
-                           }
-                        ],
-                       "sources": [
-                            {
-                                "resource_id": "infores:molepro",
-                                "resource_role": "primary_knowledge_source"
-                            }
-                       ]
-                    }
-                }
+                'edges': SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES
             },
             ""
         ),
@@ -2715,7 +2754,6 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'subject' id 'NCBIGene:12345' is missing from the nodes catalog!"
             "error.knowledge_graph.edge.subject.missing_from_nodes"
         ),
         (
@@ -2743,7 +2781,6 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Predicate element 'biolink:unknown_predicate' is unknown!"
             "error.knowledge_graph.edge.predicate.unknown"
         ),
         (
@@ -2771,7 +2808,6 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Predicate element 'biolink:has_unit' is invalid!"
             "error.knowledge_graph.edge.predicate.invalid"
         ),
         (
@@ -2813,7 +2849,6 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            # "{KNOWLEDGE_GRAPH_PREFIX}: ERROR -Predicate element 'biolink:increases_amount_or_activity of' is a mixin!"
             "error.knowledge_graph.edge.predicate.mixin"
         ),
         (
@@ -2855,7 +2890,6 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Predicate element 'biolink:contributor' is abstract!"
             "error.knowledge_graph.edge.predicate.abstract"
         ),
         (
@@ -2883,7 +2917,6 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge predicate 'biolink:affected_by' is non-canonical?"
             "warning.knowledge_graph.edge.predicate.non_canonical"
         ),
         (
@@ -2911,8 +2944,6 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge 'object' id " +
-            # f"'PUBCHEM.COMPOUND:678' is missing from the nodes catalog!"
             "error.knowledge_graph.edge.object.missing_from_nodes"
         ),
         (
@@ -2925,7 +2956,11 @@ def test_validate_biolink_curie_in_qualifiers(
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"value": "some value"}],
+                        "attributes": [
+                            {
+                                "value": "some value"
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2935,7 +2970,6 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute is missing its 'attribute_type_id' key!"
             "error.knowledge_graph.edge.attribute.type_id.missing"
         ),
         (
@@ -2963,7 +2997,6 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute is missing its 'value' key!"
             "error.knowledge_graph.edge.attribute.value.missing"
         ),
         (
@@ -2976,7 +3009,12 @@ def test_validate_biolink_curie_in_qualifiers(
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "not_a_curie", "value": "some value"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "not_a_curie",
+                                "value": "some value"
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2986,7 +3024,6 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: ERROR - Edge attribute_type_id 'not_a_curie' is not a CURIE!"
             "error.knowledge_graph.edge.attribute.type_id.not_curie"
         ),
         (
@@ -3000,7 +3037,12 @@ def test_validate_biolink_curie_in_qualifiers(
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:OrganismTaxon", "value": "9606"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:OrganismTaxon",
+                                "value": "9606"
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3023,7 +3065,12 @@ def test_validate_biolink_curie_in_qualifiers(
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:related_to", "value": "something"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:related_to",
+                                "value": "something"
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3045,7 +3092,12 @@ def test_validate_biolink_curie_in_qualifiers(
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:synonym", "value": "some synonym"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:synonym",
+                                "value": "some synonym"
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3055,8 +3107,6 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge attribute_type_id "
-            # "'biolink:synonym' is not a biolink:association_slot?"
             "warning.knowledge_graph.edge.attribute.type_id.not_association_slot"
         ),
         (
@@ -3101,7 +3151,12 @@ def test_validate_biolink_curie_in_qualifiers(
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "foo:bar", "value": "some value"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "foo:bar",
+                                "value": "some value"
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3111,8 +3166,6 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge attribute_type_id 'foo:bar' " +
-            # f"has a CURIE prefix namespace unknown to Biolink!"
             "warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix"
         ),
         (   # Query 30:  # An earlier Biolink Model won't recognize a category not found in its specified release
@@ -3153,7 +3206,12 @@ def test_validate_biolink_curie_in_qualifiers(
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "foo:bar", "value": "some value"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "foo:bar",
+                                "value": "some value"
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3178,7 +3236,12 @@ def test_validate_biolink_curie_in_qualifiers(
                         "subject": "NCBIGene:29974",
                         "predicate": "biolink:physically_interacts_with",
                         "object": "PUBCHEM.COMPOUND:597",
-                        "attributes": [{"attribute_type_id": "biolink:synonym", "value": "some synonym"}],
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:synonym",
+                                "value": "some synonym"
+                            }
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3191,6 +3254,18 @@ def test_validate_biolink_curie_in_qualifiers(
             # ...since Biolink Model validation is tagged as 'suppress',
             # we  don't expect any validation output here?
             ""
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+
+            # Query 33: Knowledge Graph dangling nodes error
+            {
+                # Sample nodes with extra  unused node
+                'nodes': SAMPLE_NODES_WITH_UNUSED_NODE,
+                # Sample edge
+                'edges': SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES
+            },
+            "error.knowledge_graph.nodes.dangling"
         )
     ]
 )

@@ -43,3 +43,32 @@ SAMPLE_NODES_WITH_ATTRIBUTES["PUBCHEM.COMPOUND:597"]["attributes"] = [
     }
 ]
 
+# complete edge dereferencing SAMPLE_NODES_WITH_ATTRIBUTES
+SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES = {
+    "edge_1": {
+        "subject": "NCBIGene:29974",
+        "predicate": "biolink:physically_interacts_with",
+        "object": "PUBCHEM.COMPOUND:597",
+        "attributes": [
+            {
+                "attribute_source": "infores:hmdb",
+                "attribute_type_id": "biolink:stoichiometry",
+                "value": 2,
+                "attributes": [],
+            }
+        ],
+        "sources": [
+            {
+                "resource_id": "infores:molepro",
+                "resource_role": "primary_knowledge_source"
+            }
+        ]
+    }
+}
+
+SAMPLE_NODES_WITH_UNUSED_NODE = deepcopy(SIMPLE_SAMPLE_NODES)
+SAMPLE_NODES_WITH_UNUSED_NODE["unused_node"] = {
+    "categories": [
+       "biolink:NamedThing"
+    ]
+}

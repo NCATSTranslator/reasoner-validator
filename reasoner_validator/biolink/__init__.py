@@ -238,6 +238,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     def count_node(self, node_id: str):
         self.nodes[node_id][1] += 1
 
+    def has_dangling_nodes(self) -> bool:
+        return any([not entry[1] for entry in self.nodes.values()])
+
     def get_result(self) -> Tuple[str, MESSAGE_CATALOG]:
         """
         Get result of validation.
@@ -1668,7 +1671,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             edges = None
 
         self.reset_node_info(graph_type=graph_type)
-        self.reset_edge_info(graph_type=graph_type)
         if nodes:
             for node_id, details in nodes.items():
                 self.validate_graph_node(node_id, details, graph_type=graph_type)
