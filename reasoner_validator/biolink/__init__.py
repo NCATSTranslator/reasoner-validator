@@ -182,27 +182,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         # the internal 'nodes' dictionary, indexed by 'node_id' key, tracks
         # the associated Biolink Model node categories, plus a usage count for the node_id key
-        self.nodes: Dict[str, Tuple[Optional[List[str]], int]] = dict()
+        self.nodes: Dict[str, List[Optional[List[str]], int]] = dict()
 
         # predicate flag assessing completeness of individual TRAPI Responses
         self._has_valid_qnode_information: bool = False
-        self._has_dangling_qnodes: bool = True
-        self._has_dangling_qedges: bool = True
-        self._has_dangling_nodes: bool = True
-        self._has_dangling_edges: bool = True
-
-    def reset_node_info(self, graph_type: TRAPIGraphType):
-        if graph_type == TRAPIGraphType.Query_Graph:
-            self._has_valid_qnode_information: bool = False
-
-    def has_valid_node_information(self, graph_type: TRAPIGraphType) -> bool:
-        if graph_type == TRAPIGraphType.Query_Graph:
-            return self._has_valid_qnode_information
-        else:
-            return True    # this may change later?
-
-    def reset_edge_info(self, graph_type: TRAPIGraphType):
-        pass
 
     def get_biolink_version(self) -> str:
         """
@@ -240,6 +223,20 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         except SemVerError as sve:
             logger.error(f"minimum_required_biolink_version() error: {str(sve)}")
             return False
+
+    def reset_node_info(self, graph_type: TRAPIGraphType):
+        if graph_type == TRAPIGraphType.Query_Graph:
+            self._has_valid_qnode_information: bool = False
+
+    def has_valid_node_information(self, graph_type: TRAPIGraphType) -> bool:
+        if graph_type == TRAPIGraphType.Query_Graph:
+            return self._has_valid_qnode_information
+        else:
+            # Not relevant or dealt with elsewhere for other graph types
+            return True
+
+    def count_node(self, node_id: str):
+        self.nodes[node_id][1] += 1
 
     def get_result(self) -> Tuple[str, MESSAGE_CATALOG]:
         """
@@ -411,7 +408,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         self.nodes.update(
             {
                 # We don't now bother to set the categories, if not provided
-                node_id: (details['categories'] if 'categories' in details and details['categories'] else None, 0)
+                node_id: [details['categories'] if 'categories' in details and details['categories'] else None, 0]
                 for node_id, details in nodes.items()
             }
         )
@@ -1431,6 +1428,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 identifier=subject_id,
                 edge_id=edge_id
             )
+        else:
+            self.count_node(node_id=subject_id)
 
         # Validate Predicates
         if graph_type is TRAPIGraphType.Knowledge_Graph:
@@ -1492,6 +1491,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 identifier=object_id,
                 edge_id=edge_id
             )
+        else:
+            self.count_node(node_id=object_id)
 
     # TODO: 11-July-2023: Certain specific 'abstract' or 'mixin' categories used in Knowledge Graphs
     #                     are being validated for now as 'warnings', for short term validation purposes
@@ -1672,8 +1673,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             for node_id, details in nodes.items():
                 self.validate_graph_node(node_id, details, graph_type=graph_type)
 
-            # The instances of 'node_id' and associated 'categories'
-            # are needed for the subsequent edge validation processes
+            # A dictionary of instances of 'node_id', associated 'categories' plus an
+            # internal counter, are needed for the subsequent edge validation processes
             self.set_nodes(nodes)
 
             if edges:
@@ -1683,6 +1684,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         if not self.has_valid_node_information(graph_type=graph_type):
             self.report(code=f"error.{graph_type.label()}.nodes.uninformative")
+
+        # dangling edges are discovered during validate_graph_edge() but
+        # dangling_nodes can only be detected after all edges are processed
+        if self.has_dangling_nodes():
+            self.report(code=f"error.{graph_type.label()}.nodes.dangling")
 
     def merge(self, reporter):
         """
