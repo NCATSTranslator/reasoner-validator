@@ -2,7 +2,8 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
-## 3.8.11
+## 3.9.0
+- Detect missing knowledge_graph names (resolves part of issue#35)
 - detection of uninformative QNodes (resolve issue#14)
 - Dangling ("unused") nodes detection is fully implemented (complements "edge nodes not in nodes list" detection already in place); resolves issue#74
 
