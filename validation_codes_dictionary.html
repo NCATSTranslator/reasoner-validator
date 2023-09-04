@@ -77,6 +77,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-input-edge-predicate-abstract">error.input_edge.predicate.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-input-edge-predicate-mixin">error.input_edge.predicate.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-input-edge-predicate-invalid">error.input_edge.predicate.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-nodes-uninformative">error.query_graph.nodes.uninformative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-nodes-dangling">error.query_graph.nodes.dangling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-category-missing">error.query_graph.node.category.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-category-not-a-category">error.query_graph.node.category.not_a_category</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-category-unknown">error.query_graph.node.category.unknown</a></li>
@@ -100,6 +102,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-value-not-a-predicate">error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.not_a_predicate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-invalid">error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-empty">error.knowledge_graph.nodes.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-uninformative">error.knowledge_graph.nodes.uninformative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-dangling">error.knowledge_graph.nodes.dangling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edges-empty">error.knowledge_graph.edges.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-id-missing">error.knowledge_graph.node.id.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-category-missing">error.knowledge_graph.node.category.missing</a></li>
@@ -370,6 +374,16 @@
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> Predicate specified in Input Edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!</p>
 </section>
+<section id="error-query-graph-nodes-uninformative">
+<h3>error.query_graph.nodes.uninformative<a class="headerlink" href="#error-query-graph-nodes-uninformative" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Missing informative node information</p>
+<p><strong>Description:</strong> Query graph must have at least one node with identifiers and/or categories available for query!</p>
+</section>
+<section id="error-query-graph-nodes-dangling">
+<h3>error.query_graph.nodes.dangling<a class="headerlink" href="#error-query-graph-nodes-dangling" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Dangling nodes</p>
+<p><strong>Description:</strong> At least one query node is unused in the query graph!</p>
+</section>
 <section id="error-query-graph-node-category-missing">
 <h3>error.query_graph.node.category.missing<a class="headerlink" href="#error-query-graph-node-category-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Category is missing from node</p>
@@ -504,12 +518,22 @@
 </section>
 <section id="error-knowledge-graph-nodes-empty">
 <h3>error.knowledge_graph.nodes.empty<a class="headerlink" href="#error-knowledge-graph-nodes-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> No nodes found!</p>
+<p><strong>Message:</strong> No nodes found</p>
 <p><strong>Description:</strong> Knowledge graph in TRAPI messages must have a ‘nodes’ key and non-empty associated value!</p>
+</section>
+<section id="error-knowledge-graph-nodes-uninformative">
+<h3>error.knowledge_graph.nodes.uninformative<a class="headerlink" href="#error-knowledge-graph-nodes-uninformative" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Missing informative node information!</p>
+<p><strong>Description:</strong> All nodes in a knowledge graph must have categories!</p>
+</section>
+<section id="error-knowledge-graph-nodes-dangling">
+<h3>error.knowledge_graph.nodes.dangling<a class="headerlink" href="#error-knowledge-graph-nodes-dangling" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Dangling nodes</p>
+<p><strong>Description:</strong> At least one query node is unused in the knowledge graph!</p>
 </section>
 <section id="error-knowledge-graph-edges-empty">
 <h3>error.knowledge_graph.edges.empty<a class="headerlink" href="#error-knowledge-graph-edges-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> No edges found!</p>
+<p><strong>Message:</strong> No edges found</p>
 <p><strong>Description:</strong> Knowledge graph in TRAPI messages must have a ‘edges’ key and non-empty associated value!</p>
 </section>
 <section id="error-knowledge-graph-node-id-missing">

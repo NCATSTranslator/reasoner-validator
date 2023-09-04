@@ -183,7 +183,7 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <td><p>Get copy of all messages as a Python data structure.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_categories</span></code>(node_id)</p></td>
-<td><p>Categories by 'node_id'.</p></td>
+<td><p>Categories by 'node_id'. :param node_id: :return: For a given node_id, returns the associated categories;          None if node_id is currently unknown or has no categories.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_identifiers</span></code>()</p></td>
 <td><p><dl class="field-list simple">
@@ -343,16 +343,28 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 </table>
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><strong>get_bmt</strong></p></td>
+<tr class="row-odd"><td><p><strong>count_node</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>get_message_type_tag</strong></p></td>
+<tr class="row-even"><td><p><strong>get_bmt</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>is_trapi_1_4</strong></p></td>
+<tr class="row-odd"><td><p><strong>get_message_type_tag</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>report_header</strong></p></td>
+<tr class="row-even"><td><p><strong>has_dangling_nodes</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>has_valid_node_information</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>is_trapi_1_4</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>report_header</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>reset_node_info</strong></p></td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><p><strong>validate_input_edge_node</strong></p></td>

@@ -61,15 +61,19 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.build_source_trail"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.build_source_trail()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.check_biolink_model_compliance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.check_biolink_model_compliance_of_input_edge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.count_node"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.count_node()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_biolink_version"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_biolink_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_node_categories"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_node_categories()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_node_identifiers"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_node_identifiers()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_result"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_result()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_target_provenance"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_target_provenance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.has_dangling_nodes"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.has_dangling_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.has_valid_node_information"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.has_valid_node_information()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.merge"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.merge()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.minimum_required_biolink_version"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.minimum_required_biolink_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.report_header"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.report_header()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.reset_biolink_version"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.reset_biolink_version()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.reset_node_info"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.reset_node_info()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.set_nodes"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.set_nodes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.to_dict"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.to_dict()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_attribute_constraints"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.validate_attribute_constraints()</span></code></a></li>
@@ -273,7 +277,7 @@
 <td><p>Get copy of all messages as a Python data structure.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_node_categories" title="reasoner_validator.biolink.BiolinkValidator.get_node_categories"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_categories</span></code></a>(node_id)</p></td>
-<td><p>Categories by 'node_id'.</p></td>
+<td><p>Categories by 'node_id'. :param node_id: :return: For a given node_id, returns the associated categories;          None if node_id is currently unknown or has no categories.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_node_identifiers" title="reasoner_validator.biolink.BiolinkValidator.get_node_identifiers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_identifiers</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
@@ -415,13 +419,25 @@
 </table>
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><strong>get_bmt</strong></p></td>
+<tr class="row-odd"><td><p><strong>count_node</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>get_message_type_tag</strong></p></td>
+<tr class="row-even"><td><p><strong>get_bmt</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>report_header</strong></p></td>
+<tr class="row-odd"><td><p><strong>get_message_type_tag</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>has_dangling_nodes</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>has_valid_node_information</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>report_header</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>reset_node_info</strong></p></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><p><strong>validate_input_edge_node</strong></p></td>
@@ -491,6 +507,11 @@ against the currently active Biolink Model Toolkit model version.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.count_node">
+<span class="sig-name descname"><span class="pre">count_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.count_node" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.get_biolink_version">
 <span class="sig-name descname"><span class="pre">get_biolink_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_biolink_version" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
@@ -508,7 +529,10 @@ against the currently active Biolink Model Toolkit model version.</p>
 <span class="sig-name descname"><span class="pre">get_node_categories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_node_categories" title="Permalink to this definition"></a></dt>
 <dd><p>Categories by ‘node_id’.
 :param node_id:
-:return: For a given node_id, returns the associated categories; None if node_id is currently unknown</p>
+:return: For a given node_id, returns the associated categories;</p>
+<blockquote>
+<div><p>None if node_id is currently unknown or has no categories.</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="py method">
@@ -539,6 +563,16 @@ against the currently active Biolink Model Toolkit model version.</p>
 <dd><p>Returns infores-prefix-normalized target provenance metadata.
 :return: Tuple[Optional[str], Optional[str], Optional[str]] of ara_source, kp_source, kp_source_type</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.has_dangling_nodes">
+<span class="sig-name descname"><span class="pre">has_dangling_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.has_dangling_nodes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.has_valid_node_information">
+<span class="sig-name descname"><span class="pre">has_valid_node_information</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.has_valid_node_information" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.merge">
@@ -579,10 +613,16 @@ into the calling TRAPISchemaValidator instance.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.reset_node_info">
+<span class="sig-name descname"><span class="pre">reset_node_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.reset_node_info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.set_nodes">
 <span class="sig-name descname"><span class="pre">set_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.set_nodes" title="Permalink to this definition"></a></dt>
 <dd><p>Records additional nodes, uniquely by node_id, with specified categories.
-:param nodes: Dict, node_id indexed node categories
+:param nodes: Dict, node_id indexed node categories. A given node_id is
+tagged with “None” if the categories are missing?
 :return: None</p>
 </dd></dl>
 
