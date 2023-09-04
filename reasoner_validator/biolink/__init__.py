@@ -183,6 +183,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         # predicate flag assessing completeness of individual TRAPI Responses
         self._has_valid_qnode_information: bool = False
+        self._has_dangling_qnodes: bool = True
+        self._has_dangling_qedges: bool = True
+        self._has_dangling_nodes: bool = True
+        self._has_dangling_edges: bool = True
 
     def reset_node_info(self, graph_type: TRAPIGraphType):
         if graph_type == TRAPIGraphType.Query_Graph:
@@ -255,9 +259,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         if graph_type is TRAPIGraphType.Knowledge_Graph:
             if self.validate_biolink():
-                # TODO: this will fail for an earlier TRAPI data schema version
-                #       which didn't use the tag 'categories' for nodes...
-                #       But this earlier TRAPI release is no longer relevant to the community?
+                # This will fail for an earlier TRAPI data schema version
+                # which didn't use the tag 'categories' for nodes...
+                # But this earlier TRAPI release is no longer relevant to the community?
                 if 'categories' in slots:
                     if not isinstance(slots["categories"], List):
                         self.report(code="error.knowledge_graph.node.categories.not_array", identifier=node_id)
@@ -397,15 +401,15 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     def set_nodes(self, nodes: Dict):
         """
         Records additional nodes, uniquely by node_id, with specified categories.
-        :param nodes: Dict, node_id indexed node categories
+        :param nodes: Dict, node_id indexed node categories. A given node_id is
+        tagged with "None" if the categories are missing?
         :return: None
         """
-        # TODO: node_id keys of nodes assumed to be unique, thus
-        #       nodes should never overwrite previously seen nodes?
         self.nodes.update(
             {
                 node_id: details['categories']
-                if 'categories' in details and details['categories'] else ['biolink:NamedThing']
+                # We don't now bother to set the category if not provided
+                if 'categories' in details and details['categories'] else None
                 for node_id, details in nodes.items()
             }
         )
@@ -420,7 +424,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         Categories by 'node_id'.
         :param node_id:
-        :return: For a given node_id, returns the associated categories; None if node_id is currently unknown
+        :return: For a given node_id, returns the associated categories;
+                 None if node_id is currently unknown or has no categories.
         """
         return self.nodes[node_id] if node_id in self.nodes else None
 
@@ -1379,7 +1384,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             associations: Optional[List[str]] = None
             if self.validate_biolink():
                 # We need to look up the biolink:Association subclass
-                # matching the subject and object categories of the edge
+                # matching the subject and object categories of the edge.
+                # We don't here filter for empty *_categories, so in some
+                # fringe cases, misleading downstream validation may occur.
                 associations = self.bmt.get_associations(
                     subject_categories=subject_categories,
                     predicates=predicates,

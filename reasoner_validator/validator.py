@@ -61,12 +61,6 @@ class TRAPIResponseValidator(BiolinkValidator):
         self._is_trapi_1_4: Optional[bool] = None
         self.suppress_empty_data_warnings: bool = suppress_empty_data_warnings
 
-        # predicate flags assessing global completeness of individual TRAPI Responses
-        self._has_dangling_qnodes: bool = True
-        self._has_dangling_qedges: bool = True
-        self._has_dangling_nodes: bool = True
-        self._has_dangling_edges: bool = True
-
     def is_trapi_1_4(self) -> bool:
         assert self.trapi_version
         try:  # try block ... Sanity check: in case the trapi_version is somehow invalid?
