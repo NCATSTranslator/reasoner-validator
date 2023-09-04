@@ -179,7 +179,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             strict_validation=strict_validation
         )
         self.target_provenance: Optional[Dict] = target_provenance
-        self.nodes: Dict[str, List[str]] = dict()
+
+        # the internal 'nodes' dictionary, indexed by 'node_id' key, tracks
+        # the associated Biolink Model node categories, plus a usage count for the node_id key
+        self.nodes: Dict[str, Tuple[Optional[List[str]], int]] = dict()
 
         # predicate flag assessing completeness of individual TRAPI Responses
         self._has_valid_qnode_information: bool = False
@@ -407,9 +410,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         self.nodes.update(
             {
-                node_id: details['categories']
-                # We don't now bother to set the category if not provided
-                if 'categories' in details and details['categories'] else None
+                # We don't now bother to set the categories, if not provided
+                node_id: (details['categories'] if 'categories' in details and details['categories'] else None, 0)
                 for node_id, details in nodes.items()
             }
         )
@@ -427,7 +429,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :return: For a given node_id, returns the associated categories;
                  None if node_id is currently unknown or has no categories.
         """
-        return self.nodes[node_id] if node_id in self.nodes else None
+        return self.nodes[node_id][0] if node_id in self.nodes else None
 
     def validate_element_status(
             self,
