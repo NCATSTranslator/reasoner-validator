@@ -72,57 +72,6 @@ class TRAPIResponseValidator(BiolinkValidator):
             self._is_trapi_1_4 = True
         return self._is_trapi_1_4
 
-    @deprecation.deprecated(
-        details="This method was a patch for pre-TRAPI 1.4.2 releases" +
-                " (now of limited current interest to the community)"
-    )
-    def sanitize_trapi_response(self, response: Dict) -> Dict:
-        """
-        Some component TRAPI Responses cannot be validated further due to missing tags and None values.
-        This method is a temporary workaround to sanitize the query for additional validation.
-
-        :param response: Dict full TRAPI Response JSON object
-        :return: Dict, response with discretionary removal of content which
-                       triggers (temporarily) unwarranted TRAPI validation failures
-        """
-        # Temporary workaround for "1.4.0-beta4" schema bugs
-        current_version: SemVer = SemVer.from_string(self.trapi_version)
-        # the message is not empty
-        if 'knowledge_graph' in response['message'] and response['message']['knowledge_graph'] is not None and \
-                TRAPI_1_4_0_BETA4_SEMVER >= current_version != TRAPI_1_3_0_SEMVER:
-            for key, edge in response['message']['knowledge_graph']['edges'].items():
-                edge_id = f"{str(edge['subject'])}--{str(edge['predicate'])}->{str(str(edge['object']))}"
-                if 'sources' not in edge or not edge['sources']:
-                    self.report("error.knowledge_graph.edge.sources.missing", identifier=edge_id)
-                    continue
-                for source in edge['sources']:
-                    if 'source_record_urls' not in source or source['source_record_urls'] is None:
-                        source['source_record_urls'] = list()
-                    if 'upstream_resource_ids' not in source or source['upstream_resource_ids'] is None:
-                        source['upstream_resource_ids'] = list()
-
-        # 'auxiliary_graphs' (introduced the TRAPI 1.4.0-beta3 pre-releases,
-        # full fixed in the 1.4.2 release) ought to be nullable.
-        if TRAPI_1_4_0_SEMVER >= current_version >= TRAPI_1_4_0_BETA3_SEMVER and \
-                ('auxiliary_graphs' not in response['message'] or response['message']['auxiliary_graphs'] is None):
-            response['message']['auxiliary_graphs'] = dict()
-
-        # In reality, we are being soft here... we should now simply let the
-        # validation fail if Translator components return ill formed workflow steps
-        if 'workflow' in response and response['workflow']:
-            # a 'workflow' is a list of steps, which are JSON object specifications
-            workflow_steps: List[Dict] = response['workflow']
-            for step in workflow_steps:
-                if 'runner_parameters' in step and not step['runner_parameters']:
-                    self.report("warning.trapi.response.workflow.runner_parameters.missing")
-                    step.pop('runner_parameters')
-                if 'parameters' in step and not step['parameters']:
-                    # There are some workflow types that have mandatory need for 'parameters'
-                    # but this should be caught in a later schema validation step
-                    self.report("warning.trapi.response.workflow.parameters.missing")
-                    step.pop('parameters')
-        return response
-
     def check_compliance_of_trapi_response(
             self,
             response: Optional[Dict],
@@ -177,10 +126,6 @@ class TRAPIResponseValidator(BiolinkValidator):
                 if self.default_biolink:
                     self.bmt = get_biolink_model_toolkit(biolink_version=response["biolink_version"])
                     self.biolink_version = self.bmt.get_model_version()
-
-            # 16 August 2023: this response sanitization was put in place for pre-TRAPI 1.4.2 anomalies.
-            # We remove it since 1.4.2 is now the latest standard for enforcement
-            # response = self.sanitize_trapi_response(response)
 
             self.is_valid_trapi_query(instance=response, component="Response")
             if not self.has_critical():
