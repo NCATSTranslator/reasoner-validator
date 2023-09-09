@@ -1566,6 +1566,7 @@ def qualifier_validator(
         message: str,
         trapi_version: Optional[str] = None,
         biolink_version: Optional[str] = LATEST_BIOLINK_MODEL_VERSION,
+        associations: Optional[List[str]] = None,
         source_trail: Optional[str] = None,
         **kwargs
 ):
@@ -1612,13 +1613,14 @@ def qualifier_validator(
     if validator.has_critical():
         validator = validator
     else:
-        # some tested_method may not have a formal
-        # 'source_trail' parameter, so to be safe...
+        # Only validate_qualifiers() has formal parameters
+        # 'source_trail' and 'associations', so to be safe...
         if source_trail is not None:
             tested_method(
                 validator,
                 edge_id=f"{tested_method.__name__} unit test",
                 edge=edge,
+                associations=associations,
                 source_trail=source_trail,
                 **kwargs
             )
@@ -2233,6 +2235,41 @@ def test_validate_qualifiers(edge: Dict, message: str, source_trail: str):
                     {
                         'qualifier_type_id': "biolink:object_aspect_qualifier",
                         'qualifier_value': "activity_or_abundance"
+                    }
+                ]
+            },
+            [
+                'biolink:ChemicalGeneInteractionAssociation',
+                'biolink:ChemicalAffectsGeneAssociation',
+                'biolink:ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation'
+            ],   # associations: Optional[List[str]]
+            "",  # this particular use case should pass
+            SAMPLE_SOURCE_TRAIL
+        ),
+        (   # Query 4 -  another example of a 'qualifier_type_id' resolvable only within
+            #            the context of a specific subclass of biolink:Association, i.e.
+            #            biolink:NamedThingAssociatedWithLikelihoodOfNamedThingAssociation
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:subject_context_qualifier",
+                        'qualifier_value': "MESH:D000069196"
+                    }
+                ]
+            },
+            [
+                "biolink:NamedThingAssociatedWithLikelihoodOfNamedThingAssociation"
+            ],   # associations: Optional[List[str]]
+            "",  # this particular use case should pass
+            SAMPLE_SOURCE_TRAIL
+        ),
+        (   # Query 5 -  another example of a 'qualifier_type_id' resolvable only within
+            #            the context of a specific subclass of biolink:Association
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:subject_form_or_variant_qualifier",
+                        'qualifier_value': "loss_of_function_variant_form"
                     }
                 ]
             },
