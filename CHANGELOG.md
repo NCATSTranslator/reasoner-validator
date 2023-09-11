@@ -2,6 +2,12 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.9.1
+- Upgrade to Biolink Model Toolkit 1.1.2
+- Removed all residual references to 'sanitize_trapi_response()' (warning: validation with pre-release versions of TRAPI 1.4 earlier than 1.4.2 may trigger some funny false positive validation messages)
+- BiolinkValidator.PREDICATE_INCLUSIONS added (just with "biolink:interacts_with") to bypass 'mixin' Biolink Model validation error (pending full community review of the 'mixin' status of this predicate); unit tests modified to suit
+- plus a small internal DRY refactor in test suit with respect to LATEST_BIOLINK_MODEL_VERSION
+
 ## 3.9.0
 - Detect missing knowledge_graph names (resolves part of issue#35)
 - detection of uninformative QNodes (resolve issue#14)

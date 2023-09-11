@@ -69,12 +69,16 @@ def test_minimum_required_biolink_version():
 
 
 def test_message():
-    reporter = BiolinkValidator(prefix="Test Message", trapi_version="v1.3", biolink_version="v3.5.4")
+    reporter = BiolinkValidator(
+        prefix="Test Message",
+        trapi_version="v1.3",
+        biolink_version=f"v{LATEST_BIOLINK_MODEL_VERSION}"
+    )
     assert reporter.get_trapi_version() == "v1.3.0"
 
     # Note: BMT is a bit tricky in resolving Biolink Model versions:
     # the version is reported without the 'v' prefix of the GitHub release!
-    assert reporter.get_biolink_version() == "3.5.4"
+    assert reporter.get_biolink_version() == LATEST_BIOLINK_MODEL_VERSION
 
     assert not reporter.has_messages()
     reporter.report("info.compliant")
@@ -2884,6 +2888,50 @@ def test_validate_biolink_curie_in_qualifiers(
             {
                 "nodes": {
                     "HGNC:3059": {
+                        "name": "Heparin binding EGF like growth factor",
+                        "categories": [
+                           "biolink:Gene"
+                        ],
+                        "description": "heparin binding EGF like growth factor"
+                    },
+                    "HGNC:391": {
+                        "name": "AKT serine/threonine kinase 1",
+                        "categories": [
+                            "biolink:Gene"
+                        ],
+                        "description": "AKT serine/threonine kinase 1"
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "HGNC:3059",
+                        "predicate": "biolink:increases_amount_or_activity_of",
+                        "object": "HGNC:391",
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ],
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
+                    }
+                }
+            },
+            "error.knowledge_graph.edge.predicate.mixin"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 20: predicate is a mixin - not allowed in Knowledge Graphs, but "biolink:interacts_with"
+            #           is tagged as an exception (see https://github.com/NCATSTranslator/reasoner-validator/issues/97)
+            {
+                "nodes": {
+                    "HGNC:3059": {
+                        "name": "Heparin binding EGF like growth factor",
                         "categories": [
                            "biolink:Gene"
                         ],
@@ -2917,14 +2965,16 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            "error.knowledge_graph.edge.predicate.mixin"
+            ""  # predicate "biolink:interacts_with" is now on
+                # the PREDICATE_INCLUSIONS list so 'mixin' validation is skipped
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 20: predicate is abstract - not allowed in Knowledge Graphs
+            # Query 21: predicate is abstract - not allowed in Knowledge Graphs
             {
                 "nodes": {
                     "PMID:1234": {
+                        "name": "article title",
                         "categories": [
                            "biolink:InformationContentEntity"
                         ],
@@ -2962,7 +3012,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 21: predicate is non-canonical
+            # Query 22: predicate is non-canonical
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -2989,7 +3039,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 22: 'object' id is missing from the nodes catalog
+            # Query 23: 'object' id is missing from the nodes catalog
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3016,7 +3066,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 23: attribute 'attribute_type_id' is missing
+            # Query 24: attribute 'attribute_type_id' is missing
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3042,7 +3092,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 24: attribute 'value' is missing?
+            # Query 25: attribute 'value' is missing?
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3069,7 +3119,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 25: 'attribute_type_id' is not a CURIE
+            # Query 26: 'attribute_type_id' is not a CURIE
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3096,7 +3146,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 26: 'attribute_type_id' is a Biolink (node) category - not sure yet
+            # Query 27: 'attribute_type_id' is a Biolink (node) category - not sure yet
             #           whether this reflects "best practices" so issue a warning for now
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3124,7 +3174,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 27: 'attribute_type_id' is a Biolink (edge) predicate - not sure yet
+            # Query 28: 'attribute_type_id' is a Biolink (edge) predicate - not sure yet
             #           whether this reflects "best practices" so issue a warning for now
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3152,7 +3202,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 28: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
+            # Query 29: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3179,7 +3229,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 29: 'attribute_type_id' has a 'biolink' CURIE prefix and
+            # Query 30: 'attribute_type_id' has a 'biolink' CURIE prefix and
             #           is an association_slot, so it should pass
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3211,7 +3261,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 30: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
+            # Query 31: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3236,7 +3286,7 @@ def test_validate_biolink_curie_in_qualifiers(
             },
             "warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix"
         ),
-        (   # Query 31:  # An earlier Biolink Model won't recognize a category not found in its specified release
+        (   # Query 32:  # An earlier Biolink Model won't recognize a category not found in its specified release
             "1.8.2",
             {
                 # Sample nodes
@@ -3265,7 +3315,7 @@ def test_validate_biolink_curie_in_qualifiers(
             },
             "error.knowledge_graph.node.category.unknown"
         ),
-        (   # Query 32:  # 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
+        (   # Query 33:  # 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3295,7 +3345,7 @@ def test_validate_biolink_curie_in_qualifiers(
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 33: 'attribute_type_id' is not a 'biolink:association_slot'
+            # Query 34: 'attribute_type_id' is not a 'biolink:association_slot'
             #           (biolink:synonym is a node property) but...
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3326,7 +3376,7 @@ def test_validate_biolink_curie_in_qualifiers(
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 34: Knowledge Graph dangling nodes error
+            # Query 35: Knowledge Graph dangling nodes error
             {
                 # Sample nodes with extra  unused node
                 'nodes': SAMPLE_NODES_WITH_UNUSED_NODE,

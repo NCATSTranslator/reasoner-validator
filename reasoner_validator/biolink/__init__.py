@@ -1225,6 +1225,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
             return source_trail  # may be empty if required RetrievalSource 'sources' entries are missing
 
+    # TODO: 11-Sept-2023: Certain specific 'mixin' predicates used in Knowledge Graphs are being validated for now
+    #       as 'warnings', for short term validation purposes (see reasoner-validator issue #97)
+    PREDICATE_INCLUSIONS = ["biolink:interacts_with"]
+
     def validate_predicate(
             self,
             edge_id: str,
@@ -1233,41 +1237,46 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             source_trail: Optional[str] = None
     ):
         """
+        Validates predicates based on their meta-nature: existence, mixin, deprecation, etc.
+        with notable hard-coded explicit PREDICATE_INCLUSIONS exceptions.
+
         :param edge_id: str, identifier of the edge whose predicate is being validated
         :param predicate: str, putative Biolink Model predicate to be validated
         :param source_trail: str, putative Biolink Model predicate to be validated
         :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
         :return: None (validation communicated via class instance of method)
         """
-        graph_type_context: str = graph_type.name.lower()
-        if graph_type_context != "input_edge":
-            graph_type_context += ".edge"
-        context: str = f"{graph_type_context}.predicate"
+        if predicate not in self.PREDICATE_INCLUSIONS:
 
-        # Validate the putative predicate as *not* being abstract, deprecated or a mixin
-        biolink_class = self.validate_element_status(
-            graph_type=graph_type,
-            context=context,
-            identifier=predicate,
-            edge_id=edge_id,
-            source_trail=source_trail
-        )
-        if biolink_class:
-            if not self.bmt.is_predicate(predicate):
-                self.report(
-                    code=f"error.{context}.invalid",
-                    source_trail=source_trail,
-                    identifier=predicate,
-                    edge_id=edge_id
-                )
-            elif self.minimum_required_biolink_version("2.2.0") and \
-                    not self.bmt.is_translator_canonical_predicate(predicate):
-                self.report(
-                    code=f"warning.{context}.non_canonical",
-                    source_trail=source_trail,
-                    identifier=predicate,
-                    edge_id=edge_id
-                )
+            graph_type_context: str = graph_type.name.lower()
+            if graph_type_context != "input_edge":
+                graph_type_context += ".edge"
+            context: str = f"{graph_type_context}.predicate"
+
+            # Validate the putative predicate as *not* being abstract, deprecated or a mixin
+            biolink_class = self.validate_element_status(
+                graph_type=graph_type,
+                context=context,
+                identifier=predicate,
+                edge_id=edge_id,
+                source_trail=source_trail
+            )
+            if biolink_class:
+                if not self.bmt.is_predicate(predicate):
+                    self.report(
+                        code=f"error.{context}.invalid",
+                        source_trail=source_trail,
+                        identifier=predicate,
+                        edge_id=edge_id
+                    )
+                elif self.minimum_required_biolink_version("2.2.0") and \
+                        not self.bmt.is_translator_canonical_predicate(predicate):
+                    self.report(
+                        code=f"warning.{context}.non_canonical",
+                        source_trail=source_trail,
+                        identifier=predicate,
+                        edge_id=edge_id
+                    )
 
     @staticmethod
     def build_source_trail(sources: Optional[Dict[str, List[str]]]) -> Optional[str]:
