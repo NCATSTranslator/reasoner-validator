@@ -58,6 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.ATTRIBUTE_TYPE_ID_INCLUSIONS"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.ATTRIBUTE_TYPE_ID_INCLUSIONS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.CATEGORY_INCLUSIONS"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.CATEGORY_INCLUSIONS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.PREDICATE_INCLUSIONS"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.PREDICATE_INCLUSIONS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.build_source_trail"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.build_source_trail()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.check_biolink_model_compliance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.check_biolink_model_compliance_of_input_edge()</span></code></a></li>
@@ -393,12 +394,7 @@
 <td><p>Validate that the specified identifier is a well-formed Infores CURIE.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_predicate" title="reasoner_validator.biolink.BiolinkValidator.validate_predicate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_predicate</span></code></a>(edge_id, predicate, ...)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">param edge_id<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str, identifier of the edge whose predicate is being validated</p>
-</dd>
-</dl>
-</p></td>
+<td><p>Validates predicates based on their meta-nature: existence, mixin, deprecation, etc.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_provenance" title="reasoner_validator.biolink.BiolinkValidator.validate_provenance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_provenance</span></code></a>(edge_id, ara_source, ...)</p></td>
 <td><p>Validates ARA and KP infores knowledge sources based on surveyed Edge slots (recorded in edge &quot;attributes&quot; pre-1.4.0; in &quot;sources&quot;, post-1.4.0).</p></td>
@@ -453,6 +449,11 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.CATEGORY_INCLUSIONS">
 <span class="sig-name descname"><span class="pre">CATEGORY_INCLUSIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['biolink:BiologicalEntity',</span> <span class="pre">'biolink:InformationContentEntity']</span></em><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.CATEGORY_INCLUSIONS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.PREDICATE_INCLUSIONS">
+<span class="sig-name descname"><span class="pre">PREDICATE_INCLUSIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['biolink:interacts_with']</span></em><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.PREDICATE_INCLUSIONS" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -782,7 +783,9 @@ be a semi-colon delimited list of such infores.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_predicate">
 <span class="sig-name descname"><span class="pre">validate_predicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_trail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_predicate" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Validates predicates based on their meta-nature: existence, mixin, deprecation, etc.
+with notable hard-coded explicit PREDICATE_INCLUSIONS exceptions.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>edge_id</strong> – str, identifier of the edge whose predicate is being validated</p></li>
