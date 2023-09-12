@@ -3,7 +3,7 @@
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
 ## 3.9.2
-- demoted **dangling nodes** 'error' down to 'info' message, annotated with the list of missing nodes
+- demoted **dangling nodes** 'error' down to 'warning' message, annotated with the list of missing nodes as the identifier
 
 ## 3.9.1
 - Upgrade to Biolink Model Toolkit 1.1.2
