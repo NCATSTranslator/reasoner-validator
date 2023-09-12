@@ -141,9 +141,6 @@ error:
       uninformative:
         $message: "Missing informative node information"
         $description: "Query graph must have at least one node with identifiers and/or categories available for query!"
-      dangling:
-        $message: "Dangling nodes"
-        $description: "At least one query node is unused in the query graph!"
     node:
       category:
         missing:
@@ -290,9 +287,6 @@ error:
       uninformative:
         $message: "Missing informative node information!"
         $description: "All nodes in a knowledge graph must have categories!"
-      dangling:
-        $message: "Dangling nodes"
-        $description: "At least one query node is unused in the knowledge graph!"
     edges:
       empty:
         $message: "No edges found"
@@ -858,6 +852,12 @@ info:
           - identifier
         $description: "Input edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'."
   query_graph:
+    nodes:
+      dangling:
+        $message: "Dangling nodes"
+        $context:
+          - identifier
+        $description: "At least one query node is unused in the query graph!"
     edge:
       predicate:
         abstract:
@@ -873,6 +873,12 @@ info:
             - identifier
           $description: "TRAPI Messages in Query Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'."
   knowledge_graph:
+    nodes:
+      dangling:
+        $message: "Dangling nodes"
+        $context:
+          - identifier
+        $description: "At least one query node is unused in the knowledge graph!"
     edge:
       predicate:
         abstract:

@@ -178,12 +178,6 @@
 
 **Description:** Query graph must have at least one node with identifiers and/or categories available for query!
 
-### error.query_graph.nodes.dangling
-
-**Message:** Dangling nodes
-
-**Description:** At least one query node is unused in the query graph!
-
 ### error.query_graph.node.category.missing
 
 **Message:** Category is missing from node
@@ -371,12 +365,6 @@
 **Message:** Missing informative node information!
 
 **Description:** All nodes in a knowledge graph must have categories!
-
-### error.knowledge_graph.nodes.dangling
-
-**Message:** Dangling nodes
-
-**Description:** At least one query node is unused in the knowledge graph!
 
 ### error.knowledge_graph.edges.empty
 
@@ -1094,6 +1082,14 @@
 
 **Description:** Input edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'.
 
+### info.query_graph.nodes.dangling
+
+**Message:** Dangling nodes
+
+**Context:** identifier
+
+**Description:** At least one query node is unused in the query graph!
+
 ### info.query_graph.edge.predicate.abstract
 
 **Message:** Edge has an 'abstract' predicate
@@ -1109,6 +1105,14 @@
 **Context:** edge_id, identifier
 
 **Description:** TRAPI Messages in Query Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'.
+
+### info.knowledge_graph.nodes.dangling
+
+**Message:** Dangling nodes
+
+**Context:** identifier
+
+**Description:** At least one query node is unused in the knowledge graph!
 
 ### info.knowledge_graph.edge.predicate.abstract
 

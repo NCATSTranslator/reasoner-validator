@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.9.2
+- demoted **dangling nodes** 'error' down to 'info' message, annotated with the list of missing nodes
+
 ## 3.9.1
 - Upgrade to Biolink Model Toolkit 1.1.2
 - Removed all residual references to 'sanitize_trapi_response()' (warning: validation with pre-release versions of TRAPI 1.4 earlier than 1.4.2 may trigger some funny false positive validation messages)

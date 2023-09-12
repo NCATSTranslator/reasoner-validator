@@ -238,8 +238,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     def count_node(self, node_id: str):
         self.nodes[node_id][1] += 1
 
-    def has_dangling_nodes(self) -> bool:
-        return any([not entry[1] for entry in self.nodes.values()])
+    def has_dangling_nodes(self) -> List[str]:
+        return [node_id for node_id, entry in self.nodes.items() if not entry[1]]
 
     def get_result(self) -> Tuple[str, MESSAGE_CATALOG]:
         """
@@ -1705,8 +1705,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         # dangling edges are discovered during validate_graph_edge() but
         # dangling_nodes can only be detected after all edges are processed
-        if self.has_dangling_nodes():
-            self.report(code=f"error.{graph_type.label()}.nodes.dangling")
+        # Release This is now deemed not a serious error but will be treated as 'info'
+        dangling_nodes: List[str] = self.has_dangling_nodes()
+        if dangling_nodes:
+            self.report(
+                code=f"info.{graph_type.label()}.nodes.dangling",
+                # this is an odd kind of identifier but the best we can do here?
+                identifier='|'.join(dangling_nodes)
+            )
 
     def merge(self, reporter):
         """

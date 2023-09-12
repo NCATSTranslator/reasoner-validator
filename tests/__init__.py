@@ -68,8 +68,9 @@ SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES = {
 }
 
 SAMPLE_NODES_WITH_UNUSED_NODE = deepcopy(SIMPLE_SAMPLE_NODES)
-SAMPLE_NODES_WITH_UNUSED_NODE["unused_node"] = {
+SAMPLE_NODES_WITH_UNUSED_NODE["NCBITaxon:9606"] = {
+    "name": "Homo sapiens",
     "categories": [
-       "biolink:NamedThing"
+       "biolink:OrganismTaxon"
     ]
 }

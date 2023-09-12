@@ -108,7 +108,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
 
 
 @pytest.mark.parametrize(
-    "biolink_version,edge,code",
+    "biolink_version,edge,validation_code",
     [
         (   # Query 0 - Valid edge object
             LATEST_BIOLINK_MODEL_VERSION,
@@ -369,14 +369,14 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         )
     ]
 )
-def test_check_biolink_model_default_compliance_of_input_edge(biolink_version: str, edge: Dict, code: str):
+def test_check_biolink_model_default_compliance_of_input_edge(biolink_version: str, edge: Dict, validation_code: str):
     validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version)
     validator.check_biolink_model_compliance_of_input_edge(edge=edge)
-    check_messages(validator, code)
+    check_messages(validator, validation_code)
 
 
 @pytest.mark.parametrize(
-    "biolink_version,edge,code",
+    "biolink_version,edge,validation_code",
     [
         (   # Query 0 - Predicate is abstract - strict_validation == False
             LATEST_BIOLINK_MODEL_VERSION,
@@ -404,10 +404,10 @@ def test_check_biolink_model_default_compliance_of_input_edge(biolink_version: s
         )
     ]
 )
-def test_check_biolink_model_non_strict_compliance_of_input_edge(biolink_version: str, edge: Dict, code: str):
+def test_check_biolink_model_non_strict_compliance_of_input_edge(biolink_version: str, edge: Dict, validation_code: str):
     validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version, strict_validation=False)
     validator.check_biolink_model_compliance_of_input_edge(edge=edge)
-    check_messages(validator, code)
+    check_messages(validator, validation_code)
 
 
 @pytest.mark.parametrize(
@@ -487,7 +487,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
 
 
 @pytest.mark.parametrize(
-    "biolink_version,query_graph,code",
+    "biolink_version,query_graph,validation_code",
     [
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -561,8 +561,8 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
             },
             # Query Graphs can have empty 'edges'
             # but since we now detect 'dangling nodes'
-            # we see a 'dangling nodes' error
-            "error.query_graph.nodes.dangling"
+            # we now see a 'dangling nodes' error
+            "info.query_graph.nodes.dangling"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -580,7 +580,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
             # Query Graphs can have empty 'edges'
             # but since we now detect 'dangling nodes'
             # we see a 'dangling nodes' error
-            "error.query_graph.nodes.dangling"
+            "info.query_graph.nodes.dangling"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -638,12 +638,16 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
             # Query 9: Unused node is considered 'dangling'
             {
                 "nodes": {
-                    "type-2 diabetes": {"ids": []},
+                    "type-2 diabetes": {
+                        "ids": []
+                    },
                     "drug": {
                         "categories": ["biolink:Drug"]
                     },
-                    "unused_node": {
-                        "categories": ["biolink:NamedThing"]
+                    "NCBITaxon:9606": {
+                        "categories": [
+                           "biolink:OrganismTaxon"
+                        ]
                     }
                 },
                 "edges": {
@@ -654,7 +658,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                     }
                 }
             },
-            "error.query_graph.nodes.dangling"
+            "info.query_graph.nodes.dangling"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -1056,17 +1060,21 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         )
     ]
 )
-def test_check_biolink_model_default_compliance_of_query_graph(query_graph: Dict, biolink_version: str, code: str):
+def test_check_biolink_model_default_compliance_of_query_graph(
+    query_graph: Dict,
+    biolink_version: str,
+    validation_code: str
+):
     validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version)
     validator.check_biolink_model_compliance(
         graph=query_graph,
         graph_type=TRAPIGraphType.Query_Graph
     )
-    check_messages(validator, code)
+    check_messages(validator, validation_code)
 
 
 @pytest.mark.parametrize(
-    "biolink_version,query_graph,code",
+    "biolink_version,query_graph,validation_code",
     [
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -1090,13 +1098,17 @@ def test_check_biolink_model_default_compliance_of_query_graph(query_graph: Dict
         )
     ]
 )
-def test_check_biolink_model_non_strict_compliance_of_query_graph(query_graph: Dict, biolink_version: str, code: str):
+def test_check_biolink_model_non_strict_compliance_of_query_graph(
+    query_graph: Dict,
+    biolink_version: str,
+    validation_code: str
+):
     validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version, strict_validation=False)
     validator.check_biolink_model_compliance(
         graph=query_graph,
         graph_type=TRAPIGraphType.Query_Graph
     )
-    check_messages(validator, code)
+    check_messages(validator, validation_code)
 
 
 TEST_ARA_CASE_TEMPLATE = {
@@ -1136,7 +1148,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
 
 
 @pytest.mark.parametrize(
-    "edge,code",
+    "edge,validation_code",
     [
         # (
         #         "mock_edge",  # mock data has dumb edges: don't worry about the S-P-O, just the attributes
@@ -1167,18 +1179,18 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
         )
     ]
 )
-def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge: Dict, code: str):
+def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge: Dict, validation_code: str):
     validator = BiolinkValidator(trapi_version=TRAPI_1_3_0)
     validator.validate_attributes(
         graph_type=TRAPIGraphType.Knowledge_Graph,
         edge_id="test_validate_attributes unit test",
         edge=edge
     )
-    check_messages(validator, code)
+    check_messages(validator, validation_code)
 
 
 @pytest.mark.parametrize(
-    "edge,code",
+    "edge,validation_code",
     [
         (
             # Query 0. 'attributes' key missing in edge record is None
@@ -1315,18 +1327,18 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge: Dict, code: 
         )
     ]
 )
-def test_post_1_4_0_trapi_validate_attributes(edge: Dict, code: str):
+def test_post_1_4_0_trapi_validate_attributes(edge: Dict, validation_code: str):
     validator = BiolinkValidator()
     validator.validate_attributes(
         graph_type=TRAPIGraphType.Knowledge_Graph,
         edge_id="test_validate_attributes unit test",
         edge=edge
     )
-    check_messages(validator, code)
+    check_messages(validator, validation_code)
 
 
 @pytest.mark.parametrize(
-    "edge,target_provenance,code",
+    "edge,target_provenance,validation_code",
     [
         (
             # Query 0. Missing ARA knowledge source provenance?
@@ -1395,7 +1407,7 @@ def test_post_1_4_0_trapi_validate_attributes(edge: Dict, code: str):
         )
     ]
 )
-def test_pre_1_4_0_validate_provenance(edge: Dict, target_provenance: Optional[Dict[str, str]], code: str):
+def test_pre_1_4_0_validate_provenance(edge: Dict, target_provenance: Optional[Dict[str, str]], validation_code: str):
     """TRAPI pre-1.4.0 releases recorded provenance in attributes. This unit test checks for this"""
     validator = BiolinkValidator(
         trapi_version=TRAPI_1_3_0,
@@ -1407,11 +1419,11 @@ def test_pre_1_4_0_validate_provenance(edge: Dict, target_provenance: Optional[D
         edge_id="test_validate_attributes unit test",
         edge=edge
     )
-    check_messages(validator, code)
+    check_messages(validator, validation_code)
 
 
 @pytest.mark.parametrize(
-    "edge,target_provenance,code",
+    "edge,target_provenance,validation_code",
     [
         (
             # Query 0. Attributes are not a proper array
@@ -1546,7 +1558,7 @@ def test_pre_1_4_0_validate_provenance(edge: Dict, target_provenance: Optional[D
         )
     ]
 )
-def test_latest_validate_attributes(edge: Dict, target_provenance: Optional[Dict[str, str]], code: str):
+def test_latest_validate_attributes(edge: Dict, target_provenance: Optional[Dict[str, str]], validation_code: str):
     validator = BiolinkValidator(
         # trapi_version="latest",
         biolink_version=LATEST_BIOLINK_MODEL_VERSION,
@@ -1557,7 +1569,7 @@ def test_latest_validate_attributes(edge: Dict, target_provenance: Optional[Dict
         edge_id="test_validate_attributes unit test",
         edge=edge
     )
-    check_messages(validator, code)
+    check_messages(validator, validation_code)
 
 
 SAMPLE_SOURCE_TRAIL = "infores:chebi -> infores:molepro -> infores:arax"
@@ -3383,7 +3395,7 @@ def test_validate_biolink_curie_in_qualifiers(
                 # Sample edge
                 'edges': SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES
             },
-            "error.knowledge_graph.nodes.dangling"
+            "info.knowledge_graph.nodes.dangling"
         )
     ]
 )
