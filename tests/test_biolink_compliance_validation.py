@@ -561,8 +561,8 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
             },
             # Query Graphs can have empty 'edges'
             # but since we now detect 'dangling nodes'
-            # we now see a 'dangling nodes' error
-            "info.query_graph.nodes.dangling"
+            # we see a 'dangling nodes' error
+            "warning.query_graph.nodes.dangling"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -580,7 +580,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
             # Query Graphs can have empty 'edges'
             # but since we now detect 'dangling nodes'
             # we see a 'dangling nodes' error
-            "info.query_graph.nodes.dangling"
+            "warning.query_graph.nodes.dangling"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -658,7 +658,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                     }
                 }
             },
-            "info.query_graph.nodes.dangling"
+            "warning.query_graph.nodes.dangling"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -3395,7 +3395,7 @@ def test_validate_biolink_curie_in_qualifiers(
                 # Sample edge
                 'edges': SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES
             },
-            "info.knowledge_graph.nodes.dangling"
+            "warning.knowledge_graph.nodes.dangling"
         )
     ]
 )

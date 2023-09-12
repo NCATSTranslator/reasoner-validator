@@ -1709,7 +1709,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         dangling_nodes: List[str] = self.has_dangling_nodes()
         if dangling_nodes:
             self.report(
-                code=f"info.{graph_type.label()}.nodes.dangling",
+                code=f"warning.{graph_type.label()}.nodes.dangling",
                 # this is an odd kind of identifier but the best we can do here?
                 identifier='|'.join(dangling_nodes)
             )

@@ -898,6 +898,14 @@
 
 **Description:** A predicate selected for use as input data should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
+### warning.query_graph.nodes.dangling
+
+**Message:** Dangling nodes
+
+**Context:** identifier
+
+**Description:** At least one query node is unused in the query graph!
+
 ### warning.query_graph.node.category.deprecated
 
 **Message:** Node has deprecated category
@@ -937,6 +945,14 @@
 **Context:** edge_id, identifier, qualifier_type_id
 
 **Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
+
+### warning.knowledge_graph.nodes.dangling
+
+**Message:** Dangling nodes
+
+**Context:** identifier
+
+**Description:** At least one query node is unused in the knowledge graph!
 
 ### warning.knowledge_graph.node.category.deprecated
 
@@ -1082,14 +1098,6 @@
 
 **Description:** Input edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'.
 
-### info.query_graph.nodes.dangling
-
-**Message:** Dangling nodes
-
-**Context:** identifier
-
-**Description:** At least one query node is unused in the query graph!
-
 ### info.query_graph.edge.predicate.abstract
 
 **Message:** Edge has an 'abstract' predicate
@@ -1105,14 +1113,6 @@
 **Context:** edge_id, identifier
 
 **Description:** TRAPI Messages in Query Graphs can have 'mixin' predicates, when the mode of validation is 'non-strict'.
-
-### info.knowledge_graph.nodes.dangling
-
-**Message:** Dangling nodes
-
-**Context:** identifier
-
-**Description:** At least one query node is unused in the knowledge graph!
 
 ### info.knowledge_graph.edge.predicate.abstract
 

@@ -134,7 +134,7 @@ def test_get_code_subtree_internal_subtree():
     assert isinstance(subtree, Dict)
     assert message_type == "warning"
     assert subtree is not None
-    assert all([key in ["node", "predicate", "edge"] for key in subtree])
+    assert all([key in ["nodes", "node", "predicate", "edge"] for key in subtree])
 
 
 def test_get_entry():
