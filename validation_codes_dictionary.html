@@ -78,7 +78,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-input-edge-predicate-mixin">error.input_edge.predicate.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-input-edge-predicate-invalid">error.input_edge.predicate.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-nodes-uninformative">error.query_graph.nodes.uninformative</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-query-graph-nodes-dangling">error.query_graph.nodes.dangling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-category-missing">error.query_graph.node.category.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-category-not-a-category">error.query_graph.node.category.not_a_category</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-node-category-unknown">error.query_graph.node.category.unknown</a></li>
@@ -103,7 +102,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-invalid">error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-empty">error.knowledge_graph.nodes.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-uninformative">error.knowledge_graph.nodes.uninformative</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-nodes-dangling">error.knowledge_graph.nodes.dangling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edges-empty">error.knowledge_graph.edges.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-id-missing">error.knowledge_graph.node.id.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-node-name-missing">error.knowledge_graph.node.name.missing</a></li>
@@ -175,11 +173,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-node-id-unmapped-to-category">warning.input_edge.node.id.unmapped_to_category</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-predicate-deprecated">warning.input_edge.predicate.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-input-edge-predicate-non-canonical">warning.input_edge.predicate.non_canonical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-nodes-dangling">warning.query_graph.nodes.dangling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-node-category-deprecated">warning.query_graph.node.category.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-node-ids-unmapped-prefix">warning.query_graph.node.ids.unmapped_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-edge-predicate-deprecated">warning.query_graph.edge.predicate.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-edge-predicate-non-canonical">warning.query_graph.edge.predicate.non_canonical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-query-graph-edge-qualifier-constraints-qualifier-set-qualifiers-qualifier-value-unresolved">warning.query_graph.edge.qualifier_constraints.qualifier_set.qualifiers.qualifier.value.unresolved</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-nodes-dangling">warning.knowledge_graph.nodes.dangling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-category-deprecated">warning.knowledge_graph.node.category.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-category-abstract-or-mixin">warning.knowledge_graph.node.category.abstract_or_mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-node-id-unmapped-prefix">warning.knowledge_graph.node.id.unmapped_prefix</a></li>
@@ -380,11 +380,6 @@
 <p><strong>Message:</strong> Missing informative node information</p>
 <p><strong>Description:</strong> Query graph must have at least one node with identifiers and/or categories available for query!</p>
 </section>
-<section id="error-query-graph-nodes-dangling">
-<h3>error.query_graph.nodes.dangling<a class="headerlink" href="#error-query-graph-nodes-dangling" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Dangling nodes</p>
-<p><strong>Description:</strong> At least one query node is unused in the query graph!</p>
-</section>
 <section id="error-query-graph-node-category-missing">
 <h3>error.query_graph.node.category.missing<a class="headerlink" href="#error-query-graph-node-category-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Category is missing from node</p>
@@ -526,11 +521,6 @@
 <h3>error.knowledge_graph.nodes.uninformative<a class="headerlink" href="#error-knowledge-graph-nodes-uninformative" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Missing informative node information!</p>
 <p><strong>Description:</strong> All nodes in a knowledge graph must have categories!</p>
-</section>
-<section id="error-knowledge-graph-nodes-dangling">
-<h3>error.knowledge_graph.nodes.dangling<a class="headerlink" href="#error-knowledge-graph-nodes-dangling" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Dangling nodes</p>
-<p><strong>Description:</strong> At least one query node is unused in the knowledge graph!</p>
 </section>
 <section id="error-knowledge-graph-edges-empty">
 <h3>error.knowledge_graph.edges.empty<a class="headerlink" href="#error-knowledge-graph-edges-empty" title="Permalink to this heading"></a></h3>
@@ -936,6 +926,12 @@
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> A predicate selected for use as input data should preferably be tagged as ‘canonical’ in the specified Biolink Model release?</p>
 </section>
+<section id="warning-query-graph-nodes-dangling">
+<h3>warning.query_graph.nodes.dangling<a class="headerlink" href="#warning-query-graph-nodes-dangling" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Dangling nodes</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> At least one query node is unused in the query graph!</p>
+</section>
 <section id="warning-query-graph-node-category-deprecated">
 <h3>warning.query_graph.node.category.deprecated<a class="headerlink" href="#warning-query-graph-node-category-deprecated" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node has deprecated category</p>
@@ -965,6 +961,12 @@
 <p><strong>Message:</strong> The ‘qualifier_type_id’ for edge has unresolved ‘qualifier_value’</p>
 <p><strong>Context:</strong> edge_id, identifier, qualifier_type_id</p>
 <p><strong>Description:</strong> A ‘qualifier_value’ for the specified ‘qualifier_type_id’ of a qualifier likely could not be resolved without knowledge of the edge category!</p>
+</section>
+<section id="warning-knowledge-graph-nodes-dangling">
+<h3>warning.knowledge_graph.nodes.dangling<a class="headerlink" href="#warning-knowledge-graph-nodes-dangling" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Dangling nodes</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> At least one query node is unused in the knowledge graph!</p>
 </section>
 <section id="warning-knowledge-graph-node-category-deprecated">
 <h3>warning.knowledge_graph.node.category.deprecated<a class="headerlink" href="#warning-knowledge-graph-node-category-deprecated" title="Permalink to this heading"></a></h3>

@@ -178,12 +178,6 @@
 
 **Description:** Query graph must have at least one node with identifiers and/or categories available for query!
 
-### error.query_graph.nodes.dangling
-
-**Message:** Dangling nodes
-
-**Description:** At least one query node is unused in the query graph!
-
 ### error.query_graph.node.category.missing
 
 **Message:** Category is missing from node
@@ -371,12 +365,6 @@
 **Message:** Missing informative node information!
 
 **Description:** All nodes in a knowledge graph must have categories!
-
-### error.knowledge_graph.nodes.dangling
-
-**Message:** Dangling nodes
-
-**Description:** At least one query node is unused in the knowledge graph!
 
 ### error.knowledge_graph.edges.empty
 
@@ -910,6 +898,14 @@
 
 **Description:** A predicate selected for use as input data should preferably be tagged as 'canonical' in the specified Biolink Model release?
 
+### warning.query_graph.nodes.dangling
+
+**Message:** Dangling nodes
+
+**Context:** identifier
+
+**Description:** At least one query node is unused in the query graph!
+
 ### warning.query_graph.node.category.deprecated
 
 **Message:** Node has deprecated category
@@ -949,6 +945,14 @@
 **Context:** edge_id, identifier, qualifier_type_id
 
 **Description:** A 'qualifier_value' for the specified 'qualifier_type_id' of a qualifier likely could not be resolved without knowledge of the edge category!
+
+### warning.knowledge_graph.nodes.dangling
+
+**Message:** Dangling nodes
+
+**Context:** identifier
+
+**Description:** At least one query node is unused in the knowledge graph!
 
 ### warning.knowledge_graph.node.category.deprecated
 
