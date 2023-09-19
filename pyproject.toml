@@ -56,12 +56,22 @@ urllib3 = "^1.26.15"
 numpydoc = {version = "^1.5.0", optional = true}
 sphinx = {version = "^6.2.1", optional = true}
 myst-parser = {version = "^2.0.0", optional = true}
-fastapi = {version = "^0.68", optional = true}
-uvicorn = {version = "^0.15", optional = true}
+fastapi = {version = "^0.85.0", optional = true}
+uvicorn = {version = "*", optional = true}
 pytest-cov = {version = "^4.0.0"}
 pytest = {version = "^7.2.2"}
 sphinx-rtd-theme = {version = "^1.2.2", optional = true}
 
+# for more pre-implemented OpenTelemetry instrumentations:
+#   https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation
+httpx = {version = "^0.18.2", optional = true}
+
+# exporting traces for jaeger
+opentelemetry-exporter-otlp-proto-http = {version = "*", optional = true}
+
+# instrumentation for fast api and httpx
+opentelemetry-instrumentation-fastapi = {version = "*", optional = true}
+opentelemetry-instrumentation-httpx = {version = "*", optional = true}
 
 [tool.poetry.urls]
 "Change Log" = "https://github.com/NCATSTranslator/reasoner-validator/blob/master/CHANGELOG.md"
@@ -69,7 +79,7 @@ sphinx-rtd-theme = {version = "^1.2.2", optional = true}
 
 [tool.poetry.extras]
 docs = ["numpydoc", "sphinx", "myst-parser", "sphinx-rtd-theme"]
-web = ["fastapi", "uvicorn"]
+web = ["fastapi", "uvicorn", "httpx", "opentelemetry-exporter-otlp-proto-http", "opentelemetry-instrumentation-fastapi", "opentelemetry-instrumentation-httpx"]
 
 [tool.coverage.run]
 source = ["reasoner_validator"]

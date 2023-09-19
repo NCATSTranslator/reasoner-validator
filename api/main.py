@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
+from api.rvtelemetry import instrument
 
 from bmt import Toolkit
 
@@ -14,10 +15,19 @@ from reasoner_validator.trapi import TRAPISchemaValidator
 from reasoner_validator.versioning import get_latest_version
 from reasoner_validator.validator import TRAPIResponseValidator
 
+SERVICE_NAME = "reasoner-validator"
+
 default_toolkit: Toolkit = Toolkit()
 DEFAULT_BIOLINK_MODEL_VERSION = default_toolkit.get_model_version()
 
-app = FastAPI()
+app = FastAPI(title=SERVICE_NAME)
+
+# call instrumentation code
+instrument(
+    app=app,
+    service_name=SERVICE_NAME
+    # , endpoint = ??
+)
 
 
 # Dictionary of validation context identifying the  ARA and KP
