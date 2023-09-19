@@ -16,6 +16,7 @@ from reasoner_validator.versioning import get_latest_version
 from reasoner_validator.validator import TRAPIResponseValidator
 
 telemetry_endpoint: Optional[str] = getenv("TELEMETRY_ENDPOINT")
+print(f"Telemetry endpoint: {str(telemetry_endpoint)}", file=stderr)
 
 SERVICE_NAME = "reasoner-validator"
 

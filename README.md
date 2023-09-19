@@ -270,6 +270,8 @@ To minimize redundancy in validation messages, messages are uniquely indexed in 
 
 The web service may be monitored for OpenTelemetry by setting an environment variable **TELEMETRY_ENDPOINT**  to a suitable trace collecting endpoint in an application like [Jaeger](https://www.jaegertracing.io/) (see also the [Translator SRI Jaeger-Demo](https://github.com/TranslatorSRI/Jaeger-demo)).
 
+**Note:** the current system Docker (Compose) design only supports OpenTemplate tracing using the internal Jaeger container and may require further refinements to enable use of an external telemetry collector.
+
 ### Running the Web Service within Docker
 
 The Reasoner Validator web service may be run inside a docker container, using Docker Compose.
