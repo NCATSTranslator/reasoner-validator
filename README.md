@@ -266,6 +266,10 @@ To minimize redundancy in validation messages, messages are uniquely indexed in 
 1. the (codes.yaml recorded) dot-delimited validation code path string
 2. for messages with templated parameters, by a mandatory 'identifier' field (which is expected to exist as a field in a template if such template has one or more parameterized fields)
 
+### OpenTelemetry and Jaeger
+
+The web service may be monitored for OpenTelemetry by setting an environment variable **TELEMETRY_ENDPOINT**  to a suitable trace collecting endpoint in an application like [Jaeger](https://www.jaegertracing.io/) (see also the [Translator SRI Jaeger-Demo](https://github.com/TranslatorSRI/Jaeger-demo)).
+
 ### Running the Web Service within Docker
 
 The Reasoner Validator web service may be run inside a docker container, using Docker Compose.

@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.9.3
+- Added (optional) OpenTelemetry functionality for web service.
+
 ## 3.9.2
 - demoted **dangling nodes** 'error' down to 'warning' message, annotated with the list of missing nodes as the identifier
 

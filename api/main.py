@@ -3,17 +3,19 @@ FastAPI web service wrapper for TRAPI validator and Biolink Model compliance tes
 """
 from typing import Optional, Dict
 from sys import stderr
+from os import getenv
 from pydantic import BaseModel
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from api.rvtelemetry import instrument
 
 from bmt import Toolkit
 
 from reasoner_validator.trapi import TRAPISchemaValidator
 from reasoner_validator.versioning import get_latest_version
 from reasoner_validator.validator import TRAPIResponseValidator
+
+telemetry_endpoint: Optional[str] = getenv("TELEMETRY_ENDPOINT")
 
 SERVICE_NAME = "reasoner-validator"
 
@@ -22,12 +24,15 @@ DEFAULT_BIOLINK_MODEL_VERSION = default_toolkit.get_model_version()
 
 app = FastAPI(title=SERVICE_NAME)
 
-# call instrumentation code
-instrument(
-    app=app,
-    service_name=SERVICE_NAME
-    # , endpoint = ??
-)
+if telemetry_endpoint:
+    from api.rvtelemetry import instrument
+
+    # call instrumentation code
+    instrument(
+        app=app,
+        service_name=SERVICE_NAME,
+        endpoint=telemetry_endpoint
+    )
 
 
 # Dictionary of validation context identifying the  ARA and KP

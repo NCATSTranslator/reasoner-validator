@@ -1,7 +1,6 @@
 """
 Exploratory Open Telemetry instrumentation of the reasoner-validator
 """
-import httpx
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry import trace
 from opentelemetry.sdk.resources import SERVICE_NAME as telemetery_service_name_key, Resource
