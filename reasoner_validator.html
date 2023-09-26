@@ -56,6 +56,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.is_trapi_1_4"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.is_trapi_1_4()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sample_graph"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sample_graph()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sample_results"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sample_results()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sanitize_workflow"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sanitize_workflow()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -276,58 +277,61 @@ conformance of TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sample_results" title="reasoner_validator.validator.TRAPIResponseValidator.sample_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_results</span></code></a>(results[, sample_size])</p></td>
 <td><p>Subsample the results to a maximum size of 'sample_size'</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_nodes</span></code>(nodes)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sanitize_workflow" title="reasoner_validator.validator.TRAPIResponseValidator.sanitize_workflow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sanitize_workflow</span></code></a>(response)</p></td>
+<td><p>Workflows in TRAPI Responses cannot be validated further due to missing tags and None values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_nodes</span></code>(nodes)</p></td>
 <td><p>Records additional nodes, uniquely by node_id, with specified categories.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_case_has_validation_errors</span></code>(tag, case)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_case_has_validation_errors</span></code>(tag, case)</p></td>
 <td><p>Check if test case has validation errors.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
 <td><p>Export BiolinkValidator contents as a Python dictionary (including Biolink version and parent class dictionary content).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code>(instance, component)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code>(instance, component)</p></td>
 <td><p>Validate instance against schema.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attribute_constraints</span></code>(edge_id, edge)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attribute_constraints</span></code>(edge_id, edge)</p></td>
 <td><p>Validate Query Edge Attributes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attributes</span></code>(graph_type, edge_id, edge)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attributes</span></code>(graph_type, edge_id, edge)</p></td>
 <td><p>Validate Knowledge Edge Attributes.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_biolink</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_biolink</span></code>()</p></td>
 <td><p>Predicate to check if the Biolink (version) is tagged to 'suppress' compliance validation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_category</span></code>(context, node_id, category)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_category</span></code>(context, node_id, category)</p></td>
 <td><p>Validate a Biolink category.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_element_status</span></code>(graph_type, context, ...)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_element_status</span></code>(graph_type, context, ...)</p></td>
 <td><p>Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_edge</span></code>(edge, graph_type)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_edge</span></code>(edge, graph_type)</p></td>
 <td><p>Validate slot properties of a relationship ('biolink:Association') edge.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_node</span></code>(node_id, slots, graph_type)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_node</span></code>(node_id, slots, graph_type)</p></td>
 <td><p>Validate slot properties (mainly 'categories') of a node.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_infores</span></code>(context, edge_id, identifier)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_infores</span></code>(context, edge_id, identifier)</p></td>
 <td><p>Validate that the specified identifier is a well-formed Infores CURIE.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_predicate</span></code>(edge_id, predicate, ...)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_predicate</span></code>(edge_id, predicate, ...)</p></td>
 <td><p>Validates predicates based on their meta-nature: existence, mixin, deprecation, etc.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_provenance</span></code>(edge_id, ara_source, ...)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_provenance</span></code>(edge_id, ara_source, ...)</p></td>
 <td><p>Validates ARA and KP infores knowledge sources based on surveyed Edge slots (recorded in edge &quot;attributes&quot; pre-1.4.0; in &quot;sources&quot;, post-1.4.0).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_constraints</span></code>(edge_id, edge)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_constraints</span></code>(edge_id, edge)</p></td>
 <td><p>Validate Query Edge Qualifier Constraints.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_entry</span></code>(context, edge_id, ...)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_entry</span></code>(context, edge_id, ...)</p></td>
 <td><p>Validate Qualifier Entry (JSON Object).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifiers</span></code>(edge_id, edge[, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifiers</span></code>(edge_id, edge[, ...])</p></td>
 <td><p>Validate Knowledge Edge Qualifiers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_sources</span></code>(edge_id, edge)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_sources</span></code>(edge_id, edge)</p></td>
 <td><p>Validate (TRAPI 1.4.0-beta ++) Edge.sources provenance.</p></td>
 </tr>
 </tbody>
@@ -537,6 +541,22 @@ triggers validation of all edges in the knowledge graph (Default: 0 - use all ed
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List, ‘sample_size’ sized subset of Results</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.sanitize_workflow">
+<span class="sig-name descname"><span class="pre">sanitize_workflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.sanitize_workflow" title="Permalink to this definition"></a></dt>
+<dd><p>Workflows in TRAPI Responses cannot be validated further due to missing tags and None values.
+This method is a temporary workaround to sanitize the query for additional validation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>response</strong> – Dict full TRAPI Response JSON object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict, response with discretionary removal of content which
+triggers (temporarily) unwarranted TRAPI validation failures</p>
 </dd>
 </dl>
 </dd></dl>
