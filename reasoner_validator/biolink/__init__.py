@@ -166,6 +166,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param prefix: named context of the BiolinkValidator, used as a prefix in validation messages.
         :param trapi_version:  Optional[str], caller specified Biolink Model version (default: None, use TRAPI 'latest')
         :param biolink_version: Optional[str], caller specified Biolink Model version (default: None, use BMT 'latest')
+                                Note that a special biolink_version value string "suppress" disables full Biolink Model
+                                validation by the validator (i.e. limits validation to superficial validation).
         :param target_provenance: Optional[Dict[str,str]], Dictionary of context ARA and KP for provenance validation
         :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
                                   'info' message; A value of 'None' uses the default value for specific graph contexts.
