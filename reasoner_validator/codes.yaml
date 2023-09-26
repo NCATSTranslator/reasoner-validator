@@ -298,12 +298,6 @@ error:
           $context:
             - identifier
           $description: "Knowledge graph node must have a 'id' key with a non-empty associated value!"
-      name:
-        missing:
-          $message: "Name is missing for node"
-          $context:
-            - identifier
-          $description: "Although TRAPI 1.4.0 states 'nullable: True', Translator user interface functionally requires that a non-empty 'name' property value must be specified in a knowledge graph node!"
       category:
         missing:
           $message: "Category is missing for node"
@@ -744,6 +738,13 @@ warning:
           - identifier
         $description: "At least one query node is unused in the knowledge graph!"
     node:
+      name:
+        missing:
+          $message: "Name is missing for node"
+          $context:
+            - identifier
+          $description: "Although TRAPI 1.4.0 states 'nullable: True', Translator user interface functionally requires that a non-empty 'name' property value ought to be specified in a knowledge graph node!"
+
       category:
         deprecated:
           $message: "Node has deprecated category"

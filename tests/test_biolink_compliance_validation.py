@@ -2466,7 +2466,7 @@ def test_validate_biolink_curie_in_qualifiers(
                     }
                 }
             },
-            "error.knowledge_graph.node.name.missing"
+            "warning.knowledge_graph.node.name.missing"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,

@@ -330,7 +330,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 # UI team request (part of issue #35): really need names here
                 if not ("name" in slots and slots["name"]):
                     self.report(
-                        code="error.knowledge_graph.node.name.missing",
+                        code="warning.knowledge_graph.node.name.missing",
                         identifier=node_id
                     )
 
