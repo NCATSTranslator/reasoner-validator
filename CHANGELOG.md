@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.9.4
+- Demote 'knowledge_graph.node.name.missing' validation error into a warning.
+- Restore TRAPI 'workflow' sanitization to fix null 'parameters' or 'runner_parameters', pending future repairs to the workflow schema (i.e. 'nullable: true' directives?)
+
 ## 3.9.3
 - Added (optional) OpenTelemetry functionality for web service.
 
