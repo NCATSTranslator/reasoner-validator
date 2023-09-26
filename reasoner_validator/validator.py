@@ -1,6 +1,5 @@
 from typing import Optional, List, Dict
 
-import deprecation
 from bmt import Toolkit
 
 from reasoner_validator.biolink import (
@@ -10,8 +9,7 @@ from reasoner_validator.biolink import (
 )
 
 from reasoner_validator.report import TRAPIGraphType
-from reasoner_validator.trapi import TRAPI_1_3_0_SEMVER, TRAPI_1_4_0_BETA3_SEMVER, TRAPI_1_4_0_BETA4_SEMVER, \
-    TRAPI_1_4_0_SEMVER, LATEST_TRAPI_RELEASE, LATEST_TRAPI_MAJOR_RELEASE_SEMVER
+from reasoner_validator.trapi import LATEST_TRAPI_RELEASE, LATEST_TRAPI_MAJOR_RELEASE_SEMVER
 from reasoner_validator.trapi.mapping import MappingValidator, check_node_edge_mappings
 from reasoner_validator.versioning import SemVer, SemVerError, get_latest_version
 from reasoner_validator.sri.util import get_aliases
@@ -72,6 +70,29 @@ class TRAPIResponseValidator(BiolinkValidator):
             self._is_trapi_1_4 = True
         return self._is_trapi_1_4
 
+    def sanitize_workflow(self, response: Dict) -> Dict:
+        """
+        Workflows in TRAPI Responses cannot be validated further due to missing tags and None values.
+        This method is a temporary workaround to sanitize the query for additional validation.
+
+        :param response: Dict full TRAPI Response JSON object
+        :return: Dict, response with discretionary removal of content which
+                       triggers (temporarily) unwarranted TRAPI validation failures
+        """
+        if 'workflow' in response and response['workflow']:
+            # a 'workflow' is a list of steps, which are JSON object specifications
+            workflow_steps: List[Dict] = response['workflow']
+            for step in workflow_steps:
+                if 'runner_parameters' in step and not step['runner_parameters']:
+                    self.report("warning.trapi.response.workflow.runner_parameters.missing")
+                    step.pop('runner_parameters')
+                if 'parameters' in step and not step['parameters']:
+                    # There are some workflow types that have mandatory need for 'parameters'
+                    # but this should be caught in a later schema validation step
+                    self.report("warning.trapi.response.workflow.parameters.missing")
+                    step.pop('parameters')
+        return response
+
     def check_compliance_of_trapi_response(
             self,
             response: Optional[Dict],
@@ -126,6 +147,8 @@ class TRAPIResponseValidator(BiolinkValidator):
                 if self.default_biolink:
                     self.bmt = get_biolink_model_toolkit(biolink_version=response["biolink_version"])
                     self.biolink_version = self.bmt.get_model_version()
+
+            response = self.sanitize_workflow(response)
 
             self.is_valid_trapi_query(instance=response, component="Response")
             if not self.has_critical():

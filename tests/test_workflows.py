@@ -8,6 +8,7 @@ from itertools import product
 from json import dumps
 
 from reasoner_validator.trapi import TRAPISchemaValidator
+from reasoner_validator.validator import TRAPIResponseValidator
 
 from tests import LATEST_TEST_RELEASES
 
@@ -78,3 +79,31 @@ def test_query_latest_trapi_workflow_properties(trapi_version: str, query: Dict)
 
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     validator.validate(query, "Query")
+
+
+SAMPLE_QUERY_3 = {
+    "message": {
+        "knowledge_graph": None,
+        "query_graph": None,
+        "results": None,
+    },
+    "log_level": None,
+    "workflow":  [
+        {
+            "id": "annotate_nodes",
+            "parameters": None,
+            "runner_parameters": None
+        },
+        {
+            "id": "lookup"
+        }
+    ]
+}
+
+
+def test_query_sanitize_response_workflow_properties():
+    """Test sanitization of flawed TRAPI Query workflow properties."""
+
+    validator = TRAPIResponseValidator()
+    response = validator.sanitize_workflow(SAMPLE_QUERY_3)
+    validator.validate(response, "Query")
