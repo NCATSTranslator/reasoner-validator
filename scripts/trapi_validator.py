@@ -29,7 +29,6 @@ from reasoner_validator.validator import TRAPIResponseValidator
 from reasoner_validator.trapi import call_trapi
 from reasoner_validator.versioning import get_latest_version
 from reasoner_validator.biolink import get_biolink_model_toolkit
-from reasoner_validator.report import ValidationReporter
 
 ARS_HOSTS = [
     'ars-prod.transltr.io',
@@ -64,21 +63,24 @@ def get_cli_arguments():
     )
     arg_parser.add_argument(
         '-r', '--ars_response_id', type=str, nargs='?', default=None,
-        help='The value of this argument can either be an ARS query PK identifier or '
-             'a file name to JSON file with a previously run query.  Ignored when --endpoint or --arax_id are given.'
+        help='The value of this argument can either be an ARS query PK identifier or ' +
+             'a file name to JSON file with a previously run query.  ' +
+             'Ignored when --endpoint or --arax_id are given.'
     )
     arg_parser.add_argument(
         '-a', '--arax_id', type=str, nargs='?', default=None,
-        help='The value of this argument is an ARAX response identifier.  Ignored when an --endpoint is given.'
+        help='The value of this argument is an ARAX response identifier.  ' +
+             'Ignored when an --endpoint is given.'
     )
     arg_parser.add_argument(
         '-e', '--endpoint', type=str, nargs='?', default=None,
         help="Target TRAPI service endpoint to be directly used for query. Note: the endpoint is the root URL, " +
-             "without any path (like /query). This argument overrides the --response_id CLI argument."
+             "without any path (like /query). This argument overrides the --ars_response_id CLI argument."
     )
     arg_parser.add_argument(
         '-l', '--local_request', type=str, nargs='?', default=None,
-        help='Local JSON input text file source of the TRAPI Request. Mandatory when --endpoint CLI argument is given.'
+        help='Local JSON input text file source of the TRAPI Request. ' +
+             'Mandatory when --endpoint CLI argument is given.'
     )
     arg_parser.add_argument(
         '-j', '--json', action='store_true',
