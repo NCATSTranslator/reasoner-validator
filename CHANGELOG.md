@@ -6,7 +6,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 - pydantic updated to 1.10.13
 - Small clean-up of trapi_validator.py CLI help text
 - gitignore JSON files in scripts subfolder to allow local validation of said JSON files without committing them to the repo
-- silenced warnings about missing workflow schema defined 'parameters' and 'runner_parameters' (workflow schema allows these to be null but...)
+- silenced warnings about missing workflow schema defined 'parameters' and 'runner_parameters' (workflow schema allows these to be null but...) - but keeping the validation codes in the codes.yaml (for now)
 - fixed subtle bug with id prefix mapping validation
 
 
