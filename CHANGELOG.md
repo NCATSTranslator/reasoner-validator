@@ -2,6 +2,14 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 3.9.5
+- pydantic updated to 1.10.13
+- Small clean-up of trapi_validator.py CLI help text
+- gitignore JSON files in scripts subfolder to allow local validation of said JSON files without committing them to the repo
+- silenced warnings about missing workflow schema defined 'parameters' and 'runner_parameters' (workflow schema allows these to be null but...)
+- fixed subtle bug with id prefix mapping validation
+
+
 ## 3.9.4
 - Demote 'knowledge_graph.node.name.missing' validation error into a warning.
 - Restore TRAPI 'workflow' sanitization to fix null 'parameters' or 'runner_parameters', pending future repairs to the workflow schema (i.e. 'nullable: true' directives?)
