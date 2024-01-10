@@ -34,5 +34,5 @@ Steps to properly issue a new project release:
 8. Add the equivalent Git **tag** to **master**. This should be the Semantic Version string from step 4 with an added 'v' prefix, i.e. "v3.9.5".
 9. Push **master** to remote (if not already done with by a pull request in step 6).
 10.  Check if Git Actions for testing and documentation complete successfully.
-11. Create the release using the same release tag, i.e. "v3.8.10".
-12. Check if Git Action for package deployment is successful and check if the new version (i.e. "3.8.10") is now visible on **[pypy.org](https://pypi.org/search/?q=reasoner-validator)**
+11. Create the release using the same release tag, i.e. "v3.9.5".
+12. Check if Git Action for package deployment is successful and check if the new version (i.e. "3.9.5") is now visible on **[pypy.org](https://pypi.org/search/?q=reasoner-validator)**
