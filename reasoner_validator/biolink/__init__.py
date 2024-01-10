@@ -1742,6 +1742,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
     def report_header(self, title: Optional[str], compact_format: bool) -> str:
         header: str = TRAPISchemaValidator.report_header(self, title, compact_format)
-        header += "and Biolink Model version " \
+        header += " and Biolink Model version " \
                   f"'{str(self.get_biolink_version() if self.get_biolink_version() is not None else 'Default')}'"
         return header
