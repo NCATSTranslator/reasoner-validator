@@ -380,13 +380,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                         possible_subject_categories = self.bmt.get_element_by_prefix(identifier)
                                         if category.name in possible_subject_categories:
                                             id_prefix_mapped[identifier] = True
-                                            node_ids.remove(identifier)
-                                            # found a suitable mapping for the given identifier
-                                            break
 
                             # At this point, if any 'node_ids' are NOT
                             # removed (above), then they are unmapped
-                            if has_node_ids and node_ids:
+                            if has_node_ids and not all([mapped for mapped in id_prefix_mapped.values()]):
                                 self.report(
                                     code="warning.query_graph.node.ids.unmapped_prefix",
                                     identifier=node_id,
