@@ -88,6 +88,21 @@ class ValidationReporter:
             "information": dict()
         }
 
+    def reset_prefix(self, name: str):
+        """
+        Resets the prefix of the ValidationReporter to a new string.
+        :param name: str, new prefix string
+        :return: None
+        """
+        self.prefix = name
+
+    def get_prefix(self) -> str:
+        """
+        Returns the current prefix of the ValidationReporter.
+        :return: str, current prefix
+        """
+        return self.prefix
+
     def is_strict_validation(self, graph_type: TRAPIGraphType) -> bool:
         """
         Predicate to test if strict validation is to be applied. If the internal
