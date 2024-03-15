@@ -33,6 +33,8 @@ def check_messages(
             assert any([error_code == code for error_code in messages['errors']])
         elif message_type == "warning":
             assert any([warning_code == code for warning_code in messages['warnings']])
+        elif message_type == "skipped":
+            assert any([skipped_code == code for skipped_code in messages['skipped tests']])
         elif message_type == "info":
             assert any([info_code == code for info_code in messages['information']])
         if source_trail:
@@ -60,6 +62,7 @@ def test_graph_type_label():
 def test_check_basic_get_code_subtree():
     assert CodeDictionary.get_code_subtree("") is None
     assert CodeDictionary.get_code_subtree("info") is not None
+    assert CodeDictionary.get_code_subtree("skipped") is not None
     assert CodeDictionary.get_code_subtree("warning") is not None
     assert CodeDictionary.get_code_subtree("error") is not None
     assert CodeDictionary.get_code_subtree("critical") is not None
@@ -147,6 +150,7 @@ def test_get_entry():
 
     # Higher level subtrees, not terminal leaf entries?
     assert CodeDictionary.get_code_entry("info") is None
+    assert CodeDictionary.get_code_entry("skipped") is None
     assert CodeDictionary.get_code_entry("info.query_graph") is None
     assert CodeDictionary.get_code_entry("info.query_graph.node") is None
     assert CodeDictionary.get_code_entry("warning") is None
@@ -221,6 +225,15 @@ def test_unknown_message_code():
         CodeDictionary.display(code="foo.bar")
 
 
+def test_prefix_accessors():
+    reporter = ValidationReporter()
+    assert reporter.report_header().startswith("Validation Report\n")
+    assert reporter.get_prefix() == ""
+    reporter.reset_prefix("test_prefix_accessors")
+    assert reporter.get_prefix() == "test_prefix_accessors"
+    assert reporter.report_header().startswith("Validation Report for 'test_prefix_accessors'\n")
+
+
 def test_global_sourced_validation_message_report():
     reporter1 = ValidationReporter(prefix="First Validation Report")
     reporter1.report(code="info.compliant")
@@ -271,6 +284,7 @@ def test_messages():
     assert reporter1.has_messages()
     assert reporter1.has_information()
     assert not reporter1.has_warnings()
+    assert not reporter1.has_skipped()
     assert not reporter1.has_errors()
     assert not reporter1.has_critical()
 
@@ -303,6 +317,14 @@ def test_messages():
                     "Horace van der Gelder": None
                 }
             }
+        },
+        "skipped tests": {
+            "skipped.test": {
+                "global": {
+                    "Catastrophe": None
+                }
+            }
+
         },
         "warnings": {
             "warning.knowledge_graph.node.id.unmapped_prefix": {
@@ -353,6 +375,15 @@ def test_messages():
         information.append(value[0])
     assert "INFO - Excluded: All test case S-P-O triples from resource test location, " + \
            "or specific user excluded S-P-O triples" in information
+
+    assert "skipped tests" in message_catalog
+    assert len(message_catalog['skipped tests']) > 0
+    skipped: List[str] = list()
+    for code, messages in message_catalog['skipped tests'].items():
+        scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
+        scope, value = scoped_messages.popitem()
+        skipped.append(value[0])
+    assert "SKIPPED - Test: For reason indicated in the identifier." in skipped
 
     assert "warnings" in message_catalog
     assert len(message_catalog['warnings']) > 0
@@ -492,6 +523,7 @@ def test_validator_method():
                 "validation": {
                     "messages": {
                         "information": {},
+                        "skipped tests": {},
                         "warnings": {},
                         "errors": {},
                         "critical": {""}
@@ -506,6 +538,7 @@ def test_validator_method():
                 "validation": {
                     "messages": {
                         "information": {},
+                        "skipped tests": {},
                         "warnings": {},
                         "errors": {""},
                         "critical": {}
@@ -520,6 +553,7 @@ def test_validator_method():
                 "validation": {
                     "messages": {
                         "information": {},
+                        "skipped tests": {},
                         "warnings": {
                             "warning.input_edge.node.category.deprecated": [
                                 {

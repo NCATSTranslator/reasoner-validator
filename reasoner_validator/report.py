@@ -60,6 +60,7 @@ class ValidationReporter:
 
     _message_type_tag: Dict[str, str] = {
         "info": "information",
+        "skipped": "skipped tests",
         "warning": "warnings",
         "error": "errors",
         "critical": "critical"
@@ -85,6 +86,7 @@ class ValidationReporter:
             "critical": dict(),
             "errors": dict(),
             "warnings": dict(),
+            "skipped tests": dict(),
             "information": dict()
         }
 
@@ -132,6 +134,12 @@ class ValidationReporter:
         """
         return bool(self.messages["information"])
 
+    def has_skipped(self) -> bool:
+        """Predicate to detect any recorded 'skipped test' messages.
+        :return: bool, True if ValidationReporter has any information messages.
+        """
+        return bool(self.messages["skipped tests"])
+
     def has_warnings(self) -> bool:
         """Predicate to detect any recorded warning messages.
         :return: bool, True if ValidationReporter has any warning messages.
@@ -156,6 +164,13 @@ class ValidationReporter:
         :return: str, JSON formatted string of information messages.
         """
         return _output(self.messages["information"], flat)
+
+    def dump_skipped(self, flat=False) -> str:
+        """Dump 'skipped test' messages as JSON.
+        :param flat: render output as 'flat' JSON (default: False)
+        :return: str, JSON formatted string of 'skipped test' messages.
+        """
+        return _output(self.messages["skipped tests"], flat)
 
     def dump_warnings(self, flat=False) -> str:
         """Dump warning messages as JSON.
@@ -248,10 +263,10 @@ class ValidationReporter:
     def add_messages(self, new_messages: MESSAGE_CATALOG):
         """
         Batch addition of a dictionary of messages to a ValidationReporter instance.
-        :param new_messages: Dict[str, Dict], with key one of "information", "warnings", "errors" or "critical",
-                              with 'code' keyed dictionaries of (structured) message parameters.
+        :param new_messages: Dict[str, Dict], with key one of "information", "skipped tests", "warnings",
+                              "errors" or "critical", with 'code' keyed dictionaries of (structured) message parameters.
         """
-        for message_type in self.messages:   # 'info', 'warning', 'error', 'critical'
+        for message_type in self.messages:   # 'info', 'skipped', 'warning', 'error', 'critical'
             if message_type in new_messages:
                 message_type_contents = new_messages[message_type]
                 for code, details in message_type_contents.items():   # codes.yaml message codes
@@ -293,6 +308,13 @@ class ValidationReporter:
         :return: List, copy of all information messages.
         """
         return copy.deepcopy(self.messages["information"])
+
+    def get_skipped(self) -> MESSAGE_PARTITION:
+        """
+        Get copy of all recorded 'skipped test' messages.
+        :return: List, copy of all 'skipped test' messages.
+        """
+        return copy.deepcopy(self.messages["skipped tests"])
 
     def get_warnings(self) -> MESSAGE_PARTITION:
         """
@@ -371,6 +393,7 @@ class ValidationReporter:
         #         ...
         #         "messages": {
         #             "information": [],
+        #             "skipped tests": [],
         #             "warnings": [
         #                 {
         #                     "warning.predicate.non_canonical": {
@@ -411,7 +434,17 @@ class ValidationReporter:
         else:
             return False
 
-    def report_header(self, title: Optional[str], compact_format: bool) -> str:
+    def report_header(self, title: Optional[str] = "", compact_format: bool = True) -> str:
+        """
+
+        :param title: Optional[str], if title is None, then only the 'reasoner-validator' version is printed out
+                      in the header. If the title is an empty string (the default), then a title is generated
+                    by appending the ValidationReporter 'prefix' to the string 'Validation Report for'.
+        :param compact_format: bool, whether to print the header in compact format (default: True).
+                               Extra line feeds are otherwise provided to provide space around the header
+                               and control characters are output to underline the header.
+        :return: str, generated header.
+        """
         header: str = ""
         if title is not None:
 
@@ -420,7 +453,7 @@ class ValidationReporter:
 
             if not title:
                 title = f"Validation Report"
-                title += f" for '{self.prefix}'" if self.prefix else ""
+                title += f" for '{self.get_prefix()}'" if self.get_prefix() else ""
 
             if not compact_format:
                 header += f"\n\033[4m{title}\033[0m\n"
