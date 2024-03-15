@@ -3,7 +3,8 @@
 # Message Codes             #
 #   - critical (errors)     #
 #   - error(s)              #
-#   - warning(s)            #
+#   - warning(s)
+#   - skipped (tests)
 #   - info(rmation)         #
 #############################
 critical:

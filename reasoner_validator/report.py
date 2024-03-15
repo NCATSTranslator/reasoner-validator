@@ -204,11 +204,11 @@ class ValidationReporter:
     def get_message_type(code: str) -> str:
         """Get type of message code.
         :param code: message code
-        :return: message type, one of 'info', 'warning', 'error' or 'critical'
+        :return: message type, one of 'info', 'skipped', 'warning', 'error' or 'critical'
         """
         code_id_parts: List[str] = code.split('.')
         message_type: str = code_id_parts[0]
-        if message_type in ['info', 'warning', 'error', 'critical']:
+        if message_type in ['info', 'skipped', 'warning', 'error', 'critical']:
             return message_type
         else:
             raise NotImplementedError(
@@ -498,13 +498,14 @@ class ValidationReporter:
         if self.has_messages():
 
             # self.messages is a MESSAGE_CATALOG where MESSAGE_CATALOG is Dict[<message type>, MESSAGE_PARTITION]
-            # <message type> is the top level partition of messages into 'critical', 'error', 'warning' or 'info'
+            # <message type> is the top level partition of messages into
+            # 'critical', 'error', 'warning', 'skipped' or 'info'
             message_type: str
             coded_messages: MESSAGE_PARTITION
             for message_type, coded_messages in self.messages.items():
 
                 # if there are coded validation messages for a
-                # given message type: 'critical', 'error', 'warning' or 'info' ...
+                # given message type: 'critical', 'error', 'warning', 'skipped' or 'info' ...
                 if coded_messages:
 
                     # ... then iterate through them and print them out

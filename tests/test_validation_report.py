@@ -234,6 +234,18 @@ def test_prefix_accessors():
     assert reporter.report_header().startswith("Validation Report for 'test_prefix_accessors'\n")
 
 
+def test_get_message_type():
+    reporter = ValidationReporter()
+    assert reporter.get_message_type("info.compliant") == "info"
+    assert reporter.get_message_type("skipped.test") == "skipped"
+    assert reporter.get_message_type("warning.graph.empty") == "warning"
+    assert reporter.get_message_type("error.trapi.response.empty") == "error"
+    assert reporter.get_message_type("critical.trapi.validation") == "critical"
+    with pytest.raises(NotImplementedError):
+        # unknown message type
+        reporter.get_message_type(code="foo.bar")
+
+
 def test_global_sourced_validation_message_report():
     reporter1 = ValidationReporter(prefix="First Validation Report")
     reporter1.report(code="info.compliant")
