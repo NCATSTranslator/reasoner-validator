@@ -81,9 +81,25 @@ MESSAGE_PARTITION = Dict[
     SCOPED_MESSAGES
 ]
 
-# A MESSAGE_CATALOG contains the validation messages from all four
-# major categories of validation: critical/errors/warnings/information
+# A individual MESSAGE_CATALOG contains
+# the validation messages from
+# all four major categories of validation:
+# critical/errors/warnings/information
 MESSAGE_CATALOG = Dict[
     str,  # message type (critical/errors/warnings/information)
     MESSAGE_PARTITION
+]
+
+# MESSAGES_BY_TEST contains MESSAGE_CATALOG
+# entries indexed by individual tests
+MESSAGES_BY_TEST = Dict[
+    str,  # unique identifiers for each test
+    MESSAGE_CATALOG
+]
+
+# MESSAGES_BY_TARGET contains MESSAGES_BY_TEST entries
+# indexed by target: endpoint URL, URI or CURIE
+MESSAGES_BY_TARGET = Dict[
+    str,  # target identifier: endpoint URL, URI or CURIE
+    MESSAGES_BY_TEST
 ]
