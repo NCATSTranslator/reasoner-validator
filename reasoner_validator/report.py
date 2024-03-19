@@ -374,51 +374,54 @@ class ValidationReporter:
 
         # else: additional parameters are None
 
-    def add_messages(self, new_messages: MESSAGE_CATALOG, test: Optional[str] = None, target: Optional[str] = None):
+    def add_messages(self, new_messages: MESSAGES_BY_TARGET):
         """
         Batch addition of a dictionary of messages to a ValidationReporter instance.
-        :param new_messages: Dict[str, Dict], with key one of "information", "skipped tests", "warnings",
-                              "errors" or "critical", with 'code' keyed dictionaries of (structured) message parameters.
-        :param test: str, specified test (gets current 'default' test if not given)
-        :param target: str, specified target (gets current 'default' test if not given)
+        :param new_messages: MESSAGES_BY_TARGET, messages indexed by target, test and categories:
+                             one of "information", "skipped tests", "warnings", "errors" or "critical",
+                             with code-keyed dictionaries of (structured) message parameters.
         """
-        message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
-        for message_type in [name for name in MessageType.__members__]:
-            if message_type in new_messages:
-                message_type_contents = new_messages[message_type]
-                messages_entry: Dict = message_catalog[message_type]
-                for code, details in message_type_contents.items():   # codes.yaml message codes
-                    if code not in messages_entry.keys:
-                        messages_entry[code] = dict()
+        for target, target_messages in new_messages.items():
+            for test, new_message_catalog in target_messages.items():
+                this_message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
+                for message_type in [name for name in MessageType.__members__]:
+                    if message_type in new_message_catalog.keys():
+                        new_message_type_entry: Dict = new_message_catalog[message_type]
+                        this_message_type_entry: Dict = this_message_catalog[message_type]
+                        for code, new_message_details in new_message_type_entry.items():   # codes.yaml message codes
+                            if code not in this_message_type_entry.keys:
+                                this_message_type_entry[code] = dict()
+                            # 'source' scope is 'global' or a source trail
+                            # path string, from primary to topmost aggregator
+                            for source, content in new_message_details.items():
+                                scope = this_message_type_entry[code][source] = dict()
+                                if content:
+                                    # content is of type Dict[str, Optional[List[Dict[str, str]]]]
+                                    # where dictionary keys are a set of message discriminating 'identifier'
+                                    identifier: str
+                                    parameters: Optional[List[Dict[str, str]]]
+                                    for identifier, parameters in content.items():
+                                        if self.messages[message_type][code] is None:
+                                            self.messages[message_type][code] = dict()
+                                        if parameters:
+                                            # additional parameters seen?
+                                            if identifier not in self.messages[message_type][code] or \
+                                                    scope[identifier] is None:
+                                                scope[identifier] = list()
 
-                    # 'source' scope is 'global' or a source trail
-                    # path string, from primary to topmost aggregator
-                    for source, content in details.items():
-                        scope = messages_entry[code][source] = dict()
-                        if content:
-                            # content is of type Dict[str, Optional[List[Dict[str, str]]]]
-                            # where dictionary keys are a set of message discriminating 'identifier'
-                            identifier: str
-                            parameters: Optional[List[Dict[str, str]]]
-                            for identifier, parameters in content.items():
-                                if self.messages[message_type][code] is None:
-                                    self.messages[message_type][code] = dict()
-                                if parameters:
-                                    # additional parameters seen?
-                                    if identifier not in self.messages[message_type][code] or \
-                                            scope[identifier] is None:
-                                        scope[identifier] = list()
-
-                                    scope[identifier].extend(parameters)
-                                else:
-                                    # the message 'identifier' is the only parameter
-                                    scope[identifier] = None
+                                            scope[identifier].extend(parameters)
+                                        else:
+                                            # the message 'identifier' is the only parameter
+                                            scope[identifier] = None
 
     def get_all_messages(self) -> MESSAGES_BY_TARGET:
         """
         Get copy of all MESSAGES_BY_TARGET as a Python data structure.
         :return: Dict (copy) of all validation messages in the ValidationReporter.
         """
+        # TODO: is it necessary to copy these messages -
+        #       may be a large data structure,
+        #       costly to replicate (just for 'safety')
         return copy.deepcopy(self.messages)
 
     def get_messages_type(
@@ -494,7 +497,7 @@ class ValidationReporter:
         assert isinstance(reporter, ValidationReporter)
 
         # new coded messages also need to be merged!
-        self.add_messages(reporter.get_all_messages()) xxxx
+        self.add_messages(reporter.get_all_messages())
 
     def to_dict(self) -> Dict:
         """
