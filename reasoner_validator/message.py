@@ -88,7 +88,7 @@ class MessageType(Enum):
     skipped = "skipped tests"
     warning = "warnings"
     error = "errors"
-    critical = "critical"
+    critical = "critical errors"
 
 
 # A individual MESSAGE_CATALOG contains
@@ -96,7 +96,7 @@ class MessageType(Enum):
 # all four major categories of validation:
 # critical/errors/warnings/information
 MESSAGE_CATALOG = Dict[
-    str,  # message type (critical/errors/warnings/information)
+    str,  # message type (critical/errors/warnings/skipped tests/information)
     MESSAGE_PARTITION
 ]
 
