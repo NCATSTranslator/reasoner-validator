@@ -62,7 +62,7 @@ class ValidationReporter:
     DEFAULT_TRAPI_VERSION = "1"
 
     @staticmethod
-    def get_message_type_tag(message_type: str) -> MessageType:
+    def get_message_type_label(message_type: str) -> MessageType:
         return MessageType[message_type]
 
     def __init__(
@@ -337,9 +337,9 @@ class ValidationReporter:
 
         message_type_id = self.get_message_type(code)
 
-        # Rarely, get_message_type_tag() can raise a
+        # Rarely, get_message_type_label() can raise a
         # "KeyError" if the message_type_id is unknown?
-        message_type_tag: MessageType = self.get_message_type_tag(message_type_id)
+        message_type_tag: MessageType = self.get_message_type_label(message_type_id)
 
         message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
         messages: message_catalog[message_type_tag.name]
@@ -381,34 +381,43 @@ class ValidationReporter:
                              one of "information", "skipped tests", "warnings", "errors" or "critical",
                              with code-keyed dictionaries of (structured) message parameters.
         """
+        target: str
+        target_messages: MESSAGES_BY_TEST
         for target, target_messages in new_messages.items():
+            test: str
+            new_message_catalog: MESSAGE_CATALOG
             for test, new_message_catalog in target_messages.items():
                 this_message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
                 for message_type in [name for name in MessageType.__members__]:
                     if message_type in new_message_catalog.keys():
                         new_message_type_entry: Dict = new_message_catalog[message_type]
                         this_message_type_entry: Dict = this_message_catalog[message_type]
-                        for code, new_message_details in new_message_type_entry.items():   # codes.yaml message codes
-                            if code not in this_message_type_entry.keys:
-                                this_message_type_entry[code] = dict()
+                        code: str
+                        new_message_details: SCOPED_MESSAGES
+                        for code, new_scoped_messages in new_message_type_entry.items():   # codes.yaml message codes
+                            if code not in this_message_type_entry.keys():
+                                this_message_type_entry[code] = dict()  # SCOPED_MESSAGES
                             # 'source' scope is 'global' or a source trail
                             # path string, from primary to topmost aggregator
-                            for source, content in new_message_details.items():
-                                scope = this_message_type_entry[code][source] = dict()
+                            source: str
+                            content: Optional[IDENTIFIED_MESSAGES]
+                            for source, content in new_scoped_messages.items():
+                                if source not in this_message_type_entry[code].keys():
+                                    this_message_type_entry[code][source] = dict() if content else None
+                                scope = this_message_type_entry[code][source]
                                 if content:
-                                    # content is of type Dict[str, Optional[List[Dict[str, str]]]]
-                                    # where dictionary keys are a set of message discriminating 'identifier'
+                                    # content is of type IDENTIFIED_MESSAGES
+                                    # where dictionary keys are a set of
+                                    # message discriminating 'identifier'
                                     identifier: str
-                                    parameters: Optional[List[Dict[str, str]]]
+                                    parameters: Optional[IDENTIFIED_MESSAGES]
                                     for identifier, parameters in content.items():
-                                        if self.messages[message_type][code] is None:
-                                            self.messages[message_type][code] = dict()
                                         if parameters:
-                                            # additional parameters seen?
-                                            if identifier not in self.messages[message_type][code] or \
-                                                    scope[identifier] is None:
+                                            # additional parameters seen, then capture
+                                            if scope is None:
+                                                scope = this_message_type_entry[code][source] = dict()
+                                            if identifier not in scope or scope[identifier] is None:
                                                 scope[identifier] = list()
-
                                             scope[identifier].extend(parameters)
                                         else:
                                             # the message 'identifier' is the only parameter

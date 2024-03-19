@@ -96,7 +96,7 @@ class MessageType(Enum):
 # all four major categories of validation:
 # critical/errors/warnings/information
 MESSAGE_CATALOG = Dict[
-    str,  # message type (critical/errors/warnings/skipped tests/information)
+    str,  # message type (info/skipped/warning/error/critical)
     MESSAGE_PARTITION
 ]
 

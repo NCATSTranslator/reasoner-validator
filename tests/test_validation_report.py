@@ -46,7 +46,7 @@ def check_messages(
         elif message_type == "info":
             assert any([info_code == code for info_code in messages['information']])
         if source_trail:
-            mtt: str = validator.get_message_type_tag(message_type)
+            mtt: str = validator.get_message_type_label(message_type)
             source_trail_tags = messages[mtt][code].keys()
             assert source_trail in source_trail_tags
             if source_trail != "global":
@@ -359,14 +359,14 @@ def test_messages():
 
     # testing addition a few raw batch messages
     new_messages_catalog: MESSAGE_CATALOG = {
-        "information": {
+        "info": {
             "info.excluded": {
                 "global": {
                     "Horace van der Gelder": None
                 }
             }
         },
-        "skipped tests": {
+        "skipped": {
             "skipped.test": {
                 "global": {
                     "Catastrophe": None
@@ -374,7 +374,7 @@ def test_messages():
             }
 
         },
-        "warnings": {
+        "warning": {
             "warning.knowledge_graph.node.id.unmapped_prefix": {
                 "infores:earth -> infores:spaceship": {
                     "Will Robinson": [
@@ -385,7 +385,7 @@ def test_messages():
                 }
             }
         },
-        "errors": {
+        "error": {
             "error.biolink.model.noncompliance": {
                 "global": {
                     "6.6.6": [
