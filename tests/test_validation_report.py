@@ -228,9 +228,9 @@ def test_unknown_message_code():
 def test_prefix_accessors():
     reporter = ValidationReporter()
     assert reporter.report_header().startswith("Validation Report\n")
-    assert reporter.get_prefix() == ""
+    assert reporter.get_default_target() == ""
     reporter.reset_prefix("test_prefix_accessors")
-    assert reporter.get_prefix() == "test_prefix_accessors"
+    assert reporter.get_default_target() == "test_prefix_accessors"
     assert reporter.report_header().startswith("Validation Report for 'test_prefix_accessors'\n")
 
 
@@ -247,7 +247,7 @@ def test_get_message_type():
 
 
 def test_global_sourced_validation_message_report():
-    reporter1 = ValidationReporter(prefix="First Validation Report")
+    reporter1 = ValidationReporter(target="First Validation Report")
     reporter1.report(code="info.compliant")
     reporter1.report(
         code="info.input_edge.predicate.abstract",
@@ -267,7 +267,7 @@ def test_global_sourced_validation_message_report():
 
 
 def test_source_trail_scoped_validation_message_report():
-    reporter2 = ValidationReporter(prefix="Second Validation Report")
+    reporter2 = ValidationReporter(target="Second Validation Report")
     reporter2.report(
         code="error.knowledge_graph.edge.predicate.abstract",
         identifier="biolink:contributor",
@@ -290,7 +290,7 @@ def test_source_trail_scoped_validation_message_report():
 
 def test_messages():
     # Loading and checking a first reporter
-    reporter1 = ValidationReporter(prefix="1st Test Message Set")
+    reporter1 = ValidationReporter(target="1st Test Message Set")
     assert not reporter1.has_messages()
     reporter1.report("info.compliant")
     assert reporter1.has_messages()
@@ -306,7 +306,7 @@ def test_messages():
     assert reporter1.has_errors()
 
     # Testing merging of messages from a second reporter
-    reporter2 = ValidationReporter(prefix="2nd Test Message Set")
+    reporter2 = ValidationReporter(target="2nd Test Message Set")
     reporter2.report(
         code="info.query_graph.edge.predicate.mixin",
         identifier="biolink:this_is_a_mixin",
@@ -479,7 +479,7 @@ def test_messages():
 
 def test_validator_method():
 
-    reporter = ValidationReporter(prefix="Test Validator Method")
+    reporter = ValidationReporter(target="Test Validator Method")
 
     test_data: Dict = {
         "some key": "some value"

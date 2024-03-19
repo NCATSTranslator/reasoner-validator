@@ -2,6 +2,7 @@
 This module provides standalone global reasoner-validator validation Message types
 to avoid load order conflicts for other modules using these data types.
 """
+from enum import Enum
 from typing import Optional, List, Dict
 #
 # The MESSAGE_CATALOG data structure is something like the following:
@@ -80,6 +81,15 @@ MESSAGE_PARTITION = Dict[
     str,  # message 'code' as indexing key
     SCOPED_MESSAGES
 ]
+
+
+class MessageType(Enum):
+    info = "information"
+    skipped = "skipped tests"
+    warning = "warnings"
+    error = "errors"
+    critical = "critical"
+
 
 # A individual MESSAGE_CATALOG contains
 # the validation messages from

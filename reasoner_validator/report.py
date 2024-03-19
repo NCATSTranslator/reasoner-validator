@@ -9,11 +9,14 @@ import copy
 from json import dumps, JSONEncoder
 
 from reasoner_validator.message import (
+    MessageType,
     MESSAGE_CATALOG,
     MESSAGE_PARTITION,
     SCOPED_MESSAGES,
     IDENTIFIED_MESSAGES,
-    MESSAGE_PARAMETERS
+    MESSAGE_PARAMETERS,
+    MESSAGES_BY_TARGET,
+    MESSAGES_BY_TEST
 )
 from reasoner_validator.validation_codes import CodeDictionary
 
@@ -58,52 +61,58 @@ class ValidationReporter:
     # specifically 1.3.0, as of September 1st, 2022
     DEFAULT_TRAPI_VERSION = "1"
 
-    _message_type_tag: Dict[str, str] = {
-        "info": "information",
-        "skipped": "skipped tests",
-        "warning": "warnings",
-        "error": "errors",
-        "critical": "critical"
-    }
-
-    @classmethod
-    def get_message_type_tag(cls, message_type: str):
-        return cls._message_type_tag[message_type]
+    @staticmethod
+    def get_message_type_tag(message_type: str) -> MessageType:
+        return MessageType[message_type]
 
     def __init__(
             self,
-            prefix: Optional[str] = None,
+            default_test: Optional[str] = None,
+            default_target: Optional[str] = None,
             strict_validation: Optional[bool] = None
     ):
         """
-        :param prefix: Optional[str] =  None, named context of the Validator, used as a prefix in validation messages.
+        :param default_test: Optional[str] =  None, initial default test context of the Validator messages
+                             Default "global" if not provided.
+        :param default_target: Optional[str] =  None, initial default target context of the Validator,
+                               also used as a prefix in validation messages. Default "global" if not provided.
         :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
                                   'info' message; A value of 'None' uses the default value for specific graph contexts.
         """
-        self.prefix: str = prefix if prefix else ""
+        self.default_test: str = default_test if default_test else "test"
+        self.default_target: str = default_target if default_target else "global"
         self.strict_validation: Optional[bool] = strict_validation
-        self.messages: MESSAGE_CATALOG = {
-            "critical": dict(),
-            "errors": dict(),
-            "warnings": dict(),
-            "skipped tests": dict(),
-            "information": dict()
-        }
+        self.messages: MESSAGES_BY_TARGET = dict()
 
-    def reset_prefix(self, name: str):
+    def reset_default_test(self, name: str):
         """
-        Resets the prefix of the ValidationReporter to a new string.
-        :param name: str, new prefix string
+        Resets the default test identifier of the ValidationReporter to a new string.
+        :param name: str, new default test identifier
         :return: None
         """
-        self.prefix = name
+        self.default_test = name
 
-    def get_prefix(self) -> str:
+    def get_default_test(self) -> str:
         """
-        Returns the current prefix of the ValidationReporter.
-        :return: str, current prefix
+        Returns the current default test identifier of the ValidationReporter.
+        :return: str, current default test identifier
         """
-        return self.prefix
+        return self.default_test
+
+    def reset_default_target(self, name: str):
+        """
+        Resets the default target identifier of the ValidationReporter to a new string.
+        :param name: str, new default target identifier (generally a URL, URI or CURIE)
+        :return: None
+        """
+        self.default_target = name
+
+    def get_default_target(self) -> str:
+        """
+        Returns the current target of the ValidationReporter.
+        :return: str, current target
+        """
+        return self.default_target
 
     def is_strict_validation(self, graph_type: TRAPIGraphType) -> bool:
         """
@@ -122,104 +131,202 @@ class ValidationReporter:
         else:
             return self.strict_validation
 
-    def has_messages(self) -> bool:
+    def get_messages_by_target(self, target: Optional[str] = None) -> MESSAGES_BY_TEST:
+        """
+        Returns a block of MESSAGES_BY_TEST corresponding to a given or default target.
+        :param target: str, specified target (gets current 'default' target if not given)
+        :return: MESSAGES_BY_TEST corresponding to a resolved target
+        """
+        current_target = target if target else self.get_default_target()
+        if current_target not in self.messages:
+            self.messages[current_target] = dict()
+        return self.messages[current_target]
+
+    def get_messages_by_test(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_CATALOG:
+        """
+        Returns MESSAGE_CATALOG corresponding to a given or default target.
+        Note that the dictionary returned is not a copy of the original
+         thus caution should be taken not to mutate it!
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: MESSAGES_BY_TEST corresponding to a resolved target
+        """
+        messages_by_test: MESSAGES_BY_TEST = self.get_messages_by_target(target=target)
+        current_test = test if test else self.get_default_test()
+        if current_test not in messages_by_test:
+            messages_by_test[current_test] = {name: dict() for name in MessageType.__members__}
+        return messages_by_test[current_test]
+
+    def has_messages(self, test: Optional[str] = None, target: Optional[str] = None) -> bool:
         """Predicate to detect any recorded validation messages.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
         :return: bool, True if ValidationReporter has any non-empty messages.
         """
-        return self.has_information() or self.has_warnings() or self.has_errors() or self.has_critical()
+        return (
+                self.has_information(test, target) or
+                self.has_skipped(test, target) or
+                self.has_warnings(test, target) or
+                self.has_errors(test, target) or
+                self.has_critical(test, target)
+        )
 
-    def has_information(self) -> bool:
+    def has_message_type(
+            self,
+            message_type: MessageType,
+            test: Optional[str] = None,
+            target: Optional[str] = None
+    ) -> bool:
+        """Predicate to detect if ValidationReporter has any non-empty messages of type 'message_type'.
+        :param message_type: MessageType, type of message whose presence is to be detected.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: bool, true only if ValidationReporter has any non-empty messages of type 'message_type'.
+        """
+        message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
+        return bool(message_catalog[message_type.value])
+
+    def has_information(self, test: Optional[str] = None, target: Optional[str] = None) -> bool:
         """Predicate to detect any recorded information messages.
-        :return: bool, True if ValidationReporter has any information messages.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: bool, True if ValidationReporter has any 'information' messages.
         """
-        return bool(self.messages["information"])
+        return self.has_message_type(MessageType.info, test=test, target=target)
 
-    def has_skipped(self) -> bool:
+    def has_skipped(self, test: Optional[str] = None, target: Optional[str] = None) -> bool:
         """Predicate to detect any recorded 'skipped test' messages.
-        :return: bool, True if ValidationReporter has any information messages.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: bool, True if ValidationReporter has any 'skipped tests' messages.
         """
-        return bool(self.messages["skipped tests"])
+        return self.has_message_type(MessageType.skipped,  test=test, target=target)
 
-    def has_warnings(self) -> bool:
+    def has_warnings(self, test: Optional[str] = None, target: Optional[str] = None) -> bool:
         """Predicate to detect any recorded warning messages.
-        :return: bool, True if ValidationReporter has any warning messages.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: bool, True if ValidationReporter has any 'warning' messages.
         """
-        return bool(self.messages["warnings"])
+        return self.has_message_type(MessageType.warning,  test=test, target=target)
 
-    def has_errors(self) -> bool:
+    def has_errors(self, test: Optional[str] = None, target: Optional[str] = None) -> bool:
         """Predicate to detect any recorded error messages.
-        :return: bool, True if ValidationReporter has any error messages.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: bool, True if ValidationReporter has any 'error' messages.
         """
-        return bool(self.messages["errors"])
+        return self.has_message_type(MessageType.error,  test=test, target=target)
 
-    def has_critical(self) -> bool:
+    def has_critical(self, test: Optional[str] = None, target: Optional[str] = None) -> bool:
         """Predicate to detect any recorded critical error messages.
-        :return: bool, True if ValidationReporter has any critical error messages.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: bool, True if ValidationReporter has any 'critical error' messages.
         """
-        return bool(self.messages["critical"])
+        return self.has_message_type(MessageType.critical,  test=test, target=target)
 
-    def dump_info(self, flat=False) -> str:
-        """Dump information messages as JSON.
+    def dump_messages_type(
+            self,
+            message_type: MessageType,
+            test: Optional[str] = None,
+            target: Optional[str] = None,
+            flat=False
+    ) -> str:
+        """Dump ValidationReporter messages of type 'message_type' as JSON.
+        :param message_type: MessageType, type of message whose presence is to be detected.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :param flat: render output as 'flat' JSON (default: False)
+        :return: bool, true only if ValidationReporter has any non-empty messages of type 'message_type'.
+        """
+        message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
+        return _output(message_catalog[message_type.value], flat)
+
+    def dump_info(self, test: Optional[str] = None, target: Optional[str] = None, flat=False) -> str:
+        """Dump 'information' messages as JSON.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
         :param flat: render output as 'flat' JSON (default: False)
         :return: str, JSON formatted string of information messages.
         """
-        return _output(self.messages["information"], flat)
+        return self.dump_messages_type(MessageType.info, test=test, target=target, flat=flat)
 
-    def dump_skipped(self, flat=False) -> str:
+    def dump_skipped(self, test: Optional[str] = None, target: Optional[str] = None, flat=False) -> str:
         """Dump 'skipped test' messages as JSON.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
         :param flat: render output as 'flat' JSON (default: False)
         :return: str, JSON formatted string of 'skipped test' messages.
         """
-        return _output(self.messages["skipped tests"], flat)
+        return self.dump_messages_type(MessageType.skipped, test=test, target=target, flat=flat)
 
-    def dump_warnings(self, flat=False) -> str:
-        """Dump warning messages as JSON.
+    def dump_warnings(self, test: Optional[str] = None, target: Optional[str] = None, flat=False) -> str:
+        """Dump 'warning' messages as JSON.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
         :param flat: render output as 'flat' JSON (default: False)
         :return: str, JSON formatted string of warning messages.
         """
-        return _output(self.messages["warnings"], flat)
+        return self.dump_messages_type(MessageType.warning, test=test, target=target, flat=flat)
 
-    def dump_errors(self, flat=False) -> str:
-        """Dump error messages as JSON.
+    def dump_errors(self, test: Optional[str] = None, target: Optional[str] = None, flat=False) -> str:
+        """Dump 'error' messages as JSON.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
         :param flat: render output as 'flat' JSON (default: False)
         :return: str, JSON formatted string of error messages.
         """
-        return _output(self.messages["errors"], flat)
+        return self.dump_messages_type(MessageType.error, test=test, target=target, flat=flat)
 
-    def dump_critical(self, flat=False) -> str:
+    def dump_critical(self, test: Optional[str] = None, target: Optional[str] = None, flat=False) -> str:
         """Dump critical error messages as JSON.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
         :param flat: render output as 'flat' JSON (default: False)
         :return: str, JSON formatted string of critical error messages.
         """
-        return _output(self.messages["critical"], flat)
+        return self.dump_messages_type(MessageType.critical, test=test, target=target, flat=flat)
 
-    def dump_messages(self, flat=False) -> str:
-        """Dump all messages as JSON.
+    def dump_all_messages(self, test: Optional[str] = None, target: Optional[str] = None, flat=False) -> str:
+        """Dump **all** messages for a given test from a given target, as JSON.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
         :param flat: render output as 'flat' JSON (default: False)
-        :return: str, JSON formatted string of all messages.
+        :return: str, JSON formatted string of all messages of test for target.
         """
-        return _output(self.messages, flat)
+        message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
+        return _output(message_catalog, flat)
 
     @staticmethod
     def get_message_type(code: str) -> str:
         """Get type of message code.
         :param code: message code
-        :return: message type, one of 'info', 'skipped', 'warning', 'error' or 'critical'
+        :return: message type, a member name of MessageType
         """
         code_id_parts: List[str] = code.split('.')
         message_type: str = code_id_parts[0]
-        if message_type in ['info', 'skipped', 'warning', 'error', 'critical']:
+        if message_type in MessageType.__members__:
             return message_type
         else:
             raise NotImplementedError(
                 f"ValidationReport.get_message_type(): {code} is unknown code type: {message_type}"
             )
 
-    def report(self, code: str, source_trail: Optional[str] = None, **message):
+    def report(
+            self,
+            code: str,
+            test: Optional[str] = None,
+            target: Optional[str] = None,
+            source_trail: Optional[str] = None,
+            **message
+    ):
         """
-        Capture a single validation message, as per specified 'code' (with any code-specific contextural parameters).
-
+        Capture a single validation message, as per specified
+        'code' (with any code-specific contextual parameters).
         :param code: str, dot delimited validation path code
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
         :param source_trail, Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
                              Defaults to "global" if not specified.
         :param message: **Dict, named parameters representing extra (str-formatted) context for the given code message
@@ -229,18 +336,25 @@ class ValidationReporter:
         assert CodeDictionary.get_code_entry(code) is not None, f"ValidationReporter.report: unknown code '{code}'"
 
         message_type_id = self.get_message_type(code)
-        message_type_tag = self.get_message_type_tag(message_type_id)
-        if code not in self.messages[message_type_tag]:
-            self.messages[message_type_tag][code] = dict()
+
+        # Rarely, get_message_type_tag() can raise a
+        # "KeyError" if the message_type_id is unknown?
+        message_type_tag: MessageType = self.get_message_type_tag(message_type_id)
+
+        message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
+        messages: message_catalog[message_type_tag.value]
+
+        if code not in message_catalog[message_type_tag.value]:
+            message_catalog[message_type_tag.value][code] = dict()
 
         # Set current scope of validation message
         if source_trail is None:
             source_trail = "global"
 
-        if source_trail not in self.messages[message_type_tag][code]:
-            self.messages[message_type_tag][code][source_trail] = dict()
+        if source_trail not in message_catalog[message_type_tag.value][code]:
+            message_catalog[message_type_tag.value][code][source_trail] = dict()
 
-        scope = self.messages[message_type_tag][code][source_trail]
+        scope = message_catalog[message_type_tag.value][code][source_trail]
 
         if message:
             # If a message has any parameters, then one of them is
@@ -260,22 +374,27 @@ class ValidationReporter:
 
         # else: additional parameters are None
 
-    def add_messages(self, new_messages: MESSAGE_CATALOG):
+    def add_messages(self, new_messages: MESSAGE_CATALOG, test: Optional[str] = None, target: Optional[str] = None):
         """
         Batch addition of a dictionary of messages to a ValidationReporter instance.
         :param new_messages: Dict[str, Dict], with key one of "information", "skipped tests", "warnings",
                               "errors" or "critical", with 'code' keyed dictionaries of (structured) message parameters.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
         """
-        for message_type in self.messages:   # 'info', 'skipped', 'warning', 'error', 'critical'
+        message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
+        for message_type in [name for name in MessageType.__members__]:
             if message_type in new_messages:
                 message_type_contents = new_messages[message_type]
+                messages_entry: Dict = message_catalog[message_type]
                 for code, details in message_type_contents.items():   # codes.yaml message codes
-                    if code not in self.messages[message_type]:
-                        self.messages[message_type][code] = dict()
+                    if code not in messages_entry.keys:
+                        messages_entry[code] = dict()
 
-                    # 'source' scope is 'global' or a source trail path string, from primary to topmost aggregator
+                    # 'source' scope is 'global' or a source trail
+                    # path string, from primary to topmost aggregator
                     for source, content in details.items():
-                        scope = self.messages[message_type][code][source] = dict()
+                        scope = messages_entry[code][source] = dict()
                         if content:
                             # content is of type Dict[str, Optional[List[Dict[str, str]]]]
                             # where dictionary keys are a set of message discriminating 'identifier'
@@ -295,47 +414,72 @@ class ValidationReporter:
                                     # the message 'identifier' is the only parameter
                                     scope[identifier] = None
 
-    def get_messages(self) -> MESSAGE_CATALOG:
+    def get_all_messages(self) -> MESSAGES_BY_TARGET:
         """
-        Get copy of all messages as a Python data structure.
+        Get copy of all MESSAGES_BY_TARGET as a Python data structure.
         :return: Dict (copy) of all validation messages in the ValidationReporter.
         """
         return copy.deepcopy(self.messages)
 
-    def get_info(self) -> MESSAGE_PARTITION:
+    def get_messages_type(
+            self,
+            message_type: MessageType,
+            test: Optional[str] = None,
+            target: Optional[str] = None
+    ) -> Dict:
+        """Dump ValidationReporter messages of type 'message_type' as JSON.
+        :param message_type: MessageType, type of message whose presence is to be detected.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: get copy of messages of type 'message_type'.
         """
-        Get copy of all recorded 'information' messages.
-        :return: List, copy of all information messages.
-        """
-        return copy.deepcopy(self.messages["information"])
+        message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
+        return copy.deepcopy(message_catalog[message_type.value])
 
-    def get_skipped(self) -> MESSAGE_PARTITION:
+    def get_info(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded 'skipped test' messages.
-        :return: List, copy of all 'skipped test' messages.
+        Get copy of all recorded 'information' messages, for a given test from a given target.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: Dict of all 'information' messages.
         """
-        return copy.deepcopy(self.messages["skipped tests"])
+        return self.get_messages_type(message_type=MessageType.info, test=test, target=target)
 
-    def get_warnings(self) -> MESSAGE_PARTITION:
+    def get_skipped(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded 'warning' messages.
-        :return: List, copy of all warning messages.
+        Get copy of all recorded 'skipped test' messages, for a given test from a given target.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: Dict of all 'skipped test' messages.
         """
-        return copy.deepcopy(self.messages["warnings"])
+        return self.get_messages_type(message_type=MessageType.skipped, test=test, target=target)
 
-    def get_errors(self) -> MESSAGE_PARTITION:
+    def get_warnings(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded 'error' messages.
-        :return: List, copy of all error messages.
+        Get copy of all recorded 'warning' messages, for a given test from a given target.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: Dict of all 'warning' messages.
         """
-        return copy.deepcopy(self.messages["errors"])
+        return self.get_messages_type(message_type=MessageType.warning, test=test, target=target)
 
-    def get_critical(self) -> MESSAGE_PARTITION:
+    def get_errors(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded 'critical' error messages.
-        :return: List, copy of all critical error messages.
+        Get copy of all recorded 'error' messages, for a given test from a given target.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: Dict of all 'error' messages.
         """
-        return copy.deepcopy(self.messages["critical"])
+        return self.get_messages_type(message_type=MessageType.error, test=test, target=target)
+
+    def get_critical(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
+        """
+        Get copy of all recorded 'critical' error messages, for a given test from a given target.
+        :param test: str, specified test (gets current 'default' test if not given)
+        :param target: str, specified target (gets current 'default' test if not given)
+        :return: Dict of all 'critical error' messages.
+        """
+        return self.get_messages_type(message_type=MessageType.critical, test=test, target=target)
 
     ############################
     # General Instance methods #
@@ -350,7 +494,7 @@ class ValidationReporter:
         assert isinstance(reporter, ValidationReporter)
 
         # new coded messages also need to be merged!
-        self.add_messages(reporter.get_messages())
+        self.add_messages(reporter.get_all_messages())
 
     def to_dict(self) -> Dict:
         """
@@ -453,7 +597,7 @@ class ValidationReporter:
 
             if not title:
                 title = f"Validation Report"
-                title += f" for '{self.get_prefix()}'" if self.get_prefix() else ""
+                title += f" for '{self.get_default_target()}'" if self.get_default_target() else ""
 
             if not compact_format:
                 header += f"\n\033[4m{title}\033[0m\n"

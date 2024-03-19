@@ -230,14 +230,16 @@ class TRAPISchemaValidator(ValidationReporter):
     """
     def __init__(
             self,
-            prefix: Optional[str] = None,
+            test: Optional[str] = None,
+            target: Optional[str] = None,
             trapi_version: Optional[str] = None,
             strict_validation: Optional[bool] = None
     ):
         """
         TRAPI Validator constructor.
-
-        :param prefix: str named context of the TRAPISchemaValidator, used as a prefix in validation messages.
+        :param test: Optional[str] =  None, initial default test context of the TRAPISchemaValidator messages
+        :param target: Optional[str] =  None, initial default target context of the TRAPISchemaValidator,
+                       also used as a prefix in validation messages.
         :param trapi_version: str, version of component to validate against
         :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
                                   'info' message; A value of 'None' uses the default value for specific graph contexts.
@@ -253,7 +255,8 @@ class TRAPISchemaValidator(ValidationReporter):
 
         ValidationReporter.__init__(
             self,
-            prefix=prefix if prefix is not None else "TRAPI Validation",
+            default_test=test if test is not None else "standards test",
+            default_target=target if target is not None else "TRAPI Validation",
             strict_validation=strict_validation
         )
 

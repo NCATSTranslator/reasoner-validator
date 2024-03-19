@@ -176,7 +176,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         BMTWrapper.__init__(self, biolink_version=biolink_version)
         TRAPISchemaValidator.__init__(
             self,
-            prefix=prefix if prefix else f"Biolink Validation",
+            target=prefix if prefix else f"Biolink Validation",
             trapi_version=trapi_version,
             strict_validation=strict_validation
         )
