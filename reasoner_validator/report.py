@@ -494,14 +494,14 @@ class ValidationReporter:
         assert isinstance(reporter, ValidationReporter)
 
         # new coded messages also need to be merged!
-        self.add_messages(reporter.get_all_messages())
+        self.add_messages(reporter.get_all_messages()) xxxx
 
     def to_dict(self) -> Dict:
         """
         Export ValidationReporter message contents as a Python dictionary.
         :return: Dict
         """
-        return {"messages": self.get_messages()}
+        return {"messages": self.get_all_messages()}
 
     def apply_validation(self, validation_method, *args, **kwargs) -> bool:
         """
