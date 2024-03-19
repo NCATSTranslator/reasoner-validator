@@ -33,7 +33,7 @@ _TEST_QG_1 = {
     "edges": {
         "treats": {
             "subject": "drug",
-            "predicates": ["biolink:treats"],
+            "predicates": ["biolink:ameliorates_condition"],
             "object": "type-2 diabetes"
         }
     }
@@ -214,7 +214,7 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
                 "drug": {"categories": ["biolink:Drug"]}
             },
             "edges": {
-                "treats": {"subject": "drug", "predicates": ["biolink:treats"],
+                "treats": {"subject": "drug", "predicates": ["biolink:ameliorates_condition"],
                            "object": "type-2 diabetes"}
             }
         },
@@ -226,7 +226,7 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
             "edges": {
                 "df87ff82": {
                     "subject": "ncats.drug:9100L32L2N",
-                    "predicate": "biolink:treats",
+                    "predicate": "biolink:ameliorates_condition",
                     "object": "MONDO:0005148",
                     "sources": [
                         {
@@ -299,13 +299,102 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
 _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
 _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
 
-# original TRAPI schema.. changing the 'schema_version' may generate errors
 _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
 _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION["schema_version"] = "1.3.0"
 
-# original TRAPI schema.. changing the 'biolink_version' may generate errors
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION["biolink_version"] = "2.4.8"
+_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
+    "biolink_version": "2.2.0",
+    "message": {
+        "query_graph": {
+            "nodes": {
+                "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                "drug": {"categories": ["biolink:Drug"]}
+            },
+            "edges": {
+                "treats": {
+                    "subject": "type-2 diabetes",
+                    "predicates": ["biolink:treated_by"],
+                    "object": "drug"
+                }
+            }
+        },
+        "knowledge_graph": {
+            "nodes": {
+                "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
+                "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
+            },
+            "edges": {
+                "df87ff82": {
+                    "subject": "MONDO:0005148",
+                    "predicate": "biolink:treated_by",
+                    "object": "ncats.drug:9100L32L2N",
+                    "sources": [
+                        {
+                            "resource_id": "infores:chebi",
+                            "resource_role": "primary_knowledge_source",
+                            "upstream_resource_ids": []
+                        },
+                        {
+                            "resource_id": "infores:biothings-explorer",
+                            "resource_role": "aggregator_knowledge_source",
+                            "upstream_resource_ids": [
+                                "infores:chebi"
+                            ]
+                        },
+                        {
+                            "resource_id": "infores:molepro",
+                            "resource_role": "aggregator_knowledge_source",
+                            "upstream_resource_ids": [
+                                "infores:biothings-explorer"
+                            ]
+                        },
+                        {
+                            "resource_id": "infores:arax",
+                            "resource_role": "aggregator_knowledge_source",
+                            "upstream_resource_ids": [
+                                "infores:molepro"
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "auxiliary_graphs": {
+            "a0": {
+                "edges": [
+                    "e02",
+                    "e12"
+                ]
+            },
+            "a1": {
+                "edges": [
+                    "extra_edge0"
+                ]
+            },
+            "a2": {
+                "edges": [
+                    "extra_edge1"
+                ]
+            }
+        },
+        "results": [
+            {
+                "node_bindings": {
+                    "type-2 diabetes": [{"id": "MONDO:0005148"}],
+                    "drug": [{"id": "ncats.drug:9100L32L2N"}]
+                },
+                "analyses": [
+                    {
+                        "resource_id": "infores:ara0",
+                        "edge_bindings": {"treats": [{"id": "df87ff82"}]},
+                        "support_graphs": [],
+                        "score": 0.7
+                    }
+                ]
+            }
+        ]
+    }
+}
 
 NUM_SAMPLE_NODES = 5
 
@@ -894,7 +983,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             #            guidelines...) but add the 'schema_version' just for fun and profit
             _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION,
             None,
-            "3.0.0",
+            "4.1.4",
             None,
             True,
             "critical.trapi.validation"   # trying to validate a 1.4.2 schema against 1.3.0 will fail!

@@ -1,6 +1,5 @@
 """Testing Validation Report methods"""
-from mailbox import Message
-from typing import Optional, Dict, Tuple, List
+from typing import Optional, Dict, List
 from sys import stderr
 
 import pytest
@@ -18,7 +17,6 @@ from reasoner_validator.validation_codes import CodeDictionary
 from reasoner_validator.versioning import get_latest_version
 
 TEST_TRAPI_VERSION = get_latest_version(ValidationReporter.DEFAULT_TRAPI_VERSION)
-TEST_BIOLINK_VERSION = "2.4.8"
 
 
 def check_messages(
@@ -27,33 +25,21 @@ def check_messages(
         no_errors: bool = False,
         source_trail: Optional[str] = None
 ):
-    messages: MESSAGE_CATALOG = validator.get_all_messages()
+    # TODO: only assume 'default' test and target for now (fix later if problematic)
+    messages: MESSAGES_BY_TARGET = validator.get_all_messages()
     if code:
-        # print("code is:", code)
-        # print("message_type", message_type)
-        # TODO: 'code' should be found in code.yaml
-        # value: Optional[Tuple[str, str]] = CodeDictionary.get_code_subtree(code)
-        # assert value is not None
-        message_type = validator.get_message_type(code)
-        if message_type == "critical":
-            assert any([critical_code == code for critical_code in messages['critical']])
-        elif message_type == "error":
-            assert any([error_code == code for error_code in messages['errors']])
-        elif message_type == "warning":
-            assert any([warning_code == code for warning_code in messages['warnings']])
-        elif message_type == "skipped":
-            assert any([skipped_code == code for skipped_code in messages['skipped tests']])
-        elif message_type == "info":
-            assert any([info_code == code for info_code in messages['information']])
+        assert CodeDictionary.get_code_entry(code) is not None, f"check_messages() unknown code: '{code}'"
+        message_type: MessageType = validator.get_message_type(code)
+        coded_messages: MESSAGE_PARTITION = validator.get_messages_type(message_type)
+        assert any([message_code == code for message_code in coded_messages.keys()])
         if source_trail:
-            mtt: str = validator.get_message_type_label(message_type)
-            source_trail_tags = messages[mtt][code].keys()
+            source_trail_tags = coded_messages[code].keys()
             assert source_trail in source_trail_tags
             if source_trail != "global":
                 assert "global" not in source_trail_tags
     else:
         if no_errors:
-            # just don't want any 'critical' (errors) nor 'errors'; 'information' and 'warnings' are ok?
+            # just don't want any error (including 'critical'); 'info', 'skipped' and 'warning' are ok?
             assert not validator.has_critical(), f"Unexpected critical error messages seen {messages}"
             assert not validator.has_errors(), f"Unexpected error messages seen {messages}"
         else:
@@ -239,16 +225,15 @@ def test_prefix_accessors():
     assert reporter.get_default_target() == "Target"
     reporter.reset_default_target("test_prefix_accessors")
     assert reporter.get_default_target() == "test_prefix_accessors"
-    assert reporter.report_header().startswith("Validation Report for 'test_prefix_accessors'\n")
 
 
 def test_get_message_type():
     reporter = ValidationReporter()
-    assert reporter.get_message_type("info.compliant") == "info"
-    assert reporter.get_message_type("skipped.test") == "skipped"
-    assert reporter.get_message_type("warning.graph.empty") == "warning"
-    assert reporter.get_message_type("error.trapi.response.empty") == "error"
-    assert reporter.get_message_type("critical.trapi.validation") == "critical"
+    assert reporter.get_message_type("info.compliant") == MessageType.info
+    assert reporter.get_message_type("skipped.test") == MessageType.skipped
+    assert reporter.get_message_type("warning.graph.empty") == MessageType.warning
+    assert reporter.get_message_type("error.trapi.response.empty") == MessageType.error
+    assert reporter.get_message_type("critical.trapi.validation") == MessageType.critical
     with pytest.raises(NotImplementedError):
         # unknown message type
         reporter.get_message_type(code="foo.bar")

@@ -61,10 +61,6 @@ class ValidationReporter:
     # specifically 1.3.0, as of September 1st, 2022
     DEFAULT_TRAPI_VERSION = "1"
 
-    @staticmethod
-    def get_message_type_label(message_type: str) -> MessageType:
-        return MessageType[message_type]
-
     def __init__(
             self,
             default_test: Optional[str] = None,
@@ -299,15 +295,15 @@ class ValidationReporter:
         return _output(message_catalog, flat)
 
     @staticmethod
-    def get_message_type(code: str) -> str:
+    def get_message_type(code: str) -> MessageType:
         """Get type of message code.
         :param code: message code
-        :return: message type, a member name of MessageType
+        :return: MessageType
         """
         code_id_parts: List[str] = code.split('.')
         message_type: str = code_id_parts[0]
         if message_type in MessageType.__members__:
-            return message_type
+            return MessageType[message_type]
         else:
             raise NotImplementedError(
                 f"ValidationReport.get_message_type(): {code} is unknown code type: {message_type}"
@@ -335,26 +331,24 @@ class ValidationReporter:
         # Sanity check: that the given code has been registered in the codes.yaml file
         assert CodeDictionary.get_code_entry(code) is not None, f"ValidationReporter.report: unknown code '{code}'"
 
-        message_type_id = self.get_message_type(code)
-
         # Rarely, get_message_type_label() can raise a
         # "KeyError" if the message_type_id is unknown?
-        message_type_tag: MessageType = self.get_message_type_label(message_type_id)
+        message_type: MessageType = self.get_message_type(code)
 
         message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
-        messages: message_catalog[message_type_tag.name]
+        messages: message_catalog[message_type.name]
 
-        if code not in message_catalog[message_type_tag.name]:
-            message_catalog[message_type_tag.name][code] = dict()
+        if code not in message_catalog[message_type.name]:
+            message_catalog[message_type.name][code] = dict()
 
         # Set current scope of validation message
         if source_trail is None:
             source_trail = "global"
 
-        if source_trail not in message_catalog[message_type_tag.name][code]:
-            message_catalog[message_type_tag.name][code][source_trail] = dict()
+        if source_trail not in message_catalog[message_type.name][code]:
+            message_catalog[message_type.name][code][source_trail] = dict()
 
-        scope = message_catalog[message_type_tag.name][code][source_trail]
+        scope = message_catalog[message_type.name][code][source_trail]
 
         if message:
             # If a message has any parameters, then one of them is
