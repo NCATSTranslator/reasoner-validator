@@ -79,8 +79,8 @@ class ValidationReporter:
         :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
                                   'info' message; A value of 'None' uses the default value for specific graph contexts.
         """
-        self.default_test: str = default_test if default_test else "test"
-        self.default_target: str = default_target if default_target else "global"
+        self.default_test: str = default_test if default_test else "Test"
+        self.default_target: str = default_target if default_target else "Target"
         self.strict_validation: Optional[bool] = strict_validation
         self.messages: MESSAGES_BY_TARGET = dict()
 
@@ -184,7 +184,7 @@ class ValidationReporter:
         :return: bool, true only if ValidationReporter has any non-empty messages of type 'message_type'.
         """
         message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
-        return bool(message_catalog[message_type.value])
+        return bool(message_catalog[message_type.name])
 
     def has_information(self, test: Optional[str] = None, target: Optional[str] = None) -> bool:
         """Predicate to detect any recorded information messages.
@@ -241,7 +241,7 @@ class ValidationReporter:
         :return: bool, true only if ValidationReporter has any non-empty messages of type 'message_type'.
         """
         message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
-        return _output(message_catalog[message_type.value], flat)
+        return _output(message_catalog[message_type.name], flat)
 
     def dump_info(self, test: Optional[str] = None, target: Optional[str] = None, flat=False) -> str:
         """Dump 'information' messages as JSON.
@@ -342,19 +342,19 @@ class ValidationReporter:
         message_type_tag: MessageType = self.get_message_type_tag(message_type_id)
 
         message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
-        messages: message_catalog[message_type_tag.value]
+        messages: message_catalog[message_type_tag.name]
 
-        if code not in message_catalog[message_type_tag.value]:
-            message_catalog[message_type_tag.value][code] = dict()
+        if code not in message_catalog[message_type_tag.name]:
+            message_catalog[message_type_tag.name][code] = dict()
 
         # Set current scope of validation message
         if source_trail is None:
             source_trail = "global"
 
-        if source_trail not in message_catalog[message_type_tag.value][code]:
-            message_catalog[message_type_tag.value][code][source_trail] = dict()
+        if source_trail not in message_catalog[message_type_tag.name][code]:
+            message_catalog[message_type_tag.name][code][source_trail] = dict()
 
-        scope = message_catalog[message_type_tag.value][code][source_trail]
+        scope = message_catalog[message_type_tag.name][code][source_trail]
 
         if message:
             # If a message has any parameters, then one of them is
@@ -376,7 +376,7 @@ class ValidationReporter:
 
     def add_messages(self, new_messages: MESSAGES_BY_TARGET):
         """
-        Batch addition of a dictionary of messages to a ValidationReporter instance.
+        Batch addition of MESSAGES_BY_TARGET messages to a ValidationReporter instance.
         :param new_messages: MESSAGES_BY_TARGET, messages indexed by target, test and categories:
                              one of "information", "skipped tests", "warnings", "errors" or "critical",
                              with code-keyed dictionaries of (structured) message parameters.
@@ -429,7 +429,7 @@ class ValidationReporter:
             message_type: MessageType,
             test: Optional[str] = None,
             target: Optional[str] = None
-    ) -> Dict:
+    ) -> MESSAGE_PARTITION:
         """Dump JSON of ValidationReporter messages of 'message_type' from specified (or default?) target and test.
         :param message_type: MessageType, type of message whose presence is to be detected.
         :param test: str, specified test (gets current 'default' test if not given)
@@ -437,7 +437,7 @@ class ValidationReporter:
         :return: get copy of messages of type 'message_type'.
         """
         message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
-        return copy.deepcopy(message_catalog[message_type.value])
+        return copy.deepcopy(message_catalog[message_type.name])
 
     def get_info(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """

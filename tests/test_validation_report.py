@@ -1,10 +1,18 @@
 """Testing Validation Report methods"""
+from mailbox import Message
 from typing import Optional, Dict, Tuple, List
 from sys import stderr
 
 import pytest
 
-from reasoner_validator.message import MESSAGE_CATALOG, SCOPED_MESSAGES
+from reasoner_validator.message import (
+    MessageType,
+    SCOPED_MESSAGES,
+    MESSAGE_PARTITION,
+    MESSAGE_CATALOG,
+    MESSAGES_BY_TEST,
+    MESSAGES_BY_TARGET
+)
 from reasoner_validator.report import ValidationReporter, TRAPIGraphType
 from reasoner_validator.validation_codes import CodeDictionary
 from reasoner_validator.versioning import get_latest_version
@@ -19,7 +27,7 @@ def check_messages(
         no_errors: bool = False,
         source_trail: Optional[str] = None
 ):
-    messages: MESSAGE_CATALOG = validator.get_messages()
+    messages: MESSAGE_CATALOG = validator.get_all_messages()
     if code:
         # print("code is:", code)
         # print("message_type", message_type)
@@ -227,9 +235,9 @@ def test_unknown_message_code():
 
 def test_prefix_accessors():
     reporter = ValidationReporter()
-    assert reporter.report_header().startswith("Validation Report\n")
-    assert reporter.get_default_target() == ""
-    reporter.reset_prefix("test_prefix_accessors")
+    assert reporter.report_header().startswith("Validation Report for 'Target'\n")
+    assert reporter.get_default_target() == "Target"
+    reporter.reset_default_target("test_prefix_accessors")
     assert reporter.get_default_target() == "test_prefix_accessors"
     assert reporter.report_header().startswith("Validation Report for 'test_prefix_accessors'\n")
 
@@ -247,19 +255,21 @@ def test_get_message_type():
 
 
 def test_global_sourced_validation_message_report():
-    reporter1 = ValidationReporter(target="First Validation Report")
+    reporter1 = ValidationReporter(
+        default_test="test_global_sourced_validation_message_report",
+        default_target="First Validation Report"
+    )
     reporter1.report(code="info.compliant")
     reporter1.report(
         code="info.input_edge.predicate.abstract",
         identifier="biolink:contributor",
         edge_id="a->biolink:contributor->b"
     )
-    report: MESSAGE_CATALOG = reporter1.get_messages()
-    assert 'information' in report
-    assert len(report['information']) > 0
+    messages_by_code: MESSAGE_PARTITION = reporter1.get_messages_type(MessageType.info)
+    assert len(messages_by_code) > 0
 
     displayed: List[str] = list()
-    for code, messages in report['information'].items():
+    for code, messages in messages_by_code.items():
         scoped_messages = CodeDictionary.display(code, messages, add_prefix=True)
         displayed.extend(scoped_messages["global"])
     assert "INFO - Compliant: Biolink Model-compliant TRAPI Message" in displayed
@@ -267,7 +277,10 @@ def test_global_sourced_validation_message_report():
 
 
 def test_source_trail_scoped_validation_message_report():
-    reporter2 = ValidationReporter(target="Second Validation Report")
+    reporter2 = ValidationReporter(
+        default_test="test_source_trail_scoped_validation_message_report",
+        default_target="Second Validation Report"
+    )
     reporter2.report(
         code="error.knowledge_graph.edge.predicate.abstract",
         identifier="biolink:contributor",
@@ -280,17 +293,37 @@ def test_source_trail_scoped_validation_message_report():
         edge_id="Tim->biolink:contributor->Translator",
         source_trail="infores:sri"
     )
-    report: MESSAGE_CATALOG = reporter2.get_messages()
-    assert 'errors' in report
-    assert len(report['errors']) > 0
-    assert "error.knowledge_graph.edge.predicate.abstract" in report['errors']
-    assert "infores:sri" in report['errors']['error.knowledge_graph.edge.predicate.abstract']
-    assert "global" not in report['errors']['error.knowledge_graph.edge.predicate.abstract']
+    messages_by_code: MESSAGE_PARTITION = reporter2.get_messages_type(MessageType.error)
+    assert len(messages_by_code) > 0
+    assert "error.knowledge_graph.edge.predicate.abstract" in messages_by_code
+    assert "infores:sri" in messages_by_code['error.knowledge_graph.edge.predicate.abstract']
+    assert "global" not in messages_by_code['error.knowledge_graph.edge.predicate.abstract']
+
+
+def _validate_full_messages(
+        reporter: ValidationReporter,
+        message_type: MessageType,
+        full_message: str
+) -> None:
+    # DRY helper function for validating fully annotated messages
+    messages_by_code: MESSAGE_PARTITION = reporter.get_messages_type(message_type)
+    assert len(messages_by_code) > 0
+    full_messages_list: List[str] = list()
+    for code, messages in messages_by_code.items():
+        scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
+        scope, value = scoped_messages.popitem()
+        full_messages_list.append(value[0])
+    assert full_message in full_messages_list
 
 
 def test_messages():
     # Loading and checking a first reporter
-    reporter1 = ValidationReporter(target="1st Test Message Set")
+    tm_default_test = "test_messages"
+    tm_default_target = "1st Test Message Set"
+    reporter1 = ValidationReporter(
+        default_test=tm_default_test,
+        default_target=tm_default_target
+    )
     assert not reporter1.has_messages()
     reporter1.report("info.compliant")
     assert reporter1.has_messages()
@@ -306,7 +339,10 @@ def test_messages():
     assert reporter1.has_errors()
 
     # Testing merging of messages from a second reporter
-    reporter2 = ValidationReporter(target="2nd Test Message Set")
+    reporter2 = ValidationReporter(
+        default_test="test_messages",
+        default_target="2nd Test Message Set"
+    )
     reporter2.report(
         code="info.query_graph.edge.predicate.mixin",
         identifier="biolink:this_is_a_mixin",
@@ -322,7 +358,7 @@ def test_messages():
     reporter1.merge(reporter3)
 
     # testing addition a few raw batch messages
-    new_messages: MESSAGE_CATALOG = {
+    new_messages_catalog: MESSAGE_CATALOG = {
         "information": {
             "info.excluded": {
                 "global": {
@@ -373,67 +409,54 @@ def test_messages():
             }
         }
     }
-    reporter1.add_messages(new_messages)
+    new_test_messages: MESSAGES_BY_TEST = {
+        "new_test": new_messages_catalog
+    }
+    new_targeted_test_messages: MESSAGES_BY_TARGET = {
+        "new_target": new_test_messages
+    }
+    reporter1.add_messages(new_targeted_test_messages)
 
     # Verify what we have
-    message_catalog: MESSAGE_CATALOG = reporter1.get_messages()
-
-    assert "information" in message_catalog
-    assert len(message_catalog['information']) > 0
-    information: List[str] = list()
-    for code, messages in message_catalog['information'].items():
-        scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        scope, value = scoped_messages.popitem()
-        information.append(value[0])
-    assert "INFO - Excluded: All test case S-P-O triples from resource test location, " + \
-           "or specific user excluded S-P-O triples" in information
-
-    assert "skipped tests" in message_catalog
-    assert len(message_catalog['skipped tests']) > 0
-    skipped: List[str] = list()
-    for code, messages in message_catalog['skipped tests'].items():
-        scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        scope, value = scoped_messages.popitem()
-        skipped.append(value[0])
-    assert "SKIPPED - Test: For reason indicated in the identifier." in skipped
-
-    assert "warnings" in message_catalog
-    assert len(message_catalog['warnings']) > 0
-    warnings: List[str] = list()
-    for code, messages in message_catalog['warnings'].items():
-        scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        scope, value = scoped_messages.popitem()
-        warnings.append(value[0])
-    assert "WARNING - Knowledge Graph Node Id Unmapped: " + \
-           "Node identifier found unmapped to target categories for node" in warnings
-
-    assert "errors" in message_catalog
-    assert len(message_catalog['errors']) > 0
-    errors: List[str] = list()
-    for code, messages in message_catalog['errors'].items():
-        scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        scope, value = scoped_messages.popitem()
-        errors.append(value[0])
-    assert "ERROR - Biolink Model: S-P-O statement is not compliant to Biolink Model release" in errors
-
-    assert "critical" in message_catalog
-    assert len(message_catalog['critical']) > 0
-    critical: List[str] = list()
-    for code, messages in message_catalog['critical'].items():
-        scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        scope, value = scoped_messages.popitem()
-        critical.append(value[0])
-    assert "CRITICAL - Trapi: Schema validation error" in critical
+    test_message_type: MessageType
+    full_message: str
+    for test_message_type, full_message in (
+        (
+            MessageType.info,
+            "INFO - Excluded: All test case S-P-O triples from resource test location, " +
+            "or specific user excluded S-P-O triples"
+        ),
+        (
+            MessageType.skipped,
+            "SKIPPED - Test: For reason indicated in the identifier."
+        ),
+        (
+            MessageType.warning,
+            "WARNING - Knowledge Graph Node Id Unmapped: Node identifier found unmapped to target categories for node"
+        ),
+        (
+            MessageType.error,
+            "ERROR - Biolink Model: S-P-O statement is not compliant to Biolink Model release"
+        ),
+        (
+            MessageType.critical,
+            "CRITICAL - Trapi: Schema validation error"
+        ),
+    ):
+        _validate_full_messages(reporter1, test_message_type, full_message)
 
     obj = reporter1.to_dict()
     assert "messages" in obj
-    assert "critical" in obj["messages"]
-    assert "critical.trapi.validation" in obj["messages"]["critical"]
+    assert tm_default_target in obj["messages"]
+    assert tm_default_test in obj["messages"][tm_default_target]
+    assert "critical" in obj["messages"][tm_default_target][tm_default_test]
+    assert "critical.trapi.validation" in obj["messages"][tm_default_target][tm_default_test]["critical"]
 
-    message_catalog: SCOPED_MESSAGES = obj["messages"]["critical"]["critical.trapi.validation"]
-    assert message_catalog, "Empty 'critical.trapi.validation' messages set?"
-    assert "9.1.1" in message_catalog["global"]
-    message_subset: List = message_catalog["global"]["9.1.1"]
+    messages_by_target: SCOPED_MESSAGES = \
+        obj["messages"][tm_default_target][tm_default_test]["critical"]["critical.trapi.validation"]
+    assert messages_by_target, "Empty 'critical.trapi.validation' messages set?"
+    assert "9.1.1" in messages_by_target["global"]
+    message_subset: List = messages_by_target["global"]["9.1.1"]
     assert "Fire, Ambulance or Police?"\
            in [message['reason'] for message in message_subset if 'reason' in message]
 
@@ -479,7 +502,10 @@ def test_messages():
 
 def test_validator_method():
 
-    reporter = ValidationReporter(target="Test Validator Method")
+    reporter = ValidationReporter(
+        default_test="test_validator_method",
+        default_target="Test Validator Method"
+    )
 
     test_data: Dict = {
         "some key": "some value"
@@ -504,26 +530,20 @@ def test_validator_method():
 
     reporter.apply_validation(validator_method, test_data, **test_parameters)
 
-    message_catalog: MESSAGE_CATALOG = reporter.get_messages()
-
-    assert "warnings" in message_catalog
-    assert len(message_catalog['warnings']) > 0
-    warnings: List[str] = list()
-    for code, messages in message_catalog['warnings'].items():
-        scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        scope, value = scoped_messages.popitem()
-        warnings.append(value[0])
-    assert "WARNING - Graph: Empty graph" in warnings
-
-    assert "errors" in message_catalog
-    assert len(message_catalog['errors']) > 0
-    errors: List[str] = list()
-    for code, messages in message_catalog['errors'].items():
-        scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        scope, value = scoped_messages.popitem()
-        errors.append(value[0])
-    assert "ERROR - Knowledge Graph Edge Provenance Infores: " + \
-           "Edge has provenance value which is not a well-formed InfoRes CURIE" in errors
+    test_message_type: MessageType
+    full_message: str
+    for test_message_type, full_message in (
+        (
+            MessageType.warning,
+            "WARNING - Graph: Empty graph"
+        ),
+        (
+            MessageType.error,
+            "ERROR - Knowledge Graph Edge Provenance Infores: " +
+            "Edge has provenance value which is not a well-formed InfoRes CURIE"
+        )
+    ):
+        _validate_full_messages(reporter, test_message_type, full_message)
 
 
 @pytest.mark.parametrize(
