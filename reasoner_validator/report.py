@@ -595,8 +595,7 @@ class ValidationReporter:
         """
         Return a suitably generated report header.
         :param title: Optional[str], if title is None, then only the 'reasoner-validator' version is printed out
-                      in the header. If the title is an empty string (the default), then a title is generated
-                    by appending the ValidationReporter 'prefix' to the string 'Validation Report for'.
+                      in the header. If the title is an empty string (the default), then 'Validation Report' used.
         :param compact_format: bool, whether to print the header in compact format (default: True).
                                Extra line feeds are otherwise provided to provide space around the header
                                and control characters are output to underline the header.
@@ -610,7 +609,6 @@ class ValidationReporter:
 
             if not title:
                 title = f"Validation Report"
-                title += f" for '{self.get_default_target()}'" if self.get_default_target() else ""
 
             if not compact_format:
                 header += f"\n\033[4m{title}\033[0m\n"
@@ -668,21 +666,21 @@ class ValidationReporter:
 
                 # TODO: clean up 'target' subheader here?
                 if not compact_format:
-                    print(f"\033[4mTarget: {target}:\033[0m", file=file)
+                    print(f"\033[4mTarget: {target}\033[0m", file=file)
                     print(file=file)
                 else:
                     # compact also ignores underlining
-                    print(f"\nTarget: {target}:", file=file)
+                    print(f"\nTarget: {target}", file=file)
 
                 for test, test_messages in target_messages.items():
 
                     # TODO: clean up 'test' subheader here?
                     if not compact_format:
-                        print(f"\033[4mTest: {test}\033[0m", file=file)
+                        print(f"\t\033[4mTest: {test}\033[0m", file=file)
                         print(file=file)
                     else:
                         # compact also ignores underlining
-                        print(f"\nTest: {test}:", file=file)
+                        print(f"\n\tTest: {test}", file=file)
 
                     for message_type, coded_messages in test_messages.items():
 
@@ -693,11 +691,11 @@ class ValidationReporter:
                             # ... then iterate through them and print them out
 
                             if not compact_format:
-                                print(f"\033[4m{message_type.capitalize()}\033[0m", file=file)
+                                print(f"\t\t\033[4m{message_type.capitalize()}\033[0m", file=file)
                                 print(file=file)
                             else:
                                 # compact also ignores underlining
-                                print(f"\n{message_type.capitalize()}:", file=file)
+                                print(f"\n\t\t{message_type.capitalize()}:", file=file)
 
                             # 'coded_messages' is a MESSAGE_PARTITION where
                             # MESSAGE_PARTITION is Dict[<validation code>, SCOPED_MESSAGES]
@@ -712,8 +710,8 @@ class ValidationReporter:
 
                                 code_label: str = CodeDictionary.validation_code_tag(code)
                                 print(
-                                    f"* {code_label}:\n"
-                                    f"=> {CodeDictionary.get_message_template(code)}",
+                                    f"\t\t* {code_label}:\n"
+                                    f"\t\t=> {CodeDictionary.get_message_template(code)}",
                                     file=file
                                 )
                                 if not compact_format:
@@ -727,7 +725,7 @@ class ValidationReporter:
                                 messages_by_scope: Optional[IDENTIFIED_MESSAGES]
                                 for scope, messages_by_scope in messages_by_code.items():
 
-                                    print(f"\t$ {scope}", file=file)
+                                    print(f"\t\t\t$ {scope}", file=file)
 
                                     # Codes with associated parameters should have
                                     # an embedded dictionary with 'identifier' keys
@@ -754,7 +752,7 @@ class ValidationReporter:
                                             # For codes whose context of validation is solely discerned
                                             # with their identifier, just print out the identifier
 
-                                            print(f"\t\t# {identifier}", file=file)
+                                            print(f"\t\t\t\t# {identifier}", file=file)
 
                                             if not compact_format:
                                                 print(file=file)
@@ -764,7 +762,7 @@ class ValidationReporter:
                                             # then we assume here that 'messages' is a List[MESSAGE_PARAMETERS]
                                             # which records distinct additional context
                                             # for a list of messages associated with a given code.
-                                            print(f"\t\t# {identifier}:", file=file)
+                                            print(f"\t\t\t\t# {identifier}:", file=file)
 
                                             first_message: bool = True
                                             messages_per_row: int = 0
@@ -780,16 +778,16 @@ class ValidationReporter:
 
                                                 if first_message:
                                                     tags = tuple(parameters.keys())
-                                                    print(f"\t\t- {' | '.join(tags)}: ", file=file)
+                                                    print(f"\t\t\t\t- {' | '.join(tags)}: ", file=file)
                                                     first_message = False
 
-                                                print(f"\t\t\t{' | '.join(parameters.values())}", file=file)
+                                                print(f"\t\t\t\t\t{' | '.join(parameters.values())}", file=file)
 
                                                 messages_per_row += 1
                                                 if msg_rows and messages_per_row >= msg_rows:
                                                     if more_msgs:
                                                         print(
-                                                            f"\t\t{str(more_msgs)} more messages " +
+                                                            f"\t\t\t\t{str(more_msgs)} more messages " +
                                                             f"for identifier '{identifier}'...",
                                                             file=file
                                                         )
@@ -802,7 +800,7 @@ class ValidationReporter:
                                         if id_rows and ids_per_row >= id_rows:
                                             if more_ids:
                                                 print(
-                                                    f"{str(more_ids)} more identifiers for code '{code_label}'...",
+                                                    f"\t\t{str(more_ids)} more identifiers for code '{code_label}'...",
                                                     file=file
                                                 )
                                             break
@@ -815,8 +813,12 @@ class ValidationReporter:
                                 #     just printing the template (done above) suffices
 
                         # else: print nothing if a given message_type has no messages
-                else:
-                    print(f"Hurray! No validation messages reported!", file=file)
+
+                    # end for each coded message
+                # end for each test
+            # end for each target
+        else:
+            print(f"Hurray! No validation messages reported!", file=file)
 
     def dumps(
             self,

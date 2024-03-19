@@ -1,12 +1,10 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import  Dict
+from typing import Dict
 from sys import stderr
 
 import logging
-
-from json import dump
 
 from copy import deepcopy
 
@@ -1117,4 +1115,5 @@ sample_kg_edge_abstract_predicate = sample_kg["edges"]["df87ff82"]["predicate"] 
 def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(response: Dict):
     validator: TRAPIResponseValidator = TRAPIResponseValidator()
     validator.check_compliance_of_trapi_response(response=response)
-    validator.dump()
+    validator.dump(file=stderr)
+    print("\n"+"="*80+"\n", file=stderr)
