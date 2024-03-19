@@ -5,7 +5,8 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 ## 4.0.0
 The major release changes relate to adapting the reasoner-validator to the new (2023-24) Translator testing infrastructure:
 - Two higher levels of indexing are added to the message catalog of the **ValidationReporter**: indexing by target (endpoint url) and indexing by test identifier.
-
+- Support for "Skipped Tests" added to the codes.yaml and code base
+- The ValidationReporter 'prefix' field converted into a 'default_target' field and accessor methods provided, with a new basic unit test
 
 ## 3.9.5
 - pydantic updated to 1.10.13
