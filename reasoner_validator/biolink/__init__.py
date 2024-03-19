@@ -154,7 +154,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     """
     def __init__(
         self,
-        prefix: Optional[str] = None,
+        default_test: Optional[str] = None,
+        default_target: Optional[str] = None,
         trapi_version: Optional[str] = None,
         biolink_version: Optional[str] = None,
         target_provenance: Optional[Dict[str, str]] = None,
@@ -162,8 +163,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     ):
         """
         Biolink Validator constructor.
-
-        :param prefix: named context of the BiolinkValidator, used as a prefix in validation messages.
+        :param default_test: Optional[str] =  None, initial default test context of the BiolinkValidator messages
+        :param default_target: Optional[str] =  None, initial default target context of the BiolinkValidator,
+                                                also used as a prefix in validation messages.
         :param trapi_version:  Optional[str], caller specified Biolink Model version (default: None, use TRAPI 'latest')
         :param biolink_version: Optional[str], caller specified Biolink Model version (default: None, use BMT 'latest')
                                 Note that a special biolink_version value string "suppress" disables full Biolink Model
@@ -176,7 +178,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         BMTWrapper.__init__(self, biolink_version=biolink_version)
         TRAPISchemaValidator.__init__(
             self,
-            target=prefix if prefix else f"Biolink Validation",
+            default_test=default_test,
+            default_target=default_target if default_target else f"Biolink Validation",
             trapi_version=trapi_version,
             strict_validation=strict_validation
         )
