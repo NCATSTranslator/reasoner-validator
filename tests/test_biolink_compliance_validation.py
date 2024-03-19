@@ -31,7 +31,7 @@ pp = PrettyPrinter(indent=4)
 # we don't pretend to totally support Biolink Models any earlier than 3.1.1.
 # If earlier biolink model compliance testing is desired,
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
-LATEST_BIOLINK_MODEL_VERSION = "3.5.4"
+LATEST_BIOLINK_MODEL_VERSION = "4.1.4"
 
 # special case of signalling suppression of validation
 SUPPRESS_BIOLINK_MODEL_VALIDATION = "suppress"
@@ -70,7 +70,8 @@ def test_minimum_required_biolink_version():
 
 def test_message():
     reporter = BiolinkValidator(
-        prefix="Test Message",
+        default_test="Test Message",
+        default_target="Test Reporter",
         trapi_version="v1.3",
         biolink_version=f"v{LATEST_BIOLINK_MODEL_VERSION}"
     )
@@ -94,7 +95,7 @@ def test_inverse_predicate():
     assert not predicate['symmetric']
     assert isinstance(predicate, SlotDefinition)
     assert not tk.get_inverse(predicate.name)
-    tk: Toolkit = get_biolink_model_toolkit("v2.4.8")
+    tk: Toolkit = get_biolink_model_toolkit("v4.1.4")
     predicate = tk.get_element("biolink:active_in")
     assert not predicate['symmetric']
     assert isinstance(predicate, SlotDefinition)
