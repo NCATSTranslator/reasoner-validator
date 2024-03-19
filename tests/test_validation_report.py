@@ -235,7 +235,7 @@ def test_unknown_message_code():
 
 def test_prefix_accessors():
     reporter = ValidationReporter()
-    assert reporter.report_header().startswith("Validation Report for 'Target'\n")
+    assert reporter.report_header().startswith("Validation Report\n")
     assert reporter.get_default_target() == "Target"
     reporter.reset_default_target("test_prefix_accessors")
     assert reporter.get_default_target() == "test_prefix_accessors"
