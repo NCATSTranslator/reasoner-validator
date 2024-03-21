@@ -30,7 +30,7 @@ def check_messages(
     if code:
         assert CodeDictionary.get_code_entry(code) is not None, f"check_messages() unknown code: '{code}'"
         message_type: MessageType = validator.get_message_type(code)
-        coded_messages: MESSAGE_PARTITION = validator.get_messages_type(message_type)
+        coded_messages: MESSAGE_PARTITION = validator.get_messages_of_type(message_type)
         assert any([message_code == code for message_code in coded_messages.keys()])
         if source_trail:
             source_trail_tags = coded_messages[code].keys()
@@ -250,7 +250,7 @@ def test_global_sourced_validation_message_report():
         identifier="biolink:contributor",
         edge_id="a->biolink:contributor->b"
     )
-    messages_by_code: MESSAGE_PARTITION = reporter1.get_messages_type(MessageType.info)
+    messages_by_code: MESSAGE_PARTITION = reporter1.get_messages_of_type(MessageType.info)
     assert len(messages_by_code) > 0
 
     displayed: List[str] = list()
@@ -278,7 +278,7 @@ def test_source_trail_scoped_validation_message_report():
         edge_id="Tim->biolink:contributor->Translator",
         source_trail="infores:sri"
     )
-    messages_by_code: MESSAGE_PARTITION = reporter2.get_messages_type(MessageType.error)
+    messages_by_code: MESSAGE_PARTITION = reporter2.get_messages_of_type(MessageType.error)
     assert len(messages_by_code) > 0
     assert "error.knowledge_graph.edge.predicate.abstract" in messages_by_code
     assert "infores:sri" in messages_by_code['error.knowledge_graph.edge.predicate.abstract']
@@ -291,7 +291,7 @@ def _validate_full_messages(
         full_message: str
 ) -> None:
     # DRY helper function for validating fully annotated messages
-    messages_by_code: MESSAGE_PARTITION = reporter.get_messages_type(message_type)
+    messages_by_code: MESSAGE_PARTITION = reporter.get_all_messages_of_type(message_type)
     assert len(messages_by_code) > 0
     full_messages_list: List[str] = list()
     for code, messages in messages_by_code.items():

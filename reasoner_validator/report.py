@@ -427,20 +427,92 @@ class ValidationReporter:
         #       costly to replicate (just for 'safety')
         return copy.deepcopy(self.messages)
 
-    def get_messages_type(
+    def get_messages_of_type(
             self,
             message_type: MessageType,
             test: Optional[str] = None,
             target: Optional[str] = None
     ) -> MESSAGE_PARTITION:
-        """Dump JSON of ValidationReporter messages of 'message_type' from specified (or default?) target and test.
+        """
+        Get Python data dictionary of ValidationReporter messages of
+        'message_type', for a specified (or default?) target and test.
         :param message_type: MessageType, type of message whose presence is to be detected.
         :param test: str, specified test (gets current 'default' test if not given)
         :param target: str, specified target (gets current 'default' test if not given)
         :return: get copy of messages of type 'message_type'.
         """
         message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
+        # TODO: the deepcopy may be desirable for message data
+        #       integrity, but it may be computationally expensive?
         return copy.deepcopy(message_catalog[message_type.name])
+
+    @staticmethod
+    def merge_identified_messages(
+        aggregated: IDENTIFIED_MESSAGES,
+        additions: IDENTIFIED_MESSAGES
+    ):
+        identifier: str
+        message_parameters_list: Optional[List[MESSAGE_PARAMETERS]]
+        for identifier, message_parameters_list in additions.items():
+            if identifier not in aggregated:
+                aggregated[identifier] = None
+            if message_parameters_list is not None:
+                if aggregated[identifier] is None:
+                    aggregated[identifier] = list()
+                aggregated[identifier].append(copy.deepcopy(message_parameters_list))
+
+    def merge_scoped_messages(
+        self,
+        aggregated: SCOPED_MESSAGES,
+        additions: SCOPED_MESSAGES
+    ):
+        source: str
+        identified_messages: Optional[IDENTIFIED_MESSAGES]
+        for source, identified_messages in additions.keys():
+            if source not in aggregated:
+                aggregated[source] = None
+            if identified_messages is not None:
+                if aggregated[source] is None:
+                    aggregated[source] = dict()
+                self.merge_identified_messages(aggregated[source], identified_messages)
+
+    def merge_coded_messages(
+            self,
+            aggregated: MESSAGE_PARTITION,
+            additions: MESSAGE_PARTITION
+    ):
+        """
+        Merge additional MESSAGE_PARTITION content into an already aggregate MESSAGE_PARTITION.
+        :param aggregated: MESSAGE_PARTITION of messages aggregated so far
+        :param additions: MESSAGE_PARTITION of additional messages to be merged into the aggregated set.
+        :return: None - mutable 'aggregrated' MESSAGE_PARTITION is updated as a side effect
+        """
+        code: str
+        scoped_message: SCOPED_MESSAGES
+        for code, scoped_message in additions.items():
+            if code not in aggregated:
+                aggregated[code] = dict()
+            self.merge_scoped_messages(aggregated[code], scoped_message)
+
+    def get_all_messages_of_type(self, message_type: MessageType) -> MESSAGE_PARTITION:
+        """
+        Get MESSAGE_PARTITION dictionary of all ValidationReporter messages of
+        a given 'message_type', harvested from all target and test contexts.
+        :param message_type: MessageType, type of message whose presence is to be detected.
+        :return: MESSAGE_PARTITION of aggregated messages of the specified MessageType.
+        """
+        all_messages_of_type: MESSAGE_PARTITION = dict()
+        target: str
+        messages_by_target: MESSAGES_BY_TARGET = self.get_all_messages()
+        test: str
+        messages_by_test: MESSAGES_BY_TEST
+        message_catalog: MESSAGE_CATALOG
+        for target, messages_by_test in messages_by_target.items():
+            for test in messages_by_test.keys():
+                additional_messages: MESSAGE_PARTITION = \
+                    self.get_messages_of_type(message_type=message_type, test=test, target=target)
+                self.merge_coded_messages(all_messages_of_type, additional_messages)
+        return all_messages_of_type
 
     def get_info(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """
@@ -449,7 +521,7 @@ class ValidationReporter:
         :param target: str, specified target (gets current 'default' test if not given)
         :return: Dict of all 'information' messages.
         """
-        return self.get_messages_type(message_type=MessageType.info, test=test, target=target)
+        return self.get_messages_of_type(message_type=MessageType.info, test=test, target=target)
 
     def get_skipped(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """
@@ -458,7 +530,7 @@ class ValidationReporter:
         :param target: str, specified target (gets current 'default' test if not given)
         :return: Dict of all 'skipped test' messages.
         """
-        return self.get_messages_type(message_type=MessageType.skipped, test=test, target=target)
+        return self.get_messages_of_type(message_type=MessageType.skipped, test=test, target=target)
 
     def get_warnings(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """
@@ -467,7 +539,7 @@ class ValidationReporter:
         :param target: str, specified target (gets current 'default' test if not given)
         :return: Dict of all 'warning' messages.
         """
-        return self.get_messages_type(message_type=MessageType.warning, test=test, target=target)
+        return self.get_messages_of_type(message_type=MessageType.warning, test=test, target=target)
 
     def get_errors(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """
@@ -476,7 +548,7 @@ class ValidationReporter:
         :param target: str, specified target (gets current 'default' test if not given)
         :return: Dict of all 'error' messages.
         """
-        return self.get_messages_type(message_type=MessageType.error, test=test, target=target)
+        return self.get_messages_of_type(message_type=MessageType.error, test=test, target=target)
 
     def get_critical(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """
@@ -485,7 +557,7 @@ class ValidationReporter:
         :param target: str, specified target (gets current 'default' test if not given)
         :return: Dict of all 'critical error' messages.
         """
-        return self.get_messages_type(message_type=MessageType.critical, test=test, target=target)
+        return self.get_messages_of_type(message_type=MessageType.critical, test=test, target=target)
 
     ############################
     # General Instance methods #

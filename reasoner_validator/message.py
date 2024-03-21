@@ -43,7 +43,6 @@ from typing import Optional, List, Dict
 # }
 #
 
-
 # One instance of 'MESSAGE_PARAMETERS' is a dictionary of string
 # parameters associated with a  given message code, as documented
 # within the global 'codes.yaml' validation message catalog
@@ -68,8 +67,9 @@ IDENTIFIED_MESSAGES = Dict[
 SCOPED_MESSAGES = Dict[
     str,  # 'source trail' origin of affected edge or 'global' validation error
 
-    # (A given message code may have no IDENTIFIED_MESSAGES with discriminating identifier
-    #  and parameters hence,it may have a scoped value of 'None')
+    # (A given message code may have
+    # no IDENTIFIED_MESSAGES with discriminating identifier
+    #  and parameters hence, it may have a scoped value of 'None')
     Optional[IDENTIFIED_MESSAGES]
 ]
 
