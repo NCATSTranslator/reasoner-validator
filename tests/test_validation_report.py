@@ -1,4 +1,5 @@
 """Testing Validation Report methods"""
+import copy
 from typing import Optional, Dict, List
 from sys import stderr
 
@@ -220,30 +221,173 @@ def test_unknown_message_code():
         CodeDictionary.display(code="foo.bar")
 
 
+im_test_aggregated: IDENTIFIED_MESSAGES = {
+    "Fe": None,
+    "Fo": None,
+    "Fum": [
+        {
+            "I": "smell",
+            "the": "blood"
+        }
+    ]
+}
+
+im_test_additions: IDENTIFIED_MESSAGES = {
+    "Fi": None,
+    "Fum": [
+        {
+            "of": "an",
+            "English": "Man"
+        }
+    ]
+}
+
+
+# IDENTIFIED_MESSAGES = Dict[
+#     str,  # key is the message-unique template 'identifier' value of parameterized messages
+#
+#     # Note: some message codes may not have any associated
+#     # parameters beyond their discriminating identifier
+#     Optional[List[MESSAGE_PARAMETERS]]
+# ]
 def test_merge_identified_messages():
     reporter = ValidationReporter()
-    aggregated: IDENTIFIED_MESSAGES
-    additions: IDENTIFIED_MESSAGES
-    reporter.merge_identified_messages(aggregated=aggregated, additions=additions)
+    aggregated: IDENTIFIED_MESSAGES = copy.deepcopy(im_test_aggregated)
+    additions: IDENTIFIED_MESSAGES = copy.deepcopy(im_test_additions)
+    reporter.merge_identified_messages(
+        aggregated=aggregated,
+        additions=additions
+    )
+    assert "Fi" in aggregated.keys()
+    assert any(
+        [
+            "Man" in parameters.values()
+            for parameters in aggregated["Fum"]
+            if "Fum" in aggregated.keys() and aggregated["Fum"]
+        ],
+    )
 
 
+sm_test_aggregated: SCOPED_MESSAGES = {
+    "global": im_test_aggregated,
+    "infores:foo -> infores:bar": None
+}
+
+
+im_another_test_addition: IDENTIFIED_MESSAGES = {
+    "Humpty": None,
+    "Dumpty": [
+        {
+            "On": "a",
+            "big": "wall"
+        }
+    ]
+}
+
+
+im_yetanother_test_addition: IDENTIFIED_MESSAGES = {
+    "Dumpty": [
+        {
+            "Had": "a",
+            "big": "fall"
+        }
+    ]
+}
+
+scope_test_tag = "infores:tweedle_dee -> infores:tweedle_dum"
+sm_test_additions: SCOPED_MESSAGES = {
+    "global": im_test_additions,
+    scope_test_tag: im_another_test_addition
+}
+
+
+# SCOPED_MESSAGES = Dict[
+#     str,  # 'source trail' origin of affected edge or 'global' validation error
+#
+#     # (A given message code may have
+#     # no IDENTIFIED_MESSAGES with discriminating identifier
+#     #  and parameters hence, it may have a scoped value of 'None')
+#     Optional[IDENTIFIED_MESSAGES]
+# ]
 def test_merge_scoped_messages():
     reporter = ValidationReporter()
-    aggregated: SCOPED_MESSAGES
-    additions: SCOPED_MESSAGES
-    reporter.merge_scoped_messages(aggregated=aggregated, additions=additions)
+    aggregated: SCOPED_MESSAGES = copy.deepcopy(sm_test_aggregated)
+    additions: SCOPED_MESSAGES = copy.deepcopy(sm_test_additions)
+    reporter.merge_scoped_messages(
+        aggregated=aggregated,
+        additions=additions
+    )
+    assert "infores:tweedle_dee -> infores:tweedle_dum" in aggregated.keys()
+    scoped_message: Optional[IDENTIFIED_MESSAGES] = aggregated["global"]
+    assert scoped_message is not None and "Fi" in scoped_message.keys()
+    second_scoped_message: Optional[IDENTIFIED_MESSAGES] = aggregated[scope_test_tag]
+    assert any(
+        [
+            "wall" in parameters.values()
+            for parameters in second_scoped_message["Dumpty"]
+            if "Dumpty" in second_scoped_message.keys() and second_scoped_message["Dumpty"]
+        ],
+    )
 
 
+code_for_testing = "info.input_edge.predicate.abstract"
+pm_test_aggregated: MESSAGE_PARTITION = {
+    "info.excluded": {
+        "global": {
+            "Horace van der Gelder": None
+        }
+    },
+    code_for_testing: {
+        "global": im_test_aggregated,
+        scope_test_tag: im_another_test_addition
+    }
+}
+
+pm_test_additions: MESSAGE_PARTITION = {
+    "info.excluded": {
+        "global": {
+            "Dolly Gallagher Levi": None
+        }
+    },
+    "info.compliant": {
+        "global": None
+    },
+    code_for_testing: {
+        "global": im_test_additions,
+        scope_test_tag: im_yetanother_test_addition
+    }
+}
+
+
+# MESSAGE_PARTITION = Dict[
+#     str,  # message 'code' as indexing key
+#     SCOPED_MESSAGES
+# ]
 def test_merge_coded_messages():
     reporter = ValidationReporter()
-    aggregated: MESSAGE_PARTITION
-    additions: MESSAGE_PARTITION
-    messages: MESSAGE_PARTITION = \
-        reporter.merge_coded_messages(aggregated=aggregated, additions=additions)
+    aggregated: MESSAGE_PARTITION = copy.deepcopy(pm_test_aggregated)
+    additions: MESSAGE_PARTITION = copy.deepcopy(pm_test_additions)
+    reporter.merge_coded_messages(
+        aggregated=aggregated,
+        additions=additions
+    )
+    assert "info.compliant" in aggregated.keys()
+    coded_message: SCOPED_MESSAGES = aggregated[code_for_testing]
+    assert coded_message is not None and \
+        scope_test_tag in coded_message.keys()
+    second_scoped_message: Optional[IDENTIFIED_MESSAGES] = coded_message[scope_test_tag]
+    assert any(
+        [
+            "fall" in parameters.values()
+            for parameters in second_scoped_message["Dumpty"]
+            if "Dumpty" in second_scoped_message.keys() and second_scoped_message["Dumpty"]
+        ],
+    )
 
 
 def test_get_all_messages_of_type():
     reporter = ValidationReporter()
+    # TODO: add a few messages here across more than one test and target space(?)
     message_type: MessageType = MessageType.info
     messages: MESSAGE_PARTITION = reporter.get_all_messages_of_type(message_type)
 

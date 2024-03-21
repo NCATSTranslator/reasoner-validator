@@ -323,8 +323,8 @@ class ValidationReporter:
         :param code: str, dot delimited validation path code
         :param test: str, specified test (gets current 'default' test if not given)
         :param target: str, specified target (gets current 'default' test if not given)
-        :param source_trail, Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
-                             Defaults to "global" if not specified.
+        :param source_trail, Optional[str], audit trail of knowledge source provenance for
+                             a given Edge, as a string. Defaults to "global" if not specified.
         :param message: **Dict, named parameters representing extra (str-formatted) context for the given code message
         :return: None (internally record the validation message)
         """
@@ -459,7 +459,7 @@ class ValidationReporter:
             if message_parameters_list is not None:
                 if aggregated[identifier] is None:
                     aggregated[identifier] = list()
-                aggregated[identifier].append(copy.deepcopy(message_parameters_list))
+                aggregated[identifier].extend(copy.deepcopy(message_parameters_list))
 
     def merge_scoped_messages(
         self,
@@ -468,7 +468,7 @@ class ValidationReporter:
     ):
         source: str
         identified_messages: Optional[IDENTIFIED_MESSAGES]
-        for source, identified_messages in additions.keys():
+        for source, identified_messages in additions.items():
             if source not in aggregated:
                 aggregated[source] = None
             if identified_messages is not None:
@@ -783,10 +783,10 @@ class ValidationReporter:
                                 if not compact_format:
                                     print(file=file)
 
-                                # 'messages_by_code' is a SCOPED_MESSAGES where
-                                # SCOPED_MESSAGES is Dict[<scope>, Optional[IDENTIFIED_MESSAGES]]
-
-                                # <scope> is "global" or source trail path string
+                                # 'messages_by_code' are 'code' indexed SCOPED_MESSAGES where
+                                # SCOPED_MESSAGES are Dict[<scope>, Optional[IDENTIFIED_MESSAGES]]
+                                # and <scope> is "global" or source trail path string and
+                                # messages_by_scope are Optional[IDENTIFIED_MESSAGES] (see below)
                                 scope: str
                                 messages_by_scope: Optional[IDENTIFIED_MESSAGES]
                                 for scope, messages_by_scope in messages_by_code.items():
@@ -800,15 +800,15 @@ class ValidationReporter:
                                     num_ids: int = len(messages_by_scope.keys())
                                     more_ids: int = num_ids - id_rows if num_ids > id_rows else 0
 
-                                    # 'messages_by_scope' is Optional[IDENTIFIED_MESSAGES] where
-                                    # 'IDENTIFIED_MESSAGES' is Dict[<identifier>, Optional[List[MESSAGE_PARAMETERS]]]
+                                    # 'messages_by_scope' are Optional[IDENTIFIED_MESSAGES] where
+                                    # 'IDENTIFIED_MESSAGES' are Dict[<identifier>, Optional[List[MESSAGE_PARAMETERS]]]
 
                                     # An entry of 'messages_by_scope' may be None if the given message code
-                                    # has no additional parameters that distinguish instances of context (e.g. edge id?)
-                                    # where the validation message occurs for the given identifier.
+                                    # has no additional parameters that distinguish instances of context
+                                    # (e.g. edge id?) where the validation message occurs for the given identifier.
 
                                     # unique 'identifier' discriminator of the
-                                    # (TRAPI or Biolink) token target of the validation
+                                    # (TRAPI or Biolink) context of the validation message
                                     identifier: str
                                     messages: Optional[List[MESSAGE_PARAMETERS]]
                                     for identifier, messages in messages_by_scope.items():
