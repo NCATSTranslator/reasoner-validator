@@ -6,6 +6,7 @@ import pytest
 
 from reasoner_validator.message import (
     MessageType,
+    IDENTIFIED_MESSAGES,
     SCOPED_MESSAGES,
     MESSAGE_PARTITION,
     MESSAGE_CATALOG,
@@ -217,6 +218,34 @@ def test_message_display():
 def test_unknown_message_code():
     with pytest.raises(AssertionError):
         CodeDictionary.display(code="foo.bar")
+
+
+def test_merge_identified_messages():
+    reporter = ValidationReporter()
+    aggregated: IDENTIFIED_MESSAGES
+    additions: IDENTIFIED_MESSAGES
+    reporter.merge_identified_messages(aggregated=aggregated, additions=additions)
+
+
+def test_merge_scoped_messages():
+    reporter = ValidationReporter()
+    aggregated: SCOPED_MESSAGES
+    additions: SCOPED_MESSAGES
+    reporter.merge_scoped_messages(aggregated=aggregated, additions=additions)
+
+
+def test_merge_coded_messages():
+    reporter = ValidationReporter()
+    aggregated: MESSAGE_PARTITION
+    additions: MESSAGE_PARTITION
+    messages: MESSAGE_PARTITION = \
+        reporter.merge_coded_messages(aggregated=aggregated, additions=additions)
+
+
+def test_get_all_messages_of_type():
+    reporter = ValidationReporter()
+    message_type: MessageType = MessageType.info
+    messages: MESSAGE_PARTITION = reporter.get_all_messages_of_type(message_type)
 
 
 def test_prefix_accessors():
