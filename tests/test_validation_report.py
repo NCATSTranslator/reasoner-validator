@@ -502,8 +502,8 @@ full_test_messages_by_test_2: MESSAGES_BY_TEST = {
 
 critical_target = "new_target_1"
 full_test_messages_by_target: MESSAGES_BY_TARGET = {
-    "new_target_1": copy.deepcopy(full_test_messages_by_test_1),
-    critical_target: copy.deepcopy(full_test_messages_by_test_2)
+    critical_target: copy.deepcopy(full_test_messages_by_test_1),
+    "new_target_2": copy.deepcopy(full_test_messages_by_test_2)
 }
 
 
@@ -699,7 +699,7 @@ def test_messages():
     assert messages_by_target, "Empty 'critical.trapi.validation' messages set?"
     assert "9.1.1" in messages_by_target["global"]
     message_subset: List = messages_by_target["global"]["9.1.1"]
-    assert "Fire, Ambulance or Police?"\
+    assert "Fire, Ambulance or Police?" \
            in [message['reason'] for message in message_subset if 'reason' in message]
 
     for n in range(0, 10):
