@@ -1150,7 +1150,7 @@
 
 ### skipped.test
 
-**Message:** For reason indicated in the identifier.
+**Message:** For reason indicated in the identifier
 
 **Context:** identifier
 
