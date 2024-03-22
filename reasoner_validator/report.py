@@ -714,7 +714,10 @@ class ValidationReporter:
         assert id_rows >= 0, "dump(): 'id_rows' argument must be positive or equal to zero"
         assert msg_rows >= 0, "dump(): 'pm_rows' argument must be positive or equal to zero"
 
-        print(f"{self.report_header(title, compact_format)}.\n", file=file)
+        print(f"{self.report_header(title, compact_format)}.", file=file)
+        if not compact_format:
+            # extra blank line spacer
+            print(file=file)
 
         if self.has_messages():
 
@@ -746,7 +749,7 @@ class ValidationReporter:
                         print(file=file)
                     else:
                         # compact also ignores underlining
-                        print(f"\n\tTest: {test}", file=file)
+                        print(f"\tTest: {test}", file=file)
 
                     for message_type, coded_messages in test_messages.items():
 
@@ -790,65 +793,54 @@ class ValidationReporter:
                                 scope: str
                                 messages_by_scope: Optional[IDENTIFIED_MESSAGES]
                                 for scope, messages_by_scope in messages_by_code.items():
-
                                     print(f"\t\t\t$ {scope}", file=file)
 
-                                    # Codes with associated parameters should have
-                                    # an embedded dictionary with 'identifier' keys
+                                    # 'messages_by_scope' are Optional[IDENTIFIED_MESSAGES]
+                                    # An entry of 'messages_by_scope' may be None if the given message code
+                                    # has no additional parameters that distinguish instances of context
+                                    # (e.g. edge id?) where the validation message occurs for the given identifier.
+                                    if messages_by_scope is None:
+                                        continue
+
+                                    # Otherwise, codes with associated parameters in scope
+                                    # 'IDENTIFIED_MESSAGES' are Dict[<identifier>, Optional[List[MESSAGE_PARAMETERS]]]
+                                    # where a unique 'identifier' serves as the discriminator
+                                    # of the (TRAPI or Biolink) context of the validation message
 
                                     ids_per_row: int = 0
                                     num_ids: int = len(messages_by_scope.keys())
                                     more_ids: int = num_ids - id_rows if num_ids > id_rows else 0
-
-                                    # 'messages_by_scope' are Optional[IDENTIFIED_MESSAGES] where
-                                    # 'IDENTIFIED_MESSAGES' are Dict[<identifier>, Optional[List[MESSAGE_PARAMETERS]]]
-
-                                    # An entry of 'messages_by_scope' may be None if the given message code
-                                    # has no additional parameters that distinguish instances of context
-                                    # (e.g. edge id?) where the validation message occurs for the given identifier.
-
-                                    # unique 'identifier' discriminator of the
-                                    # (TRAPI or Biolink) context of the validation message
                                     identifier: str
                                     messages: Optional[List[MESSAGE_PARAMETERS]]
                                     for identifier, messages in messages_by_scope.items():
-
                                         if messages is None:
-
                                             # For codes whose context of validation is solely discerned
                                             # with their identifier, just print out the identifier
-
                                             print(f"\t\t\t\t# {identifier}", file=file)
-
                                             if not compact_format:
                                                 print(file=file)
-
                                         else:
                                             # Since we have already checked if messages is None above,
                                             # then we assume here that 'messages' is a List[MESSAGE_PARAMETERS]
                                             # which records distinct additional context
                                             # for a list of messages associated with a given code.
-                                            print(f"\t\t\t\t# {identifier}:", file=file)
 
+                                            print(f"\t\t\t\t# {identifier}:", file=file)
                                             first_message: bool = True
                                             messages_per_row: int = 0
                                             num_messages: int = len(messages)
                                             more_msgs: int = num_messages - msg_rows if num_messages > msg_rows else 0
-
                                             # 'messages' is an instance List[MESSAGE_PARAMETERS] where every entry of
                                             # 'MESSAGE_PARAMETERS' is a dictionary of additional parameters documenting
                                             # a specific instance of validation message related to the given identifier,
                                             # where the keys are validation code specific (documented in codes.yaml)
                                             parameters: MESSAGE_PARAMETERS
                                             for parameters in messages:
-
                                                 if first_message:
                                                     tags = tuple(parameters.keys())
                                                     print(f"\t\t\t\t- {' | '.join(tags)}: ", file=file)
                                                     first_message = False
-
                                                 print(f"\t\t\t\t\t{' | '.join(parameters.values())}", file=file)
-
                                                 messages_per_row += 1
                                                 if msg_rows and messages_per_row >= msg_rows:
                                                     if more_msgs:
@@ -858,28 +850,22 @@ class ValidationReporter:
                                                             file=file
                                                         )
                                                     break
-
                                             if not compact_format:
                                                 print(file=file)
-
                                         ids_per_row += 1
                                         if id_rows and ids_per_row >= id_rows:
                                             if more_ids:
                                                 print(
-                                                    f"\t\t{str(more_ids)} more identifiers for code '{code_label}'...",
+                                                    f"\t\t\t{str(more_ids)} more identifiers for code '{code_label}'...",
                                                     file=file
                                                 )
                                             break
-
                                     if not compact_format:
                                         print(file=file)
-
                                 # else:
                                 #     For codes with associated non-parametric templates,
                                 #     just printing the template (done above) suffices
-
                         # else: print nothing if a given message_type has no messages
-
                     # end for each coded message
                 # end for each test
             # end for each target
