@@ -7,6 +7,7 @@ The major release changes relate to adapting the reasoner-validator to the new (
 - Two higher levels of indexing are added to the message catalog of the **ValidationReporter**: indexing by target (endpoint url) and indexing by test identifier.
 - Support for "Skipped Tests" added to the codes.yaml and code base
 - The ValidationReporter 'prefix' field converted into a 'default_target' field and accessor methods provided, with a new basic unit test
+- OpenTelemetry features in API disabled for the time being, pending future update
 
 ## 3.9.5
 - pydantic updated to 1.10.13
@@ -14,7 +15,6 @@ The major release changes relate to adapting the reasoner-validator to the new (
 - gitignore JSON files in scripts subfolder to allow local validation of said JSON files without committing them to the repo
 - silenced warnings about missing workflow schema defined 'parameters' and 'runner_parameters' (workflow schema allows these to be null but...) - but keeping the validation codes in the codes.yaml (for now)
 - fixed subtle bug with id prefix mapping validation
-
 
 ## 3.9.4
 - Demote 'knowledge_graph.node.name.missing' validation error into a warning.
