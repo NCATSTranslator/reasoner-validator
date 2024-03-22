@@ -1,5 +1,6 @@
 """Testing Validation Report methods"""
 import copy
+import sys
 from typing import Optional, Dict, List
 from sys import stderr
 
@@ -237,7 +238,7 @@ im_test_additions: IDENTIFIED_MESSAGES = {
     "Fum": [
         {
             "of": "an",
-            "English": "Man"
+            "English": "man"
         }
     ]
 }
@@ -261,17 +262,11 @@ def test_merge_identified_messages():
     assert "Fi" in aggregated.keys()
     assert any(
         [
-            "Man" in parameters.values()
+            "man" in parameters.values()
             for parameters in aggregated["Fum"]
             if "Fum" in aggregated.keys() and aggregated["Fum"]
         ],
     )
-
-
-sm_test_aggregated: SCOPED_MESSAGES = {
-    "global": im_test_aggregated,
-    "infores:foo -> infores:bar": None
-}
 
 
 im_another_test_addition: IDENTIFIED_MESSAGES = {
@@ -295,10 +290,52 @@ im_yetanother_test_addition: IDENTIFIED_MESSAGES = {
 }
 
 scope_test_tag = "infores:tweedle_dee -> infores:tweedle_dum"
-sm_test_additions: SCOPED_MESSAGES = {
-    "global": im_test_additions,
+sm_test_aggregated: SCOPED_MESSAGES = {
+    "global": im_test_aggregated,
+    "infores:foo -> infores:bar": None,
     scope_test_tag: im_another_test_addition
 }
+
+
+sm_test_additions: SCOPED_MESSAGES = {
+    "global": im_test_additions,
+    scope_test_tag: im_yetanother_test_addition
+}
+
+
+def _check_coded_messages(
+        coded_messages: SCOPED_MESSAGES,
+        target_scope: str,
+        target_identifier: str,
+        target_parameter_values: List[str]
+):
+    assert coded_messages is not None and target_scope in coded_messages.keys()
+    scoped_messages: Optional[IDENTIFIED_MESSAGES] = coded_messages[target_scope]
+    assert all(
+        [
+            any([p in parameters.values() for p in target_parameter_values])
+            for parameters in scoped_messages[target_identifier]
+            if target_identifier in scoped_messages.keys() and scoped_messages[target_identifier]
+        ]
+    )
+
+
+def _check_unfriendly_giant(coded_messages: SCOPED_MESSAGES):
+    _check_coded_messages(
+        coded_messages,
+        target_scope="global",
+        target_identifier="Fum",
+        target_parameter_values=["blood", "man"]
+    )
+
+
+def _check_humpty_dumpty(coded_messages: SCOPED_MESSAGES):
+    _check_coded_messages(
+        coded_messages,
+        target_scope=scope_test_tag,
+        target_identifier="Dumpty",
+        target_parameter_values=["wall", "fall"]
+    )
 
 
 # SCOPED_MESSAGES = Dict[
@@ -317,17 +354,12 @@ def test_merge_scoped_messages():
         aggregated=aggregated,
         additions=additions
     )
-    assert "infores:tweedle_dee -> infores:tweedle_dum" in aggregated.keys()
-    scoped_message: Optional[IDENTIFIED_MESSAGES] = aggregated["global"]
-    assert scoped_message is not None and "Fi" in scoped_message.keys()
-    second_scoped_message: Optional[IDENTIFIED_MESSAGES] = aggregated[scope_test_tag]
-    assert any(
-        [
-            "wall" in parameters.values()
-            for parameters in second_scoped_message["Dumpty"]
-            if "Dumpty" in second_scoped_message.keys() and second_scoped_message["Dumpty"]
-        ],
-    )
+    global_scoped_message: Optional[IDENTIFIED_MESSAGES] = aggregated["global"]
+    assert global_scoped_message is not None and "Fi" in global_scoped_message.keys()
+
+    # Now check for Humpty Dumpty message
+    # in the 'aggregated' SCOPED_MESSAGES
+    _check_humpty_dumpty(aggregated)
 
 
 code_for_testing = "info.input_edge.predicate.abstract"
@@ -372,24 +404,133 @@ def test_merge_coded_messages():
         additions=additions
     )
     assert "info.compliant" in aggregated.keys()
-    coded_message: SCOPED_MESSAGES = aggregated[code_for_testing]
-    assert coded_message is not None and \
-        scope_test_tag in coded_message.keys()
-    second_scoped_message: Optional[IDENTIFIED_MESSAGES] = coded_message[scope_test_tag]
-    assert any(
-        [
-            "fall" in parameters.values()
-            for parameters in second_scoped_message["Dumpty"]
-            if "Dumpty" in second_scoped_message.keys() and second_scoped_message["Dumpty"]
-        ],
-    )
+
+
+##########################
+# Full message test data #
+##########################
+full_test_messages_catalog_1: MESSAGE_CATALOG = {
+    "info": {
+        "info.excluded": {
+            "global": {
+                "Dolly Gallagher Levi": None
+            }
+        },
+        "info.compliant": {
+            "global": None
+        },
+        code_for_testing: {
+            "global": copy.deepcopy(im_test_aggregated)
+        }
+    },
+    "skipped": {
+        "skipped.test": {
+            "global": {
+                "Catastrophe": None
+            }
+        }
+
+    },
+    "warning": {
+        "warning.knowledge_graph.node.id.unmapped_prefix": {
+            "infores:earth -> infores:spaceship": {
+                "Will Robinson": [
+                    {
+                        "categories": "Lost in Space"
+                    }
+                ]
+            }
+        }
+    }
+}
+
+full_test_messages_catalog_2: MESSAGE_CATALOG = {
+    "info": {
+        "info.excluded": {
+            "global": {
+                "Horace van der Gelder": None
+            }
+        },
+        code_for_testing: {
+            "global": copy.deepcopy(im_test_additions),
+            scope_test_tag: copy.deepcopy(im_another_test_addition)
+        }
+    },
+    "error": {
+        "error.biolink.model.noncompliance": {
+            "global": {
+                "6.6.6": [
+                    {
+                        'reason': "Dave, this can only be due to human error..."
+                    }
+                ]
+            }
+        }
+    },
+    "critical": {
+        "critical.trapi.validation": {
+            "global": {
+                "9.1.1": [
+                    {
+                        'component': 'Query',
+                        'reason': "Fire, Ambulance or Police?"
+                    }
+                ]
+            }
+        }
+    }
+}
+
+
+full_test_messages_catalog_3: MESSAGE_CATALOG = {
+    "info": {
+        code_for_testing: {
+            scope_test_tag: copy.deepcopy(im_yetanother_test_addition)
+        }
+    }
+}
+
+critical_test = "new_test_2"
+full_test_messages_by_test_1: MESSAGES_BY_TEST = {
+    "new_test_1": copy.deepcopy(full_test_messages_catalog_1),
+    critical_test: copy.deepcopy(full_test_messages_catalog_2)
+}
+
+full_test_messages_by_test_2: MESSAGES_BY_TEST = {
+    "new_test_3": copy.deepcopy(full_test_messages_catalog_3)
+}
+
+critical_target = "new_target_1"
+full_test_messages_by_target: MESSAGES_BY_TARGET = {
+    "new_target_1": copy.deepcopy(full_test_messages_by_test_1),
+    critical_target: copy.deepcopy(full_test_messages_by_test_2)
+}
 
 
 def test_get_all_messages_of_type():
     reporter = ValidationReporter()
-    # TODO: add a few messages here across more than one test and target space(?)
-    message_type: MessageType = MessageType.info
-    messages: MESSAGE_PARTITION = reporter.get_all_messages_of_type(message_type)
+    # Load the reporter with several messages
+    # across multiple test and target contexts
+    reporter.add_messages(new_messages=full_test_messages_by_target)
+    messages: MESSAGE_PARTITION = reporter.get_all_messages_of_type(MessageType.info)
+    print(messages, file=sys.stderr, flush=True)
+    assert all([code in ["info.excluded", "info.compliant", code_for_testing] for code in messages])
+    info_excluded_scoped_messages: SCOPED_MESSAGES = messages["info.excluded"]
+    assert "global" in info_excluded_scoped_messages and info_excluded_scoped_messages["global"] is not None
+    assert all(
+        [
+            identifier in ["Dolly Gallagher Levi", "Horace van der Gelder"]
+            for identifier in info_excluded_scoped_messages["global"].keys()
+        ]
+    )
+    info_compliant_messages: SCOPED_MESSAGES = messages["info.compliant"]
+    assert "global" in info_compliant_messages and info_compliant_messages["global"] is None
+
+    # In the SCOPED_MESSAGES associated with 'code_for_testing',
+    # Check for Jack in the Beanstalk Giant messages...
+    _check_unfriendly_giant(messages[code_for_testing])
+    # ...then, for Humpty Dumpty messages...
+    _check_humpty_dumpty(messages[code_for_testing])
 
 
 def test_prefix_accessors():
@@ -516,64 +657,7 @@ def test_messages():
     reporter1.merge(reporter3)
 
     # testing addition a few raw batch messages
-    new_messages_catalog: MESSAGE_CATALOG = {
-        "info": {
-            "info.excluded": {
-                "global": {
-                    "Horace van der Gelder": None
-                }
-            }
-        },
-        "skipped": {
-            "skipped.test": {
-                "global": {
-                    "Catastrophe": None
-                }
-            }
-
-        },
-        "warning": {
-            "warning.knowledge_graph.node.id.unmapped_prefix": {
-                "infores:earth -> infores:spaceship": {
-                    "Will Robinson": [
-                        {
-                            "categories": "Lost in Space"
-                        }
-                    ]
-                }
-            }
-        },
-        "error": {
-            "error.biolink.model.noncompliance": {
-                "global": {
-                    "6.6.6": [
-                        {
-                            'reason': "Dave, this can only be due to human error..."
-                        }
-                    ]
-                }
-            }
-        },
-        "critical": {
-            "critical.trapi.validation": {
-                "global": {
-                    "9.1.1": [
-                        {
-                            'component': 'Query',
-                            'reason': "Fire, Ambulance or Police?"
-                        }
-                    ]
-                }
-            }
-        }
-    }
-    new_test_messages: MESSAGES_BY_TEST = {
-        "new_test": new_messages_catalog
-    }
-    new_targeted_test_messages: MESSAGES_BY_TARGET = {
-        "new_target": new_test_messages
-    }
-    reporter1.add_messages(new_targeted_test_messages)
+    reporter1.add_messages(full_test_messages_by_target)
 
     # Verify what we have
     test_message_type: MessageType
@@ -586,7 +670,7 @@ def test_messages():
         ),
         (
             MessageType.skipped,
-            "SKIPPED - Test: For reason indicated in the identifier."
+            "SKIPPED - Test: For reason indicated in the identifier"
         ),
         (
             MessageType.warning,
@@ -605,13 +689,13 @@ def test_messages():
 
     obj = reporter1.to_dict()
     assert "messages" in obj
-    assert tm_default_target in obj["messages"]
-    assert tm_default_test in obj["messages"][tm_default_target]
-    assert "critical" in obj["messages"][tm_default_target][tm_default_test]
-    assert "critical.trapi.validation" in obj["messages"][tm_default_target][tm_default_test]["critical"]
+    assert critical_target in obj["messages"]
+    assert critical_test in obj["messages"][critical_target]
+    assert "critical" in obj["messages"][critical_target][critical_test]
+    assert "critical.trapi.validation" in obj["messages"][critical_target][critical_test]["critical"]
 
     messages_by_target: SCOPED_MESSAGES = \
-        obj["messages"][tm_default_target][tm_default_test]["critical"]["critical.trapi.validation"]
+        obj["messages"][critical_target][critical_test]["critical"]["critical.trapi.validation"]
     assert messages_by_target, "Empty 'critical.trapi.validation' messages set?"
     assert "9.1.1" in messages_by_target["global"]
     message_subset: List = messages_by_target["global"]["9.1.1"]

@@ -911,7 +911,7 @@ info:
             $description: "TRAPI Messages in Knowledge Graphs can have 'mixin' attribute type identifiers, when the mode of validation is 'non-strict'."
 skipped:
   test:
-    $message: "For reason indicated in the identifier."
+    $message: "For reason indicated in the identifier"
     $context:
       - identifier
     $description: "Test was skipped for the reason documented in the 'identifier' string value."
