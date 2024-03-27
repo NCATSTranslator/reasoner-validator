@@ -10,7 +10,9 @@
 #     poetry install
 #     poetry shell
 #     cd scripts
-#     ./trapi_validator.py --help
+#     ./trapi_validator.py --help  # within *nix shell terminals
+#         or
+#     python .\trapi_validator.py  # on the MS Windows command line terminal
 #
 ##################################################
 import asyncio
@@ -264,7 +266,7 @@ def validation_report(validator: TRAPIResponseValidator, args):
 
     if show_messages or args.verbose:
         if args.json:
-            print(json.dumps(validator.get_messages(), sort_keys=True, indent=2))
+            print(json.dumps(validator.get_all_messages(), sort_keys=True, indent=2))
         else:
             validator.dump(
                 title=args.title,

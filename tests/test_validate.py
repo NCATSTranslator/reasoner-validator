@@ -91,7 +91,11 @@ def test_load_master_schema():
 
 
 def test_message():
-    reporter = TRAPISchemaValidator(prefix="Test Message", trapi_version="v1.4")
+    reporter = TRAPISchemaValidator(
+        default_test="test_message",
+        default_target="Test Message",
+        trapi_version="v1.4"
+    )
     assert reporter.get_trapi_version() == LATEST_TRAPI_RELEASE
     assert not reporter.has_messages()
     reporter.report("info.compliant")

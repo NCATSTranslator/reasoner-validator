@@ -2,6 +2,7 @@
 This module provides standalone global reasoner-validator validation Message types
 to avoid load order conflicts for other modules using these data types.
 """
+from enum import Enum
 from typing import Optional, List, Dict
 #
 # The MESSAGE_CATALOG data structure is something like the following:
@@ -42,7 +43,6 @@ from typing import Optional, List, Dict
 # }
 #
 
-
 # One instance of 'MESSAGE_PARAMETERS' is a dictionary of string
 # parameters associated with a  given message code, as documented
 # within the global 'codes.yaml' validation message catalog
@@ -67,8 +67,9 @@ IDENTIFIED_MESSAGES = Dict[
 SCOPED_MESSAGES = Dict[
     str,  # 'source trail' origin of affected edge or 'global' validation error
 
-    # (A given message code may have no IDENTIFIED_MESSAGES with discriminating identifier
-    #  and parameters hence,it may have a scoped value of 'None')
+    # (A given message code may have
+    # no IDENTIFIED_MESSAGES with discriminating identifier
+    #  and parameters hence, it may have a scoped value of 'None')
     Optional[IDENTIFIED_MESSAGES]
 ]
 
@@ -81,9 +82,34 @@ MESSAGE_PARTITION = Dict[
     SCOPED_MESSAGES
 ]
 
-# A MESSAGE_CATALOG contains the validation messages from all four
-# major categories of validation: critical/errors/warnings/information
+
+class MessageType(Enum):
+    info = "information"
+    skipped = "skipped tests"
+    warning = "warnings"
+    error = "errors"
+    critical = "critical errors"
+
+
+# A individual MESSAGE_CATALOG contains
+# the validation messages from
+# all four major categories of validation:
+# critical/errors/warnings/information
 MESSAGE_CATALOG = Dict[
-    str,  # message type (critical/errors/warnings/information)
+    str,  # message type (info/skipped/warning/error/critical)
     MESSAGE_PARTITION
+]
+
+# MESSAGES_BY_TEST contains MESSAGE_CATALOG
+# entries indexed by individual tests
+MESSAGES_BY_TEST = Dict[
+    str,  # unique identifiers for each test
+    MESSAGE_CATALOG
+]
+
+# MESSAGES_BY_TARGET contains MESSAGES_BY_TEST entries
+# indexed by target: endpoint URL, URI or CURIE
+MESSAGES_BY_TARGET = Dict[
+    str,  # target identifier: endpoint URL, URI or CURIE
+    MESSAGES_BY_TEST
 ]

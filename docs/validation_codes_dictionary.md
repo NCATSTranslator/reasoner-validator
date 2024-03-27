@@ -1146,3 +1146,13 @@
 
 **Description:** TRAPI Messages in Knowledge Graphs can have 'mixin' attribute type identifiers, when the mode of validation is 'non-strict'.
 
+## Skipped Test
+
+### skipped.test
+
+**Message:** For reason indicated in the identifier
+
+**Context:** identifier
+
+**Description:** Test was skipped for the reason documented in the 'identifier' string value.
+

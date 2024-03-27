@@ -15,8 +15,8 @@ from reasoner_validator.trapi import TRAPISchemaValidator
 from reasoner_validator.versioning import get_latest_version
 from reasoner_validator.validator import TRAPIResponseValidator
 
-telemetry_endpoint: Optional[str] = getenv("TELEMETRY_ENDPOINT")
-print(f"Telemetry endpoint: {str(telemetry_endpoint)}", file=stderr)
+# telemetry_endpoint: Optional[str] = getenv("TELEMETRY_ENDPOINT")
+# print(f"Telemetry endpoint: {str(telemetry_endpoint)}", file=stderr)
 
 SERVICE_NAME = "reasoner-validator"
 
@@ -25,15 +25,15 @@ DEFAULT_BIOLINK_MODEL_VERSION = default_toolkit.get_model_version()
 
 app = FastAPI(title=SERVICE_NAME)
 
-if telemetry_endpoint:
-    from api.rvtelemetry import instrument
-
-    # call instrumentation code
-    instrument(
-        app=app,
-        service_name=SERVICE_NAME,
-        endpoint=telemetry_endpoint
-    )
+# if telemetry_endpoint:
+#     from api.rvtelemetry import instrument
+#
+#     # call instrumentation code
+#     instrument(
+#         app=app,
+#         service_name=SERVICE_NAME,
+#         endpoint=telemetry_endpoint
+#     )
 
 
 # Dictionary of validation context identifying the  ARA and KP

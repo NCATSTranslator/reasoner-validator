@@ -25,12 +25,13 @@ RESULT_TEST_DATA_SAMPLE_SIZE = 10
 
 class TRAPIResponseValidator(BiolinkValidator):
     """
-    TRAPI Validator is an overall wrapper class for validating
-    conformance of TRAPI Responses to TRAPI and the Biolink Model.
+    TRAPIResponseValidator is an overall wrapper class for validating
+    conformance of full TRAPI Responses to TRAPI and the Biolink Model.
     """
     def __init__(
             self,
-            prefix: Optional[str] = None,
+            default_test: Optional[str] = None,
+            default_target: Optional[str] = None,
             trapi_version: Optional[str] = None,
             biolink_version: Optional[str] = None,
             target_provenance: Optional[Dict[str, str]] = None,
@@ -38,7 +39,9 @@ class TRAPIResponseValidator(BiolinkValidator):
             suppress_empty_data_warnings: bool = False
     ):
         """
-        :param prefix: named context of the BiolinkValidator, used as a prefix in validation messages.
+        :param default_test: Optional[str] =  None, initial default test context of the TRAPIResponseValidator messages
+        :param default_target: Optional[str] =  None, initial default target context of the TRAPIResponseValidator,
+                                                also used as a prefix in validation messages.
         :param trapi_version: str, version of component against which to validate the message (mandatory, no default)
         :param biolink_version: Optional[str] = None, Biolink Model (SemVer) release against which the knowledge graph
                                 is to be validated (Default: if None, use the Biolink Model Toolkit default version).
@@ -50,7 +53,8 @@ class TRAPIResponseValidator(BiolinkValidator):
         """
         BiolinkValidator.__init__(
             self,
-            prefix=prefix if prefix else "Validate TRAPI Response",
+            default_test=default_test,
+            default_target=default_target if default_target else "Validate TRAPI Response",
             trapi_version=trapi_version,
             biolink_version=biolink_version,
             target_provenance=target_provenance,

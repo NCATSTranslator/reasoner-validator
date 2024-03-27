@@ -31,7 +31,7 @@ pp = PrettyPrinter(indent=4)
 # we don't pretend to totally support Biolink Models any earlier than 3.1.1.
 # If earlier biolink model compliance testing is desired,
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
-LATEST_BIOLINK_MODEL_VERSION = "3.5.4"
+LATEST_BIOLINK_MODEL_VERSION = Toolkit().get_model_version()
 
 # special case of signalling suppression of validation
 SUPPRESS_BIOLINK_MODEL_VALIDATION = "suppress"
@@ -70,7 +70,8 @@ def test_minimum_required_biolink_version():
 
 def test_message():
     reporter = BiolinkValidator(
-        prefix="Test Message",
+        default_test="Test Message",
+        default_target="Test Reporter",
         trapi_version="v1.3",
         biolink_version=f"v{LATEST_BIOLINK_MODEL_VERSION}"
     )
@@ -94,7 +95,7 @@ def test_inverse_predicate():
     assert not predicate['symmetric']
     assert isinstance(predicate, SlotDefinition)
     assert not tk.get_inverse(predicate.name)
-    tk: Toolkit = get_biolink_model_toolkit("v2.4.8")
+    tk: Toolkit = get_biolink_model_toolkit("v4.1.4")
     predicate = tk.get_element("biolink:active_in")
     assert not predicate['symmetric']
     assert isinstance(predicate, SlotDefinition)
@@ -425,7 +426,7 @@ def test_check_biolink_model_non_strict_compliance_of_input_edge(biolink_version
                         "object": "on",
                         "option_group_id": None,
                         "predicates": [
-                            "biolink:treats"
+                            "biolink:ameliorates_condition"
                         ],
                         "qualifier_constraints": [],
                         "subject": "sn"
@@ -468,7 +469,7 @@ def test_check_biolink_model_non_strict_compliance_of_input_edge(biolink_version
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -502,7 +503,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -539,7 +540,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -604,7 +605,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges":  {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -626,7 +627,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -653,7 +654,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -672,7 +673,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -692,7 +693,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -712,7 +713,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        # "predicates": ["biolink:treats"],
+                        # "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -732,12 +733,12 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": "biolink:treats",
+                        "predicates": "biolink:ameliorates_condition",
                         "object": "type-2 diabetes"
                     }
                 }
             },
-            # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'drug--biolink:treats->type-2 diabetes' " +
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'drug--biolink:ameliorates_condition->type-2 diabetes' " +
             # f"predicate slot value is not an array!"
             "error.query_graph.edge.predicate.not_array"
         ),
@@ -837,12 +838,12 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 },
                 "edges": {
                     "treats": {
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
             },
-            # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'None--['biolink:treats']->type-2 diabetes' " +
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'None--['biolink:ameliorates_condition']->type-2 diabetes' " +
             # "has a missing or empty 'subject' slot value!"
             "error.query_graph.edge.subject.missing"
         ),
@@ -856,7 +857,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -877,11 +878,11 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"]
+                        "predicates": ["biolink:ameliorates_condition"]
                     }
                 }
             },
-            # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'drug--['biolink:treats']->None' " +
+            # f"{QUERY_GRAPH_PREFIX}: ERROR - Edge 'drug--['biolink:ameliorates_condition']->None' " +
             # f"has a missing or empty 'object' slot value!"
             "error.query_graph.edge.object.missing"
         ),
@@ -897,7 +898,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -919,7 +920,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -943,7 +944,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -965,7 +966,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
@@ -985,7 +986,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:treats"],
+                        "predicates": ["biolink:ameliorates_condition"],
                         "object": "type-2 diabetes"
                     }
                 }
