@@ -251,7 +251,7 @@ class TRAPISchemaValidator(ValidationReporter):
         self.trapi_version = get_latest_version(trapi_version) \
             if trapi_version else get_latest_version(self.DEFAULT_TRAPI_VERSION)
 
-        logger.info(f"TRAPISchemaValidator set to TRAPI Version: '{self.trapi_version}'")
+        logger.debug(f"TRAPISchemaValidator set to TRAPI Version: '{self.trapi_version}'")
 
         ValidationReporter.__init__(
             self,

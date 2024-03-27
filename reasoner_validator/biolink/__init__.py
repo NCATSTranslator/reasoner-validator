@@ -91,7 +91,7 @@ class BMTWrapper:
         else:
             self.biolink_version = "suppress"
 
-        logger.info(f"Resolved Biolink Model Version: '{self.biolink_version}'")
+        logger.debug(f"Resolved Biolink Model Version: '{self.biolink_version}'")
 
     def get_biolink_version(self) -> str:
         """
