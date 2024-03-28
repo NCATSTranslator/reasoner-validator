@@ -405,7 +405,9 @@ def test_check_biolink_model_default_compliance_of_input_edge(biolink_version: s
         )
     ]
 )
-def test_check_biolink_model_non_strict_compliance_of_input_edge(biolink_version: str, edge: Dict, validation_code: str):
+def test_check_biolink_model_non_strict_compliance_of_input_edge(
+        biolink_version: str, edge: Dict, validation_code: str
+):
     validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version, strict_validation=False)
     validator.check_biolink_model_compliance_of_input_edge(edge=edge)
     check_messages(validator, validation_code)
@@ -3454,7 +3456,7 @@ SAMPLE_PRIMARY_RETRIEVAL_SOURCE = {
     # are now presented as first class edge annotation
     "resource_role": "primary_knowledge_source",
 
-    # nothing upstream... it' primary!
+    # nothing upstream... it's primary!
     "upstream_resource_ids": []
 }
 
@@ -3587,14 +3589,14 @@ def test_build_source_trail():
         # )
     ]
 )
-def test_latest_trapi_validate_sources(sources: bool, validation_code: str):
+def test_latest_trapi_validate_sources(sources: List[Dict], validation_code: str):
     # no attributes are strictly needed in 1.4.0-beta now that (mandatory)
     # Edge provenance is recorded in the Edge.sources list of RetrievalSource
     # message edges must have at least some 'provenance' attributes
-    sample_message = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
+    sample_message: Dict = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
     if sources is not None:
-        edge = sample_message["edges"]["edge_1"]
-        edge["sources"] = sources
+        edge: Dict = sample_message["edges"]["edge_1"]
+        edge["sources"]: List[Dict] = sources
     validator = BiolinkValidator(biolink_version=LATEST_BIOLINK_MODEL_VERSION)
     validator.check_biolink_model_compliance(graph=sample_message, graph_type=TRAPIGraphType.Knowledge_Graph)
     check_messages(validator, validation_code)
