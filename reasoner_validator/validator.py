@@ -710,7 +710,7 @@ class TRAPIResponseValidator(BiolinkValidator):
 
         bmtw = BMTWrapper(biolink_version=self.biolink_version)
 
-        predicate = case["predicate"]
+        predicate = case["predicate"] if "predicate" in case else case["predicate_id"]
 
         bmt: Optional[Toolkit] = bmtw.get_bmt()
         predicate_descendants: List[str]
