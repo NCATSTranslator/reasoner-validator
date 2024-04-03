@@ -15,7 +15,7 @@ class MappingValidator(ValidationReporter):
         """
         ValidationReporter.__init__(
             self,
-            prefix="Validating Knowledge Graph Node and Edge Mappings"
+            default_target="Validating Knowledge Graph Node and Edge Mappings"
         )
 
     def check_dangling_references(self, graph: Dict):

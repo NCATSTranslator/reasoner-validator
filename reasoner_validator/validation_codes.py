@@ -293,6 +293,8 @@ class CodeDictionary:
 
                     if top_level_tag == "info":
                         top_level_name = "Information"
+                    elif top_level_tag == "skipped":
+                        top_level_name = "Skipped Test"
                     elif top_level_tag == "critical":
                         top_level_name = "Critical Error"
                     else:

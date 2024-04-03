@@ -53,7 +53,7 @@ poetry install --all-extras
 
 A local script **`trapi_validator.py`** is available to run TRAPI Response validation against either a PK (UUID)
 indexed query result of the Biomedical Knowledge Translator "Autonomous Relay System" (ARS), a local JSON Response
-text file or a locally triggered _ad hoc_ query Request against an directly specified TRAPI endpoint.
+text file or a locally triggered _ad hoc_ query Request against a directly specified TRAPI endpoint.
 
 Note that it is best run within a **`poetry shell`** created by **`poetry install`**.
 
@@ -184,8 +184,8 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
 
 ```json
 {
-  "trapi_version": "1.4.1",
-  "biolink_version": "3.5.0",
+  "trapi_version": "1.4.2",
+  "biolink_version": "4.1.5",
   "response": {
       "message": {
         "query_graph": {
@@ -227,37 +227,39 @@ one should typically get a response body something like the following JSON valid
 
 ```json
 {
-  "trapi_version": "1.4.1",
-  "biolink_version": "3.2.1",
   "messages": {
-    "_comment": "some categories of messages may be absent, hence, empty dictionaries",
-    "critical": {},
-    "errors": {
-      "error.knowledge_graph.node.category.missing": {
-          "_comment": "source scope of the validation error ('global' or some knowledge source path string)",
-          "global": {
-              "_comment": "this message template does not have any additional parameters other than identifier hence it just has the unique identifier  value as a dictionary key, with associated value None",
-               "MONDO:0005148": null            
+    "Validate TRAPI Response": {
+      "Standards Test": {
+        "info": {
+          "info.query_graph.edge.predicate.mixin": {
+            "global": {
+              "biolink:treats": [
+                {
+                  "edge_id": "drug[biolink:Drug]--['biolink:treats']->type-2 diabetes[None]"
+                }
+              ]
+            }
           }
-        }
-    },
-    "warnings": {
-      "_comment": "validation code",
-      "warning.knowledge_graph.node.unmapped_prefix": {
-          "global": {
-              "_comment": "template identifier field value",
-              "CHEBI:6801": [  
-                  {
-                    "_comment": "additional message template field values, if applicable",
-                    "categories": "['biolink:Drug']"  
-                  }
-              ]       
+        },
+        "skipped": {},
+        "warning": {},
+        "error": {
+          "error.query_graph.edge.predicate.invalid": {
+            "global": {
+              "biolink:treats": [
+                {
+                  "edge_id": "drug[biolink:Drug]--['biolink:treats']->type-2 diabetes[None]"
+                }
+              ]
+            }
           }
-
-        }
-    },
-    "information": {},
-  }
+        },
+        "critical": {}
+      }
+    }
+  },
+  "trapi_version": "v1.4.2",
+  "biolink_version": "4.1.5"
 }
 ```
 
@@ -267,6 +269,8 @@ To minimize redundancy in validation messages, messages are uniquely indexed in 
 2. for messages with templated parameters, by a mandatory 'identifier' field (which is expected to exist as a field in a template if such template has one or more parameterized fields)
 
 ### OpenTelemetry and Jaeger
+
+NOTE: OpenTelemetry is temporarily disabled in this code release (to be updated later)
 
 The web service may be monitored for OpenTelemetry by setting an environment variable **TELEMETRY_ENDPOINT**  to a suitable trace collecting endpoint in an application like [Jaeger](https://www.jaegertracing.io/) (see also the [Translator SRI Jaeger-Demo](https://github.com/TranslatorSRI/Jaeger-demo)).
 

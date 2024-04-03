@@ -230,14 +230,16 @@ class TRAPISchemaValidator(ValidationReporter):
     """
     def __init__(
             self,
-            prefix: Optional[str] = None,
+            default_test: Optional[str] = None,
+            default_target: Optional[str] = None,
             trapi_version: Optional[str] = None,
             strict_validation: Optional[bool] = None
     ):
         """
         TRAPI Validator constructor.
-
-        :param prefix: str named context of the TRAPISchemaValidator, used as a prefix in validation messages.
+        :param default_test: Optional[str] =  None, initial default test context of the TRAPISchemaValidator messages
+        :param default_target: Optional[str] =  None, initial default target context of the TRAPISchemaValidator,
+                                                also used as a prefix in validation messages.
         :param trapi_version: str, version of component to validate against
         :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
                                   'info' message; A value of 'None' uses the default value for specific graph contexts.
@@ -253,7 +255,8 @@ class TRAPISchemaValidator(ValidationReporter):
 
         ValidationReporter.__init__(
             self,
-            prefix=prefix if prefix is not None else "TRAPI Validation",
+            default_test=default_test if default_test is not None else "Standards Test",
+            default_target=default_target if default_target is not None else "TRAPI Validation",
             strict_validation=strict_validation
         )
 
@@ -369,7 +372,7 @@ class TRAPISchemaValidator(ValidationReporter):
         dictionary["trapi_version"] = self.get_trapi_version()
         return dictionary
 
-    def report_header(self, title: Optional[str], compact_format: bool) -> str:
+    def report_header(self, title: Optional[str] = None, compact_format: bool = True) -> str:
         header: str = ValidationReporter.report_header(self, title, compact_format)
         header += f" validating against TRAPI version " \
                   f"'{str(self.get_trapi_version() if self.get_trapi_version() is not None else 'Default')}'"
