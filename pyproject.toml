@@ -81,6 +81,9 @@ opentelemetry-instrumentation-httpx = {version = "*", optional = true}
 docs = ["numpydoc", "sphinx", "myst-parser", "sphinx-rtd-theme"]
 web = ["fastapi", "uvicorn", "httpx", "opentelemetry-exporter-otlp-proto-http", "opentelemetry-instrumentation-fastapi", "opentelemetry-instrumentation-httpx"]
 
+[tool.poetry.group.dev.dependencies]
+setuptools = "^69.5.1"
+
 [tool.coverage.run]
 source = ["reasoner_validator"]
 
