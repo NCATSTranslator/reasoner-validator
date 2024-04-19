@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.0.1
+
+- Pydantic V2 update 
+
 ## 4.0.0
 The major release changes relate to adapting the reasoner-validator to the new (2023-24) Translator testing infrastructure:
 - Two higher levels of indexing are added to the message catalog of the **ValidationReporter**: indexing by target (endpoint url) and indexing by test identifier.
