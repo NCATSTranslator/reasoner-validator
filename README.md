@@ -67,7 +67,7 @@ For script usage, type:
 
 ## Running tests
 
-To run the test locally install with the `dev` dependencies group if not already done:
+To run the test locally install with the `dev` dependencies, if not already done (e.g. by **`--all-extras`** above):
 
 ```bash
 poetry install --extras dev
@@ -110,7 +110,7 @@ python -m http.server 3000 --directory ./htmlcov
 
 All paths here are relative to the root project directory.
 
-First install the documentation-specific dependencies.
+First install the documentation-specific dependencies, if not already done (e.g. by **`--all-extras`** above):
 
 ```bash
 poetry install --extras docs  # or poetry install --all-extras
@@ -164,7 +164,7 @@ The request body consists of JSON data structure with two top level tag:
 
 ### Running the Web Service Directly
 
-First install the web-specific dependencies.
+First install the web-specific dependencies, if not already done (e.g. by **`--all-extras`** above):
 
 ```bash
 poetry install --extras web  # or poetry install --all-extras
