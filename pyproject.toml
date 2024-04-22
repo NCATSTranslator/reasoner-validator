@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "reasoner-validator"
-version = "4.0.1"
+version = "4.0.2"
 description = "Validation tools for Reasoner API"
 authors = [
     "Richard Bruskiewich <richard.bruskiewich@delphinai.com>",
@@ -72,6 +72,7 @@ opentelemetry-exporter-otlp-proto-http = {version = "*", optional = true}
 # instrumentation for fast api and httpx
 opentelemetry-instrumentation-fastapi = {version = "*", optional = true}
 opentelemetry-instrumentation-httpx = {version = "*", optional = true}
+bioregistry = "^0.11.1"
 
 [tool.poetry.urls]
 "Change Log" = "https://github.com/NCATSTranslator/reasoner-validator/blob/master/CHANGELOG.md"

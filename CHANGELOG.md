@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.0.2
+
+- Bioregistry added to release "^0.11.1" as a possible cure for some downstream LinkML issues.
+
 ## 4.0.1
 
 - Pydantic V2 update 
