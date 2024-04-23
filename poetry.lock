@@ -1592,7 +1592,6 @@ babel = ">=2.9"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 docutils = ">=0.18.1,<0.20"
 imagesize = ">=1.3"
-importlib-metadata = {version = ">=4.8", markers = "python_version < \"3.10\""}
 Jinja2 = ">=3.0"
 packaging = ">=21.0"
 Pygments = ">=2.13"
@@ -1750,7 +1749,6 @@ files = [
 
 [package.dependencies]
 anyio = ">=3.4.0,<5"
-typing-extensions = {version = ">=3.10.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
 full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.7)", "pyyaml"]
@@ -1956,5 +1954,5 @@ web = ["fastapi", "httpx", "opentelemetry-exporter-otlp-proto-http", "openteleme
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.9"
-content-hash = "04c8c1c426216633915f134ba4e8fa5215515ddac7bdccd3d672f31420ebbc62"
+python-versions = "^3.10"
+content-hash = "6ca34ced41e5df9e55f71cf4d88b404cda118439de3fdf59d4c7daedbb8517eb"

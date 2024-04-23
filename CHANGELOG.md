@@ -4,7 +4,8 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 
 ## 4.0.2
 
-- Bioregistry added to release "^0.11.1" as a possible cure for some downstream LinkML issues.
+- Bioregistry "^0.11.1" added as a possible cure for some downstream LinkML issues.
+- BMT upgraded to "^1.4.0"
 
 ## 4.0.1
 
