@@ -43,8 +43,24 @@ TRAPI_1_5_0_BETA: str = str(TRAPI_1_5_0_BETA_SEMVER)
 
 LATEST_TRAPI_RELEASE_SEMVER: SemVer = TRAPI_1_5_0_BETA_SEMVER
 LATEST_TRAPI_RELEASE: str = TRAPI_1_5_0_BETA
-LATEST_TRAPI_MAJOR_RELEASE_SEMVER: SemVer = SemVer.from_string(LATEST_TRAPI_RELEASE, core_fields=['major', 'minor'])
-LATEST_TRAPI_MAJOR_RELEASE: str = str(LATEST_TRAPI_MAJOR_RELEASE_SEMVER)
+
+LATEST_TRAPI_MAJOR_MINOR_RELEASE: str = "1.5"
+LATEST_TRAPI_MAJOR_MINOR_RELEASE_SEMVER: SemVer = \
+    SemVer.from_string(
+        LATEST_TRAPI_MAJOR_MINOR_RELEASE,
+        core_fields=['major', 'minor'],
+        # generally also suppress extension fields
+        # when just going for MAJOR MINOR release SemVer
+        ext_fields=[]
+    )
+LATEST_TRAPI_MAJOR_MINOR_PATCH_RELEASE_SEMVER: SemVer = \
+    SemVer.from_string(
+        LATEST_TRAPI_RELEASE,
+        # generally also suppress extension fields
+        # when just going for MAJOR MINOR PATCH release SemVer
+        ext_fields=[]
+    )
+LATEST_TRAPI_MAJOR_MINOR_PATCH_RELEASE: str = str(LATEST_TRAPI_MAJOR_MINOR_PATCH_RELEASE_SEMVER)
 
 
 class TRAPIAccessError(RuntimeError):

@@ -12,7 +12,7 @@ from reasoner_validator.trapi import (
     openapi_to_jsonschema,
     load_schema,
     LATEST_TRAPI_RELEASE,
-    LATEST_TRAPI_MAJOR_RELEASE
+    LATEST_TRAPI_MAJOR_MINOR_RELEASE
 )
 from tests import (
     LATEST_TEST_RELEASES,
@@ -105,7 +105,7 @@ def test_message():
     reporter = TRAPISchemaValidator(
         default_test="test_message",
         default_target="Test Message",
-        trapi_version=LATEST_TRAPI_MAJOR_RELEASE
+        trapi_version=LATEST_TRAPI_RELEASE
     )
     assert reporter.get_trapi_version() == LATEST_TRAPI_RELEASE
     assert not reporter.has_messages()
