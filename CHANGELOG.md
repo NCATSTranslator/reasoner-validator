@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.0.3
+
+- Refactered pyproject.toml specified poetry dependencies into groups rather than extras, updating README accordingly.
+
 ## 4.0.2
 
 - Bioregistry "^0.11.1" added as a possible cure for some downstream LinkML issues.

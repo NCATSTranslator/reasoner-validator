@@ -25,28 +25,32 @@ The module may be installed directly from pypi.org using (Python 3) `pip` or `pi
 pip install reasoner-validator
 ```
 
-If you want to install it with the extra dependencies for using it as a web service, you can use:
-
-```bash
-pip install "reasoner-validator[web]"
-```
-
 ## Installing and working with the module locally from source
 
 As of release 3.1.6, this project uses the [poetry dependency management](https://python-poetry.org) tool to orchestrate its installation and dependencies.
 
-After [installing poetry](https://python-poetry.org/docs/#installation) and cloning the project, the poetry installation may be run:
+After [installing poetry](https://python-poetry.org/docs/#installation) and cloning the project, the poetry installation may be run (within the available poetry shell):
 
 ```bash
 git clone https://github.com/NCATSTranslator/reasoner-validator.git
 cd reasoner-validator
+poetry use 3.10
+poetry shell
 poetry install
 ```
 
-To develop this package, install with all extras dependencies using:
+Note that the **`poetry env`** can be set to either Python 3.10 or 3.11 at the present time.
+
+This installation also installs testing dependencies (in the poetry 'dev' group in the pyproject.toml) and documentation dependencies (in the corresponding poetry 'docs' group). If you don't want the overhead of these dependencies, then the installation of these poetry group dependencies may be excluded:
 
 ```bash
-poetry install --all-extras
+poetry install --without dev,docs
+```
+
+If you plan to run the web service API,  then install it with the optional web group:
+
+```bash
+poetry install reasoner-validator --with web
 ```
 
 ## Running Validation against an ARS UUID Result(*) or using a Local TRAPI Request Query
@@ -67,13 +71,7 @@ For script usage, type:
 
 ## Running tests
 
-To run the test locally install with the `dev` dependencies, if not already done (e.g. by **`--all-extras`** above):
-
-```bash
-poetry install --extras dev
-```
-
-Run the tests with coverage report:
+Run the available unit tests with coverage report:
 
 ```bash
 poetry run pytest --cov
@@ -108,15 +106,7 @@ python -m http.server 3000 --directory ./htmlcov
 
 ## Building the Documentation Locally
 
-All paths here are relative to the root project directory.
-
-First install the documentation-specific dependencies, if not already done (e.g. by **`--all-extras`** above):
-
-```bash
-poetry install --extras docs  # or poetry install --all-extras
-```
-
-The validation codes MarkDown file should first be regenerated if needed (i.e. if it was revised):
+All paths here are relative to the root project directory. The validation codes MarkDown file should first be regenerated if needed (i.e. if the **`codes.yaml`** was revised):
 
 ```bash
 cd reasoner_validator
