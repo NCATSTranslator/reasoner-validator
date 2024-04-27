@@ -4,7 +4,8 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 
 ## 4.0.3
 
-- Refactered pyproject.toml specified poetry dependencies into groups rather than extras, updating README accordingly.
+- Refactored pyproject.toml specified poetry dependencies into groups rather than extras, updating README accordingly.
+- Updated Git action workflows
 
 ## 4.0.2
 
