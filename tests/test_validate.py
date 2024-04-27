@@ -7,8 +7,19 @@ import pytest
 
 from jsonschema.exceptions import ValidationError
 
-from reasoner_validator.trapi import TRAPISchemaValidator, openapi_to_jsonschema, load_schema, LATEST_TRAPI_RELEASE
-from tests import LATEST_TEST_RELEASES, PRE_1_4_0_TEST_VERSIONS, ALL_TEST_VERSIONS
+from reasoner_validator.trapi import (
+    TRAPISchemaValidator,
+    openapi_to_jsonschema,
+    load_schema,
+    LATEST_TRAPI_RELEASE,
+    LATEST_TRAPI_MAJOR_RELEASE
+)
+from tests import (
+    LATEST_TEST_RELEASES,
+    PRE_1_4_0_TEST_VERSIONS,
+    ALL_TEST_VERSIONS,
+    PRE_1_5_0_TEST_VERSIONS, TRAPI_1_4_TEST_VERSIONS
+)
 
 
 @pytest.mark.parametrize(
@@ -94,7 +105,7 @@ def test_message():
     reporter = TRAPISchemaValidator(
         default_test="test_message",
         default_target="Test Message",
-        trapi_version="v1.4"
+        trapi_version=LATEST_TRAPI_MAJOR_RELEASE
     )
     assert reporter.get_trapi_version() == LATEST_TRAPI_RELEASE
     assert not reporter.has_messages()
@@ -120,8 +131,21 @@ def test_query_and_version_completion(trapi_version: str):
         }, "Query")
 
 
-@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_edgebinding(trapi_version: str):
+@pytest.mark.parametrize("trapi_version", PRE_1_5_0_TEST_VERSIONS)
+def test_trapi_pre_1_5_edgebinding(trapi_version: str):
+    """Test TRAPIValidator(trapi_version=query).validate_EdgeBinding()."""
+    validator = TRAPISchemaValidator(trapi_version=trapi_version)
+    validator.validate({
+        "id": "hello",
+    }, "EdgeBinding")
+    with pytest.raises(ValidationError):
+        validator.validate({
+            "foo": {},
+        }, "EdgeBinding")
+
+
+@pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
+def test_trapi_1_5_edgebinding(trapi_version: str):
     """Test TRAPIValidator(trapi_version=query).validate_EdgeBinding()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     validator.validate({
@@ -256,8 +280,50 @@ SAMPLE_WORKFLOW_1_3_4 = [
 ]
 
 
+@pytest.mark.parametrize("trapi_version", TRAPI_1_4_TEST_VERSIONS)
+def test_pre_1_5_query_latest_trapi_workflow_properties(trapi_version: str):
+    """Test flawed TRAPI Query workflow properties."""
+    validator = TRAPISchemaValidator(trapi_version=trapi_version)
+    query = deepcopy(SAMPLE_QUERY)
+    query["workflow"] = SAMPLE_WORKFLOW_1_3_4
+    validator.validate(query, "Query")
+    with pytest.raises(ValidationError):
+        faulty_query_wf = deepcopy(query)
+        # ...and the 'id' object key should have a schema-defined enum as its value,...
+        faulty_query_wf["workflow"] = [
+            {
+                "id": "not-a-workflow-enum"
+            }
+        ]
+        validator.validate(faulty_query_wf, "Query")
+    with pytest.raises(ValidationError):
+        faulty_query_wf = deepcopy(query)
+        # ...and if 'runner_parameters' key is present and has a non-empty value,
+        # it needs oneOf the "allowlist" or "denylist" keys...
+        faulty_query_wf["workflow"] = [
+            {
+                "id": "sort_results_score",
+                "runner_parameters": {}
+            }
+        ]
+        validator.validate(faulty_query_wf, "Query")
+    with pytest.raises(ValidationError):
+        faulty_query_wf = deepcopy(query)
+        # ...and if 'runner_parameters' object "allowlist" or "denylist"
+        # is present, they must have a non-empty value, of at least one infores CURIE.
+        faulty_query_wf["workflow"] = [
+            {
+                "id": "lookup",
+                "runner_parameters": {
+                    "allowlist": []
+                }
+            }
+        ]
+        validator.validate(faulty_query_wf, "Query")
+
+
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_query_latest_trapi_workflow_properties(trapi_version: str):
+def test_1_5_query_latest_trapi_workflow_properties(trapi_version: str):
     """Test flawed TRAPI Query workflow properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     query = deepcopy(SAMPLE_QUERY)
@@ -371,6 +437,151 @@ def test_trapi_pre_1_4_0_message_results_component_validation(trapi_version: str
         "score": None
     }
     validator.validate(sample_message_result, "Result")
+    with pytest.raises(ValidationError):
+        validator.validate({
+            # missing required: node_bindings, edge_bindings
+            "foo": {},
+            "bar": {},
+        }, "Result")
+
+
+@pytest.mark.parametrize("trapi_version", TRAPI_1_4_TEST_VERSIONS)
+def test_trapi_1_4_message_results_component_validation(trapi_version: str):
+    """Test Message.Results component in TRAPIValidator(trapi_version=query).validate()."""
+    #     Result:
+    #       type: object
+    #       description: >-
+    #         A Result object specifies the nodes and edges in the knowledge graph
+    #         that satisfy the structure or conditions of a user-submitted query
+    #         graph. It must contain a NodeBindings object (list of query graph node
+    #         to knowledge graph node mappings) and an EdgeBindings object (list of
+    #         query graph edge to knowledge graph edge mappings).
+    #       properties:
+    #         node_bindings:
+    #           type: object
+    #           description: >-
+    #             The dictionary of Input Query Graph to Result Knowledge Graph node
+    #             bindings where the dictionary keys are the key identifiers of the
+    #             Query Graph nodes and the associated values of those keys are
+    #             instances of NodeBinding schema type (see below). This value is an
+    #             array of NodeBindings since a given query node may have multiple
+    #             knowledge graph Node bindings in the result.
+    #           additionalProperties:
+    #             type: array
+    #             items:
+    #               $ref: '#/components/schemas/NodeBinding'
+    #         analyses:
+    #           type: array
+    #           description: >-
+    #             The list of all Analysis components that contribute to the result.
+    #             See below for Analysis components.
+    #           items:
+    #             $ref: '#/components/schemas/Analysis'
+    #       additionalProperties: true
+    #       required:
+    #         - node_bindings
+    #         - analyses
+    # where an Analysis object is:
+    #     Analysis:
+    #       type: object
+    #       description: >-
+    #         An analysis is a dictionary that contains information about
+    #         the result tied to a particular service. Each Analysis is
+    #         generated by a single reasoning service, and describes the
+    #         outputs of analyses performed by the reasoner on a particular
+    #         Result (e.g. a result score), along with provenance information
+    #         supporting the analysis (e.g. method or data that supported
+    #         generation of the score).
+    #       properties:
+    #         resource_id:
+    #           $ref: '#/components/schemas/CURIE'
+    #           description: The id of the service generating and using this Anlysis
+    #         score:
+    #           type: number
+    #           format: float
+    #           example: 163.233
+    #           description: >-
+    #             A numerical score associated with this result indicating the
+    #             relevance or confidence of this result relative to others in the
+    #             returned set. Higher MUST be better.
+    #           nullable: true
+    #         edge_bindings:
+    #           type: object
+    #           description: >-
+    #             The dictionary of input Query Graph to Knowledge Graph edge
+    #             bindings where the dictionary keys are the key identifiers of the
+    #             Query Graph edges and the associated values of those keys are
+    #             instances of EdgeBinding schema type (see below). This value is an
+    #             array of EdgeBindings since a given query edge may resolve to
+    #             multiple Knowledge Graph Edges.
+    #           additionalProperties:
+    #             type: array
+    #             items:
+    #               $ref: '#/components/schemas/EdgeBinding'
+    #         support_graphs:
+    #           type: array
+    #           description: >-
+    #             This is a list of references to Auxiliary Graph instances
+    #             that supported the analysis of a Result as performed by the
+    #             reasoning service. Each item in the list is the key of a
+    #             single Auxiliary Graph.
+    #           nullable: true
+    #           items:
+    #             type: string
+    #         scoring_method:
+    #           type: string
+    #           description: >-
+    #             An identifier and link to an explanation for the method used
+    #             to generate the score
+    #           nullable: true
+    #         attributes:
+    #           type: array
+    #           description: >-
+    #             The attributes of this particular Analysis.
+    #           items:
+    #             $ref: '#/components/schemas/Attribute'
+    #           nullable: true
+    #       additionalProperties: true
+    #       required:
+    #         - resource_id
+    #         - edge_bindings
+    validator = TRAPISchemaValidator(trapi_version=trapi_version)
+    sample_message_result = {
+        "node_bindings": {
+            "a": [
+                {
+                    "attributes": None,
+                    "id": "SGD:S000000065",
+                    "qnode_id": "SGD:S000000065",
+                    "query_id": None
+                }
+            ],
+            "b": [
+                {
+                    "attributes": None,
+                    "id": "GO:1905776",
+                    "query_id": None
+                }
+            ]
+        },
+        "analyses": [
+            {
+                "resource_id": "infores:arax",
+                "edge_bindings": {
+                    "ab": [
+                        {
+                            "attributes": None,
+                            "id": "uuid:7884e454-d09c-11ec-b00f-0242ac110002"
+                        }
+                    ]
+                },
+                "score": None
+            }
+        ]
+    }
+
+    validator.validate(sample_message_result, "Result")
+
     with pytest.raises(ValidationError):
         validator.validate({
             # missing required: node_bindings, edge_bindings
@@ -524,8 +735,28 @@ def test_latest_trapi_message_results_component_validation(trapi_version: str):
         }, "Result")
 
 
-@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_message_node_binding_component_validation(trapi_version: str):
+@pytest.mark.parametrize("trapi_version", PRE_1_5_0_TEST_VERSIONS)
+def test_message_pre_1_5_node_binding_component_validation(trapi_version: str):
+    """Test NodeBinding component in TRAPIValidator(trapi_version=query).validate()."""
+    validator = TRAPISchemaValidator(trapi_version=trapi_version)
+    sample_node_binding = {
+        "id": "SGD:S000000065",
+        # 'qnode_id' is not formally specified in spec, but it is an
+        # example of an additionalProperties: true permitted field
+        "qnode_id": "SGD:S000000065",
+        "query_id": None
+    }
+
+    validator.validate(sample_node_binding, "NodeBinding")
+    with pytest.raises(ValidationError):
+        validator.validate({
+            # missing required: id
+            "foo": {},
+            "bar": {},
+        }, "NodeBinding")
+
+@pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
+def test_latest_trapi_message_node_binding_component_validation(trapi_version: str):
     """Test NodeBinding component in TRAPIValidator(trapi_version=query).validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     sample_node_binding = {
