@@ -22,7 +22,7 @@ jobs:
         run: pip install poetry
 
       - name: Poetry install the project.
-        run: poetry install -E docs
+        run: poetry install
 
       - name: Regenerate validation message codes documentation.
         run: |
