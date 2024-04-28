@@ -541,6 +541,12 @@ error:
           $context:
             - identifier
           $description: "The value of a 'knowledge_level' property in a Knowledge Graph must not be empty!"
+        duplicated:
+          $message: "The 'knowledge_level' slot value is duplicated for the given edge"
+          $context:
+            - identifier
+            - edge_id
+          $description: "Each edge should only have one 'knowledge_level' attribute value. Additional ones ignored?"
         invalid:
           $message: "The indicated 'knowledge_level' slot value is invalid for the given edge"
           $context:
@@ -558,6 +564,12 @@ error:
           $context:
             - identifier
           $description: "The 'agent_type' property value is empty in the given edge"
+        duplicated:
+          $message: "The 'agent_type' slot value is duplicated for the given edge"
+          $context:
+            - identifier
+            - edge_id
+          $description: "Each edge should only have one 'agent_type' attribute value. Additional ones ignored?"
         invalid:
           $message: "The indicated 'agent_type' slot value is invalid for the given edge"
           $context:

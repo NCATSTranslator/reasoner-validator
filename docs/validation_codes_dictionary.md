@@ -708,6 +708,14 @@
 
 **Description:** The value of a 'knowledge_level' property in a Knowledge Graph must not be empty!
 
+### error.knowledge_graph.edge.knowledge_level.duplicated
+
+**Message:** The 'knowledge_level' slot value is duplicated for the given edge
+
+**Context:** identifier, edge_id
+
+**Description:** Each edge should only have one 'knowledge_level' attribute value. Additional ones ignored?
+
 ### error.knowledge_graph.edge.knowledge_level.invalid
 
 **Message:** The indicated 'knowledge_level' slot value is invalid for the given edge
@@ -731,6 +739,14 @@
 **Context:** identifier
 
 **Description:** The 'agent_type' property value is empty in the given edge
+
+### error.knowledge_graph.edge.agent_type.duplicated
+
+**Message:** The 'agent_type' slot value is duplicated for the given edge
+
+**Context:** identifier, edge_id
+
+**Description:** Each edge should only have one 'agent_type' attribute value. Additional ones ignored?
 
 ### error.knowledge_graph.edge.agent_type.invalid
 
