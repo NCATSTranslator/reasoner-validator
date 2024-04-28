@@ -694,7 +694,7 @@
 
 ### error.knowledge_graph.edge.knowledge_level.missing
 
-**Message:** Edge is missing its required 'knowledge_level' property
+**Message:** Edge is missing its required 'knowledge_level' property!
 
 **Context:** edge_id
 
@@ -702,7 +702,7 @@
 
 ### error.knowledge_graph.edge.knowledge_level.empty
 
-**Message:** The 'knowledge_level' property value is empty for the given edge
+**Message:** The 'knowledge_level' property value is empty for the given edge!
 
 **Context:** identifier
 
@@ -710,23 +710,23 @@
 
 ### error.knowledge_graph.edge.knowledge_level.duplicated
 
-**Message:** The 'knowledge_level' slot value is duplicated for the given edge
+**Message:** The 'knowledge_level' slot is duplicated for the given edge!
 
 **Context:** identifier, edge_id
 
-**Description:** Each edge should only have one 'knowledge_level' attribute value. Additional ones ignored?
+**Description:** Each edge should only have one 'knowledge_level' attribute value. Additional ones are ignored
 
 ### error.knowledge_graph.edge.knowledge_level.invalid
 
-**Message:** The indicated 'knowledge_level' slot value is invalid for the given edge
+**Message:** The indicated 'knowledge_level' slot value is invalid for the given edge!
 
-**Context:** identifier, edge_id
+**Context:** identifier, context
 
 **Description:** Acceptable values of the 'knowledge_level' slot are only as enumerated in the specified Biolink Model
 
 ### error.knowledge_graph.edge.agent_type.missing
 
-**Message:** Edge is missing its required 'agent_type' property
+**Message:** Edge is missing its required 'agent_type' property!
 
 **Context:** identifier
 
@@ -734,7 +734,7 @@
 
 ### error.knowledge_graph.edge.agent_type.empty
 
-**Message:** Edge is missing its required 'agent_type' property
+**Message:** Edge is missing its required 'agent_type' property!
 
 **Context:** identifier
 
@@ -742,17 +742,17 @@
 
 ### error.knowledge_graph.edge.agent_type.duplicated
 
-**Message:** The 'agent_type' slot value is duplicated for the given edge
+**Message:** The 'agent_type' slot is duplicated for the given edge!
 
 **Context:** identifier, edge_id
 
-**Description:** Each edge should only have one 'agent_type' attribute value. Additional ones ignored?
+**Description:** Each edge should only have one 'agent_type' attribute value. Additional ones are ignored.
 
 ### error.knowledge_graph.edge.agent_type.invalid
 
-**Message:** The indicated 'agent_type' slot value is invalid for the given edge
+**Message:** The indicated 'agent_type' slot value is invalid for the given edge!
 
-**Context:** identifier, edge_id
+**Context:** identifier, context
 
 **Description:** Acceptable values of the 'agent_type' slot are only as enumerated in the specified Biolink Model
 
@@ -861,6 +861,14 @@
 **Description:** Value of the 'resource_role' property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty ResourceRole enum value!
 
 ## Warning
+
+### warning.biolink.element.range.unspecified
+
+**Message:** Undefined slot range specification
+
+**Context:** identifier, context, value
+
+**Description:** Biolink Model error: the range slot of the specified element is missing or its value is not a known enum?
 
 ### warning.trapi.response.status.unknown
 
