@@ -692,6 +692,54 @@
 
 **Description:** Validation of a specified 'qualifier_type_id' and 'qualifier_value' failed for a given exceptional reason!
 
+### error.knowledge_graph.edge.knowledge_level.missing
+
+**Message:** Edge is missing its required 'knowledge_level' property
+
+**Context:** edge_id
+
+**Description:** The 'knowledge_level' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!
+
+### error.knowledge_graph.edge.knowledge_level.empty
+
+**Message:** The 'knowledge_level' property value is empty for the given edge
+
+**Context:** identifier
+
+**Description:** The value of a 'knowledge_level' property in a Knowledge Graph must not be empty!
+
+### error.knowledge_graph.edge.knowledge_level.invalid
+
+**Message:** The indicated 'knowledge_level' slot value is invalid for the given edge
+
+**Context:** identifier, edge_id
+
+**Description:** Acceptable values of the 'knowledge_level' slot are only as enumerated in the specified Biolink Model
+
+### error.knowledge_graph.edge.agent_type.missing
+
+**Message:** Edge is missing its required 'agent_type' property
+
+**Context:** identifier
+
+**Description:** The 'agent_type' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!
+
+### error.knowledge_graph.edge.agent_type.empty
+
+**Message:** Edge is missing its required 'agent_type' property
+
+**Context:** identifier
+
+**Description:** The 'agent_type' property value is empty in the given edge
+
+### error.knowledge_graph.edge.agent_type.invalid
+
+**Message:** The indicated 'agent_type' slot value is invalid for the given edge
+
+**Context:** identifier, edge_id
+
+**Description:** Acceptable values of the 'agent_type' slot are only as enumerated in the specified Biolink Model
+
 ### error.knowledge_graph.edge.sources.missing
 
 **Message:** Missing 'sources' key for Edge

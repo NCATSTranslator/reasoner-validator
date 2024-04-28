@@ -530,6 +530,40 @@ error:
                 - qualifier_value
                 - reason
               $description: "Validation of a specified 'qualifier_type_id' and 'qualifier_value' failed for a given exceptional reason!"
+      knowledge_level:
+        missing:
+          $message: "Edge is missing its required 'knowledge_level' property"
+          $context:
+            - edge_id
+          $description: "The 'knowledge_level' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!"
+        empty:
+          $message: "The 'knowledge_level' property value is empty for the given edge"
+          $context:
+            - identifier
+          $description: "The value of a 'knowledge_level' property in a Knowledge Graph must not be empty!"
+        invalid:
+          $message: "The indicated 'knowledge_level' slot value is invalid for the given edge"
+          $context:
+            - identifier
+            - edge_id
+          $description: "Acceptable values of the 'knowledge_level' slot are only as enumerated in the specified Biolink Model"
+      agent_type:
+        missing:
+          $message: "Edge is missing its required 'agent_type' property"
+          $context:
+            - identifier
+          $description: "The 'agent_type' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!"
+        empty:
+          $message: "Edge is missing its required 'agent_type' property"
+          $context:
+            - identifier
+          $description: "The 'agent_type' property value is empty in the given edge"
+        invalid:
+          $message: "The indicated 'agent_type' slot value is invalid for the given edge"
+          $context:
+            - identifier
+            - edge_id
+          $description: "Acceptable values of the 'agent_type' slot are only as enumerated in the specified Biolink Model"
       sources:
         missing:
           $message: "Missing 'sources' key for Edge"
