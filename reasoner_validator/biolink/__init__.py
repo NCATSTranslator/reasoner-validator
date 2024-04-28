@@ -679,6 +679,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # also track primary_knowledge_source attribute cardinality now
             found_primary_knowledge_source: List[str] = list()
 
+            # Track presence of 'knowledge_level' and 'agent_type' attributes
+            found_knowledge_level = False
+            found_agent_type = False
+
             for attribute in attributes:
 
                 # Validate attribute_type_id
@@ -818,6 +822,20 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                             infores == kp_source:
                                                         found_kp_knowledge_source = True
 
+                                        # We won't likely care if these shows up in
+                                        # graphs compliant with Biolink earlier than 4.2.0.
+                                        # But we validate their values anyhow...
+                                        if attribute_type_id == "biolink:knowledge_level":
+                                            # TODO: maybe check here if 'knowledge_level' is duplicated?
+                                            found_knowledge_level = True
+                                            value = value[0]  # expect that it was a scalar
+                                            self.validate_knowledge_level(edge_id, value)
+                                        elif attribute_type_id == "biolink:agent_type":
+                                            # TODO: maybe check here if 'agent_type' is duplicated?
+                                            found_agent_type = True
+                                            value = value[0]  # expect that it was a scalar
+                                            self.validation_agent_type(edge_id, value)
+
                         # if not a Biolink model defined attribute term, at least, check if
                         # the 'attribute_type_id' has a namespace (prefix) known to Biolink.
                         # We won't call it a hard error, but issue a warning
@@ -843,6 +861,21 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     found_primary_knowledge_source,
                     source_trail=source_trail
                 )
+
+            # Mandatory 'knowledge_level' and 'agent_type'
+            # attributes required in all Biolink Model edges
+            # from Biolink Model release 4.2.0 onwards
+            if self.minimum_required_biolink_version("4.2.0"):
+                if not found_knowledge_level:
+                    self.report(
+                        code="error.knowledge_graph.edge.knowledge_level.missing",
+                        identifier=edge_id
+                    )
+                if not found_agent_type:
+                    self.report(
+                        code="error.knowledge_graph.edge.knowledge_level.missing",
+                        identifier=edge_id
+                    )
 
         return source_trail  # may be 'None' if the required attributes are missing
 
@@ -972,6 +1005,44 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 associations=associations,
                 source_trail=source_trail
             )
+
+    def validate_knowledge_level(
+            self,
+            edge_id: str,
+            value: Optional[str]
+    ):
+        if not value:
+            self.report(
+                code="error.knowledge_graph.edge.knowledge_level.empty",
+                identifier=edge_id
+            )
+        else:
+            # TODO: validate 'knowledge_level' value here
+            self.report(
+                code="error.knowledge_graph.edge.knowledge_level.invalid",
+                identifier=str(value),
+                edge_id=edge_id
+            )
+            raise NotImplementedError
+
+    def validation_agent_type(
+            self,
+            edge_id: str,
+            value: Optional[str]
+    ):
+        if not value:
+            self.report(
+                code="error.knowledge_graph.edge.knowledge_level.empty",
+                identifier=edge_id
+            )
+        else:
+            # TODO: validate 'knowledge_level' value here
+            self.report(
+                code="error.knowledge_graph.edge.knowledge_level.invalid",
+                identifier=str(value),
+                edge_id=edge_id
+            )
+            raise NotImplementedError
 
     def validate_qualifier_constraints(
             self,
