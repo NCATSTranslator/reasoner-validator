@@ -268,6 +268,8 @@ def get_latest_version(release_tag: Optional[str]) -> Optional[str]:
     global _latest
 
     if not release_tag:
+        # the current policy is NOT to second guess if the 'latest' version is needed,
+        # but rather, to rely on project maintainers to update the versions.yaml file.
         return None
     elif release_tag.lower().endswith(".yaml"):
         return release_tag
@@ -279,7 +281,7 @@ def get_latest_version(release_tag: Optional[str]) -> Optional[str]:
         # strip any prefix from the release tag to ensure that
         # only the SemVer part is used for the latest version lookup
         release_tag = sub(r'^[^0-9]+', '', release_tag)
-        latest: SemVer = _latest.get(release_tag, None)
+        latest: Optional[SemVer] = _latest.get(release_tag, None)
         return str(latest) if latest else None
 
 

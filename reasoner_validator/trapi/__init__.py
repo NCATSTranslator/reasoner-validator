@@ -96,7 +96,9 @@ def load_schema(target: str):
     if mapped_release:
         schema_version = mapped_release
     else:
-        err_msg: str = f"No TRAPI version {target}"
+        err_msg: str = \
+            f"Requested TRAPI version '{target}' is unknown to the system. " + \
+            "Perhaps the project version list needs to be updated and package re-released?"
         logger.error(err_msg)
         raise ValueError(err_msg)
 
