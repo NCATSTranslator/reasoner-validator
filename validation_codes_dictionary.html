@@ -143,6 +143,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-type-id-unknown">error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-value-not-a-predicate">error.knowledge_graph.edge.qualifiers.qualifier.value.not_a_predicate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-invalid">error.knowledge_graph.edge.qualifiers.qualifier.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-knowledge-level-missing">error.knowledge_graph.edge.knowledge_level.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-knowledge-level-duplicated">error.knowledge_graph.edge.knowledge_level.duplicated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-knowledge-level-invalid">error.knowledge_graph.edge.knowledge_level.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-agent-type-missing">error.knowledge_graph.edge.agent_type.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-agent-type-duplicated">error.knowledge_graph.edge.agent_type.duplicated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-agent-type-invalid">error.knowledge_graph.edge.agent_type.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-missing">error.knowledge_graph.edge.sources.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-empty">error.knowledge_graph.edge.sources.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-not-array">error.knowledge_graph.edge.sources.not_array</a></li>
@@ -159,6 +165,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#warning">Warning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#warning-biolink-element-range-unspecified">warning.biolink.element.range.unspecified</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-status-unknown">warning.trapi.response.status.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-schema-version-missing">warning.trapi.response.schema_version.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-biolink-version-missing">warning.trapi.response.biolink_version.missing</a></li>
@@ -194,6 +201,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-multiple-primary">warning.knowledge_graph.edge.provenance.multiple_primary</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-ara-missing">warning.knowledge_graph.edge.provenance.ara.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-kp-missing">warning.knowledge_graph.edge.provenance.kp.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-knowledge-level-missing">warning.knowledge_graph.edge.knowledge_level.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-agent-type-missing">warning.knowledge_graph.edge.agent_type.missing</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#information">Information</a><ul>
@@ -720,13 +729,13 @@
 <section id="error-knowledge-graph-edge-attribute-value-missing">
 <h3>error.knowledge_graph.edge.attribute.value.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-value-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> An attribute is missing its ‘value’ property in Edge</p>
-<p><strong>Context:</strong> identifier</p>
+<p><strong>Context:</strong> identifier, attribute_id</p>
 <p><strong>Description:</strong> An attribute of a Knowledge graph edge must have a ‘value’ key with a non-empty associated value!</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-value-empty">
 <h3>error.knowledge_graph.edge.attribute.value.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-value-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> An attribute has an empty value in Edge</p>
-<p><strong>Context:</strong> identifier</p>
+<p><strong>Context:</strong> identifier, attribute_id</p>
 <p><strong>Description:</strong> The value of an attribute of a Knowledge graph edge must not be empty!</p>
 </section>
 <section id="error-knowledge-graph-edge-provenance-infores-missing">
@@ -770,6 +779,42 @@
 <p><strong>Message:</strong> Validation of qualifier in qualifiers threw an unexpected exception</p>
 <p><strong>Context:</strong> identifier, qualifier_type_id, qualifier_value, reason</p>
 <p><strong>Description:</strong> Validation of a specified ‘qualifier_type_id’ and ‘qualifier_value’ failed for a given exceptional reason!</p>
+</section>
+<section id="error-knowledge-graph-edge-knowledge-level-missing">
+<h3>error.knowledge_graph.edge.knowledge_level.missing<a class="headerlink" href="#error-knowledge-graph-edge-knowledge-level-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge is missing its required ‘knowledge_level’ property!</p>
+<p><strong>Context:</strong> edge_id</p>
+<p><strong>Description:</strong> The ‘knowledge_level’ slot is required for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!</p>
+</section>
+<section id="error-knowledge-graph-edge-knowledge-level-duplicated">
+<h3>error.knowledge_graph.edge.knowledge_level.duplicated<a class="headerlink" href="#error-knowledge-graph-edge-knowledge-level-duplicated" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> The ‘knowledge_level’ slot is duplicated for the given edge!</p>
+<p><strong>Context:</strong> identifier, edge_id</p>
+<p><strong>Description:</strong> Each edge should only have one ‘knowledge_level’ attribute value. Additional ones are ignored</p>
+</section>
+<section id="error-knowledge-graph-edge-knowledge-level-invalid">
+<h3>error.knowledge_graph.edge.knowledge_level.invalid<a class="headerlink" href="#error-knowledge-graph-edge-knowledge-level-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> The indicated ‘knowledge_level’ slot value is invalid for the given edge!</p>
+<p><strong>Context:</strong> identifier, context</p>
+<p><strong>Description:</strong> Acceptable values of the ‘knowledge_level’ slot are only as enumerated in the specified Biolink Model</p>
+</section>
+<section id="error-knowledge-graph-edge-agent-type-missing">
+<h3>error.knowledge_graph.edge.agent_type.missing<a class="headerlink" href="#error-knowledge-graph-edge-agent-type-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge is missing its required ‘agent_type’ property!</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> The ‘agent_type’ slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!</p>
+</section>
+<section id="error-knowledge-graph-edge-agent-type-duplicated">
+<h3>error.knowledge_graph.edge.agent_type.duplicated<a class="headerlink" href="#error-knowledge-graph-edge-agent-type-duplicated" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> The ‘agent_type’ slot is duplicated for the given edge!</p>
+<p><strong>Context:</strong> identifier, edge_id</p>
+<p><strong>Description:</strong> Each edge should only have one ‘agent_type’ attribute value. Additional ones are ignored.</p>
+</section>
+<section id="error-knowledge-graph-edge-agent-type-invalid">
+<h3>error.knowledge_graph.edge.agent_type.invalid<a class="headerlink" href="#error-knowledge-graph-edge-agent-type-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> The indicated ‘agent_type’ slot value is invalid for the given edge!</p>
+<p><strong>Context:</strong> identifier, context</p>
+<p><strong>Description:</strong> Acceptable values of the ‘agent_type’ slot are only as enumerated in the specified Biolink Model</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-missing">
 <h3>error.knowledge_graph.edge.sources.missing<a class="headerlink" href="#error-knowledge-graph-edge-sources-missing" title="Permalink to this heading"></a></h3>
@@ -852,6 +897,12 @@
 </section>
 <section id="warning">
 <h2>Warning<a class="headerlink" href="#warning" title="Permalink to this heading"></a></h2>
+<section id="warning-biolink-element-range-unspecified">
+<h3>warning.biolink.element.range.unspecified<a class="headerlink" href="#warning-biolink-element-range-unspecified" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Undefined slot range specification</p>
+<p><strong>Context:</strong> identifier, context, value</p>
+<p><strong>Description:</strong> Biolink Model error: the range slot of the specified element is missing or its value is not a known enum?</p>
+</section>
 <section id="warning-trapi-response-status-unknown">
 <h3>warning.trapi.response.status.unknown<a class="headerlink" href="#warning-trapi-response-status-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> TRAPI Response has unrecognized status code</p>
@@ -1055,6 +1106,18 @@
 <p><strong>Message:</strong> Edge attribute values are missing expected Knowledge Provider provenance</p>
 <p><strong>Context:</strong> edge_id, identifier, kp_source_type</p>
 <p><strong>Description:</strong> Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP.</p>
+</section>
+<section id="warning-knowledge-graph-edge-knowledge-level-missing">
+<h3>warning.knowledge_graph.edge.knowledge_level.missing<a class="headerlink" href="#warning-knowledge-graph-edge-knowledge-level-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge is missing its required ‘knowledge_level’ property!</p>
+<p><strong>Context:</strong> edge_id</p>
+<p><strong>Description:</strong> The ‘knowledge_level’ slot is currently optional but recommended for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!</p>
+</section>
+<section id="warning-knowledge-graph-edge-agent-type-missing">
+<h3>warning.knowledge_graph.edge.agent_type.missing<a class="headerlink" href="#warning-knowledge-graph-edge-agent-type-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge is missing its required ‘agent_type’ property!</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> The ‘agent_type’ slot is currently optional but recommended for all edges in knowledge graphs complying with the specified Biolink Model release!</p>
 </section>
 </section>
 <section id="information">
