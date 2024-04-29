@@ -4,8 +4,8 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 
 ## 4.1.0
 
-- Biolink Model 4.2.0 validation starting to be added
-  - Validate presence of "knowledge_level" and "agent_type", with compliant values, on all knowledge graph edges (removed previous ATTRIBUTE_TYPE_ID_INCLUSIONS for these fields, since no longer surprising to see them...)
+- Reasoner-validator is TRAPI 1.5 aware but nothing more than basic schema validation provided; unit tests which are incompletely refactored are skipped.
+- Biolink Model 4.2.0 validation starting to be added : validate presence and values of "knowledge_level" and "agent_type", with compliant values, on all knowledge graph edges (removed previous ATTRIBUTE_TYPE_ID_INCLUSIONS for these fields, since no longer surprising to see them...)
 - Update BiolinkValidator.get_result() to properly return Tuple[str, MESSAGES_BY_TARGET]
 - Cleaned up some technical debt
 
