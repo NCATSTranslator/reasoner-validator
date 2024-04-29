@@ -18,7 +18,7 @@ After modifying the codes.yaml file, one should run the reasoner_validator.valid
 
 ## TRAPI Version Updates
 
-For Github-related performance reasons, as of project release v3.8.3, the code caches the TRAPI releases and branches from the ReasonerAPI in the **[versions.yaml](reasoner_validator/versions.yaml)** file.  Whenever the TRAPI releases changed significantly, one needs to update this file by running the [scripts/trapi_releases.py](scripts/trapi_releases.py) script, then commit the new **[versions.yaml](reasoner_validator/versions.yaml)** file to Github.
+For Github-related performance reasons, as of project release v3.8.3, the code caches the TRAPI releases and branches from the ReasonerAPI in the **[versions.yaml](reasoner_validator/versions.yaml)** file.  Whenever the TRAPI releases changed significantly, one needs to update the project version inventory file by running the [scripts/trapi_releases.py](scripts/trapi_releases.py) script, then commit the new **[versions.yaml](reasoner_validator/versions.yaml)** file to Github.
 
 ## Project Releases
 
