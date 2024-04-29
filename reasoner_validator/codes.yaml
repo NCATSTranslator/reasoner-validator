@@ -537,7 +537,7 @@ error:
           $message: "Edge is missing its required 'knowledge_level' property!"
           $context:
             - edge_id
-          $description: "The 'knowledge_level' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!"
+          $description: "The 'knowledge_level' slot is required for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!"
         duplicated:
           $message: "The 'knowledge_level' slot is duplicated for the given edge!"
           $context:
@@ -890,6 +890,18 @@ warning:
               - identifier
               - kp_source_type
             $description: "Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP."
+      knowledge_level:
+        missing:
+          $message: "Edge is missing its required 'knowledge_level' property!"
+          $context:
+            - edge_id
+          $description: "The 'knowledge_level' slot is currently optional but recommended for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!"
+      agent_type:
+        missing:
+          $message: "Edge is missing its required 'agent_type' property!"
+          $context:
+            - identifier
+          $description: "The 'agent_type' slot is currently optional but recommended for all edges in knowledge graphs complying with the specified Biolink Model release!"
 info:
   excluded:
     $message: "All test case S-P-O triples from resource test location, or specific user excluded S-P-O triples"

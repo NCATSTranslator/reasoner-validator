@@ -698,7 +698,7 @@
 
 **Context:** edge_id
 
-**Description:** The 'knowledge_level' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!
+**Description:** The 'knowledge_level' slot is required for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!
 
 ### error.knowledge_graph.edge.knowledge_level.duplicated
 
@@ -1121,6 +1121,22 @@
 **Context:** edge_id, identifier, kp_source_type
 
 **Description:** Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP.
+
+### warning.knowledge_graph.edge.knowledge_level.missing
+
+**Message:** Edge is missing its required 'knowledge_level' property!
+
+**Context:** edge_id
+
+**Description:** The 'knowledge_level' slot is currently optional but recommended for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!
+
+### warning.knowledge_graph.edge.agent_type.missing
+
+**Message:** Edge is missing its required 'agent_type' property!
+
+**Context:** identifier
+
+**Description:** The 'agent_type' slot is currently optional but recommended for all edges in knowledge graphs complying with the specified Biolink Model release!
 
 ## Information
 

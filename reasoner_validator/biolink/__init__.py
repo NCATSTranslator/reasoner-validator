@@ -966,15 +966,29 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # from Biolink Model release 4.2.0 onwards
             if self.minimum_required_biolink_version("4.2.0"):
                 if not found_knowledge_level:
-                    self.report(
-                        code="error.knowledge_graph.edge.knowledge_level.missing",
-                        identifier=edge_id
-                    )
+                    # Currently projected to be mandatory only in TRAPI 1.6.0
+                    if self.minimum_required_trapi_version("1.6.0"):
+                        self.report(
+                            code="error.knowledge_graph.edge.knowledge_level.missing",
+                            identifier=edge_id
+                        )
+                    else:
+                        self.report(
+                            code="warning.knowledge_graph.edge.knowledge_level.missing",
+                            identifier=edge_id
+                        )
                 if not found_agent_type:
-                    self.report(
-                        code="error.knowledge_graph.edge.agent_type.missing",
-                        identifier=edge_id
-                    )
+                    # Currently projected to be mandatory only in TRAPI 1.6.0
+                    if self.minimum_required_trapi_version("1.6.0"):
+                        self.report(
+                            code="error.knowledge_graph.edge.agent_type.missing",
+                            identifier=edge_id
+                        )
+                    else:
+                        self.report(
+                            code="warning.knowledge_graph.edge.agent_type.missing",
+                            identifier=edge_id
+                        )
 
         return source_trail  # may be 'None' if the required attributes are missing
 

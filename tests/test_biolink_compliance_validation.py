@@ -3530,7 +3530,8 @@ def test_validate_agent_type(value: Optional[str], code: str):
                     ]
                 )
             },
-            "error.knowledge_graph.edge.knowledge_level.missing"
+            # This will be a warning for TRAPI 1.5.0 but should become an error in TRAPI 1.6.0
+            "warning.knowledge_graph.edge.knowledge_level.missing"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -3578,7 +3579,8 @@ def test_validate_agent_type(value: Optional[str], code: str):
                     ]
                 )
             },
-            "error.knowledge_graph.edge.agent_type.missing"
+            # This will be a warning for TRAPI 1.5.0 but should become an error in TRAPI 1.6.0
+            "warning.knowledge_graph.edge.agent_type.missing"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
