@@ -2363,6 +2363,108 @@ def test_validate_biolink_curie_in_qualifiers(
 ##################################
 # Validate TRAPI Knowledge Graph #
 ##################################
+def test_validate_duplicate_slot_value():
+    validator = BiolinkValidator(biolink_version="4.2.0")
+    validator.validate_slot_value(
+        slot_name="knowledge_level",
+        context="test_validate_duplicate_slot_value",
+        found=True,
+        value="fake-kl-value"
+    )
+    check_messages(validator, "error.knowledge_graph.edge.knowledge_level.duplicated")
+
+
+def test_validate_unspecified_slot_value_range():
+    validator = BiolinkValidator(biolink_version="4.2.0")
+    validator.validate_slot_value(
+        slot_name="supporting_study_metadata",
+        context="test_validate_unspecified_slot_value_range",
+        found=False,
+        value="fake-kl-value"
+    )
+    check_messages(validator, "warning.biolink.element.range.unspecified")
+
+
+#     def validate_slot_value(
+#             self,
+#             slot_name: str,
+#             context: str,
+#             found: bool,
+#             value: Optional[str]
+#     ):
+@pytest.mark.parametrize(
+    "value,code",
+    [
+        ("not_provided", ""),
+        ("prediction", ""),
+        (None, "error.knowledge_graph.edge.knowledge_level.empty"),
+        ("", "error.knowledge_graph.edge.knowledge_level.empty"),
+        ("fake-kl-value", "error.knowledge_graph.edge.knowledge_level.invalid")
+    ]
+)
+def test_validate_slot_value(value: Optional[str], code: str):
+    validator = BiolinkValidator(biolink_version="4.2.0")
+    validator.validate_slot_value(
+        slot_name="knowledge_level",
+        context="test_validate_slot_value",
+        found=False,
+        value=value
+    )
+    check_messages(validator, code)
+
+
+# def validate_knowledge_level(
+#             self,
+#             edge_id: str,
+#             found: bool,
+#             value: Optional[str]
+#     ) -> bool:
+@pytest.mark.parametrize(
+    "value,code",
+    [
+        ("not_provided", ""),
+        ("prediction", ""),
+        (None, "error.knowledge_graph.edge.knowledge_level.empty"),
+        ("", "error.knowledge_graph.edge.knowledge_level.empty"),
+        ("fake-kl-value", "error.knowledge_graph.edge.knowledge_level.invalid")
+    ]
+)
+def test_validate_knowledge_level(value: Optional[str], code: str):
+    validator = BiolinkValidator(biolink_version="4.2.0")
+    validator.validate_knowledge_level(
+        edge_id="test_validate_knowledge_level",
+        found=False,
+        value=value
+    )
+    check_messages(validator, code)
+
+
+# def validate_agent_type(
+#             self,
+#             edge_id: str,
+#             found: bool,
+#             value: Optional[str]
+#     ) -> bool:
+@pytest.mark.parametrize(
+    "value,code",
+    [
+        ("not_provided", ""),
+        ("data_analysis_pipeline", ""),
+        (None, "error.knowledge_graph.edge.agent_type.empty"),
+        ("", "error.knowledge_graph.edge.agent_type.empty"),
+        ("fake-kl-value", "error.knowledge_graph.edge.agent_type.invalid")
+    ]
+)
+def test_validate_agent_type(value: Optional[str], code: str):
+    validator = BiolinkValidator(biolink_version="4.2.0")
+    validator.validate_agent_type(
+        edge_id="test_validate_agent_type",
+        found=False,
+        value=value
+    )
+    check_messages(validator, code)
+
+
 @pytest.mark.parametrize(
     "biolink_version,graph_data,validation_code",
     [
