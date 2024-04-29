@@ -624,41 +624,37 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # that the first slot value was acceptable.
             return True
 
-        if not value:
-            self.report(
-                code=f"error.knowledge_graph.edge.{slot_name}.empty",
-                identifier=context
-            )
-        else:
-            slot_element = self.bmt.get_element(f"biolink:{slot_name}")
-            assert slot_element, f"No such slot {slot_name} element in Biolink Model release {self.biolink_version}"
-            # Validate slot value here against the specified slot range Enum
-            if "range" in slot_element and slot_element.range:
-                value_range = slot_element.range
-                if value_range and self.bmt.is_enum(value_range):
-                    enum = self.bmt.view.get_enum(value_range)
-                    if not self.bmt.is_permissible_value_of_enum(enum.name, value):
-                        self.report(
-                            code=f"error.knowledge_graph.edge.{slot_name}.invalid",
-                            identifier=str(value),
-                            context=context
-                        )
-                        return False
-                    else:
-                        # if this passes all the gauntlets, assert
-                        # that the slot and its value were found
-                        return True
+        slot_element = self.bmt.get_element(f"biolink:{slot_name}")
+        assert slot_element, f"No such slot {slot_name} element in Biolink Model release {self.biolink_version}"
 
-            # Catch this as a warning against a missing
-            # Biolink Model element range specification
-            self.report(
-                code=f"warning.biolink.element.range.unspecified",
-                identifier=slot_name,
-                context=context,
-                value=str(value)
-            )
+        # Note: we don't need to check for empty attribute.values
+        # here since done elsewhere in the code base
 
-        # probably best to signal failure here
+        # Validate slot value here against the specified slot range Enum
+        if "range" in slot_element and slot_element.range:
+            value_range = slot_element.range
+            if value_range and self.bmt.is_enum(value_range):
+                enum = self.bmt.view.get_enum(value_range)
+                if not self.bmt.is_permissible_value_of_enum(enum.name, value):
+                    self.report(
+                        code=f"error.knowledge_graph.edge.{slot_name}.invalid",
+                        identifier=str(value),
+                        context=context
+                    )
+                    return False
+                else:
+                    # if this passes all the gauntlets, assert
+                    # that the slot and its value were found
+                    return True
+
+        # Catch this as a warning against a missing
+        # Biolink Model element range specification
+        self.report(
+            code=f"warning.biolink.element.range.unspecified",
+            identifier=slot_name,
+            context=context,
+            value=str(value)
+        )
         return False
 
     def validate_knowledge_level(
@@ -759,7 +755,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         else:
             attributes = edge['attributes']
 
-            # TODO: EDeutsch feedback: maybe we don't need to capture TRAPI 1.3.0 attribute-defined 'sources'
+            # EDeutsch feedback: maybe we don't need to capture TRAPI 1.3.0 attribute-defined 'sources'
             # raise NotImplementedError("Implement capture of 'sources' from TRAPI 1.3.0 attributes!")
             # source_trail = self.build_source_trail(sources) if sources else None
 
@@ -794,159 +790,162 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         identifier=edge_id,
                         source_trail=source_trail
                     )
-                elif 'value' not in attribute:
-                    self.report(
-                        code="error.knowledge_graph.edge.attribute.value.missing",
-                        identifier=edge_id,
-                        source_trail=source_trail
-                    )
-                elif isinstance(attribute['value'], bool) or isinstance(attribute['value'], Number):
-                    # An attribute value which is a Python bool of value 'False'
-                    # or a numeric value with value zero, is acceptable...
-                    pass
-
-                elif not attribute['value'] or \
-                        str(attribute['value']).upper() in ["N/A", "NONE", "NULL"]:
-                    # ...But not other datatype values deemed 'empty'
-                    self.report(
-                        code="error.knowledge_graph.edge.attribute.value.empty",
-                        identifier=edge_id,
-                        source_trail=source_trail
-                    )
                 else:
                     attribute_type_id: str = attribute['attribute_type_id']
-                    value = attribute['value']
-
-                    # TODO: there seems to be non-uniformity in provenance attribute values for some KP/ARA's
-                    #       in which a value is returned as a Python list (of at least one element?) instead
-                    #       of a string. Here, to ensure full coverage of the attribute values returned,
-                    #       we'll coerce scalar values into a list, then iterate.
-                    if not isinstance(value, List):
-                        value = [value]
-
-                    if not is_curie(attribute_type_id):
+                    if 'value' not in attribute:
                         self.report(
-                            code="error.knowledge_graph.edge.attribute.type_id.not_curie",
-                            identifier=attribute_type_id,
-                            edge_id=edge_id,
+                            code="error.knowledge_graph.edge.attribute.value.missing",
+                            identifier=edge_id,
+                            attribute_id=attribute_type_id,
                             source_trail=source_trail
                         )
-                    elif self.validate_biolink():
-                        # 'attribute_type_id' is a CURIE, but how well does it map?
-                        prefix = attribute_type_id.split(":", 1)[0]
-                        if prefix == 'biolink':
-                            # We will skip further validation of terms
-                            # in the ATTRIBUTE_TYPE_ID_INCLUSIONS list...
-                            if attribute_type_id not in self.ATTRIBUTE_TYPE_ID_INCLUSIONS:
+                    else:
+                        value = attribute['value']
+                        if isinstance(value, bool) or isinstance(value, Number):
+                            # An attribute value which is a Python bool of value 'False'
+                            # or a numeric value with value zero, is acceptable...
+                            pass
 
-                                # ... but further validate everything else...
-                                biolink_class = self.validate_element_status(
-                                    graph_type=graph_type,
-                                    context="knowledge_graph.edge.attribute.type_id",
+                        # ...But not other datatype values deemed 'empty'
+                        elif not value or \
+                                str(value).upper() in ["N/A", "NONE", "NULL"]:
+                            self.report(
+                                code="error.knowledge_graph.edge.attribute.value.empty",
+                                identifier=edge_id,
+                                attribute_id=attribute_type_id,
+                                source_trail=source_trail
+                            )
+                        else:
+                            # TODO: there seems to be non-uniformity in provenance attribute values for some KP/ARA's
+                            #       in which a value is returned as a Python list (of at least one element?) instead
+                            #       of a string. Here, to ensure full coverage of the attribute values returned,
+                            #       we'll coerce scalar values into a list, then iterate.
+                            if not isinstance(value, List):
+                                value = [value]
+
+                            if not is_curie(attribute_type_id):
+                                self.report(
+                                    code="error.knowledge_graph.edge.attribute.type_id.not_curie",
                                     identifier=attribute_type_id,
                                     edge_id=edge_id,
                                     source_trail=source_trail
                                 )
-                                if biolink_class:
-                                    if self.bmt.is_category(name=biolink_class.name):
-                                        self.report(
-                                            code="warning.knowledge_graph.edge.attribute.type_id.is_category",
+                            elif self.validate_biolink():
+                                # 'attribute_type_id' is a CURIE, but how well does it map?
+                                prefix = attribute_type_id.split(":", 1)[0]
+                                if prefix == 'biolink':
+                                    # We will skip further validation of terms
+                                    # in the ATTRIBUTE_TYPE_ID_INCLUSIONS list...
+                                    if attribute_type_id not in self.ATTRIBUTE_TYPE_ID_INCLUSIONS:
+
+                                        # ... but further validate everything else...
+                                        biolink_class = self.validate_element_status(
+                                            graph_type=graph_type,
+                                            context="knowledge_graph.edge.attribute.type_id",
                                             identifier=attribute_type_id,
                                             edge_id=edge_id,
                                             source_trail=source_trail
                                         )
-                                    elif self.bmt.is_predicate(name=biolink_class.name):
-                                        self.report(
-                                            code="warning.knowledge_graph.edge.attribute.type_id.is_predicate",
-                                            identifier=attribute_type_id,
-                                            edge_id=edge_id,
-                                            source_trail=source_trail
-                                        )
-                                    elif not self.bmt.is_association_slot(attribute_type_id):
-                                        self.report(
-                                            code="warning.knowledge_graph.edge.attribute.type_id.not_association_slot",
-                                            identifier=attribute_type_id,
-                                            edge_id=edge_id,
-                                            source_trail=source_trail
-                                        )
-                                    else:
-                                        # attribute_type_id is a Biolink 'association_slot': validate it further...
+                                        if biolink_class:
+                                            if self.bmt.is_category(name=biolink_class.name):
+                                                self.report(
+                                                    code="warning.knowledge_graph.edge.attribute.type_id.is_category",
+                                                    identifier=attribute_type_id,
+                                                    edge_id=edge_id,
+                                                    source_trail=source_trail
+                                                )
+                                            elif self.bmt.is_predicate(name=biolink_class.name):
+                                                self.report(
+                                                    code="warning.knowledge_graph.edge.attribute.type_id.is_predicate",
+                                                    identifier=attribute_type_id,
+                                                    edge_id=edge_id,
+                                                    source_trail=source_trail
+                                                )
+                                            elif not self.bmt.is_association_slot(attribute_type_id):
+                                                self.report(
+                                                    code="warning.knowledge_graph.edge.attribute.type_id.not_association_slot",
+                                                    identifier=attribute_type_id,
+                                                    edge_id=edge_id,
+                                                    source_trail=source_trail
+                                                )
+                                            else:
+                                                # attribute_type_id is a Biolink 'association_slot': validate further...
 
-                                        # TODO: only check knowledge_source provenance here for now.
-                                        #       Are there other association_slots to be validated here too?
-                                        #       For example, once new terms with defined value ranges are published
-                                        #       in the Biolink Model, then perhaps 'value' validation will be feasible.
+                                                # TODO: only check knowledge_source provenance here for now.
+                                                #       Are there other association_slots to be validated here too?
+                                                #       For example, once new terms with defined value ranges are published
+                                                #       in the Biolink Model, then perhaps 'value' validation will be feasible.
 
-                                        # Edge provenance tags only recorded in
-                                        # Edge attributes prior to TRAPI 1.4.0-beta
-                                        if not self.minimum_required_trapi_version("1.4.0-beta"):
+                                                # Edge provenance tags only recorded in
+                                                # Edge attributes prior to TRAPI 1.4.0-beta
+                                                if not self.minimum_required_trapi_version("1.4.0-beta"):
 
-                                            if attribute_type_id in \
-                                                    [
-                                                        "biolink:aggregator_knowledge_source",
-                                                        "biolink:primary_knowledge_source",
+                                                    if attribute_type_id in \
+                                                            [
+                                                                "biolink:aggregator_knowledge_source",
+                                                                "biolink:primary_knowledge_source",
 
-                                                        # Note: deprecated since Biolink release 3.0.2
-                                                        #       but this is probably caught above in the
-                                                        #       'validate_element_status' method predicate
-                                                        "biolink:original_knowledge_source"
-                                                    ]:
+                                                                # Note: deprecated since Biolink release 3.0.2
+                                                                #       but this is probably caught above in the
+                                                                #       'validate_element_status' method predicate
+                                                                "biolink:original_knowledge_source"
+                                                            ]:
 
-                                                # ... now, check the infores values against various expectations
-                                                for infores in value:
-                                                    if not infores.startswith("infores:"):
-                                                        self.report(
-                                                           code="error.knowledge_graph.edge.provenance.infores.missing",
-                                                           identifier=str(infores),
-                                                           edge_id=edge_id,
-                                                           source_trail=source_trail
+                                                        # ... now, check the infores values against various expectations
+                                                        for infores in value:
+                                                            if not infores.startswith("infores:"):
+                                                                self.report(
+                                                                   code="error.knowledge_graph.edge.provenance.infores.missing",
+                                                                   identifier=str(infores),
+                                                                   edge_id=edge_id,
+                                                                   source_trail=source_trail
+                                                                )
+                                                            else:
+                                                                if attribute_type_id == "biolink:primary_knowledge_source":
+                                                                    found_primary_knowledge_source.append(infores)
+
+                                                                if ara_source and \
+                                                                   attribute_type_id == "biolink:aggregator_knowledge_source" \
+                                                                        and infores == ara_source:
+                                                                    found_ara_knowledge_source = True
+                                                                elif kp_source and \
+                                                                        attribute_type_id == kp_source_type and \
+                                                                        infores == kp_source:
+                                                                    found_kp_knowledge_source = True
+
+                                                # We won't likely care if these shows up in
+                                                # graphs compliant with Biolink earlier than 4.2.0.
+                                                # But we validate their values anyhow...
+
+                                                # We expect at this point that the value should be a single scalar
+                                                value = value[0]
+
+                                                if attribute_type_id == "biolink:knowledge_level":
+                                                    found_knowledge_level = \
+                                                        self.validate_knowledge_level(
+                                                            edge_id=edge_id,
+                                                            found=found_knowledge_level,
+                                                            value=value
                                                         )
-                                                    else:
-                                                        if attribute_type_id == "biolink:primary_knowledge_source":
-                                                            found_primary_knowledge_source.append(infores)
+                                                elif attribute_type_id == "biolink:agent_type":
+                                                    found_agent_type = \
+                                                        self.validate_agent_type(
+                                                            edge_id=edge_id,
+                                                            found=found_agent_type,
+                                                            value=value
+                                                        )
 
-                                                        if ara_source and \
-                                                           attribute_type_id == "biolink:aggregator_knowledge_source" \
-                                                                and infores == ara_source:
-                                                            found_ara_knowledge_source = True
-                                                        elif kp_source and \
-                                                                attribute_type_id == kp_source_type and \
-                                                                infores == kp_source:
-                                                            found_kp_knowledge_source = True
-
-                                        # We won't likely care if these shows up in
-                                        # graphs compliant with Biolink earlier than 4.2.0.
-                                        # But we validate their values anyhow...
-
-                                        # We expect at this point that the value should be a single scalar
-                                        value = value[0]
-
-                                        if attribute_type_id == "biolink:knowledge_level":
-                                            found_knowledge_level = \
-                                                self.validate_knowledge_level(
-                                                    edge_id=edge_id,
-                                                    found=found_knowledge_level,
-                                                    value=value
-                                                )
-                                        elif attribute_type_id == "biolink:agent_type":
-                                            found_agent_type = \
-                                                self.validate_agent_type(
-                                                    edge_id=edge_id,
-                                                    found=found_agent_type,
-                                                    value=value
-                                                )
-
-                        # if not a Biolink model defined attribute term, at least, check if
-                        # the 'attribute_type_id' has a namespace (prefix) known to Biolink.
-                        # We won't call it a hard error, but issue a warning
-                        elif not self.bmt.get_element_by_prefix(attribute_type_id):
-                            self.report(
-                                code="warning.knowledge_graph.edge." +
-                                     "attribute.type_id.non_biolink_prefix",
-                                identifier=attribute_type_id,
-                                edge_id=edge_id,
-                                source_trail=source_trail
-                            )
+                                # if not a Biolink model defined attribute term, at least, check if
+                                # the 'attribute_type_id' has a namespace (prefix) known to Biolink.
+                                # We won't call it a hard error, but issue a warning
+                                elif not self.bmt.get_element_by_prefix(attribute_type_id):
+                                    self.report(
+                                        code="warning.knowledge_graph.edge." +
+                                             "attribute.type_id.non_biolink_prefix",
+                                        identifier=attribute_type_id,
+                                        edge_id=edge_id,
+                                        source_trail=source_trail
+                                    )
 
             # Edge provenance tags only recorded in Edge attributes prior to TRAPI 1.4.0-beta
             if not self.minimum_required_trapi_version("1.4.0-beta") and self.validate_biolink():
@@ -973,7 +972,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     )
                 if not found_agent_type:
                     self.report(
-                        code="error.knowledge_graph.edge.knowledge_level.missing",
+                        code="error.knowledge_graph.edge.agent_type.missing",
                         identifier=edge_id
                     )
 

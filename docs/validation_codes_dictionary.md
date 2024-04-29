@@ -624,7 +624,7 @@
 
 **Message:** An attribute is missing its 'value' property in Edge
 
-**Context:** identifier
+**Context:** identifier, attribute_id
 
 **Description:** An attribute of a Knowledge graph edge must have a 'value' key with a non-empty associated value!
 
@@ -632,7 +632,7 @@
 
 **Message:** An attribute has an empty value in Edge
 
-**Context:** identifier
+**Context:** identifier, attribute_id
 
 **Description:** The value of an attribute of a Knowledge graph edge must not be empty!
 
@@ -700,14 +700,6 @@
 
 **Description:** The 'knowledge_level' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!
 
-### error.knowledge_graph.edge.knowledge_level.empty
-
-**Message:** The 'knowledge_level' property value is empty for the given edge!
-
-**Context:** identifier
-
-**Description:** The value of a 'knowledge_level' property in a Knowledge Graph must not be empty!
-
 ### error.knowledge_graph.edge.knowledge_level.duplicated
 
 **Message:** The 'knowledge_level' slot is duplicated for the given edge!
@@ -731,14 +723,6 @@
 **Context:** identifier
 
 **Description:** The 'agent_type' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!
-
-### error.knowledge_graph.edge.agent_type.empty
-
-**Message:** Edge is missing its required 'agent_type' property!
-
-**Context:** identifier
-
-**Description:** The 'agent_type' property value is empty in the given edge
 
 ### error.knowledge_graph.edge.agent_type.duplicated
 

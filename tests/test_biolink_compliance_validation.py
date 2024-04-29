@@ -19,7 +19,10 @@ from tests import (
     SAMPLE_NODES_WITH_ATTRIBUTES,
     SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES,
     SAMPLE_NODES_WITH_UNUSED_NODE,
-    DEFAULT_KL_AND_AT_ATTRIBUTES
+    DEFAULT_KL,
+    DEFAULT_AT,
+    DEFAULT_KL_AND_AT_ATTRIBUTES,
+    sample_edge_with_attributes
 )
 from tests.test_validation_report import check_messages
 
@@ -2397,8 +2400,6 @@ def test_validate_unspecified_slot_value_range():
     [
         ("not_provided", ""),
         ("prediction", ""),
-        (None, "error.knowledge_graph.edge.knowledge_level.empty"),
-        ("", "error.knowledge_graph.edge.knowledge_level.empty"),
         ("fake-kl-value", "error.knowledge_graph.edge.knowledge_level.invalid")
     ]
 )
@@ -2424,8 +2425,6 @@ def test_validate_slot_value(value: Optional[str], code: str):
     [
         ("not_provided", ""),
         ("prediction", ""),
-        (None, "error.knowledge_graph.edge.knowledge_level.empty"),
-        ("", "error.knowledge_graph.edge.knowledge_level.empty"),
         ("fake-kl-value", "error.knowledge_graph.edge.knowledge_level.invalid")
     ]
 )
@@ -2450,8 +2449,6 @@ def test_validate_knowledge_level(value: Optional[str], code: str):
     [
         ("not_provided", ""),
         ("data_analysis_pipeline", ""),
-        (None, "error.knowledge_graph.edge.agent_type.empty"),
-        ("", "error.knowledge_graph.edge.agent_type.empty"),
         ("fake-kl-value", "error.knowledge_graph.edge.agent_type.invalid")
     ]
 )
@@ -2466,7 +2463,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
 
 
 @pytest.mark.parametrize(
-    "biolink_version,graph_data,validation_code",
+    "biolink_version,graph_data,code",
     [
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -3504,17 +3501,113 @@ def test_validate_agent_type(value: Optional[str], code: str):
                 'edges': SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES
             },
             "warning.knowledge_graph.nodes.dangling"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+
+            # Query 36: Knowledge Graph edge duplicated Knowledge Level
+            {
+                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
+                'edges': sample_edge_with_attributes(
+                    attributes=[
+                        DEFAULT_KL,
+                        DEFAULT_KL,
+                        DEFAULT_AT
+                    ]
+                )
+            },
+            "error.knowledge_graph.edge.knowledge_level.duplicated"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+
+            # Query 37: Knowledge Graph edge missing Knowledge Level
+            {
+                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
+                'edges': sample_edge_with_attributes(
+                    attributes=[
+                        DEFAULT_AT
+                    ]
+                )
+            },
+            "error.knowledge_graph.edge.knowledge_level.missing"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+
+            # Query 38: Knowledge Graph edge invalid Knowledge Level
+            {
+                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
+                'edges': sample_edge_with_attributes(
+                    attributes=[
+                        {
+                           "attribute_type_id": "biolink:knowledge_level",
+                           "value": "not-a-knowledge-level"
+                        },
+                        DEFAULT_AT
+                    ]
+                )
+            },
+            "error.knowledge_graph.edge.knowledge_level.invalid"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+
+            # Query 39: Knowledge Graph edge duplicated Agent Type
+            {
+                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
+                'edges': sample_edge_with_attributes(
+                    attributes=[
+                        DEFAULT_KL,
+                        DEFAULT_AT,
+                        DEFAULT_AT
+                    ]
+                )
+            },
+            "error.knowledge_graph.edge.agent_type.duplicated"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+
+            # Query 40: Knowledge Graph edge missing Agent Type
+            {
+                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
+                'edges': sample_edge_with_attributes(
+                    attributes=[
+                        DEFAULT_KL
+                    ]
+                )
+            },
+            "error.knowledge_graph.edge.agent_type.missing"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+
+            # Query 41: Knowledge Graph edge invalid Agent Type
+            {
+                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
+                'edges': sample_edge_with_attributes(
+                    attributes=[
+                        DEFAULT_KL,
+                        {
+                           "attribute_type_id": "biolink:agent_type",
+                           "value": "not-an-agent-type"
+                        }
+                    ]
+                )
+            },
+            "error.knowledge_graph.edge.agent_type.invalid"
         )
     ]
 )
 def test_check_biolink_model_compliance_of_knowledge_graph(
         biolink_version: str,
         graph_data: Dict,
-        validation_code: str
+        code: str
 ):
     validator = BiolinkValidator(biolink_version=biolink_version)
     validator.check_biolink_model_compliance(graph=graph_data, graph_type=TRAPIGraphType.Knowledge_Graph)
-    check_messages(validator, validation_code)
+    check_messages(validator, code)
 
 
 MESSAGE_EDGE_WITHOUT_ATTRIBUTES = {

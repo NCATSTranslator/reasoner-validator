@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Dict, Any
 from sys import stderr
 from os.path import abspath, dirname, sep
 from copy import deepcopy
@@ -87,3 +87,24 @@ SAMPLE_NODES_WITH_UNUSED_NODE["NCBITaxon:9606"] = {
        "biolink:OrganismTaxon"
     ]
 }
+
+SAMPLE_EDGE_WITH_WITHOUT_ATTRIBUTES = {
+    "edge_1": {
+        "subject": "NCBIGene:29974",
+        "predicate": "biolink:physically_interacts_with",
+        "object": "PUBCHEM.COMPOUND:597",
+        "attributes": [],
+        "sources": [
+            {
+                "resource_id": "infores:molepro",
+                "resource_role": "primary_knowledge_source"
+            }
+        ]
+    }
+}
+
+
+def sample_edge_with_attributes(attributes: List[Dict[str, Any]]) -> Dict[str, Any]:
+    sample_edge = deepcopy(SAMPLE_EDGE_WITH_WITHOUT_ATTRIBUTES)
+    sample_edge["edge_1"]["attributes"] = attributes
+    return sample_edge

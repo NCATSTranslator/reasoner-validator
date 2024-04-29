@@ -477,11 +477,13 @@ error:
             $message: "An attribute is missing its 'value' property in Edge"
             $context:
               - identifier
+              - attribute_id
             $description: "An attribute of a Knowledge graph edge must have a 'value' key with a non-empty associated value!"
           empty:
             $message: "An attribute has an empty value in Edge"
             $context:
               - identifier
+              - attribute_id
             $description: "The value of an attribute of a Knowledge graph edge must not be empty!"
       provenance:
         infores:
@@ -536,11 +538,6 @@ error:
           $context:
             - edge_id
           $description: "The 'knowledge_level' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!"
-        empty:
-          $message: "The 'knowledge_level' property value is empty for the given edge!"
-          $context:
-            - identifier
-          $description: "The value of a 'knowledge_level' property in a Knowledge Graph must not be empty!"
         duplicated:
           $message: "The 'knowledge_level' slot is duplicated for the given edge!"
           $context:
@@ -559,11 +556,6 @@ error:
           $context:
             - identifier
           $description: "The 'agent_type' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!"
-        empty:
-          $message: "Edge is missing its required 'agent_type' property!"
-          $context:
-            - identifier
-          $description: "The 'agent_type' property value is empty in the given edge"
         duplicated:
           $message: "The 'agent_type' slot is duplicated for the given edge!"
           $context:
