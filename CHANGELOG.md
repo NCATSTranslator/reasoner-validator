@@ -2,6 +2,13 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.1.0
+
+- Biolink Model 4.2.0 validation starting to be added
+  - Validate presence of "knowledge_level" and "agent_type", with compliant values, on all knowledge graph edges (removed previous ATTRIBUTE_TYPE_ID_INCLUSIONS for these fields, since no longer surprising to see them...)
+- Update BiolinkValidator.get_result() to properly return Tuple[str, MESSAGES_BY_TARGET]
+- Cleaned up some technical debt
+
 ## 4.0.3
 
 - Refactored pyproject.toml specified poetry dependencies into groups rather than extras, updating README accordingly.
