@@ -373,7 +373,7 @@ class TRAPISchemaValidator(ValidationReporter):
         return dictionary
 
     def report_header(self, title: Optional[str] = None, compact_format: bool = True) -> str:
-        header: str = ValidationReporter.report_header(self, title, compact_format)
+        header: str = super().report_header(title, compact_format)
         header += f" validating against TRAPI version " \
                   f"'{str(self.get_trapi_version() if self.get_trapi_version() is not None else 'Default')}'"
         return header
