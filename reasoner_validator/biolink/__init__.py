@@ -13,7 +13,7 @@ from linkml_runtime.linkml_model import ClassDefinition, Element
 
 from reasoner_validator.sri.util import is_curie
 from reasoner_validator.versioning import SemVer, SemVerError
-from reasoner_validator.message import MESSAGE_CATALOG
+from reasoner_validator.message import MESSAGES_BY_TARGET
 from reasoner_validator.trapi import TRAPISchemaValidator
 from reasoner_validator.report import TRAPIGraphType
 
@@ -246,14 +246,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     def has_dangling_nodes(self) -> List[str]:
         return [node_id for node_id, entry in self.nodes.items() if not entry[1]]
 
-    def get_result(self) -> Tuple[str, MESSAGE_CATALOG]:
+    def get_result(self) -> Tuple[str, MESSAGES_BY_TARGET]:
         """
         Get result of validation.
 
         :return: model version of the validation and dictionary of reported validation messages.
         :rtype Tuple[str, Optional[Dict[str, Set[str]]]]
         """
-        return self.bmt.get_model_version(), self.get_messages()
+        return self.bmt.get_model_version(), super().get_all_messages()
 
     def validate_graph_node(self, node_id: str, slots: Dict[str, Any], graph_type: TRAPIGraphType):
         """
@@ -596,11 +596,107 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 sources=",".join(found_primary_knowledge_source)
             )
 
-    # TODO: 13-July-2023: Certain attribute_type_id's are slated for future implementation in the Biolink Model
-    #                     but not in the current model release; however, some teams have started to use the terms.
-    #                     We therefore put them on a special "inclusion list" (like the CATEGORY_INCLUSIONS below)
-    #                     to permit them to pass through the validation without any complaints.
-    ATTRIBUTE_TYPE_ID_INCLUSIONS = ["biolink:knowledge_level", "biolink:agent_type"]
+    def validate_slot_value(
+            self,
+            slot_name: str,
+            context: str,
+            found: bool,
+            value: Optional[str]
+    ):
+        """
+        Validate the single-valued value of a specified slot of the given knowledge graph entity slot.
+        :param slot_name, str, name of a valid slot, a value for which is to be validated
+        :param context: str, context of the validation (e.g. node or edge id)
+        :param found: bool, current status of slot detection,
+                      Should be true if the slot was already previously seen
+        :param value: Optional[str], the value to be validated
+        :return: bool, True if valid slot and value (validation messages recorded in the BiolinkValidator)
+        """
+        if found:
+            # The slot was already encountered in this element,
+            # hence report the duplication with its value?
+            self.report(
+                code=f"error.knowledge_graph.edge.{slot_name}.duplicated",
+                identifier=context,
+                value=str(value)
+            )
+            # we'll be forgiving here and just assume
+            # that the first slot value was acceptable.
+            return True
+
+        if not value:
+            self.report(
+                code=f"error.knowledge_graph.edge.{slot_name}.empty",
+                identifier=context
+            )
+        else:
+            slot_element = self.bmt.get_element(f"biolink:{slot_name}")
+            assert slot_element, f"No such slot {slot_name} element in Biolink Model release {self.biolink_version}"
+            # Validate slot value here against the specified slot range Enum
+            if "range" in slot_element and slot_element.range:
+                value_range = slot_element.range
+                if value_range and self.bmt.is_enum(value_range):
+                    enum = self.bmt.view.get_enum(value_range)
+                    if not self.bmt.is_permissible_value_of_enum(enum.name, value):
+                        self.report(
+                            code=f"error.knowledge_graph.edge.{slot_name}.invalid",
+                            identifier=str(value),
+                            context=context
+                        )
+                        return False
+                    else:
+                        # if this passes all the gauntlets, assert
+                        # that the slot and its value were found
+                        return True
+
+            # Catch this as a warning against a missing
+            # Biolink Model element range specification
+            self.report(
+                code=f"warning.biolink.element.range.unspecified",
+                identifier=slot_name,
+                context=context,
+                value=str(value)
+            )
+
+        # probably best to signal failure here
+        return False
+
+    def validate_knowledge_level(
+            self,
+            edge_id: str,
+            found: bool,
+            value: Optional[str]
+    ) -> bool:
+        """
+        Validate the value of a 'knowledge_level' of the given edge.
+        :param edge_id: str, identifier of the edge being validated
+        :param found: bool, current status of slot detection, True if already seen previously (return 'True' value here)
+        :param value: Optional[str], the value to be validated
+        :return: bool, if valid slot and value found (validation messages recorded in the BiolinkValidator)
+        """
+        return self.validate_slot_value(slot_name="knowledge_level", context=edge_id, found=found, value=value)
+
+    def validation_agent_type(
+            self,
+            edge_id: str,
+            found: bool,
+            value: Optional[str]
+    ) -> bool:
+        """
+        Validate the value of a 'agent_type' of the given edge.
+        :param edge_id: str, identifier of the edge being validated
+        :param found: bool, current status of slot detection, True if already seen previously (return 'True' value here)
+        :param value: Optional[str], the value to be validated
+        :return: None (validation messages recorded in the BiolinkValidator)
+        """
+        return self.validate_slot_value(slot_name="agent_type", context=edge_id, found=found, value=value)
+
+    # 13-July-2023: Certain attribute_type_id's are slated for future implementation in the Biolink Model
+    #               but not in the current model release; however, some teams have started to use the terms.
+    #               We therefore put them on a special "inclusion list" (like the CATEGORY_INCLUSIONS below)
+    #               to permit them to pass through the validation without any complaints.
+    # ATTRIBUTE_TYPE_ID_INCLUSIONS = ["biolink:knowledge_level", "biolink:agent_type"]
+    ATTRIBUTE_TYPE_ID_INCLUSIONS = []
 
     def validate_attributes(
             self,
@@ -739,7 +835,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         # 'attribute_type_id' is a CURIE, but how well does it map?
                         prefix = attribute_type_id.split(":", 1)[0]
                         if prefix == 'biolink':
-                            # We will skip further validation of terms in the ATTRIBUTE_TYPE_ID_INCLUSIONS list...
+                            # We will skip further validation of terms
+                            # in the ATTRIBUTE_TYPE_ID_INCLUSIONS list...
                             if attribute_type_id not in self.ATTRIBUTE_TYPE_ID_INCLUSIONS:
 
                                 # ... but further validate everything else...
@@ -784,7 +881,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                         # Edge attributes prior to TRAPI 1.4.0-beta
                                         if not self.minimum_required_trapi_version("1.4.0-beta"):
 
-                                            if attribute_type_id not in \
+                                            if attribute_type_id in \
                                                     [
                                                         "biolink:aggregator_knowledge_source",
                                                         "biolink:primary_knowledge_source",
@@ -793,48 +890,51 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                         #       but this is probably caught above in the
                                                         #       'validate_element_status' method predicate
                                                         "biolink:original_knowledge_source"
-
                                                     ]:
 
-                                                # TODO: not interested here in any other
-                                                #       attribute_type_id's at this moment
-                                                continue
+                                                # ... now, check the infores values against various expectations
+                                                for infores in value:
+                                                    if not infores.startswith("infores:"):
+                                                        self.report(
+                                                           code="error.knowledge_graph.edge.provenance.infores.missing",
+                                                           identifier=str(infores),
+                                                           edge_id=edge_id,
+                                                           source_trail=source_trail
+                                                        )
+                                                    else:
+                                                        if attribute_type_id == "biolink:primary_knowledge_source":
+                                                            found_primary_knowledge_source.append(infores)
 
-                                            # ... now, check the infores values against various expectations
-                                            for infores in value:
-                                                if not infores.startswith("infores:"):
-                                                    self.report(
-                                                        code="error.knowledge_graph.edge.provenance.infores.missing",
-                                                        identifier=str(infores),
-                                                        edge_id=edge_id,
-                                                        source_trail=source_trail
-                                                    )
-                                                else:
-                                                    if attribute_type_id == "biolink:primary_knowledge_source":
-                                                        found_primary_knowledge_source.append(infores)
-
-                                                    if ara_source and \
-                                                       attribute_type_id == "biolink:aggregator_knowledge_source" and \
-                                                       infores == ara_source:
-                                                        found_ara_knowledge_source = True
-                                                    elif kp_source and \
-                                                            attribute_type_id == kp_source_type and \
-                                                            infores == kp_source:
-                                                        found_kp_knowledge_source = True
+                                                        if ara_source and \
+                                                           attribute_type_id == "biolink:aggregator_knowledge_source" \
+                                                                and infores == ara_source:
+                                                            found_ara_knowledge_source = True
+                                                        elif kp_source and \
+                                                                attribute_type_id == kp_source_type and \
+                                                                infores == kp_source:
+                                                            found_kp_knowledge_source = True
 
                                         # We won't likely care if these shows up in
                                         # graphs compliant with Biolink earlier than 4.2.0.
                                         # But we validate their values anyhow...
+
+                                        # We expect at this point that the value should be a single scalar
+                                        value = value[0]
+
                                         if attribute_type_id == "biolink:knowledge_level":
-                                            # TODO: maybe check here if 'knowledge_level' is duplicated?
-                                            found_knowledge_level = True
-                                            value = value[0]  # expect that it was a scalar
-                                            self.validate_knowledge_level(edge_id, value)
+                                            found_knowledge_level = \
+                                                self.validate_knowledge_level(
+                                                    edge_id=edge_id,
+                                                    found=found_knowledge_level,
+                                                    value=value
+                                                )
                                         elif attribute_type_id == "biolink:agent_type":
-                                            # TODO: maybe check here if 'agent_type' is duplicated?
-                                            found_agent_type = True
-                                            value = value[0]  # expect that it was a scalar
-                                            self.validation_agent_type(edge_id, value)
+                                            found_agent_type = \
+                                                self.validation_agent_type(
+                                                    edge_id=edge_id,
+                                                    found=found_agent_type,
+                                                    value=value
+                                                )
 
                         # if not a Biolink model defined attribute term, at least, check if
                         # the 'attribute_type_id' has a namespace (prefix) known to Biolink.
@@ -1006,44 +1106,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 source_trail=source_trail
             )
 
-    def validate_knowledge_level(
-            self,
-            edge_id: str,
-            value: Optional[str]
-    ):
-        if not value:
-            self.report(
-                code="error.knowledge_graph.edge.knowledge_level.empty",
-                identifier=edge_id
-            )
-        else:
-            # TODO: validate 'knowledge_level' value here
-            self.report(
-                code="error.knowledge_graph.edge.knowledge_level.invalid",
-                identifier=str(value),
-                edge_id=edge_id
-            )
-            raise NotImplementedError
-
-    def validation_agent_type(
-            self,
-            edge_id: str,
-            value: Optional[str]
-    ):
-        if not value:
-            self.report(
-                code="error.knowledge_graph.edge.knowledge_level.empty",
-                identifier=edge_id
-            )
-        else:
-            # TODO: validate 'knowledge_level' value here
-            self.report(
-                code="error.knowledge_graph.edge.knowledge_level.invalid",
-                identifier=str(value),
-                edge_id=edge_id
-            )
-            raise NotImplementedError
-
     def validate_qualifier_constraints(
             self,
             edge_id: str,
@@ -1087,7 +1149,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         Validate that the specified identifier is a well-formed Infores CURIE.
         Note that here we also now accept that the identifier can
-        be a semi-colon delimited list of such infores.
+        be a semicolon delimited list of such infores.
 
         :param context: reporting context as specified by a validation code prefix
         :param edge_id: specific edge validated, for the purpose of reporting validation context
@@ -1152,7 +1214,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
     def validate_sources(self, edge_id: str, edge: Dict) -> Optional[str]:
         """
-        Validate (TRAPI 1.4.0-beta ++) Edge.sources provenance.
+        Validate (TRAPI 1.4.0-beta ++) Edge sources provenance.
 
         :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param edge: Dict, the edge object associated with some attributes are expected to be found
@@ -1811,8 +1873,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         dictionary["biolink_version"] = self.get_biolink_version()
         return dictionary
 
-    def report_header(self, title: Optional[str], compact_format: bool) -> str:
-        header: str = TRAPISchemaValidator.report_header(self, title, compact_format)
+    def report_header(self, title: Optional[str] = None, compact_format: bool = True) -> str:
+        header: str = super().report_header(title, compact_format)
         header += " and Biolink Model version " \
                   f"'{str(self.get_biolink_version() if self.get_biolink_version() is not None else 'Default')}'"
         return header

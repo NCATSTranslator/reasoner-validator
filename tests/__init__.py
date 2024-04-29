@@ -44,6 +44,19 @@ SAMPLE_NODES_WITH_ATTRIBUTES["PUBCHEM.COMPOUND:597"]["attributes"] = [
     }
 ]
 
+DEFAULT_KL = {
+    "attribute_type_id": "biolink:knowledge_level",
+    "value": "not_provided"
+}
+
+
+DEFAULT_AT = {
+    "attribute_type_id": "biolink:agent_type",
+    "value": "not_provided"
+}
+
+DEFAULT_KL_AND_AT_ATTRIBUTES = [DEFAULT_KL, DEFAULT_AT]
+
 # complete edge dereferencing SAMPLE_NODES_WITH_ATTRIBUTES
 SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES = {
     "edge_1": {
@@ -57,7 +70,7 @@ SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES = {
                 "value": 2,
                 "attributes": [],
             }
-        ],
+        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
         "sources": [
             {
                 "resource_id": "infores:molepro",

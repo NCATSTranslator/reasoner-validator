@@ -18,7 +18,8 @@ from tests import (
     SIMPLE_SAMPLE_NODES,
     SAMPLE_NODES_WITH_ATTRIBUTES,
     SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES,
-    SAMPLE_NODES_WITH_UNUSED_NODE
+    SAMPLE_NODES_WITH_UNUSED_NODE,
+    DEFAULT_KL_AND_AT_ATTRIBUTES
 )
 from tests.test_validation_report import check_messages
 
@@ -1221,116 +1222,116 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge: Dict, valida
                     {
                         "attribute_type_id": "EDAM-DATA:2526",
                         "value": "some-value"
-                    }
-                ]
-            },
-            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
-        ),
-        (
-            # Query 4. Validating terms in the ATTRIBUTE_TYPE_ID_INCLUSIONS list
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:knowledge_level",
-                        "value": "knowledge_assertion"
                     },
-                    {
-                        "attribute_type_id": "biolink:agent_type",
-                        "value": "manual_agent"
-                    }
-                ]
+                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
             },
             ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
         ),
+        # (
+        #     # Query #. Validating terms in the ATTRIBUTE_TYPE_ID_INCLUSIONS list
+        #     {
+        #         "attributes": [
+        #             {
+        #                 "attribute_type_id": "biolink:knowledge_level",
+        #                 "value": "knowledge_assertion"
+        #             },
+        #             {
+        #                 "attribute_type_id": "biolink:agent_type",
+        #                 "value": "manual_agent"
+        #             }
+        #         ]
+        #     },
+        #     ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
+        # ),
         # Slipping in a few unit tests of the
         # "error.knowledge_graph.edge.attribute.value.empty"
         (
-            # Query 5. Attribute value is numeric (int) and zero
+            # Query 4. Attribute value is numeric (int) and zero
             {
                 "attributes": [
                     {
                         "attribute_type_id": "biolink:Attribute",
                         "value": 0
                     }
-                ]
+                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
             },
             ""   # should pass since 'False' is a valid non-empty attribute value
         ),
         (
-            # Query 6. Attribute value is numeric (float) and zero
+            # Query 5. Attribute value is numeric (float) and zero
             {
                 "attributes": [
                     {
                         "attribute_type_id": "biolink:Attribute",
                         "value": 0.0
                     }
-                ]
+                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
             },
             ""   # should pass since 'False' is a valid non-empty attribute value
         ),
         (
-            # Query 7. Attribute value is explicit boolean 'false'
+            # Query 6. Attribute value is explicit boolean 'false'
             {
                 "attributes": [
                     {
                         "attribute_type_id": "biolink:Attribute",
                         "value": False
                     }
-                ]
+                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
             },
             ""   # should pass since 'False' is a valid non-empty attribute value
         ),
         (
-            # Query 8. Empty string as attribute value
+            # Query 7. Empty string as attribute value
             {
                 "attributes": [
                     {
                         "attribute_type_id": "biolink:Attribute",
                         "value": ""
                     }
-                ]
+                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
             },
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 9. None (JSON 'null'?) as attribute value
+            # Query 8. None (JSON 'null'?) as attribute value
             {
                 "attributes": [
                     {
                         "attribute_type_id": "biolink:Attribute",
                         "value": None
                     }
-                ]
+                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
             },
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 10. Empty array (JSON 'null'?) as attribute value
+            # Query 9. Empty array (JSON 'null'?) as attribute value
             {
                 "attributes": [
                     {
                         "attribute_type_id": "biolink:Attribute",
                         "value": []
                     }
-                ]
+                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
             },
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 11. Empty set/dict (JSON 'null'?) as attribute value
+            # Query 10. Empty set/dict (JSON 'null'?) as attribute value
             {
                 "attributes": [
                     {
                         "attribute_type_id": "biolink:Attribute",
                         "value": {}
                     }
-                ]
+                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
             },
             "error.knowledge_graph.edge.attribute.value.empty"
         )
     ]
 )
-def test_post_1_4_0_trapi_validate_attributes(edge: Dict, validation_code: str):
+def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
     validator = BiolinkValidator()
     validator.validate_attributes(
         graph_type=TRAPIGraphType.Knowledge_Graph,
@@ -1532,7 +1533,7 @@ def test_pre_1_4_0_validate_provenance(edge: Dict, target_provenance: Optional[D
                         "attribute_type_id": "biolink:aggregator_knowledge_source",
                         "value": False
                     },
-                ]
+                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
             },
             get_ara_test_case(),
             ""
@@ -1561,10 +1562,12 @@ def test_pre_1_4_0_validate_provenance(edge: Dict, target_provenance: Optional[D
         )
     ]
 )
-def test_latest_validate_attributes(edge: Dict, target_provenance: Optional[Dict[str, str]], validation_code: str):
+def test_latest_validate_trapi_attributes_with_target_provenance(
+        edge: Dict,
+        target_provenance: Optional[Dict[str, str]],
+        validation_code: str
+):
     validator = BiolinkValidator(
-        # trapi_version="latest",
-        biolink_version=LATEST_BIOLINK_MODEL_VERSION,
         target_provenance=target_provenance
     )
     validator.validate_attributes(
@@ -2629,7 +2632,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2666,7 +2669,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2703,7 +2706,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2775,7 +2778,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2802,7 +2805,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2831,7 +2834,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2858,7 +2861,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2885,7 +2888,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2927,7 +2930,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -2970,7 +2973,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3013,7 +3016,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3040,7 +3043,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3067,7 +3070,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3093,7 +3096,7 @@ def test_validate_biolink_curie_in_qualifiers(
                             {
                                 "value": "some value"
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3120,7 +3123,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 # "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3147,7 +3150,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "not_a_curie",
                                 "value": "some value"
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3175,7 +3178,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:OrganismTaxon",
                                 "value": "9606"
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3203,7 +3206,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:related_to",
                                 "value": "something"
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3230,7 +3233,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:synonym",
                                 "value": "some synonym"
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3262,7 +3265,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3289,7 +3292,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "foo:bar",
                                 "value": "some value"
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3344,7 +3347,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "foo:bar",
                                 "value": "some value"
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
@@ -3374,7 +3377,7 @@ def test_validate_biolink_curie_in_qualifiers(
                                 "attribute_type_id": "biolink:synonym",
                                 "value": "some synonym"
                             }
-                        ],
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
