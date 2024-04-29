@@ -602,7 +602,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             context: str,
             found: bool,
             value: Optional[str]
-    ):
+    ) -> bool:
         """
         Validate the single-valued value of a specified slot of the given knowledge graph entity slot.
         :param slot_name, str, name of a valid slot, a value for which is to be validated
@@ -676,7 +676,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         return self.validate_slot_value(slot_name="knowledge_level", context=edge_id, found=found, value=value)
 
-    def validation_agent_type(
+    def validate_agent_type(
             self,
             edge_id: str,
             found: bool,
@@ -930,7 +930,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                 )
                                         elif attribute_type_id == "biolink:agent_type":
                                             found_agent_type = \
-                                                self.validation_agent_type(
+                                                self.validate_agent_type(
                                                     edge_id=edge_id,
                                                     found=found_agent_type,
                                                     value=value
