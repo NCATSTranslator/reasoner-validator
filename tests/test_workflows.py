@@ -84,7 +84,6 @@ def test_trapi_1_4_query_trapi_workflow_properties(trapi_version: str, query: Di
 TRAPI_LATEST_TRAPI_QUERY_VERSION = [qv for qv in product(LATEST_TEST_RELEASES, (SAMPLE_QUERY_1, SAMPLE_QUERY_2))]
 
 
-@pytest.mark.skip("Test inputs are not yet TRAPI 1.5 compliant")
 @pytest.mark.parametrize("trapi_version,query", TRAPI_LATEST_TRAPI_QUERY_VERSION)
 def test_query_latest_trapi_workflow_properties(trapi_version: str, query: Dict):
     """Test flawed TRAPI Query workflow properties."""
