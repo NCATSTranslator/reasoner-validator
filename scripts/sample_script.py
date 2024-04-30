@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from typing import Optional, List, Dict
+from reasoner_validator.message import MESSAGES_BY_TARGET
 from reasoner_validator.validator import TRAPIResponseValidator
 
 SAMPLE_RESPONSE = {
-    "schema_version": "1.4.1",
-    "biolink_version": "3.2.6",
+    "schema_version": "1.5.0",
+    "biolink_version": "4.2.0",
     "message": {
         "query_graph": {
             "nodes": {
@@ -46,11 +46,11 @@ SAMPLE_RESPONSE = {
 validator = TRAPIResponseValidator(
     # If the TRAPI version value is omitted or set to None,
     # then the latest TRAPI version applies.
-    trapi_version="1.3.0",
+    trapi_version="1.5.0",
 
     # If the Biolink Model version value is omitted or set to None,
     # then the current Biolink Model Toolkit default release applies.
-    biolink_version="3.2.6",
+    biolink_version="4.2.0",
 
     # 'target_provenance' is set to trigger checking of
     # expected edge knowledge source provenance
@@ -74,27 +74,37 @@ validator = TRAPIResponseValidator(
 validator.check_compliance_of_trapi_response(response=SAMPLE_RESPONSE)
 
 # Messages are retrieved from the validator object as follows:
-messages: Dict[
-            str,  # message type (errors|warnings|information)
-            Dict[
-                str,  # message 'code' as indexing key
-                # Dictionary of 'identifier' indexed messages with parameters
-                # (Maybe None, if code doesn't have any additional parameters)
-                Optional[
-                    Dict[
-                        str,  # key is the message-unique template 'identifier' value of parameterized messages
-                        Optional[
-                            List[
-                                # Each reported message adds a dictionary of such parameters
-                                # to the list here; these are not guaranteed to be unique
-                                Dict[str, str]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ] = validator.get_messages()
+messages: MESSAGES_BY_TARGET = validator.get_all_messages()
 
+# where MESSAGES_BY_TARGET is:
+#
+# Dict[
+#     str,  # target identifier: endpoint URL, URI or CURIE
+#     Dict[
+#         str,  # unique identifiers for each test
+#         Dict[
+#             str,  # message type (info|skipped|warning|error|critical)
+#             Dict[
+#                 str,  # message 'code' as indexing key
+#                 # Dictionary of 'identifier' indexed messages with parameters
+#                 # (Maybe None, if code doesn't have any additional parameters)
+#                 Optional[
+#                     Dict[
+#                         str,  # key is the message-unique template 'identifier' value of parameterized messages
+#                         Optional[
+#                             List[
+#                                 # Each reported message adds a dictionary of such parameters
+#                                 # to the list here; these are not guaranteed to be unique
+#                                 Dict[str, str]
+#                             ]
+#                         ]
+#                     ]
+#                 ]
+#             ]
+#         ]
+#     ]
+# ]
+#
 # this method dumps a human-readable text report of
 # the validation messages to (by default) stdout
 validator.dump()
