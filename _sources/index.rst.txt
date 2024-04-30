@@ -31,8 +31,8 @@ Checkout then setup dependencies and the standard virtual environment using poet
 
     git checkout https://github.com/NCATSTranslator/reasoner-validator.git
     cd reasoner-validator
-    poetry install
     poetry shell
+    poetry install
 
 These operations install the software and creates a virtual operation for running the software in a simple fashion.
 
