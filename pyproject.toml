@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "reasoner-validator"
-version = "4.1.0"
+version = "4.1.1"
 description = "Validation tools for Reasoner API"
 authors = [
     "Richard Bruskiewich <richard.bruskiewich@delphinai.com>",
@@ -40,7 +40,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
+python = ">=3.9,<3.12"
 bmt = "^1.4.0"
 bioregistry = "^0.11.1"
 
