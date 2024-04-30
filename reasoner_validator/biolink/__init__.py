@@ -687,12 +687,17 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         return self.validate_slot_value(slot_name="agent_type", context=edge_id, found=found, value=value)
 
-    # 13-July-2023: Certain attribute_type_id's are slated for future implementation in the Biolink Model
-    #               but not in the current model release; however, some teams have started to use the terms.
-    #               We therefore put them on a special "inclusion list" (like the CATEGORY_INCLUSIONS below)
-    #               to permit them to pass through the validation without any complaints.
-    # ATTRIBUTE_TYPE_ID_INCLUSIONS = ["biolink:knowledge_level", "biolink:agent_type"]
-    ATTRIBUTE_TYPE_ID_INCLUSIONS = []
+    def get_attribute_type_exclusions(self) -> List[str]:
+        if self.minimum_required_biolink_version("4.2.0"):
+            return list()
+        else:
+            # 13-July-2023: Certain attribute_type_id's are slated for future implementation in the Biolink Model
+            #               but not in the current model release; however, some teams have started to use the terms.
+            #               We therefore put them on a special "inclusion list" (like the CATEGORY_INCLUSIONS below)
+            #               to permit them to pass through the validation without any complaints.
+            # Still not defined in Biolink releases prior to "4.2.0'
+            # but sometimes implemented: ignore in validation
+            return ["biolink:knowledge_level", "biolink:agent_type"]
 
     def validate_attributes(
             self,
@@ -836,7 +841,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                 if prefix == 'biolink':
                                     # We will skip further validation of terms
                                     # in the ATTRIBUTE_TYPE_ID_INCLUSIONS list...
-                                    if attribute_type_id not in self.ATTRIBUTE_TYPE_ID_INCLUSIONS:
+                                    if attribute_type_id not in self.get_attribute_type_exclusions():
 
                                         # ... but further validate everything else...
                                         biolink_class = self.validate_element_status(
