@@ -50,7 +50,7 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
     #!/usr/bin/env python
     from typing import Optional, List, Dict
     from reasoner_validator.validator import TRAPIResponseValidator
-    from reasoner_validator import MESSAGE_CATALOG
+    from reasoner_validator import MESSAGES_BY_TARGET
 
     SAMPLE_RESPONSE = {
       "message": {
@@ -86,12 +86,12 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
     }
 
     }
-    validator = TRAPIResponseValidator(
-        trapi_version="1.4.2",
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(
+        trapi_version="1.5.0",
 
         # If omit or set the Biolink Model version parameter to None,
         # then the current Biolink Model Toolkit default release applies
-        biolink_version="3.5.0",
+        biolink_version="4.2.0",
 
         # 'sources' are set to trigger checking of expected edge knowledge source provenance
         sources={
@@ -114,7 +114,7 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
 
     if validator.has_messages():
         # Raw message data is retrieved from the validator object as follows:
-        messages: MESSAGE_CATALOG = validator.get_messages()
+        messages: MESSAGES_BY_TARGET = validator.get_all_messages()
 
         # this method dumps a human readable text report of
         # the validation messages (default) to stdout
@@ -254,17 +254,17 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
         # If the following trapi_version parameter is given, then it overrides the TRAPI Response 'schema_version';
         # Otherwise, a TRAPI 1.4.0 Response embedded 'schema_version' (not 'latest') becomes the default validation version."
 
-        "trapi_version": "1.4.2",
+        "trapi_version": "1.5.0",
 
         "_comment": "If the Biolink Model version is omitted or set to None, then the current Biolink Model Toolkit is used.
 
         # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed 'biolink_version'.
         # This modifies slightly the interpretation of this parameter, as follows:
         # If the 'biolink_version' given here is assumed, which overrides the TRAPI Response stated 'biolink_version';
-        # Otherwise, a TRAPI 1.4.0 Response embedded 'biolink_version' (not BMT) becomes the default validation version.
+        # Otherwise, a TRAPI 1.5.0 Response embedded 'biolink_version' (not BMT) becomes the default validation version.
         # The biolink_version may also be set to the string 'suppress', in which case, most Biolink Model validation is NOT done during the validation of a TRAPI Response."
 
-        "biolink_version": "3.5.0",
+        "biolink_version": "4.2.0",
 
         "sources": {
             "ara_source": "infores:aragorn",
@@ -310,8 +310,8 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
 .. code-block:: json
 
     {
-        "schema_version": "1.4.2",
-        "biolink_version": "3.5.0",
+        "schema_version": "1.5.0",
+        "biolink_version": "4.2.0",
         "message": {
             "query_graph": {
                 "nodes": {
@@ -374,8 +374,8 @@ then, one should typically get a response body like the following JSON validatio
 .. code-block:: json
 
     {
-      "trapi_version": "1.4.2",
-      "biolink_version": "3.5.0",
+      "trapi_version": "1.5.0",
+      "biolink_version": "4.2.0",
       "messages": {
         "critical": {},
         "errors": {
@@ -459,6 +459,8 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 * 3.0.# releases
   - wrapped the all validation with a ValidatorReporter class serving to collect and return validation messages in a disciplined, codified manner (as a [master YAML file with hierarchically-indexed Python string templates](reasoner_validator/codes.yaml)). Generally still reliably validates Biolink Model release <= 2.4.8
 * 3.1.# releases: mainly supports Biolink Model releases >= 3.0.* and will likely generate some spurious validation warnings or errors for Biolink Model release <= 2.4.8 (reflects non-backward compatible changes to the Biolink Model Toolkit)
+* 4.0.# restructured output messages indexing by target (endpoint url) and indexing by test identifier;
+# 4.1.# TRAPI 1.5 and Biolink Model 4.2.0 validation support
 
 The `full change log is here <https://github.com/NCATSTranslator/reasoner-validator/blob/master/CHANGELOG.md>`_.
 
