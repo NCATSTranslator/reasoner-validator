@@ -3599,6 +3599,18 @@ def test_validate_agent_type(value: Optional[str], code: str):
                 )
             },
             "error.knowledge_graph.edge.agent_type.invalid"
+        ),
+(
+            "4.1.6",
+
+            # Query 42: Sample full valid TRAPI Knowledge Graph
+            {
+                # Sample nodes
+                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
+                # Sample edge
+                'edges': SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES
+            },
+            ""
         )
     ]
 )
