@@ -56,13 +56,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.ATTRIBUTE_TYPE_ID_INCLUSIONS"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.ATTRIBUTE_TYPE_ID_INCLUSIONS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.CATEGORY_INCLUSIONS"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.CATEGORY_INCLUSIONS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.PREDICATE_INCLUSIONS"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.PREDICATE_INCLUSIONS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.build_source_trail"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.build_source_trail()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.check_biolink_model_compliance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.check_biolink_model_compliance_of_input_edge()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.count_node"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.count_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_attribute_type_exclusions"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_attribute_type_exclusions()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_biolink_version"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_biolink_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_node_categories"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_node_categories()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_node_identifiers"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_node_identifiers()</span></code></a></li>
@@ -475,34 +475,32 @@
 <tr class="row-odd"><td><p><strong>count_node</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>get_bmt</strong></p></td>
+<tr class="row-even"><td><p><strong>get_attribute_type_exclusions</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>has_dangling_nodes</strong></p></td>
+<tr class="row-odd"><td><p><strong>get_bmt</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>has_valid_node_information</strong></p></td>
+<tr class="row-even"><td><p><strong>has_dangling_nodes</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>merge_identified_messages</strong></p></td>
+<tr class="row-odd"><td><p><strong>has_valid_node_information</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>merge_scoped_messages</strong></p></td>
+<tr class="row-even"><td><p><strong>merge_identified_messages</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>reset_node_info</strong></p></td>
+<tr class="row-odd"><td><p><strong>merge_scoped_messages</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>validate_input_edge_node</strong></p></td>
+<tr class="row-even"><td><p><strong>reset_node_info</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>validate_input_edge_node</strong></p></td>
 <td></td>
 </tr>
 </tbody>
 </table>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.ATTRIBUTE_TYPE_ID_INCLUSIONS">
-<span class="sig-name descname"><span class="pre">ATTRIBUTE_TYPE_ID_INCLUSIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.ATTRIBUTE_TYPE_ID_INCLUSIONS" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.CATEGORY_INCLUSIONS">
 <span class="sig-name descname"><span class="pre">CATEGORY_INCLUSIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['biolink:BiologicalEntity',</span> <span class="pre">'biolink:InformationContentEntity']</span></em><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.CATEGORY_INCLUSIONS" title="Permalink to this definition"></a></dt>
@@ -567,6 +565,11 @@ against the currently active Biolink Model Toolkit model version.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.count_node">
 <span class="sig-name descname"><span class="pre">count_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.count_node" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.get_attribute_type_exclusions">
+<span class="sig-name descname"><span class="pre">get_attribute_type_exclusions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_attribute_type_exclusions" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
