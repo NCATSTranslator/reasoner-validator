@@ -60,8 +60,8 @@ urllib3 = "^1.26.15"
 
 [tool.poetry.group.dev.dependencies]
 setuptools = "^69.5.1"
-pytest = "^7.4.2"
-pytest-cov = "^4.0.0"
+pytest = "^7.4.4"
+pytest-cov = "^4.1.0"
 
 [tool.poetry.group.docs.dependencies]
 numpydoc = "^1.5.0"
