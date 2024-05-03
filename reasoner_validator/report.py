@@ -825,7 +825,7 @@ class ValidationReporter:
                                             # which records distinct additional context
                                             # for a list of messages associated with a given code.
 
-                                            print(f"\t\t\t\t# {identifier}:", file=file)
+                                            print(f"\t\t\t\t# {identifier}", file=file)
                                             first_message: bool = True
                                             messages_per_row: int = 0
                                             num_messages: int = len(messages)
