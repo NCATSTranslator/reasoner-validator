@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.1.3
+
+- Generalize trapi_1.4 testing predicate to trapi_1.4 or later
+- biolink:treats as a mixin is tagged as permitted in TRAPI graphs (further code review for this use case is recommended)
+
 ## 4.1.2
 
 -  Add back ATTRIBUTE_TYPE_ID_INCLUSIONS filtering for "knowledge_level" and "agent_type" such that the presence of these 'attribute_type_id' values are (blissfully) ignored, conditionally for all Biolink Model releases lower than 4.2.0
