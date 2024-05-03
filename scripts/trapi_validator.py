@@ -204,8 +204,10 @@ def retrieve_ars_result(response_id: str, verbose: bool):
             host_url=f"https://{ars_host}/ars/api/messages/",
             response_id=response_id
         )
-        if status_code != 200:
-            continue
+        # take the first live endpoint
+        # in the ordered list of ARS_HOSTS
+        if status_code == 200:
+            break
 
     if status_code != 200:
         print(f"Unsuccessful HTTP status code '{status_code}' reported for ARS PK '{response_id}'?")
