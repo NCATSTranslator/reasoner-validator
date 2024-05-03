@@ -1,7 +1,7 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import Dict
+from typing import Dict, Optional
 from sys import stderr
 
 import logging
@@ -14,7 +14,6 @@ from dictdiffer import diff
 
 from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_2
 from reasoner_validator.validator import TRAPIResponseValidator
-from reasoner_validator.report import TRAPIGraphType
 
 from tests import PATCHED_140_SCHEMA_FILEPATH, SAMPLE_NODES_WITH_ATTRIBUTES, DEFAULT_KL_AND_AT_ATTRIBUTES
 from tests.test_validation_report import check_messages
@@ -426,6 +425,25 @@ def test_conservation_of_response_object():
     assert input_response == reference_response
     validator.check_compliance_of_trapi_response(response=input_response)
     assert not list(diff(input_response, reference_response))
+
+
+@pytest.mark.parametrize(
+    "trapi_version,outcome",
+    [
+        ("1.3.0", False),
+        ("1.4.0", True),
+        ("1.4.2", True),
+        ("1.5.0-beta", True),
+        ("1.5.0", True),
+
+        # since the latest default (as of test creation)
+        # is 1.5 something, then 'None' should also be true
+        (None, True)
+    ]
+)
+def test_is_trapi_1_4_or_later(trapi_version: Optional[str], outcome: bool):
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(trapi_version=trapi_version)
+    assert validator.is_trapi_1_4_or_later() is outcome
 
 
 @pytest.mark.parametrize(

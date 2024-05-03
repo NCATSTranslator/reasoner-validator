@@ -9,7 +9,7 @@ from reasoner_validator.biolink import (
 )
 
 from reasoner_validator.report import TRAPIGraphType
-from reasoner_validator.trapi import LATEST_TRAPI_RELEASE, LATEST_TRAPI_MAJOR_MINOR_RELEASE_SEMVER
+from reasoner_validator.trapi import LATEST_TRAPI_RELEASE, TRAPI_1_4_0_SEMVER
 from reasoner_validator.trapi.mapping import MappingValidator, check_node_edge_mappings
 from reasoner_validator.versioning import SemVer, SemVerError, get_latest_version
 from reasoner_validator.sri.util import get_aliases
@@ -60,19 +60,20 @@ class TRAPIResponseValidator(BiolinkValidator):
             target_provenance=target_provenance,
             strict_validation=strict_validation
         )
-        self._is_trapi_1_4: Optional[bool] = None
+        self._is_trapi_1_4_or_later: Optional[bool] = None
         self.suppress_empty_data_warnings: bool = suppress_empty_data_warnings
 
-    def is_trapi_1_4(self) -> bool:
+    def is_trapi_1_4_or_later(self) -> bool:
         assert self.trapi_version
         try:  # try block ... Sanity check: in case the trapi_version is somehow invalid?
-            target_major_version: SemVer = SemVer.from_string(self.trapi_version, core_fields=['major', 'minor'])
-            self._is_trapi_1_4 = target_major_version >= LATEST_TRAPI_MAJOR_MINOR_RELEASE_SEMVER
+            target_major_version: SemVer = \
+                SemVer.from_string(self.trapi_version, core_fields=['major', 'minor'],  ext_fields=[])
+            self._is_trapi_1_4_or_later = target_major_version >= TRAPI_1_4_0_SEMVER
         except SemVerError as sve:
             logger.error(f"Current TRAPI release '{self.trapi_version}' seems invalid: {str(sve)}. Reset to latest?")
             self.trapi_version = LATEST_TRAPI_RELEASE
-            self._is_trapi_1_4 = True
-        return self._is_trapi_1_4
+            self._is_trapi_1_4_or_later = True
+        return self._is_trapi_1_4_or_later
 
     def sanitize_workflow(self, response: Dict) -> Dict:
         """
@@ -378,7 +379,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                     self.is_valid_trapi_query(instance=result, component="Result")
 
                     # Maybe some additional TRAPI-release specific non-schematic validation here?
-                    if self.is_trapi_1_4():
+                    if self.is_trapi_1_4_or_later():
                         # TODO: implement me!
                         pass
                     else:
@@ -508,7 +509,7 @@ class TRAPIResponseValidator(BiolinkValidator):
 
             # However, TRAPI 1.4.0 Message 'Results' 'edge_bindings' are reported differently
             #          from 1.3.0, rather, embedded in 'Analysis' objects (and 'Auxiliary Graphs')
-            if self.is_trapi_1_4():
+            if self.is_trapi_1_4_or_later():
                 #
                 #     "auxiliary_graphs": {
                 #         "a0": {
