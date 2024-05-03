@@ -1004,20 +1004,47 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
             # Query 26: Query edge predicate is a mixin; default 'strict_validation' == False for query graphs
             {
                 "nodes": {
-                    "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
                     "drug": {
+                        "ids": ["DRUGBANK:DB00331"],
                         "categories": ["biolink:Drug"]
-                    }
+                    },
+                    "disease": {
+                        "categories": ["biolink:Disease"]
+                    },
                 },
                 "edges": {
                     "treats": {
                         "subject": "drug",
-                        "predicates": ["biolink:increases_amount_or_activity_of"],
-                        "object": "IRS1"
+                        "predicates": ["biolink:treats"],
+                        "object": "diseaes"
                     }
                 }
             },
-            # f"{QUERY_GRAPH_PREFIX}: INFO - Predicate element 'biolink:increases_amount_or_activity_of' is a mixin."
+            # f"{QUERY_GRAPH_PREFIX}: INFO - Predicate element 'biolink:treats' is a mixin."
+            "info.query_graph.edge.predicate.mixin"
+        ),
+        (
+            "4.1.6",
+            # Query 26: Query edge predicate is a mixin; default 'strict_validation' == False for query graphs
+            {
+                "nodes": {
+                    "drug": {
+                        "ids": ["DRUGBANK:DB00331"],
+                        "categories": ["biolink:Drug"]
+                    },
+                    "disease": {
+                        "categories": ["biolink:Disease"]
+                    },
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "diseaes"
+                    }
+                }
+            },
+            # f"{QUERY_GRAPH_PREFIX}: INFO - Predicate element 'biolink:treats' is a mixin."
             "info.query_graph.edge.predicate.mixin"
         ),
         (

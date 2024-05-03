@@ -1378,9 +1378,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
             return source_trail  # may be empty if required RetrievalSource 'sources' entries are missing
 
-    # TODO: 11-Sept-2023: Certain specific 'mixin' predicates used in Knowledge Graphs are being validated for now
-    #       as 'warnings', for short term validation purposes (see reasoner-validator issue #97)
-    PREDICATE_INCLUSIONS = ["biolink:interacts_with"]
+    # TODO: 11-Sept-2023: Certain specific 'mixin' predicates used in
+    #       Knowledge or Query Graphs are being validated for now
+    #       as 'warnings', for short term validation purposes
+    #       (see reasoner-validator issue #97)
+    PREDICATE_INCLUSIONS = ["biolink:interacts_with", 'biolink:treats']
 
     def validate_predicate(
             self,
@@ -1399,6 +1401,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
         :return: None (validation communicated via class instance of method)
         """
+        # PREDICATE_INCLUSIONS provides for selective
+        # override of validation of particular predicates
         if predicate not in self.PREDICATE_INCLUSIONS:
 
             graph_type_context: str = graph_type.name.lower()
