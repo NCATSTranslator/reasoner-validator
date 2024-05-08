@@ -624,7 +624,7 @@
 
 **Message:** An attribute is missing its 'value' property in Edge
 
-**Context:** identifier
+**Context:** identifier, attribute_id
 
 **Description:** An attribute of a Knowledge graph edge must have a 'value' key with a non-empty associated value!
 
@@ -632,7 +632,7 @@
 
 **Message:** An attribute has an empty value in Edge
 
-**Context:** identifier
+**Context:** identifier, attribute_id
 
 **Description:** The value of an attribute of a Knowledge graph edge must not be empty!
 
@@ -691,6 +691,54 @@
 **Context:** identifier, qualifier_type_id, qualifier_value, reason
 
 **Description:** Validation of a specified 'qualifier_type_id' and 'qualifier_value' failed for a given exceptional reason!
+
+### error.knowledge_graph.edge.knowledge_level.missing
+
+**Message:** Edge is missing its required 'knowledge_level' property!
+
+**Context:** edge_id
+
+**Description:** The 'knowledge_level' slot is required for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!
+
+### error.knowledge_graph.edge.knowledge_level.duplicated
+
+**Message:** The 'knowledge_level' slot is duplicated for the given edge!
+
+**Context:** identifier, edge_id
+
+**Description:** Each edge should only have one 'knowledge_level' attribute value. Additional ones are ignored
+
+### error.knowledge_graph.edge.knowledge_level.invalid
+
+**Message:** The indicated 'knowledge_level' slot value is invalid for the given edge!
+
+**Context:** identifier, context
+
+**Description:** Acceptable values of the 'knowledge_level' slot are only as enumerated in the specified Biolink Model
+
+### error.knowledge_graph.edge.agent_type.missing
+
+**Message:** Edge is missing its required 'agent_type' property!
+
+**Context:** identifier
+
+**Description:** The 'agent_type' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!
+
+### error.knowledge_graph.edge.agent_type.duplicated
+
+**Message:** The 'agent_type' slot is duplicated for the given edge!
+
+**Context:** identifier, edge_id
+
+**Description:** Each edge should only have one 'agent_type' attribute value. Additional ones are ignored.
+
+### error.knowledge_graph.edge.agent_type.invalid
+
+**Message:** The indicated 'agent_type' slot value is invalid for the given edge!
+
+**Context:** identifier, context
+
+**Description:** Acceptable values of the 'agent_type' slot are only as enumerated in the specified Biolink Model
 
 ### error.knowledge_graph.edge.sources.missing
 
@@ -797,6 +845,14 @@
 **Description:** Value of the 'resource_role' property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty ResourceRole enum value!
 
 ## Warning
+
+### warning.biolink.element.range.unspecified
+
+**Message:** Undefined slot range specification
+
+**Context:** identifier, context, value
+
+**Description:** Biolink Model error: the range slot of the specified element is missing or its value is not a known enum?
 
 ### warning.trapi.response.status.unknown
 
@@ -1065,6 +1121,22 @@
 **Context:** edge_id, identifier, kp_source_type
 
 **Description:** Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP.
+
+### warning.knowledge_graph.edge.knowledge_level.missing
+
+**Message:** Edge is missing its required 'knowledge_level' property!
+
+**Context:** edge_id
+
+**Description:** The 'knowledge_level' slot is currently optional but recommended for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!
+
+### warning.knowledge_graph.edge.agent_type.missing
+
+**Message:** Edge is missing its required 'agent_type' property!
+
+**Context:** identifier
+
+**Description:** The 'agent_type' slot is currently optional but recommended for all edges in knowledge graphs complying with the specified Biolink Model release!
 
 ## Information
 

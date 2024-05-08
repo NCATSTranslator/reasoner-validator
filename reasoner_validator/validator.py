@@ -9,7 +9,7 @@ from reasoner_validator.biolink import (
 )
 
 from reasoner_validator.report import TRAPIGraphType
-from reasoner_validator.trapi import LATEST_TRAPI_RELEASE, LATEST_TRAPI_MAJOR_RELEASE_SEMVER
+from reasoner_validator.trapi import LATEST_TRAPI_RELEASE, LATEST_TRAPI_MAJOR_MINOR_RELEASE_SEMVER
 from reasoner_validator.trapi.mapping import MappingValidator, check_node_edge_mappings
 from reasoner_validator.versioning import SemVer, SemVerError, get_latest_version
 from reasoner_validator.sri.util import get_aliases
@@ -67,7 +67,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         assert self.trapi_version
         try:  # try block ... Sanity check: in case the trapi_version is somehow invalid?
             target_major_version: SemVer = SemVer.from_string(self.trapi_version, core_fields=['major', 'minor'])
-            self._is_trapi_1_4 = target_major_version >= LATEST_TRAPI_MAJOR_RELEASE_SEMVER
+            self._is_trapi_1_4 = target_major_version >= LATEST_TRAPI_MAJOR_MINOR_RELEASE_SEMVER
         except SemVerError as sve:
             logger.error(f"Current TRAPI release '{self.trapi_version}' seems invalid: {str(sve)}. Reset to latest?")
             self.trapi_version = LATEST_TRAPI_RELEASE

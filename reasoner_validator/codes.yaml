@@ -477,11 +477,13 @@ error:
             $message: "An attribute is missing its 'value' property in Edge"
             $context:
               - identifier
+              - attribute_id
             $description: "An attribute of a Knowledge graph edge must have a 'value' key with a non-empty associated value!"
           empty:
             $message: "An attribute has an empty value in Edge"
             $context:
               - identifier
+              - attribute_id
             $description: "The value of an attribute of a Knowledge graph edge must not be empty!"
       provenance:
         infores:
@@ -530,6 +532,42 @@ error:
                 - qualifier_value
                 - reason
               $description: "Validation of a specified 'qualifier_type_id' and 'qualifier_value' failed for a given exceptional reason!"
+      knowledge_level:
+        missing:
+          $message: "Edge is missing its required 'knowledge_level' property!"
+          $context:
+            - edge_id
+          $description: "The 'knowledge_level' slot is required for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!"
+        duplicated:
+          $message: "The 'knowledge_level' slot is duplicated for the given edge!"
+          $context:
+            - identifier
+            - edge_id
+          $description: "Each edge should only have one 'knowledge_level' attribute value. Additional ones are ignored"
+        invalid:
+          $message: "The indicated 'knowledge_level' slot value is invalid for the given edge!"
+          $context:
+            - identifier
+            - context
+          $description: "Acceptable values of the 'knowledge_level' slot are only as enumerated in the specified Biolink Model"
+      agent_type:
+        missing:
+          $message: "Edge is missing its required 'agent_type' property!"
+          $context:
+            - identifier
+          $description: "The 'agent_type' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!"
+        duplicated:
+          $message: "The 'agent_type' slot is duplicated for the given edge!"
+          $context:
+            - identifier
+            - edge_id
+          $description: "Each edge should only have one 'agent_type' attribute value. Additional ones are ignored."
+        invalid:
+          $message: "The indicated 'agent_type' slot value is invalid for the given edge!"
+          $context:
+            - identifier
+            - context
+          $description: "Acceptable values of the 'agent_type' slot are only as enumerated in the specified Biolink Model"
       sources:
         missing:
           $message: "Missing 'sources' key for Edge"
@@ -609,6 +647,16 @@ error:
                 - identifier
               $description: "Value of the 'resource_role' property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty ResourceRole enum value!"
 warning:
+  biolink:
+    element:
+      range:
+        unspecified:
+          $message: "Undefined slot range specification"
+          $context:
+            - identifier
+            - context
+            - value
+          $description: "Biolink Model error: the range slot of the specified element is missing or its value is not a known enum?"
   trapi:
     response:
       status:
@@ -842,6 +890,18 @@ warning:
               - identifier
               - kp_source_type
             $description: "Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP."
+      knowledge_level:
+        missing:
+          $message: "Edge is missing its required 'knowledge_level' property!"
+          $context:
+            - edge_id
+          $description: "The 'knowledge_level' slot is currently optional but recommended for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!"
+      agent_type:
+        missing:
+          $message: "Edge is missing its required 'agent_type' property!"
+          $context:
+            - identifier
+          $description: "The 'agent_type' slot is currently optional but recommended for all edges in knowledge graphs complying with the specified Biolink Model release!"
 info:
   excluded:
     $message: "All test case S-P-O triples from resource test location, or specific user excluded S-P-O triples"

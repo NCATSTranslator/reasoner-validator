@@ -16,7 +16,7 @@ from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_2
 from reasoner_validator.validator import TRAPIResponseValidator
 from reasoner_validator.report import TRAPIGraphType
 
-from tests import PATCHED_140_SCHEMA_FILEPATH, SAMPLE_NODES_WITH_ATTRIBUTES
+from tests import PATCHED_140_SCHEMA_FILEPATH, SAMPLE_NODES_WITH_ATTRIBUTES, DEFAULT_KL_AND_AT_ATTRIBUTES
 from tests.test_validation_report import check_messages
 
 
@@ -64,7 +64,7 @@ _TEST_EDGES_1 = {
                    "value": "infores:molepro",
                    "value_type_id": "biolink:InformationResource"
                }
-            ],
+            ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
         }
     }
 

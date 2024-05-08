@@ -38,10 +38,29 @@ TRAPI_1_4_1_SEMVER = SemVer.from_string("v1.4.1")
 TRAPI_1_4_1: str = str(TRAPI_1_4_1_SEMVER)
 TRAPI_1_4_2_SEMVER = SemVer.from_string("v1.4.2")
 TRAPI_1_4_2: str = str(TRAPI_1_4_2_SEMVER)
-LATEST_TRAPI_RELEASE_SEMVER: SemVer = TRAPI_1_4_2_SEMVER
-LATEST_TRAPI_RELEASE: str = TRAPI_1_4_2
-LATEST_TRAPI_MAJOR_RELEASE_SEMVER: SemVer = SemVer.from_string("v1.4", core_fields=['major', 'minor'])
-LATEST_TRAPI_MAJOR_RELEASE: str = str(LATEST_TRAPI_MAJOR_RELEASE_SEMVER)
+TRAPI_1_5_0_BETA_SEMVER = SemVer.from_string("v1.5.0-beta")
+TRAPI_1_5_0_BETA: str = str(TRAPI_1_5_0_BETA_SEMVER)
+
+LATEST_TRAPI_RELEASE_SEMVER: SemVer = TRAPI_1_5_0_BETA_SEMVER
+LATEST_TRAPI_RELEASE: str = TRAPI_1_5_0_BETA
+
+LATEST_TRAPI_MAJOR_MINOR_RELEASE: str = "1.5"
+LATEST_TRAPI_MAJOR_MINOR_RELEASE_SEMVER: SemVer = \
+    SemVer.from_string(
+        LATEST_TRAPI_MAJOR_MINOR_RELEASE,
+        core_fields=['major', 'minor'],
+        # generally also suppress extension fields
+        # when just going for MAJOR MINOR release SemVer
+        ext_fields=[]
+    )
+LATEST_TRAPI_MAJOR_MINOR_PATCH_RELEASE_SEMVER: SemVer = \
+    SemVer.from_string(
+        LATEST_TRAPI_RELEASE,
+        # generally also suppress extension fields
+        # when just going for MAJOR MINOR PATCH release SemVer
+        ext_fields=[]
+    )
+LATEST_TRAPI_MAJOR_MINOR_PATCH_RELEASE: str = str(LATEST_TRAPI_MAJOR_MINOR_PATCH_RELEASE_SEMVER)
 
 
 class TRAPIAccessError(RuntimeError):
@@ -96,7 +115,9 @@ def load_schema(target: str):
     if mapped_release:
         schema_version = mapped_release
     else:
-        err_msg: str = f"No TRAPI version {target}"
+        err_msg: str = \
+            f"Requested TRAPI version '{target}' is unknown to the system. " + \
+            "Perhaps the project version list needs to be updated and package re-released?"
         logger.error(err_msg)
         raise ValueError(err_msg)
 
@@ -373,7 +394,7 @@ class TRAPISchemaValidator(ValidationReporter):
         return dictionary
 
     def report_header(self, title: Optional[str] = None, compact_format: bool = True) -> str:
-        header: str = ValidationReporter.report_header(self, title, compact_format)
+        header: str = super().report_header(title, compact_format)
         header += f" validating against TRAPI version " \
                   f"'{str(self.get_trapi_version() if self.get_trapi_version() is not None else 'Default')}'"
         return header
