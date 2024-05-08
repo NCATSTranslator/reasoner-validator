@@ -443,6 +443,9 @@ class TRAPIResponseValidator(BiolinkValidator):
                 node_details = nodes[identifier]
                 if "categories" in node_details:
                     category = case[f"{target}_category"]
+                    # TODO: it may be helpful here to also try to match
+                    #       any parent classes of the specified 'category'
+                    #       to the node_details["categories"], using BMT
                     if category in node_details["categories"]:
                         return True
 
@@ -685,13 +688,15 @@ class TRAPIResponseValidator(BiolinkValidator):
         subject_id = case["subject_id"] if "subject_id" in case else case["subject"]
         subject_aliases = get_aliases(subject_id)
         if not self.case_node_found("subject", subject_aliases, case, nodes):
-            # 'subject' node identifier not found?
+            # TODO: perhaps I should explicitly report that
+            #      the 'subject' node identifier was not found?
             return False
 
         object_id = case["object_id"] if "object_id" in case else case["object"]
         object_aliases = get_aliases(object_id)
         if not self.case_node_found("object", object_aliases, case, nodes):
-            # 'object' node identifier not found?
+            # TODO: perhaps I should explicitly report that
+            #      the 'object' node identifier was not found?
             return False
 
         # In the Knowledge Graph:
@@ -746,13 +751,15 @@ class TRAPIResponseValidator(BiolinkValidator):
                 break
 
         if edge_id_match is None:
-            # Test case S--P->O edge not found?
+            # TODO: perhaps I should explicitly report that
+            #      the test case S--P->O edge was not found?
             return False
 
         results: List = message["results"]
         if not self.case_result_found(subject_match, object_match, edge_id_match, results, trapi_version):
-            # Some components of test case S--P->O edge
-            # NOT bound within any Results?
+            # TODO: perhaps I should explicitly report that
+            #       some components of test case S--P->O
+            #       edge were not bound with any Results?
             return False
 
         # By this point, the case data assumed to be
