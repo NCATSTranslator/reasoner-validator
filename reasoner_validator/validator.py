@@ -461,8 +461,6 @@ class TRAPIResponseValidator(BiolinkValidator):
         """
         edge_bindings: Dict = data["edge_bindings"]
         for bound_query_id, edge in edge_bindings.items():
-            # The expected query identifier in this context is
-            # hard coded as 'ab' in the 'one_hop.util.py' model
             if bound_query_id in q_edge_ids:
                 for binding_details in edge:
                     # TRAPI schema validation actually
