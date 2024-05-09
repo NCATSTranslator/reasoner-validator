@@ -14,7 +14,6 @@ from dictdiffer import diff
 
 from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_2
 from reasoner_validator.validator import TRAPIResponseValidator
-from reasoner_validator.report import TRAPIGraphType
 
 from tests import PATCHED_140_SCHEMA_FILEPATH, SAMPLE_NODES_WITH_ATTRIBUTES, DEFAULT_KL_AND_AT_ATTRIBUTES
 from tests.test_validation_report import check_messages
@@ -205,6 +204,35 @@ _TEST_KG_4 = {
     "edges": _TEST_EDGES_4
 }
 
+_TEST_KG_EDGE_SOURCES = [
+    {
+        "resource_id": "infores:chebi",
+        "resource_role": "primary_knowledge_source",
+        "upstream_resource_ids": []
+    },
+    {
+        "resource_id": "infores:biothings-explorer",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:chebi"
+        ]
+    },
+    {
+        "resource_id": "infores:molepro",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:biothings-explorer"
+        ]
+    },
+    {
+        "resource_id": "infores:arax",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:molepro"
+        ]
+    }
+]
+
 # From Implementation Guidelines circa June 2023
 _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
     "message": {
@@ -228,34 +256,7 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
                     "subject": "ncats.drug:9100L32L2N",
                     "predicate": "biolink:ameliorates_condition",
                     "object": "MONDO:0005148",
-                    "sources": [
-                        {
-                            "resource_id": "infores:chebi",
-                            "resource_role": "primary_knowledge_source",
-                            "upstream_resource_ids": []
-                        },
-                        {
-                            "resource_id": "infores:biothings-explorer",
-                            "resource_role": "aggregator_knowledge_source",
-                            "upstream_resource_ids": [
-                                "infores:chebi"
-                            ]
-                        },
-                        {
-                            "resource_id": "infores:molepro",
-                            "resource_role": "aggregator_knowledge_source",
-                            "upstream_resource_ids": [
-                                "infores:biothings-explorer"
-                            ]
-                        },
-                        {
-                            "resource_id": "infores:arax",
-                            "resource_role": "aggregator_knowledge_source",
-                            "upstream_resource_ids": [
-                                "infores:molepro"
-                            ]
-                        }
-                    ]
+                    "sources": _TEST_KG_EDGE_SOURCES
                 }
             }
         },
@@ -328,34 +329,7 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
                     "subject": "MONDO:0005148",
                     "predicate": "biolink:treated_by",
                     "object": "ncats.drug:9100L32L2N",
-                    "sources": [
-                        {
-                            "resource_id": "infores:chebi",
-                            "resource_role": "primary_knowledge_source",
-                            "upstream_resource_ids": []
-                        },
-                        {
-                            "resource_id": "infores:biothings-explorer",
-                            "resource_role": "aggregator_knowledge_source",
-                            "upstream_resource_ids": [
-                                "infores:chebi"
-                            ]
-                        },
-                        {
-                            "resource_id": "infores:molepro",
-                            "resource_role": "aggregator_knowledge_source",
-                            "upstream_resource_ids": [
-                                "infores:biothings-explorer"
-                            ]
-                        },
-                        {
-                            "resource_id": "infores:arax",
-                            "resource_role": "aggregator_knowledge_source",
-                            "upstream_resource_ids": [
-                                "infores:molepro"
-                            ]
-                        }
-                    ]
+                    "sources": _TEST_KG_EDGE_SOURCES
                 }
             }
         },

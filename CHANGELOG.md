@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.1.3
+
+- Added more fine-grained validation reporting inside case_input_found_in_response() TRAPI Response validation method, also injecting externalized "missing edge" validation message into method(); added/refactored validation codes accordingly
+- Full TRAPI 1.5.0 unit tests still skipped (need rework)
+
 ## 4.1.2
 
 -  Add back ATTRIBUTE_TYPE_ID_INCLUSIONS filtering for "knowledge_level" and "agent_type" such that the presence of these 'attribute_type_id' values are (blissfully) ignored, conditionally for all Biolink Model releases lower than 4.2.0

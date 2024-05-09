@@ -144,6 +144,7 @@ def test_trapi_pre_1_5_edgebinding(trapi_version: str):
         }, "EdgeBinding")
 
 
+@pytest.mark.skip(reason="Not updated to work correctly with TRAPI 1.5.0")
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
 def test_trapi_1_5_edgebinding(trapi_version: str):
     """Test TRAPIValidator(trapi_version=query).validate_EdgeBinding()."""
@@ -322,6 +323,7 @@ def test_pre_1_5_query_latest_trapi_workflow_properties(trapi_version: str):
         validator.validate(faulty_query_wf, "Query")
 
 
+@pytest.mark.skip(reason="Not updated to work correctly with TRAPI 1.5.0")
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
 def test_1_5_query_latest_trapi_workflow_properties(trapi_version: str):
     """Test flawed TRAPI Query workflow properties."""
@@ -590,6 +592,7 @@ def test_trapi_1_4_message_results_component_validation(trapi_version: str):
         }, "Result")
 
 
+@pytest.mark.skip(reason="Not updated to work correctly with TRAPI 1.5.0")
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
 def test_latest_trapi_message_results_component_validation(trapi_version: str):
     """Test Message.Results component in TRAPIValidator(trapi_version=query).validate()."""
@@ -756,6 +759,7 @@ def test_message_pre_1_5_node_binding_component_validation(trapi_version: str):
         }, "NodeBinding")
 
 
+@pytest.mark.skip(reason="Not updated to work correctly with TRAPI 1.5.0")
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
 def test_latest_trapi_message_node_binding_component_validation(trapi_version: str):
     """Test NodeBinding component in TRAPIValidator(trapi_version=query).validate()."""

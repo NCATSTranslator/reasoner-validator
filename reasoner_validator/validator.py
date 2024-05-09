@@ -646,11 +646,6 @@ class TRAPIResponseValidator(BiolinkValidator):
             # this, input test data edge is automatically deemed missing
             return False
 
-        # TODO: We need to check **here*** whether or not the
-        #       TRAPI response returned the original test case edge!!?!!
-        #       Not totally sure if we should first search the Results then
-        #       the Knowledge Graph, or go directly to the Knowledge Graph...
-
         # The Message Query Graph could be something like:
         # "query_graph": {
         #     "nodes": {
@@ -688,15 +683,21 @@ class TRAPIResponseValidator(BiolinkValidator):
         subject_id = case["subject_id"] if "subject_id" in case else case["subject"]
         subject_aliases = get_aliases(subject_id)
         if not self.case_node_found("subject", subject_aliases, case, nodes):
-            # TODO: perhaps I should explicitly report that
-            #      the 'subject' node identifier was not found?
+            self.report(
+                code="error.trapi.response.missing_expected.knowledge_graph.node",
+                identifier=subject_id,
+                context="subject"
+            )
             return False
 
         object_id = case["object_id"] if "object_id" in case else case["object"]
         object_aliases = get_aliases(object_id)
         if not self.case_node_found("object", object_aliases, case, nodes):
-            # TODO: perhaps I should explicitly report that
-            #      the 'object' node identifier was not found?
+            self.report(
+                code="error.trapi.response.missing_expected.knowledge_graph.node",
+                identifier=object_id,
+                context="object"
+            )
             return False
 
         # In the Knowledge Graph:
@@ -750,16 +751,25 @@ class TRAPIResponseValidator(BiolinkValidator):
                 edge_id_match = edge_id
                 break
 
+        edge_id: str = \
+            f"{case['idx']}|" +\
+            f"({case['subject_id']}#{case['subject_category']})" + \
+            f"-[{case['predicate_id']}]->" + \
+            f"({case['object_id']}#{case['object_category']})"
+
         if edge_id_match is None:
-            # TODO: perhaps I should explicitly report that
-            #      the test case S--P->O edge was not found?
+            self.report(
+                code="error.trapi.response.missing_expected.knowledge_graph.edge",
+                identifier=edge_id
+            )
             return False
 
         results: List = message["results"]
         if not self.case_result_found(subject_match, object_match, edge_id_match, results, trapi_version):
-            # TODO: perhaps I should explicitly report that
-            #       some components of test case S--P->O
-            #       edge were not bound with any Results?
+            self.report(
+                code="error.trapi.response.missing_expected.result",
+                identifier=edge_id
+            )
             return False
 
         # By this point, the case data assumed to be
