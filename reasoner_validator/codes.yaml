@@ -49,51 +49,54 @@ error:
         empty:
           $message: "TRAPI Response missing its Message!"
           $description: "TRAPI Response should at least have non-empty original TRAPI request Message in its reply."
-      query_graph:
-        missing:
-          $message: "TRAPI Message is missing its Query Graph!"
-          $description: "TRAPI Response should generally have a TRAPI request message Query Graph key value in its reply."
-        empty:
-          $message: "Response returned an empty Message Query Graph!"
-          $description: "TRAPI Response should at least have original non-empty TRAPI request message Query Graph in its reply."
-      knowledge_graph:
-        missing:
-          $message: "TRAPI Message is missing its Knowledge Graph component!"
-          $description: "TRAPI Response should generally have a TRAPI request message Knowledge Graph key value in its reply."
-        empty:
-          $message: "Response returned an empty Message Knowledge Graph, which is an error in this context!"
-          $description: "An empty Knowledge Graph is considered an error in this validation context!"
-      results:
-        missing:
-          $message: "TRAPI Message is missing its Results component!"
-          $description: "TRAPI Response should generally have a TRAPI request message Request key value in its reply."
-        not_array:
-          $message: "Response returned a non-array Message.Results!"
-          $description: "TRAPI Message.Results must be an array data type (even if empty)"
-        missing_bindings:
-          $message: "Result object IDs for output node binding did not return the original identifier nor aliases for input id"
-          $context:
-            - identifier
-            - output_node_binding
-          $description: "TRAPI Message.Results cannot resolve its reported identifier mappings to the original query."
-      missing:
-        message:
-          knowledge_graph:
-            $message: "Knowledge Graph for TRAPI Response Message is missing"
-            $description: "The given TRAPI Response is expected to return a non-empty knowledge graph!"
-          results:
-            $message: "Results for TRAPI Response Message is missing"
-            $description: "The given TRAPI Response is expected to return non-empty results!"
+        query_graph:
+          missing:
+            $message: "TRAPI Message is missing its Query Graph!"
+            $description: "TRAPI Response should generally have a TRAPI request message Query Graph key value in its reply."
+          empty:
+            $message: "Response returned an empty Message Query Graph!"
+            $description: "TRAPI Response should at least have original non-empty TRAPI request message Query Graph in its reply."
+        knowledge_graph:
+          missing:
+            $message: "TRAPI Message is missing its Knowledge Graph component!"
+            $description: "TRAPI Response should generally have a TRAPI request message Knowledge Graph key value in its reply."
+          empty:
+            $message: "Response returned an empty Message Knowledge Graph, which is an error in this context!"
+            $description: "An empty Knowledge Graph is considered an error in this validation context!"
+          node:
+            missing:
+              $message: "Knowledge Graph of TRAPI Response Message Knowledge Graph is missing an expected Node"
+              $context:
+                - identifier
+              $description: "The given TRAPI Response is expected to return specific node(s) related to the original input data used to prepare the TRAPI Request!"
           edge:
-            $message: "Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Edge"
+            missing:
+              $message: "Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Edge"
+              $context:
+                - identifier
+              $description: "The given TRAPI Response is expected to return specific edge(s) related to the original input data used to prepare the TRAPI Request!"
+        result:
+          missing:
+            $message: "TRAPI Response Message is missing expected knowledge graph edge mapping in its Results"
             $context:
               - identifier
-            $description: "The given TRAPI Response is expected to return specific edge(s) relating to the original input data used to prepare the TRAPI Request!"
-        result:
-          $message: "Knowledge Graph of TRAPI Response Message is missing expected Result"
-          $context:
-            - identifier
-          $description: "The given TRAPI Response is expected to return specific result(s) relating to the original input data used to prepare the TRAPI Request!"
+            $description: "The given TRAPI Response is expected to return a specified edge - in its list of Results - relating to the original input data used to prepare the TRAPI Request!"
+        results:
+          missing:
+            $message: "TRAPI Message is missing its Results component!"
+            $description: "In this context, the TRAPI Response should generally have a non-empty TRAPI Response Message Results component."
+          empty:
+            $message: "Response returned an empty Message Results, which is an error in this context!"
+            $description: "An empty block of Results is considered an error in the specific validation context!"
+          not_array:
+            $message: "Response returned a non-array Message.Results!"
+            $description: "TRAPI Message.Results must be an array data type (even if empty)"
+          missing_bindings:
+            $message: "Result object IDs for output node binding did not return the original identifier nor aliases for input id"
+            $context:
+              - identifier
+              - output_node_binding
+            $description: "TRAPI Message.Results cannot resolve its reported identifier mappings to the original query."
   input_edge:
     node:
       category:

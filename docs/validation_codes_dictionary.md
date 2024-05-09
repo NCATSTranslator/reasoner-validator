@@ -48,77 +48,79 @@
 
 **Description:** TRAPI Response should at least have non-empty original TRAPI request Message in its reply.
 
-### error.trapi.response.query_graph.missing
+### error.trapi.response.message.query_graph.missing
 
 **Message:** TRAPI Message is missing its Query Graph!
 
 **Description:** TRAPI Response should generally have a TRAPI request message Query Graph key value in its reply.
 
-### error.trapi.response.query_graph.empty
+### error.trapi.response.message.query_graph.empty
 
 **Message:** Response returned an empty Message Query Graph!
 
 **Description:** TRAPI Response should at least have original non-empty TRAPI request message Query Graph in its reply.
 
-### error.trapi.response.knowledge_graph.missing
+### error.trapi.response.message.knowledge_graph.missing
 
 **Message:** TRAPI Message is missing its Knowledge Graph component!
 
 **Description:** TRAPI Response should generally have a TRAPI request message Knowledge Graph key value in its reply.
 
-### error.trapi.response.knowledge_graph.empty
+### error.trapi.response.message.knowledge_graph.empty
 
 **Message:** Response returned an empty Message Knowledge Graph, which is an error in this context!
 
 **Description:** An empty Knowledge Graph is considered an error in this validation context!
 
-### error.trapi.response.results.missing
+### error.trapi.response.message.knowledge_graph.node.missing
+
+**Message:** Knowledge Graph of TRAPI Response Message Knowledge Graph is missing an expected Node
+
+**Context:** identifier
+
+**Description:** The given TRAPI Response is expected to return specific node(s) related to the original input data used to prepare the TRAPI Request!
+
+### error.trapi.response.message.knowledge_graph.edge.missing
+
+**Message:** Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Edge
+
+**Context:** identifier
+
+**Description:** The given TRAPI Response is expected to return specific edge(s) related to the original input data used to prepare the TRAPI Request!
+
+### error.trapi.response.message.result.missing
+
+**Message:** TRAPI Response Message is missing expected knowledge graph edge mapping in its Results
+
+**Context:** identifier
+
+**Description:** The given TRAPI Response is expected to return a specified edge - in its list of Results - relating to the original input data used to prepare the TRAPI Request!
+
+### error.trapi.response.message.results.missing
 
 **Message:** TRAPI Message is missing its Results component!
 
-**Description:** TRAPI Response should generally have a TRAPI request message Request key value in its reply.
+**Description:** In this context, the TRAPI Response should generally have a non-empty TRAPI Response Message Results component.
 
-### error.trapi.response.results.not_array
+### error.trapi.response.message.results.empty
+
+**Message:** Response returned an empty Message Results, which is an error in this context!
+
+**Description:** An empty block of Results is considered an error in the specific validation context!
+
+### error.trapi.response.message.results.not_array
 
 **Message:** Response returned a non-array Message.Results!
 
 **Description:** TRAPI Message.Results must be an array data type (even if empty)
 
-### error.trapi.response.results.missing_bindings
+### error.trapi.response.message.results.missing_bindings
 
 **Message:** Result object IDs for output node binding did not return the original identifier nor aliases for input id
 
 **Context:** identifier, output_node_binding
 
 **Description:** TRAPI Message.Results cannot resolve its reported identifier mappings to the original query.
-
-### error.trapi.response.missing.message.knowledge_graph
-
-**Message:** Knowledge Graph for TRAPI Response Message is missing
-
-**Description:** The given TRAPI Response is expected to return a non-empty knowledge graph!
-
-### error.trapi.response.missing.message.results
-
-**Message:** Results for TRAPI Response Message is missing
-
-**Description:** The given TRAPI Response is expected to return non-empty results!
-
-### error.trapi.response.missing.message.edge
-
-**Message:** Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Edge
-
-**Context:** identifier
-
-**Description:** The given TRAPI Response is expected to return specific edge(s) relating to the original input data used to prepare the TRAPI Request!
-
-### error.trapi.response.missing.result
-
-**Message:** Knowledge Graph of TRAPI Response Message is missing expected Result
-
-**Context:** identifier
-
-**Description:** The given TRAPI Response is expected to return specific result(s) relating to the original input data used to prepare the TRAPI Request!
 
 ### error.input_edge.node.category.missing
 
