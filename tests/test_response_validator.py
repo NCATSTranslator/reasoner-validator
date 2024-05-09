@@ -1199,3 +1199,142 @@ def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(r
     validator.check_compliance_of_trapi_response(response=response)
     validator.dump(file=stderr)
     print("\n"+"="*80+"\n", file=stderr)
+
+
+@pytest.mark.parametrize(
+    "case,response",
+    [
+        (dict(), {"empty": "nonsense"}),
+        ({"empty": "nonsense"}, dict()),
+    ]
+)
+def test_empty_case_input_found_in_response(case, response):
+    validator = TRAPIResponseValidator()
+    with pytest.raises(AssertionError):
+        validator.case_input_found_in_response(case, response)
+
+
+#
+# case: Dict parameter contains something like:
+SAMPLE_TEST_CASE = {
+    "idx": 0,
+    "subject_id": 'CHEBI:3002',
+    "subject_category": 'biolink:SmallMolecule',
+    "predicate": 'biolink:treats',
+    "object_id": 'MESH:D001249',
+    "object_category": 'biolink:Disease'
+}
+#
+# the contents for which ought to be returned in
+# the TRAPI Knowledge Graph, with a Result mapping?
+#
+SAMPLE_RESPONSE = {
+    "message": {}
+}
+
+
+@pytest.mark.parametrize(
+    "case,response,code",
+    [
+        (   # Query 0 - missing message knowledge_graph
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": {},
+                    # "knowledge_graph": {},
+                    # "results": {},
+                }
+            },
+            "error.trapi.response.missing.message.knowledge_graph"
+        ),
+        (   # Query 1 - missing message results
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": {},
+                    "knowledge_graph": {"nodes": {}, "edges": {}},
+                    # "results": {},
+                }
+            },
+            "error.trapi.response.missing.message.results"
+        ),
+        (   # Query 2 - missing message subject node
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": {},
+                    "knowledge_graph": {
+                        "nodes": {
+                            # "CHEBI:3002": {},
+                            "MESH:D001249": {}
+                        },
+                        "edges": {}
+                    },
+                    "results": {},
+                }
+            },
+            "error.trapi.response.missing.message.knowledge_graph.node"
+        ),
+        (   # Query 3 - missing message object node
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": {},
+                    "knowledge_graph": {
+                        "nodes": {
+                            "CHEBI:3002": {},
+                            # "MESH:D001249": {}
+                        },
+                        "edges": {}
+                    },
+                    "results": {},
+                }
+            },
+            "error.trapi.response.missing.message.knowledge_graph.node"
+        ),
+        (   # Query 4 - missing message edge
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": {},
+                    "knowledge_graph": {
+                        "nodes": {
+                            "CHEBI:3002": {},
+                            "MESH:D001249": {}
+                        },
+                        "edges": {}
+                    },
+                    "results": {},
+                }
+            },
+            "error.trapi.response.missing.message.knowledge_graph.edge"
+        ),
+        (   # Query 5 - missing message results
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": {},
+                    "knowledge_graph": {
+                        "nodes": {
+                            "CHEBI:3002": {},
+                            "MESH:D001249": {}
+                        },
+                        "edges": {
+                            "df87ff82": {
+                                "subject": "CHEBI:3002",
+                                "predicate": "biolink:treated_by",
+                                "object": "MESH:D001249"
+                            }
+                        }
+                    },
+                    "results": {},
+                }
+            },
+            "error.trapi.response.missing.message.result"
+        )
+    ]
+)
+def test_case_input_found_in_response(case, response, code):
+    validator = TRAPIResponseValidator()
+    validator.case_input_found_in_response(case, response)
+    check_messages(validator, code)

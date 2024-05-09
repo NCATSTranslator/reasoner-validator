@@ -92,19 +92,19 @@
 
 **Description:** TRAPI Message.Results cannot resolve its reported identifier mappings to the original query.
 
-### error.trapi.response.missing_expected.message.knowledge_graph
+### error.trapi.response.missing.message.knowledge_graph
 
 **Message:** Knowledge Graph for TRAPI Response Message is missing
 
 **Description:** The given TRAPI Response is expected to return a non-empty knowledge graph!
 
-### error.trapi.response.missing_expected.message.result
+### error.trapi.response.missing.message.results
 
 **Message:** Results for TRAPI Response Message is missing
 
 **Description:** The given TRAPI Response is expected to return non-empty results!
 
-### error.trapi.response.missing_expected.message.edge
+### error.trapi.response.missing.message.edge
 
 **Message:** Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Edge
 
@@ -112,7 +112,7 @@
 
 **Description:** The given TRAPI Response is expected to return specific edge(s) relating to the original input data used to prepare the TRAPI Request!
 
-### error.trapi.response.missing_expected.result
+### error.trapi.response.missing.result
 
 **Message:** Knowledge Graph of TRAPI Response Message is missing expected Result
 

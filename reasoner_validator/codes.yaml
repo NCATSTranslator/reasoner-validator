@@ -76,12 +76,12 @@ error:
             - identifier
             - output_node_binding
           $description: "TRAPI Message.Results cannot resolve its reported identifier mappings to the original query."
-      missing_expected:
+      missing:
         message:
           knowledge_graph:
             $message: "Knowledge Graph for TRAPI Response Message is missing"
             $description: "The given TRAPI Response is expected to return a non-empty knowledge graph!"
-          result:
+          results:
             $message: "Results for TRAPI Response Message is missing"
             $description: "The given TRAPI Response is expected to return non-empty results!"
           edge:

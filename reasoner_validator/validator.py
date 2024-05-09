@@ -481,8 +481,7 @@ class TRAPIResponseValidator(BiolinkValidator):
             subject_id: str,
             object_id: str,
             edge_id: str,
-            results: List,
-            trapi_version: str
+            results: List
     ) -> bool:
         """
         Validate that test case S--P->O edge is found bound to the Results?
@@ -490,7 +489,6 @@ class TRAPIResponseValidator(BiolinkValidator):
         :param object_id:  str, subject node (CURIE) identifier
         :param edge_id:  str, subject node (CURIE) identifier
         :param results: List of (TRAPI-version specific) Result objects
-        :param trapi_version: str, target TRAPI version of the Response being validated
         :return: bool, True if case S-P-O edge was found in the results
         """
         result_found: bool = False
@@ -606,8 +604,7 @@ class TRAPIResponseValidator(BiolinkValidator):
     def case_input_found_in_response(
             self,
             case: Dict,
-            response: Dict,
-            trapi_version: str
+            response: Dict
     ) -> bool:
         """
         Predicate to validate if test data test case specified edge is returned
@@ -616,14 +613,12 @@ class TRAPIResponseValidator(BiolinkValidator):
 
         :param case: Dict, input data test case
         :param response: Dict, TRAPI Response whose message ought to contain the test case edge
-        :param trapi_version: str, TRAPI version of response being tested
         :return: True if test case edge found; False otherwise
         """
         # sanity checks
         assert case, "case_input_found_in_response(): Empty or missing test case data!"
         assert response, "case_input_found_in_response(): Empty or missing TRAPI Response!"
         assert "message" in response, "case_input_found_in_response(): TRAPI Response missing its Message component!"
-        assert trapi_version
 
         #
         # case: Dict parameter contains something like:
@@ -636,16 +631,29 @@ class TRAPIResponseValidator(BiolinkValidator):
         #     object_id: 'MESH:D001249', # may have the deprecated key 'object' here
         #
         # the contents for which ought to be returned in
-        # the TRAPI Knowledge Graph, as a Result mapping?
+        # the TRAPI Knowledge Graph, with a Result mapping?
         #
-
         message: Dict = response["message"]
-        if not (
-            "knowledge_graph" in message and message["knowledge_graph"] and
-            "results" in message and message["results"]
-        ):
+
+        # Another sanity check - unlikely to be a problem since
+        # TRAPI schema validation should have picked it up since
+        # the TRAPI Message is "nullable: false" in the schema
+        assert message, "case_input_found_in_response(): Empty or missing TRAPI message component!"
+
+        if "knowledge_graph" not in message or not message["knowledge_graph"]:
             # empty knowledge graph is syntactically ok, but in
             # this, input test data edge is automatically deemed missing
+            self.report(
+                code="error.trapi.response.missing.message.knowledge_graph"
+            )
+            return False
+
+        if "results" not in message or not message["results"]:
+            # empty knowledge graph is syntactically ok, but in
+            # this, input test data edge is automatically deemed missing
+            self.report(
+                code="error.trapi.response.missing.message.results"
+            )
             return False
 
         # The Message Query Graph could be something like:
@@ -686,7 +694,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         subject_aliases = get_aliases(subject_id)
         if not self.case_node_found("subject", subject_aliases, case, nodes):
             self.report(
-                code="error.trapi.response.missing_expected.knowledge_graph.node",
+                code="error.trapi.response.missing.knowledge_graph.node",
                 identifier=subject_id,
                 context="subject"
             )
@@ -696,7 +704,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         object_aliases = get_aliases(object_id)
         if not self.case_node_found("object", object_aliases, case, nodes):
             self.report(
-                code="error.trapi.response.missing_expected.knowledge_graph.node",
+                code="error.trapi.response.missing.knowledge_graph.node",
                 identifier=object_id,
                 context="object"
             )
@@ -761,15 +769,15 @@ class TRAPIResponseValidator(BiolinkValidator):
 
         if edge_id_match is None:
             self.report(
-                code="error.trapi.response.missing_expected.knowledge_graph.edge",
+                code="error.trapi.response.missing.knowledge_graph.edge",
                 identifier=edge_id
             )
             return False
 
         results: List = message["results"]
-        if not self.case_result_found(subject_match, object_match, edge_id_match, results, trapi_version):
+        if not self.case_result_found(subject_match, object_match, edge_id_match, results):
             self.report(
-                code="error.trapi.response.missing_expected.result",
+                code="error.trapi.response.missing.message.result",
                 identifier=edge_id
             )
             return False
