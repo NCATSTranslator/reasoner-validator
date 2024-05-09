@@ -60,11 +60,6 @@ error:
         missing:
           $message: "TRAPI Message is missing its Knowledge Graph component!"
           $description: "TRAPI Response should generally have a TRAPI request message Knowledge Graph key value in its reply."
-        missing_expected_edge:
-          $message: "Knowledge Graph of TRAPI Response Message is missing expected Edge"
-          $context:
-            - identifier
-          $description: "The given TRAPI Response is expected to return specific edge(s) relating to the original (test edge?) data used to prepare the TRAPI Request!"
         empty:
           $message: "Response returned an empty Message Knowledge Graph, which is an error in this context!"
           $description: "An empty Knowledge Graph is considered an error in this validation context!"
@@ -81,6 +76,24 @@ error:
             - identifier
             - output_node_binding
           $description: "TRAPI Message.Results cannot resolve its reported identifier mappings to the original query."
+      missing_expected:
+        knowledge_graph:
+          node:
+            $message: "Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Node"
+            $context:
+              - identifier
+              - context   # 'subject' or 'object'
+            $description: "The given TRAPI Response is expected to return specific nodes(s) relating to the original input data used to prepare the TRAPI Request!"
+          edge:
+            $message: "Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Edge"
+            $context:
+              - identifier
+            $description: "The given TRAPI Response is expected to return specific edge(s) relating to the original input data used to prepare the TRAPI Request!"
+        result:
+          $message: "Knowledge Graph of TRAPI Response Message is missing expected Result"
+          $context:
+            - identifier
+          $description: "The given TRAPI Response is expected to return specific result(s) relating to the original input data used to prepare the TRAPI Request!"
   input_edge:
     node:
       category:
