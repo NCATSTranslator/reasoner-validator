@@ -1,9 +1,6 @@
-from typing import Optional, List, Dict
-
-from bmt import Toolkit
+from typing import Optional, Tuple, List, Dict
 
 from reasoner_validator.biolink import (
-    BMTWrapper,
     BiolinkValidator,
     get_biolink_model_toolkit
 )
@@ -262,13 +259,13 @@ class TRAPIResponseValidator(BiolinkValidator):
         # Query Graph must not be missing...
         if 'query_graph' not in message:
             if not self.suppress_empty_data_warnings:
-                self.report(code="error.trapi.response.query_graph.missing")
+                self.report(code="error.trapi.response.message.query_graph.missing")
         else:
             # ... nor empty
             query_graph = message['query_graph']
             if not (query_graph and len(query_graph) > 0):
                 if not self.suppress_empty_data_warnings:
-                    self.report(code="error.trapi.response.query_graph.empty")
+                    self.report(code="error.trapi.response.message.query_graph.empty")
             else:
                 # Validate the TRAPI compliance of the Query Graph
                 self.is_valid_trapi_query(instance=query_graph, component="QueryGraph")
@@ -302,7 +299,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         # The Knowledge Graph should not be missing
         if 'knowledge_graph' not in message:
             if not self.suppress_empty_data_warnings:
-                self.report(code="error.trapi.response.knowledge_graph.missing")
+                self.report(code="error.trapi.response.message.knowledge_graph.missing")
         else:
             knowledge_graph = message['knowledge_graph']
             # The Knowledge Graph should also not generally be empty? Issue a warning
@@ -357,7 +354,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         # The Message.Results key should not be missing?
         if 'results' not in message:
             if not self.suppress_empty_data_warnings:
-                self.report(code="error.trapi.response.results.missing")
+                self.report(code="error.trapi.response.message.results.missing")
         else:
             results = message['results']
 
@@ -369,7 +366,7 @@ class TRAPIResponseValidator(BiolinkValidator):
 
             elif not isinstance(results, List):
                 # The Message.results should be an array of Result objects
-                self.report(code="error.trapi.response.results.not_array")
+                self.report(code="error.trapi.response.message.results.not_array")
 
             else:
                 # Validate a subsample of a non-empty Message.results component.
@@ -417,8 +414,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
         return False if self.has_errors() else True
 
-    @staticmethod
-    def case_node_found(target: str, identifiers: List[str], case: Dict, nodes: Dict) -> bool:
+    def case_node_found(self, target: str, identifiers: List[str], case: Dict, nodes: Dict) -> bool:
         """
         Check for presence of the target identifier,
         with expected categories, in the "nodes" catalog.
@@ -445,10 +441,8 @@ class TRAPIResponseValidator(BiolinkValidator):
                 node_details = nodes[identifier]
                 if "categories" in node_details:
                     category = case[f"{target}_category"]
-                    # TODO: it may be helpful here to also try to match
-                    #       any parent classes of the specified 'category'
-                    #       to the node_details["categories"], using BMT
-                    if category in node_details["categories"]:
+                    categories: List[str] = self.bmt.get_ancestors(category, formatted=True, mixin=False)
+                    if any([category in node_details["categories"] for category in categories]):
                         return True
 
         # Target node identifier or categories is missing,
@@ -456,9 +450,11 @@ class TRAPIResponseValidator(BiolinkValidator):
         return False
 
     @staticmethod
-    def case_edge_bindings(target_edge_id: str, data: Dict) -> bool:
+    def case_edge_bindings(q_edge_ids: Tuple[str], target_edge_id: str, data: Dict) -> bool:
         """
         Check if target query edge id and knowledge graph edge id are in specified edge_bindings.
+        :rtype: object
+        :param q_edge_ids: Tuple[str], expected query edge identifiers in a matching result
         :param target_edge_id:  str, expected knowledge edge identifier in a matching result
         :param data: TRAPI version-specific Response context from which the 'edge_bindings' may be retrieved
         :return: True, if found
@@ -467,7 +463,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         for bound_query_id, edge in edge_bindings.items():
             # The expected query identifier in this context is
             # hard coded as 'ab' in the 'one_hop.util.py' model
-            if bound_query_id == "ab":
+            if bound_query_id in q_edge_ids:
                 for binding_details in edge:
                     # TRAPI schema validation actually
                     # catches missing id's, but sanity check...
@@ -478,6 +474,7 @@ class TRAPIResponseValidator(BiolinkValidator):
 
     def case_result_found(
             self,
+            query_graph: Dict,
             subject_id: str,
             object_id: str,
             edge_id: str,
@@ -485,12 +482,17 @@ class TRAPIResponseValidator(BiolinkValidator):
     ) -> bool:
         """
         Validate that test case S--P->O edge is found bound to the Results?
+        :param query_graph: Dict, query graph to which the results pertain
         :param subject_id: str, subject node (CURIE) identifier
         :param object_id:  str, subject node (CURIE) identifier
         :param edge_id:  str, subject node (CURIE) identifier
         :param results: List of (TRAPI-version specific) Result objects
         :return: bool, True if case S-P-O edge was found in the results
         """
+        assert query_graph, "case_result_found() encountered an empty query graph"
+        q_edges: Dict = query_graph["edges"]
+        q_edge_ids = tuple(q_edges.keys())
+
         result_found: bool = False
         result: Dict
 
@@ -532,6 +534,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                 #         }
                 #     },
                 #     "results": [
+                #         # Single result in list:
                 #         {
                 #             "node_bindings": {
                 #                 "n0": [
@@ -568,7 +571,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                 # the "analysis" key is at least present plus the objects themselves are 'well-formed'
                 analyses: List = result["analyses"]
                 for analysis in analyses:
-                    edge_id_found = self.case_edge_bindings(edge_id, analysis)
+                    edge_id_found: bool = self.case_edge_bindings(q_edge_ids, edge_id, analysis)
                     if edge_id_found:
                         break
 
@@ -579,6 +582,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                 # Response Knowledge Graph) could be something like this:
                 #
                 #     "results": [
+                #         # Single result in list:
                 #         {
                 #             "node_bindings": {
                 #                # node "id"'s in knowledge graph, in edge "id"
@@ -588,12 +592,12 @@ class TRAPIResponseValidator(BiolinkValidator):
                 #             "edge_bindings": {
                 #                 # the edge binding key should be the query edge id
                 #                 # bounded edge "id" is from knowledge graph
-                #                 "treats": [{"id": "df87ff82"}]
+                #                 "treated_by": [{"id": "df87ff82"}]
                 #             }
                 #         }
                 #     ]
                 #
-                edge_id_found = self.case_edge_bindings(edge_id, result)
+                edge_id_found: bool = self.case_edge_bindings(q_edge_ids, edge_id, result)
 
             if subject_id_found and object_id_found and edge_id_found:
                 result_found = True
@@ -640,20 +644,47 @@ class TRAPIResponseValidator(BiolinkValidator):
         # the TRAPI Message is "nullable: false" in the schema
         assert message, "case_input_found_in_response(): Empty or missing TRAPI message component!"
 
-        if "knowledge_graph" not in message or not message["knowledge_graph"]:
-            # empty knowledge graph is syntactically ok, but in
-            # this, input test data edge is automatically deemed missing
+        message_found: bool = False
+        if "query_graph" not in message:
+            # missing query graph allowed by the TRAPI schema but
+            # the input test data edge is automatically deemed missing
             self.report(
-                code="error.trapi.response.missing.message.knowledge_graph"
+                code="error.trapi.response.message.query_graph.missing"
             )
-            return False
+        elif not message["query_graph"]:
+            # empty query graph is also allowed by the TRAPI schema
+            # but the input test data edge is automatically deemed missing
+            self.report(
+                code="error.trapi.response.message.query_graph.empty"
+            )
+        elif "knowledge_graph" not in message:
+            # missing knowledge graph allowed by the TRAPI schema but
+            # the input test data edge is automatically deemed missing
+            self.report(
+                code="error.trapi.response.message.knowledge_graph.missing"
+            )
+        elif not message["knowledge_graph"]:
+            # empty knowledge graph is also allowed by the TRAPI schema
+            # but the input test data edge is automatically deemed missing
+            self.report(
+                code="error.trapi.response.message.knowledge_graph.empty"
+            )
+        elif "results" not in message:
+            # missing results are allowed by the TRAPI schema but
+            # the input test data edge is automatically deemed missing
+            self.report(
+                code="error.trapi.response.message.results.missing"
+            )
+        elif not message["results"]:
+            # missing results are allowed by the TRAPI schema but
+            # the input test data edge are automatically deemed missing
+            self.report(
+                code="error.trapi.response.message.results.empty"
+            )
+        else:
+            message_found = True
 
-        if "results" not in message or not message["results"]:
-            # empty knowledge graph is syntactically ok, but in
-            # this, input test data edge is automatically deemed missing
-            self.report(
-                code="error.trapi.response.missing.message.results"
-            )
+        if not message_found:
             return False
 
         # The Message Query Graph could be something like:
@@ -663,13 +694,16 @@ class TRAPIResponseValidator(BiolinkValidator):
         #         "drug": {"categories": ["biolink:Drug"]}
         #     },
         #     "edges": {
-        #         "treats": {
-        #             "subject": "drug",
-        #             "predicates": ["biolink:treats"],
-        #             "object": "type-2 diabetes"
+        #         "treated_by": {
+        #             "subject": "type-2 diabetes",
+        #             "predicates": ["biolink:treated_by"],
+        #             "object": "drug"
         #         }
         #     }
         # }
+
+        query_graph: Dict = message["query_graph"]
+
         #
         # with a Response Message Knowledge Graph
         # dictionary with 'nodes' and 'edges':
@@ -694,7 +728,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         subject_aliases = get_aliases(subject_id)
         if not self.case_node_found("subject", subject_aliases, case, nodes):
             self.report(
-                code="error.trapi.response.missing.knowledge_graph.node",
+                code="error.trapi.response.message.knowledge_graph.node.missing",
                 identifier=subject_id,
                 context="subject"
             )
@@ -704,7 +738,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         object_aliases = get_aliases(object_id)
         if not self.case_node_found("object", object_aliases, case, nodes):
             self.report(
-                code="error.trapi.response.missing.knowledge_graph.node",
+                code="error.trapi.response.message.knowledge_graph.node.missing",
                 identifier=object_id,
                 context="object"
             )
@@ -724,18 +758,14 @@ class TRAPIResponseValidator(BiolinkValidator):
         # the case 'subject_id', 'predicate' and 'object_id'
         edges: Dict = knowledge_graph["edges"]
 
-        bmtw = BMTWrapper(biolink_version=self.biolink_version)
-
         predicate = case["predicate"] if "predicate" in case else case["predicate_id"]
-
-        bmt: Optional[Toolkit] = bmtw.get_bmt()
         predicate_descendants: List[str]
         inverse_predicate_descendants: List[str] = list()  # may sometimes remain empty...
-        if bmt is not None:
-            predicate_descendants = bmt.get_descendants(predicate, formatted=True)
-            inverse_predicate = bmtw.get_inverse_predicate(predicate)
+        if self.validate_biolink():
+            predicate_descendants = self.bmt.get_descendants(predicate, formatted=True)
+            inverse_predicate = self.get_inverse_predicate(predicate)
             if inverse_predicate:
-                inverse_predicate_descendants = bmt.get_descendants(inverse_predicate, formatted=True)
+                inverse_predicate_descendants = self.bmt.get_descendants(inverse_predicate, formatted=True)
         else:
             # simpler case in which we are ignoring deep Biolink Model validation
             predicate_descendants = [predicate]
@@ -764,20 +794,20 @@ class TRAPIResponseValidator(BiolinkValidator):
         edge_id: str = \
             f"{case['idx']}|" +\
             f"({case['subject_id']}#{case['subject_category']})" + \
-            f"-[{case['predicate_id']}]->" + \
+            f"-[{predicate}]->" + \
             f"({case['object_id']}#{case['object_category']})"
 
         if edge_id_match is None:
             self.report(
-                code="error.trapi.response.missing.knowledge_graph.edge",
+                code="error.trapi.response.message.knowledge_graph.edge.missing",
                 identifier=edge_id
             )
             return False
 
         results: List = message["results"]
-        if not self.case_result_found(subject_match, object_match, edge_id_match, results):
+        if not self.case_result_found(query_graph, subject_match, object_match, edge_id_match, results):
             self.report(
-                code="error.trapi.response.missing.message.result",
+                code="error.trapi.response.message.result.missing",
                 identifier=edge_id
             )
             return False
