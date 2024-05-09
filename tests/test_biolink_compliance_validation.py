@@ -236,11 +236,11 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             {
                 'subject_category': 'biolink:Drug',
                 'object_category': 'biolink:BiologicalProcess',
-                'predicate': 'biolink:decreases_amount_or_activity_of',
+                'predicate': 'biolink:treats',
                 'subject_id': 'NDC:50090‑0766',  # Metformin
                 'object_id': 'GO:0006094'  # Gluconeogenesis
             },
-            # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:decreases_amount_or_activity_of' is a mixin."
+            # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:treats' is a mixin."
             "info.input_edge.predicate.mixin"
         ),
         (   # Query 11 - Unknown predicate element
@@ -834,7 +834,27 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 18: 'Subject' id used in edge is mandatory
+            # Query 18: ... but can be now be a mixin for Biolink Model release >= 4.2.0
+            {
+                "nodes": {
+                    "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:treats"],
+                        "object": "type-2 diabetes"
+                    }
+                }
+            },
+            "info.query_graph.edge.predicate.mixin"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 19: 'Subject' id used in edge is mandatory
             {
                 "nodes": {
                     "drug": {
@@ -855,7 +875,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 19: 'Subject' id used in edge is missing from the nodes catalog?
+            # Query 20: 'Subject' id used in edge is missing from the nodes catalog?
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]}
@@ -873,7 +893,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 20: 'Object' id used in edge is mandatory
+            # Query 21: 'Object' id used in edge is mandatory
             {
                 "nodes": {
                     "drug": {
@@ -894,7 +914,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 21: 'Object' id used in edge is missing from the nodes catalog?
+            # Query 22: 'Object' id used in edge is missing from the nodes catalog?
             {
                 "nodes": {
                     "drug": {
@@ -914,7 +934,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 22: Node 'is_set' value is not a boolean
+            # Query 23: Node 'is_set' value is not a boolean
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -936,7 +956,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 23: Unmapped node ids against any of the specified Biolink Model categories
+            # Query 24: Unmapped node ids against any of the specified Biolink Model categories
             {
                 "nodes": {
                     "type-2 diabetes": {
@@ -961,7 +981,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 24: Abstract category in query graph? Simply ignored now during validation...
+            # Query 25: Abstract category in query graph? Simply ignored now during validation...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -981,7 +1001,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 25: Mixin category in query graph? Simply ignored now during validation...
+            # Query 26: Mixin category in query graph? Simply ignored now during validation...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -1001,7 +1021,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 26: Query edge predicate is a mixin; default 'strict_validation' == False for query graphs
+            # Query 27: Query edge predicate is a mixin; default 'strict_validation' == False for query graphs
             {
                 "nodes": {
                     "drug": {
@@ -1025,7 +1045,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             "4.1.6",
-            # Query 27: Query edge 'treats' predicate is a special case of mixin;
+            # Query 28: Query edge 'treats' predicate is a special case of mixin;
             #           default 'strict_validation' == False for query graphs
             {
                 "nodes": {
@@ -1049,7 +1069,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 28: ... but if present, predicates must be valid
+            # Query 29: ... but if present, predicates must be valid
             #           for the specified Biolink Model version, but...
             {
                 "nodes": {
@@ -1072,7 +1092,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 29: Query edge predicate is a mixin...but...
+            # Query 30: Query edge predicate is a mixin...but...
             {
                 "nodes": {
                     "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
@@ -3069,9 +3089,10 @@ def test_validate_agent_type(value: Optional[str], code: str):
             "error.knowledge_graph.edge.predicate.mixin"
         ),
         (
-            LATEST_BIOLINK_MODEL_VERSION,
+            "4.1.6",
             # Query 20: predicate is a mixin - not allowed in Knowledge Graphs, but "biolink:interacts_with"
             #           is tagged as an exception (see https://github.com/NCATSTranslator/reasoner-validator/issues/97)
+            #           for Biolink Model releases < 4.2.0
             {
                 "nodes": {
                     "HGNC:3059": {
@@ -3114,7 +3135,50 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 21: predicate is abstract - not allowed in Knowledge Graphs
+            # Query 21: predicate is a mixin - not allowed in Knowledge Graphs,
+            #           but only in QueryGraphs from Biolink Model 4.2.0 onwards
+            {
+                "nodes": {
+                    "HGNC:3059": {
+                        "name": "Heparin binding EGF like growth factor",
+                        "categories": [
+                           "biolink:Gene"
+                        ],
+                        "description": "heparin binding EGF like growth factor"
+                    },
+                    "HGNC:391": {
+                        "name": "AKT serine/threonine kinase 1",
+                        "categories": [
+                            "biolink:Gene"
+                        ],
+                        "description": "AKT serine/threonine kinase 1"
+                    }
+                },
+                "edges": {
+                    "edge_1": {
+                        "subject": "HGNC:3059",
+                        "predicate": "biolink:interacts_with",
+                        "object": "HGNC:391",
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:stoichiometry",
+                                "value": 2
+                            }
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
+                    }
+                }
+            },
+            "error.knowledge_graph.edge.predicate.mixin"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 22: predicate is abstract - not allowed in Knowledge Graphs
             {
                 "nodes": {
                     "PMID:1234": {
@@ -3156,7 +3220,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 22: predicate is non-canonical
+            # Query 23: predicate is non-canonical
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3183,7 +3247,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 23: 'object' id is missing from the nodes catalog
+            # Query 24: 'object' id is missing from the nodes catalog
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3210,7 +3274,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 24: attribute 'attribute_type_id' is missing
+            # Query 25: attribute 'attribute_type_id' is missing
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3236,7 +3300,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 25: attribute 'value' is missing?
+            # Query 26: attribute 'value' is missing?
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3263,7 +3327,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 26: 'attribute_type_id' is not a CURIE
+            # Query 27: 'attribute_type_id' is not a CURIE
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3290,7 +3354,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 27: 'attribute_type_id' is a Biolink (node) category - not sure yet
+            # Query 28: 'attribute_type_id' is a Biolink (node) category - not sure yet
             #           whether this reflects "best practices" so issue a warning for now
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3318,7 +3382,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 28: 'attribute_type_id' is a Biolink (edge) predicate - not sure yet
+            # Query 29: 'attribute_type_id' is a Biolink (edge) predicate - not sure yet
             #           whether this reflects "best practices" so issue a warning for now
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3346,7 +3410,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 29: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
+            # Query 30: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3373,7 +3437,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 30: 'attribute_type_id' has a 'biolink' CURIE prefix and
+            # Query 31: 'attribute_type_id' has a 'biolink' CURIE prefix and
             #           is an association_slot, so it should pass
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3405,7 +3469,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 31: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
+            # Query 32: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3430,7 +3494,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
             },
             "warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix"
         ),
-        (   # Query 32:  # An earlier Biolink Model won't recognize a category not found in its specified release
+        (   # Query 33:  # An earlier Biolink Model won't recognize a category not found in its specified release
             "1.8.2",
             {
                 # Sample nodes
@@ -3459,7 +3523,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
             },
             "error.knowledge_graph.node.category.unknown"
         ),
-        (   # Query 33:  # 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
+        (   # Query 34:  # 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3489,7 +3553,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 34: 'attribute_type_id' is not a 'biolink:association_slot'
+            # Query 35: 'attribute_type_id' is not a 'biolink:association_slot'
             #           (biolink:synonym is a node property) but...
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3520,7 +3584,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 35: Knowledge Graph dangling nodes error
+            # Query 36: Knowledge Graph dangling nodes error
             {
                 # Sample nodes with extra  unused node
                 'nodes': SAMPLE_NODES_WITH_UNUSED_NODE,
@@ -3532,7 +3596,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 36: Knowledge Graph edge duplicated Knowledge Level
+            # Query 37: Knowledge Graph edge duplicated Knowledge Level
             {
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 'edges': sample_edge_with_attributes(
@@ -3548,7 +3612,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 37: Knowledge Graph edge missing Knowledge Level
+            # Query 38: Knowledge Graph edge missing Knowledge Level
             {
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 'edges': sample_edge_with_attributes(
@@ -3563,7 +3627,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 38: Knowledge Graph edge invalid Knowledge Level
+            # Query 39: Knowledge Graph edge invalid Knowledge Level
             {
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 'edges': sample_edge_with_attributes(
@@ -3581,7 +3645,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 39: Knowledge Graph edge duplicated Agent Type
+            # Query 40: Knowledge Graph edge duplicated Agent Type
             {
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 'edges': sample_edge_with_attributes(
@@ -3597,7 +3661,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 40: Knowledge Graph edge missing Agent Type
+            # Query 41: Knowledge Graph edge missing Agent Type
             {
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 'edges': sample_edge_with_attributes(
@@ -3612,7 +3676,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 41: Knowledge Graph edge invalid Agent Type
+            # Query 42: Knowledge Graph edge invalid Agent Type
             {
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 'edges': sample_edge_with_attributes(
@@ -3627,10 +3691,10 @@ def test_validate_agent_type(value: Optional[str], code: str):
             },
             "error.knowledge_graph.edge.agent_type.invalid"
         ),
-(
+        (
             "4.1.6",
 
-            # Query 42: Sample full valid TRAPI Knowledge Graph
+            # Query 43: Sample full valid TRAPI Knowledge Graph
             {
                 # Sample nodes
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,

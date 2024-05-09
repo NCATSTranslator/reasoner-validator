@@ -497,6 +497,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         elif self.bmt.is_mixin(identifier):
             # A mixin cannot be instantiated ...
+            # but can be used in QueryGraphs
+            # or when explicitly permitted
             if self.is_strict_validation(graph_type):
                 self.report(
                     code=f"error.{context}.mixin",
@@ -1403,14 +1405,17 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         # PREDICATE_INCLUSIONS provides for selective
         # override of validation of particular predicates
-        if predicate not in self.PREDICATE_INCLUSIONS:
+        if self.minimum_required_biolink_version("4.2.0") or \
+                predicate not in self.PREDICATE_INCLUSIONS:
 
             graph_type_context: str = graph_type.name.lower()
             if graph_type_context != "input_edge":
                 graph_type_context += ".edge"
             context: str = f"{graph_type_context}.predicate"
 
-            # Validate the putative predicate as *not* being abstract, deprecated or a mixin
+            # Validate the putative predicate as
+            # *not* being abstract, deprecated or
+            # a mixin (for Biolink Model release >= 4.2.0?)
             biolink_class = self.validate_element_status(
                 graph_type=graph_type,
                 context=context,

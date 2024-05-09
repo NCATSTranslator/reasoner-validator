@@ -75,7 +75,8 @@ class TRAPIResponseValidator(BiolinkValidator):
             self._is_trapi_1_4_or_later = True
         return self._is_trapi_1_4_or_later
 
-    def sanitize_workflow(self, response: Dict) -> Dict:
+    @staticmethod
+    def sanitize_workflow(response: Dict) -> Dict:
         """
         Workflows in TRAPI Responses cannot be validated further due to missing tags and None values.
         This method is a temporary workaround to sanitize the query for additional validation.
