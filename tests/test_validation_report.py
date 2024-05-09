@@ -653,7 +653,7 @@ def test_messages():
 
     # No prefix...
     reporter3 = ValidationReporter()
-    reporter3.report("error.trapi.response.query_graph.missing")
+    reporter3.report("error.trapi.response.message.query_graph.missing")
     reporter1.merge(reporter3)
 
     # testing addition a few raw batch messages

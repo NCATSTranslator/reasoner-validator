@@ -73,16 +73,16 @@ _TEST_KG_1 = {
 }
 
 _TEST_RESULTS_1 = [
-        {
-            "node_bindings": {
-                "type-2 diabetes": [{"id": "MONDO:0005148"}],
-                "drug": [{"id": "ncats.drug:9100L32L2N"}]
-            },
-            "edge_bindings": {
-                "treats": [{"id": "df87ff82"}]
-            }
+    {
+        "node_bindings": {
+            "type-2 diabetes": [{"id": "MONDO:0005148"}],
+            "drug": [{"id": "ncats.drug:9100L32L2N"}]
+        },
+        "edge_bindings": {
+            "treats": [{"id": "df87ff82"}]
         }
-    ]
+    }
+]
 
 # Sample edge 2
 _TEST_EDGES_2 = {
@@ -477,7 +477,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             None,
             False,
             # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Query Graph!"
-            "error.trapi.response.query_graph.missing"
+            "error.trapi.response.message.query_graph.missing"
         ),
         (   # Query 2 - Response.Message also devoid of content, null QGraph trapped first....
             {
@@ -492,7 +492,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             None,
             False,
             # "Validate TRAPI Response: ERROR - Response returned a null or empty Message Query Graph!"
-            "error.trapi.response.query_graph.empty"
+            "error.trapi.response.message.query_graph.empty"
         ),
         (
             # Query 3 - Partly empty Response.Message with a modest but
@@ -509,7 +509,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             None,
             False,
             # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Knowledge Graph component?"
-            "error.trapi.response.knowledge_graph.missing"
+            "error.trapi.response.message.knowledge_graph.missing"
         ),
         (
             # Query 4 - Partly empty Response.Message with a modest
@@ -543,7 +543,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             None,
             False,
             # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Results component!"
-            "error.trapi.response.results.missing"
+            "error.trapi.response.message.results.missing"
         ),
         (
             # Query 6 - Partly empty Response.Message with a modest but workable query and
@@ -577,7 +577,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             None,
             False,
             # "Validate TRAPI Response: ERROR - Response returned a non-array Message.Results!
-            "error.trapi.response.results.not_array"
+            "error.trapi.response.message.results.not_array"
         ),
         (
             # Query 8 - Partly empty Response.Message with a modest but workable query and
@@ -594,7 +594,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             None,
             False,
             # "Validate TRAPI Response: ERROR - Response returned empty Message.results?"
-            "warning.trapi.response.results.empty"
+            "warning.trapi.response.message.results.empty"
         ),
         (
             # Query 9 - Full Message, without "sources" and "strict_validation": False - should pass?
@@ -1216,108 +1216,139 @@ def test_empty_case_input_found_in_response(case, response):
 
 #
 # case: Dict parameter contains something like:
+#
 SAMPLE_TEST_CASE = {
     "idx": 0,
-    "subject_id": 'CHEBI:3002',
-    "subject_category": 'biolink:SmallMolecule',
-    "predicate": 'biolink:treats',
-    "object_id": 'MESH:D001249',
-    "object_category": 'biolink:Disease'
+    "subject_id": "MONDO:0005148",
+    "subject_category": "biolink:Disease",
+    "predicate_id": 'biolink:treated_by',
+    "object_id": "ncats.drug:9100L32L2N",
+    "object_category": "biolink:Drug"
 }
 #
 # the contents for which ought to be returned in
 # the TRAPI Knowledge Graph, with a Result mapping?
 #
-SAMPLE_RESPONSE = {
-    "message": {}
+SAMPLE_QUERY_GRAPH = {
+    "nodes": {
+        "type-2 diabetes": {
+            "ids": ["diabetes"]
+        },
+        "drug": {
+            "categories": ["biolink:Drug"]
+        }
+    },
+    "edges": {
+        "treated_by": {
+            "subject": "type-2 diabetes",
+            "predicates": ["biolink:treated_by"],
+            "object": "drug"
+        }
+    }
 }
+
+SAMPLE_TEST_NODES = {
+    "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
+    "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
+}
+
+SAMPLE_TEST_EDGES = {
+    "df879999": {
+        "subject": "MONDO:0005148",
+        "predicate": "biolink:treated_by",
+        "object": "ncats.drug:9100L32L2N"
+    }
+}
+SAMPLE_TEST_GRAPH = {
+    "nodes": SAMPLE_TEST_NODES,
+    "edges": SAMPLE_TEST_EDGES
+}
+
+SAMPLE_TEST_RESULTS = [
+    {
+        "node_bindings": {
+            "type-2 diabetes": [{"id": "MONDO:0005148"}],
+            "drug": [{"id": "ncats.drug:9100L32L2N"}]
+        },
+        "edge_bindings": {
+            "treated_by": [{"id": "df879999"}]
+        }
+    }
+]
+
+SAMPLE_TEST_INCOMPLETE_RESULTS = [
+    {
+        "node_bindings": {
+            "type-2 diabetes": [{"id": "MONDO:0005148"}],
+            "drug": [{"id": "ncats.drug:9100L32L2N"}]
+        },
+        "analyses": [
+            {
+                "resource_id": "infores:ara0",
+                # not pointing to an edge in the existing sample KG
+                "edge_bindings": {"treated_by": [{"id": "abcde999"}]},
+                "support_graphs": [],
+                "score": 0.7
+            }
+        ]
+    }
+]
 
 
 @pytest.mark.parametrize(
     "case,response,code",
     [
-        (   # Query 0 - missing message knowledge_graph
+        (   # Query 0 - missing message 'knowledge_graph' property key
             SAMPLE_TEST_CASE,
             {
                 "message": {
-                    "query_graph": {},
-                    # "knowledge_graph": {},
-                    # "results": {},
+                    "query_graph": SAMPLE_QUERY_GRAPH,
+                    "results": SAMPLE_TEST_RESULTS
                 }
             },
-            "error.trapi.response.missing.message.knowledge_graph"
+            "error.trapi.response.message.knowledge_graph.missing"
         ),
-        (   # Query 1 - missing message results
+        (  # Query 1 - empty message 'knowledge_graph' value
+                SAMPLE_TEST_CASE,
+                {
+                    "message": {
+                        "query_graph": SAMPLE_QUERY_GRAPH,
+                        "knowledge_graph": {},
+                        "results": SAMPLE_TEST_RESULTS
+                    }
+                },
+                "error.trapi.response.message.knowledge_graph.empty"
+        ),
+        (   # Query 2 - missing message 'results' property key
             SAMPLE_TEST_CASE,
             {
                 "message": {
-                    "query_graph": {},
+                    "query_graph": SAMPLE_QUERY_GRAPH,
+                    "knowledge_graph": {"nodes": {}, "edges": {}}
+                }
+            },
+            "error.trapi.response.message.results.missing"
+        ),
+        (   # Query 3 - empty message 'results' property value
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": SAMPLE_QUERY_GRAPH,
                     "knowledge_graph": {"nodes": {}, "edges": {}},
-                    # "results": {},
+                    "results": []
                 }
             },
-            "error.trapi.response.missing.message.results"
+            "error.trapi.response.message.results.empty"
         ),
-        (   # Query 2 - missing message subject node
+        (   # Query 4 - missing message subject node
             SAMPLE_TEST_CASE,
             {
                 "message": {
-                    "query_graph": {},
+                    "query_graph": SAMPLE_QUERY_GRAPH,
                     "knowledge_graph": {
                         "nodes": {
-                            # "CHEBI:3002": {},
-                            "MESH:D001249": {}
-                        },
-                        "edges": {}
-                    },
-                    "results": {},
-                }
-            },
-            "error.trapi.response.missing.message.knowledge_graph.node"
-        ),
-        (   # Query 3 - missing message object node
-            SAMPLE_TEST_CASE,
-            {
-                "message": {
-                    "query_graph": {},
-                    "knowledge_graph": {
-                        "nodes": {
-                            "CHEBI:3002": {},
-                            # "MESH:D001249": {}
-                        },
-                        "edges": {}
-                    },
-                    "results": {},
-                }
-            },
-            "error.trapi.response.missing.message.knowledge_graph.node"
-        ),
-        (   # Query 4 - missing message edge
-            SAMPLE_TEST_CASE,
-            {
-                "message": {
-                    "query_graph": {},
-                    "knowledge_graph": {
-                        "nodes": {
-                            "CHEBI:3002": {},
-                            "MESH:D001249": {}
-                        },
-                        "edges": {}
-                    },
-                    "results": {},
-                }
-            },
-            "error.trapi.response.missing.message.knowledge_graph.edge"
-        ),
-        (   # Query 5 - missing message results
-            SAMPLE_TEST_CASE,
-            {
-                "message": {
-                    "query_graph": {},
-                    "knowledge_graph": {
-                        "nodes": {
-                            "CHEBI:3002": {},
-                            "MESH:D001249": {}
+                            # "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
+                            "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
                         },
                         "edges": {
                             "df87ff82": {
@@ -1327,14 +1358,101 @@ SAMPLE_RESPONSE = {
                             }
                         }
                     },
-                    "results": {},
+                    "results": SAMPLE_TEST_RESULTS
                 }
             },
-            "error.trapi.response.missing.message.result"
+            "error.trapi.response.message.knowledge_graph.node.missing"
+        ),
+        (   # Query 5 - the test case 'subject' node category is not an exact match against
+            #           the knowledge graph edge category; however, the test case has a
+            #           parent category which does match the knowledge graph, so we let it pass!
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": SAMPLE_QUERY_GRAPH,
+                    "knowledge_graph": {
+                        "nodes": {
+                            "MONDO:0005148": {
+                                "name": "type-2 diabetes",
+                                "categories": [
+                                    "biolink:DiseaseOrPhenotypicFeature"
+                                ]
+                            },
+                            "ncats.drug:9100L32L2N": {
+                                "name": "metformin",
+                                "categories": [
+                                    "biolink:Drug"
+                                ]
+                            }
+                        },
+                        "edges": {
+                            "df87ff82": {
+                                "subject": "CHEBI:3002",
+                                "predicate": "biolink:treated_by",
+                                "object": "MESH:D001249"
+                            }
+                        }
+                    },
+                    "results": SAMPLE_TEST_RESULTS
+                }
+            },
+            # NOT "error.trapi.response.message.knowledge_graph.node.missing"
+            ""
+        ),
+        (   # Query 6 - missing message object node
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": SAMPLE_QUERY_GRAPH,
+                    "knowledge_graph": {
+                        "nodes": {
+                            "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
+                            # "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
+                        },
+                        "edges": {
+                            "df87ff82": {
+                                "subject": "CHEBI:3002",
+                                "predicate": "biolink:treated_by",
+                                "object": "MESH:D001249"
+                            }
+                        }
+                    },
+                    "results": SAMPLE_TEST_RESULTS
+                }
+            },
+            "error.trapi.response.message.knowledge_graph.node.missing"
+        ),
+        (   # Query 7 - missing message edge
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": SAMPLE_QUERY_GRAPH,
+                    "knowledge_graph": {
+                        "nodes": {
+                            "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
+                            "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
+                        },
+                        "edges": {}
+                    },
+                    "results": SAMPLE_TEST_RESULTS
+                }
+            },
+            "error.trapi.response.message.knowledge_graph.edge.missing"
+        ),
+        (   # Query 8 -  missing specific result in messages results matching input values
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": SAMPLE_QUERY_GRAPH,
+                    "knowledge_graph": SAMPLE_TEST_GRAPH,
+                    "results": SAMPLE_TEST_INCOMPLETE_RESULTS
+                }
+            },
+            "error.trapi.response.message.result.missing"
         )
     ]
 )
 def test_case_input_found_in_response(case, response, code):
     validator = TRAPIResponseValidator()
-    validator.case_input_found_in_response(case, response)
+    assert not validator.case_input_found_in_response(case, response) if code else True
     check_messages(validator, code)
