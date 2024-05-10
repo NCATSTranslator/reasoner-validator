@@ -241,7 +241,8 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
                 'object_id': 'GO:0006094'  # Gluconeogenesis
             },
             # f"{INPUT_EDGE_PREFIX}: INFO - Predicate element 'biolink:treats' is a mixin."
-            "info.input_edge.predicate.mixin"
+            # "info.input_edge.predicate.mixin"
+            ""  # mixin predicate patch < BM 4.2.1 skips validation of biolink:treats
         ),
         (   # Query 11 - Unknown predicate element
             LATEST_BIOLINK_MODEL_VERSION,
@@ -850,7 +851,8 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                     }
                 }
             },
-            "info.query_graph.edge.predicate.mixin"
+            # "info.query_graph.edge.predicate.mixin"
+            ""  # mixin predicate patch < BM 4.2.1 skips validation of biolink:treats
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -3174,7 +3176,8 @@ def test_validate_agent_type(value: Optional[str], code: str):
                     }
                 }
             },
-            "error.knowledge_graph.edge.predicate.mixin"
+            # "error.knowledge_graph.edge.predicate.mixin"
+            ""  # mixin predicate patch < BM 4.2.1 skips validation of biolink:interacts_with
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,

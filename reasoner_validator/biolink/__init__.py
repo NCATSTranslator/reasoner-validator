@@ -1394,8 +1394,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             source_trail: Optional[str] = None
     ):
         """
-        Validates predicates based on their meta-nature: existence, mixin, deprecation, etc.
-        with notable hard-coded explicit PREDICATE_INCLUSIONS exceptions.
+        Validates predicates based on their meta-nature: existence, mixin,
+        deprecation, etc. with some notable hard-coded explicit
+        PREDICATE_INCLUSIONS exceptions in earlier Biolink Model releases.
 
         :param edge_id: str, identifier of the edge whose predicate is being validated
         :param predicate: str, putative Biolink Model predicate to be validated
@@ -1403,9 +1404,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
         :return: None (validation communicated via class instance of method)
         """
-        # PREDICATE_INCLUSIONS provides for selective
-        # override of validation of particular predicates
-        if self.minimum_required_biolink_version("4.2.0") or \
+        # PREDICATE_INCLUSIONS provides for selective override of
+        # validation of particular predicates prior to Biolink 4.2.1
+        if self.minimum_required_biolink_version("4.2.1") or \
                 predicate not in self.PREDICATE_INCLUSIONS:
 
             graph_type_context: str = graph_type.name.lower()
@@ -1415,7 +1416,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
             # Validate the putative predicate as
             # *not* being abstract, deprecated or
-            # a mixin (for Biolink Model release >= 4.2.0?)
+            # a mixin (for Biolink Model release >= 4.2.1?)
             biolink_class = self.validate_element_status(
                 graph_type=graph_type,
                 context=context,
