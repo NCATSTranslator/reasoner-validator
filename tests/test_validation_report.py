@@ -426,7 +426,12 @@ full_test_messages_catalog_1: MESSAGE_CATALOG = {
     "skipped": {
         "skipped.test": {
             "global": {
-                "Catastrophe": None
+                "Catastrophe": [
+                    {
+                        "context": "Family Robinson",
+                        "reason": "Lost in Space"
+                    }
+                ]
             }
         }
 
@@ -670,7 +675,7 @@ def test_messages():
         ),
         (
             MessageType.skipped,
-            "SKIPPED - Test: For reason indicated in the identifier"
+            "SKIPPED - Test: Test case skipped for a test asset, for a specified reason."
         ),
         (
             MessageType.warning,

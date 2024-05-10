@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.1.6
+
+- 'skipped.test' validation message given more metadata to clarify circumstances of event.
+
 ## 4.1.5
 
 - postpone full mixin predicate validation until (putative) 4.2.1 release of Biolink fixing biolink:treats predicate hierarchy

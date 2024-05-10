@@ -1244,9 +1244,9 @@
 
 ### skipped.test
 
-**Message:** For reason indicated in the identifier
+**Message:** Test case skipped for a test asset, for a specified reason.
 
-**Context:** identifier
+**Context:** identifier, context, reason
 
-**Description:** Test was skipped for the reason documented in the 'identifier' string value.
+**Description:** Test was skipped for the documented 'reason', for the test specified by the 'identifier' in the 'context' indicated.
 
