@@ -60,16 +60,17 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-biolink-model-noncompliance">error.biolink.model.noncompliance</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-empty">error.trapi.response.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-empty">error.trapi.response.message.empty</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-query-graph-missing">error.trapi.response.query_graph.missing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-query-graph-empty">error.trapi.response.query_graph.empty</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-knowledge-graph-missing">error.trapi.response.knowledge_graph.missing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-knowledge-graph-empty">error.trapi.response.knowledge_graph.empty</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-results-missing">error.trapi.response.results.missing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-results-not-array">error.trapi.response.results.not_array</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-results-missing-bindings">error.trapi.response.results.missing_bindings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-missing-expected-knowledge-graph-node">error.trapi.response.missing_expected.knowledge_graph.node</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-missing-expected-knowledge-graph-edge">error.trapi.response.missing_expected.knowledge_graph.edge</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-missing-expected-result">error.trapi.response.missing_expected.result</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-query-graph-missing">error.trapi.response.message.query_graph.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-query-graph-empty">error.trapi.response.message.query_graph.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-missing">error.trapi.response.message.knowledge_graph.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-empty">error.trapi.response.message.knowledge_graph.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-node-missing">error.trapi.response.message.knowledge_graph.node.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-edge-missing">error.trapi.response.message.knowledge_graph.edge.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-result-missing">error.trapi.response.message.result.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-results-missing">error.trapi.response.message.results.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-results-empty">error.trapi.response.message.results.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-results-not-array">error.trapi.response.message.results.not_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-results-missing-bindings">error.trapi.response.message.results.missing_bindings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-input-edge-node-category-missing">error.input_edge.node.category.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-input-edge-node-category-not-a-category">error.input_edge.node.category.not_a_category</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-input-edge-node-category-unknown">error.input_edge.node.category.unknown</a></li>
@@ -171,8 +172,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-status-unknown">warning.trapi.response.status.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-schema-version-missing">warning.trapi.response.schema_version.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-biolink-version-missing">warning.trapi.response.biolink_version.missing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-knowledge-graph-empty">warning.trapi.response.knowledge_graph.empty</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-results-empty">warning.trapi.response.results.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-knowledge-graph-empty">warning.trapi.response.message.knowledge_graph.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-results-empty">warning.trapi.response.message.results.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-workflow-runner-parameters-missing">warning.trapi.response.workflow.runner_parameters.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-workflow-parameters-missing">warning.trapi.response.workflow.parameters.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-graph-empty">warning.graph.empty</a></li>
@@ -294,59 +295,64 @@
 <p><strong>Message:</strong> TRAPI Response missing its Message!</p>
 <p><strong>Description:</strong> TRAPI Response should at least have non-empty original TRAPI request Message in its reply.</p>
 </section>
-<section id="error-trapi-response-query-graph-missing">
-<h3>error.trapi.response.query_graph.missing<a class="headerlink" href="#error-trapi-response-query-graph-missing" title="Permalink to this heading"></a></h3>
+<section id="error-trapi-response-message-query-graph-missing">
+<h3>error.trapi.response.message.query_graph.missing<a class="headerlink" href="#error-trapi-response-message-query-graph-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> TRAPI Message is missing its Query Graph!</p>
 <p><strong>Description:</strong> TRAPI Response should generally have a TRAPI request message Query Graph key value in its reply.</p>
 </section>
-<section id="error-trapi-response-query-graph-empty">
-<h3>error.trapi.response.query_graph.empty<a class="headerlink" href="#error-trapi-response-query-graph-empty" title="Permalink to this heading"></a></h3>
+<section id="error-trapi-response-message-query-graph-empty">
+<h3>error.trapi.response.message.query_graph.empty<a class="headerlink" href="#error-trapi-response-message-query-graph-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Response returned an empty Message Query Graph!</p>
 <p><strong>Description:</strong> TRAPI Response should at least have original non-empty TRAPI request message Query Graph in its reply.</p>
 </section>
-<section id="error-trapi-response-knowledge-graph-missing">
-<h3>error.trapi.response.knowledge_graph.missing<a class="headerlink" href="#error-trapi-response-knowledge-graph-missing" title="Permalink to this heading"></a></h3>
+<section id="error-trapi-response-message-knowledge-graph-missing">
+<h3>error.trapi.response.message.knowledge_graph.missing<a class="headerlink" href="#error-trapi-response-message-knowledge-graph-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> TRAPI Message is missing its Knowledge Graph component!</p>
 <p><strong>Description:</strong> TRAPI Response should generally have a TRAPI request message Knowledge Graph key value in its reply.</p>
 </section>
-<section id="error-trapi-response-knowledge-graph-empty">
-<h3>error.trapi.response.knowledge_graph.empty<a class="headerlink" href="#error-trapi-response-knowledge-graph-empty" title="Permalink to this heading"></a></h3>
+<section id="error-trapi-response-message-knowledge-graph-empty">
+<h3>error.trapi.response.message.knowledge_graph.empty<a class="headerlink" href="#error-trapi-response-message-knowledge-graph-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Response returned an empty Message Knowledge Graph, which is an error in this context!</p>
 <p><strong>Description:</strong> An empty Knowledge Graph is considered an error in this validation context!</p>
 </section>
-<section id="error-trapi-response-results-missing">
-<h3>error.trapi.response.results.missing<a class="headerlink" href="#error-trapi-response-results-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> TRAPI Message is missing its Results component!</p>
-<p><strong>Description:</strong> TRAPI Response should generally have a TRAPI request message Request key value in its reply.</p>
+<section id="error-trapi-response-message-knowledge-graph-node-missing">
+<h3>error.trapi.response.message.knowledge_graph.node.missing<a class="headerlink" href="#error-trapi-response-message-knowledge-graph-node-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Knowledge Graph of TRAPI Response Message Knowledge Graph is missing an expected Node</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> The given TRAPI Response is expected to return specific node(s) related to the original input data used to prepare the TRAPI Request!</p>
 </section>
-<section id="error-trapi-response-results-not-array">
-<h3>error.trapi.response.results.not_array<a class="headerlink" href="#error-trapi-response-results-not-array" title="Permalink to this heading"></a></h3>
+<section id="error-trapi-response-message-knowledge-graph-edge-missing">
+<h3>error.trapi.response.message.knowledge_graph.edge.missing<a class="headerlink" href="#error-trapi-response-message-knowledge-graph-edge-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Edge</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> The given TRAPI Response is expected to return specific edge(s) related to the original input data used to prepare the TRAPI Request!</p>
+</section>
+<section id="error-trapi-response-message-result-missing">
+<h3>error.trapi.response.message.result.missing<a class="headerlink" href="#error-trapi-response-message-result-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> TRAPI Response Message is missing expected knowledge graph edge mapping in its Results</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> The given TRAPI Response is expected to return a specified edge - in its list of Results - relating to the original input data used to prepare the TRAPI Request!</p>
+</section>
+<section id="error-trapi-response-message-results-missing">
+<h3>error.trapi.response.message.results.missing<a class="headerlink" href="#error-trapi-response-message-results-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> TRAPI Message is missing its Results component!</p>
+<p><strong>Description:</strong> In this context, the TRAPI Response should generally have a non-empty TRAPI Response Message Results component.</p>
+</section>
+<section id="error-trapi-response-message-results-empty">
+<h3>error.trapi.response.message.results.empty<a class="headerlink" href="#error-trapi-response-message-results-empty" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Response returned an empty Message Results, which is an error in this context!</p>
+<p><strong>Description:</strong> An empty block of Results is considered an error in the specific validation context!</p>
+</section>
+<section id="error-trapi-response-message-results-not-array">
+<h3>error.trapi.response.message.results.not_array<a class="headerlink" href="#error-trapi-response-message-results-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Response returned a non-array Message.Results!</p>
 <p><strong>Description:</strong> TRAPI Message.Results must be an array data type (even if empty)</p>
 </section>
-<section id="error-trapi-response-results-missing-bindings">
-<h3>error.trapi.response.results.missing_bindings<a class="headerlink" href="#error-trapi-response-results-missing-bindings" title="Permalink to this heading"></a></h3>
+<section id="error-trapi-response-message-results-missing-bindings">
+<h3>error.trapi.response.message.results.missing_bindings<a class="headerlink" href="#error-trapi-response-message-results-missing-bindings" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Result object IDs for output node binding did not return the original identifier nor aliases for input id</p>
 <p><strong>Context:</strong> identifier, output_node_binding</p>
 <p><strong>Description:</strong> TRAPI Message.Results cannot resolve its reported identifier mappings to the original query.</p>
-</section>
-<section id="error-trapi-response-missing-expected-knowledge-graph-node">
-<h3>error.trapi.response.missing_expected.knowledge_graph.node<a class="headerlink" href="#error-trapi-response-missing-expected-knowledge-graph-node" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Node</p>
-<p><strong>Context:</strong> identifier, context</p>
-<p><strong>Description:</strong> The given TRAPI Response is expected to return specific nodes(s) relating to the original input data used to prepare the TRAPI Request!</p>
-</section>
-<section id="error-trapi-response-missing-expected-knowledge-graph-edge">
-<h3>error.trapi.response.missing_expected.knowledge_graph.edge<a class="headerlink" href="#error-trapi-response-missing-expected-knowledge-graph-edge" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Edge</p>
-<p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The given TRAPI Response is expected to return specific edge(s) relating to the original input data used to prepare the TRAPI Request!</p>
-</section>
-<section id="error-trapi-response-missing-expected-result">
-<h3>error.trapi.response.missing_expected.result<a class="headerlink" href="#error-trapi-response-missing-expected-result" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge Graph of TRAPI Response Message is missing expected Result</p>
-<p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The given TRAPI Response is expected to return specific result(s) relating to the original input data used to prepare the TRAPI Request!</p>
 </section>
 <section id="error-input-edge-node-category-missing">
 <h3>error.input_edge.node.category.missing<a class="headerlink" href="#error-input-edge-node-category-missing" title="Permalink to this heading"></a></h3>
@@ -933,13 +939,13 @@
 <p><strong>Message:</strong> TRAPI Response is missing its Biolink Model version</p>
 <p><strong>Description:</strong> The TRAPI Response should specify its Biolink Model version compliance.</p>
 </section>
-<section id="warning-trapi-response-knowledge-graph-empty">
-<h3>warning.trapi.response.knowledge_graph.empty<a class="headerlink" href="#warning-trapi-response-knowledge-graph-empty" title="Permalink to this heading"></a></h3>
+<section id="warning-trapi-response-message-knowledge-graph-empty">
+<h3>warning.trapi.response.message.knowledge_graph.empty<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Response returned an empty Message Knowledge Graph?</p>
 <p><strong>Description:</strong> An empty Knowledge Graph is allowed but merits a boundary response warning?</p>
 </section>
-<section id="warning-trapi-response-results-empty">
-<h3>warning.trapi.response.results.empty<a class="headerlink" href="#warning-trapi-response-results-empty" title="Permalink to this heading"></a></h3>
+<section id="warning-trapi-response-message-results-empty">
+<h3>warning.trapi.response.message.results.empty<a class="headerlink" href="#warning-trapi-response-message-results-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Response returned empty Message.results?</p>
 <p><strong>Description:</strong> Empty Results is allowed but merits a boundary response warning?</p>
 </section>
