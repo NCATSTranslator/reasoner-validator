@@ -25,7 +25,7 @@ For Github-related performance reasons, as of project release v3.8.3, the code c
 Steps to properly issue a new project release:
 
 1. Perform any required **codes.yaml** and TRAPI **versions.yaml** updates (as above). 
-2. If the **codes.yaml** were revised, regenerated the associate code documentation by running the reasoner_validator/validation_codes.py module as a script from the CLI.
+2. If the **codes.yaml** were revised, regenerated the associate code documentation by running the **reasoner_validator/validation_codes.py** module as a script from the CLI.
 3. Run the unit test suite to ensure that nothing fails. Iterate to fix failures (in the code or in terms of revised unit tests to reflect fresh code designs)
 4. Document release changes in the **CHANGELOG.md**
 5. Update the **`[Tool Poetry]version =`** field in the **pyprojects.yaml**, e.g. "4.1.4"
