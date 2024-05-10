@@ -647,7 +647,7 @@ def test_messages():
         identifier="biolink:this_is_a_mixin",
         edge_id="a-biolink:this_is_a_mixin->b"
     )
-    reporter2.report("warning.trapi.response.results.empty")
+    reporter2.report("warning.trapi.response.message.results.empty")
     reporter2.report("error.knowledge_graph.edges.empty")
     reporter1.merge(reporter2)
 
