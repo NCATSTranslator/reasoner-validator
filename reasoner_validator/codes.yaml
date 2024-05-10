@@ -689,14 +689,15 @@ warning:
         missing:
           $message: "TRAPI Response is missing its Biolink Model version"
           $description:  "The TRAPI Response should specify its Biolink Model version compliance."
-      knowledge_graph:
-        empty:
-          $message: "Response returned an empty Message Knowledge Graph?"
-          $description: "An empty Knowledge Graph is allowed but merits a boundary response warning?"
-      results:
-        empty:
-          $message: "Response returned empty Message.results?"
-          $description: "Empty Results is allowed but merits a boundary response warning?"
+      message:
+        knowledge_graph:
+          empty:
+            $message: "Response returned an empty Message Knowledge Graph?"
+            $description: "An empty Knowledge Graph is allowed but merits a boundary response warning?"
+        results:
+          empty:
+            $message: "Response returned empty Message.results?"
+            $description: "Empty Results is allowed but merits a boundary response warning?"
       workflow:
         runner_parameters:
           missing:

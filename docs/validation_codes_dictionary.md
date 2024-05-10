@@ -896,13 +896,13 @@
 
 **Description:** The TRAPI Response should specify its Biolink Model version compliance.
 
-### warning.trapi.response.knowledge_graph.empty
+### warning.trapi.response.message.knowledge_graph.empty
 
 **Message:** Response returned an empty Message Knowledge Graph?
 
 **Description:** An empty Knowledge Graph is allowed but merits a boundary response warning?
 
-### warning.trapi.response.results.empty
+### warning.trapi.response.message.results.empty
 
 **Message:** Response returned empty Message.results?
 

@@ -450,7 +450,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
 
 
 @pytest.mark.parametrize(
-    "response,trapi_version,biolink_version,target_provenance,strict_validation,message",
+    "response,trapi_version,biolink_version,target_provenance,strict_validation,code",
     [
         (   # Query 0 - Completely empty Response.Message
             {
@@ -526,7 +526,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             None,
             False,
             # "Validate TRAPI Response: WARNING - Response returned an empty Message Knowledge Graph?"
-            "warning.trapi.response.knowledge_graph.empty"
+            "warning.trapi.response.message.knowledge_graph.empty"
         ),
         (
             # Query 5 - Partly empty Response.Message with a modest but workable
@@ -560,7 +560,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             None,
             False,
             # "Validate TRAPI Response: WARNING -Response returned empty Message.results?"
-            "warning.trapi.response.results.empty"
+            "warning.trapi.response.message.results.empty"
         ),
         (
             # Query 7 - Partly empty Response.Message with a modest but workable
@@ -999,7 +999,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
         biolink_version: str,
         target_provenance: Dict,
         strict_validation: bool,
-        message: str
+        code
 ):
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=trapi_version,
@@ -1008,7 +1008,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
         target_provenance=target_provenance
     )
     validator.check_compliance_of_trapi_response(response=response)
-    check_messages(validator, message, no_errors=True)
+    check_messages(validator, code, no_errors=True)
 
 
 @pytest.mark.parametrize(
