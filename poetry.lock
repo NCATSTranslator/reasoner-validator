@@ -95,13 +95,13 @@ dev = ["freezegun (>=1.0,<2.0)", "pytest (>=6.0)", "pytest-cov"]
 
 [[package]]
 name = "bioregistry"
-version = "0.11.3"
+version = "0.11.4"
 description = "Integrated registry of biological databases and nomenclatures"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "bioregistry-0.11.3-py3-none-any.whl", hash = "sha256:ea23736b41f2e7e7f26f544d19f5a3ab4ba41343a0a10d3162507922adc3ebfd"},
-    {file = "bioregistry-0.11.3.tar.gz", hash = "sha256:7e04e926ee0068b7623b2ec1984e1872e0b152c203b71542a4edfe26985044f1"},
+    {file = "bioregistry-0.11.4-py3-none-any.whl", hash = "sha256:531c3d8602e8a1446cdb8cd8f75279f3a0dab72dbd19a10465826c9464b7cee1"},
+    {file = "bioregistry-0.11.4.tar.gz", hash = "sha256:a5f007fb44f42df1cff87464eda5f49dd16156a3606d8bcf28755db1db50fd82"},
 ]
 
 [package.dependencies]
@@ -788,13 +788,13 @@ files = [
 
 [[package]]
 name = "mdit-py-plugins"
-version = "0.4.0"
+version = "0.4.1"
 description = "Collection of plugins for markdown-it-py"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "mdit_py_plugins-0.4.0-py3-none-any.whl", hash = "sha256:b51b3bb70691f57f974e257e367107857a93b36f322a9e6d44ca5bf28ec2def9"},
-    {file = "mdit_py_plugins-0.4.0.tar.gz", hash = "sha256:d8ab27e9aed6c38aa716819fedfde15ca275715955f8a185a8e1cf90fb1d2c1b"},
+    {file = "mdit_py_plugins-0.4.1-py3-none-any.whl", hash = "sha256:1020dfe4e6bfc2c79fb49ae4e3f5b297f5ccd20f010187acc52af2921e27dc6a"},
+    {file = "mdit_py_plugins-0.4.1.tar.gz", hash = "sha256:834b8ac23d1cd60cec703646ffd22ae97b7955a6d596eb1d304be1e251ae499c"},
 ]
 
 [package.dependencies]
