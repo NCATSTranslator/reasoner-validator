@@ -1409,7 +1409,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         # PREDICATE_INCLUSIONS provides for selective override of
         # validation of particular predicates prior to Biolink 4.2.1
-        if self.minimum_required_biolink_version("4.2.1") or \
+        # TODO: hacky workaround for the day for 'treats'
+        if predicate.endswith("treats") or self.minimum_required_biolink_version("4.2.1") or \
                 predicate not in self.PREDICATE_INCLUSIONS:
 
             graph_type_context: str = graph_type.name.lower()
@@ -1432,7 +1433,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 ignore_graph_type=True
             )
             if biolink_class:
-                if not self.bmt.is_predicate(predicate):
+                # TODO: another hacky workaround for the day for 'treats'
+                if not (predicate.endswith("treats") or self.bmt.is_predicate(predicate)):
                     self.report(
                         code=f"error.{context}.invalid",
                         source_trail=source_trail,
@@ -1636,6 +1638,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     graph_type=graph_type,
                     source_trail=source_trail
                 )
+                # TODO: Specifically validate provision of a
+                #       suitable support graph for 'treats' edges
+                if predicate in self.bmt.get_descendants("treats", formatted=True):
+                    pass
 
         else:  # is a Query Graph...
             if predicates is None:
