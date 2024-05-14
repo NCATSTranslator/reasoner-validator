@@ -446,7 +446,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             context: str,
             identifier: str,
             edge_id: str,
-            source_trail: Optional[str] = None
+            source_trail: Optional[str] = None,
+            ignore_graph_type: bool = False
     ) -> Optional[Element]:
         """
         Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.
@@ -456,6 +457,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param identifier: str, name of the putative Biolink element ('class')
         :param edge_id: str, identifier of enclosing edge containing the element (e.g. the 'edge_id')
         :param source_trail: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
+        :param ignore_graph_type: bool, if strict validation is None (not set globally), then
+               only apply graph-type-differential strict validation if 'ignore_graph_type' is False
         :return: Optional[Element], Biolink Element resolved to 'name' if element no validation error; None otherwise.
         """
         element: Optional[Element] = self.bmt.get_element(identifier)
@@ -499,7 +502,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # A mixin cannot be instantiated ...
             # but can be used in QueryGraphs
             # or when explicitly permitted
-            if self.is_strict_validation(graph_type):
+            if self.is_strict_validation(graph_type, ignore_graph_type=ignore_graph_type):
                 self.report(
                     code=f"error.{context}.mixin",
                     source_trail=source_trail,
@@ -1422,7 +1425,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 context=context,
                 identifier=predicate,
                 edge_id=edge_id,
-                source_trail=source_trail
+                source_trail=source_trail,
+
+                # validation of 'predicates' can ignore graph type
+                # unless strict validation is globally overridden
+                ignore_graph_type=True
             )
             if biolink_class:
                 if not self.bmt.is_predicate(predicate):

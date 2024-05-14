@@ -110,17 +110,19 @@ class ValidationReporter:
         """
         return self.default_target
 
-    def is_strict_validation(self, graph_type: TRAPIGraphType) -> bool:
+    def is_strict_validation(self, graph_type: TRAPIGraphType, ignore_graph_type: bool = False) -> bool:
         """
         Predicate to test if strict validation is to be applied. If the internal
         'strict_validation' flag is not set (i.e. None), then graph_type is
         to resolve strictness based on TRAPI graph type context.
 
         :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
+        :param ignore_graph_type: bool, if strict validation is None (not set globally), then
+               only apply graph-type-differential strict validation if 'ignore_graph_type' is False
         :return: bool, value of validation strictness set in the ValidationReporter.
         """
         if self.strict_validation is None:
-            if graph_type == TRAPIGraphType.Knowledge_Graph:
+            if not ignore_graph_type and graph_type == TRAPIGraphType.Knowledge_Graph:
                 return True
             else:
                 return False

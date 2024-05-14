@@ -413,7 +413,10 @@ def test_check_biolink_model_default_compliance_of_input_edge(biolink_version: s
 def test_check_biolink_model_non_strict_compliance_of_input_edge(
         biolink_version: str, edge: Dict, validation_code: str
 ):
-    validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version, strict_validation=False)
+    validator: BiolinkValidator = BiolinkValidator(
+        biolink_version=biolink_version,
+        strict_validation=False
+    )
     validator.check_biolink_model_compliance_of_input_edge(edge=edge)
     check_messages(validator, validation_code)
 
@@ -1159,7 +1162,53 @@ def test_check_biolink_model_non_strict_compliance_of_query_graph(
     biolink_version: str,
     validation_code: str
 ):
-    validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version, strict_validation=False)
+    validator: BiolinkValidator = BiolinkValidator(
+        biolink_version=biolink_version,
+        strict_validation=False
+    )
+    validator.check_biolink_model_compliance(
+        graph=query_graph,
+        graph_type=TRAPIGraphType.Query_Graph
+    )
+    check_messages(validator, validation_code)
+
+
+@pytest.mark.parametrize(
+    "biolink_version,query_graph,validation_code",
+    [
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 0: Query edge predicate is a mixin, normally now
+            #          allowed in both QueryGraph and Knowledge Graphs but
+            #          caller here explicitly specifies strict validation
+            {
+                "nodes": {
+                    "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
+                    "drug": {
+                        "categories": ["biolink:Drug"]
+                    }
+                },
+                "edges": {
+                    "treats": {
+                        "subject": "drug",
+                        "predicates": ["biolink:increases_amount_or_activity_of"],
+                        "object": "IRS1"
+                    }
+                }
+            },
+            "error.query_graph.edge.predicate.mixin"
+        )
+    ]
+)
+def test_check_biolink_model_strict_compliance_of_query_graph(
+    query_graph: Dict,
+    biolink_version: str,
+    validation_code: str
+):
+    validator: BiolinkValidator = BiolinkValidator(
+        biolink_version=biolink_version,
+        strict_validation=True
+    )
     validator.check_biolink_model_compliance(
         graph=query_graph,
         graph_type=TRAPIGraphType.Query_Graph
@@ -3088,7 +3137,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
                     }
                 }
             },
-            "error.knowledge_graph.edge.predicate.mixin"
+            "info.knowledge_graph.edge.predicate.mixin"
         ),
         (
             "4.1.6",
