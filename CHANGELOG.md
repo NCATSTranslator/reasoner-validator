@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.1.7
+
+- Fixed mixin predicates to be allowed in both Query Graph and Knowledge Graph contexts; however, this may be overridden by explicitly setting strict_validation to true
+
 ## 4.1.6
 
 - 'skipped.test' validation message given more metadata to clarify circumstances of event.
