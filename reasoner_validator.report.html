@@ -310,7 +310,7 @@ although their application is within specific pertinent subclasses.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.has_warnings" title="reasoner_validator.report.ValidationReporter.has_warnings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code></a>([test, target])</p></td>
 <td><p>Predicate to detect any recorded warning messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.is_strict_validation" title="reasoner_validator.report.ValidationReporter.is_strict_validation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code></a>(graph_type)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.is_strict_validation" title="reasoner_validator.report.ValidationReporter.is_strict_validation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code></a>(graph_type[, ...])</p></td>
 <td><p>Predicate to test if strict validation is to be applied.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.report.ValidationReporter.merge" title="reasoner_validator.report.ValidationReporter.merge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code></a>(reporter)</p></td>
@@ -690,13 +690,17 @@ Note that the dictionary returned is not a copy of the original</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.report.ValidationReporter.is_strict_validation">
-<span class="sig-name descname"><span class="pre">is_strict_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.is_strict_validation" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">is_strict_validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.report.ValidationReporter.is_strict_validation" title="Permalink to this definition"></a></dt>
 <dd><p>Predicate to test if strict validation is to be applied. If the internal
 ‘strict_validation’ flag is not set (i.e. None), then graph_type is
 to resolve strictness based on TRAPI graph type context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>graph_type</strong> – TRAPIGraphType, type of TRAPI graph component being validated</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph_type</strong> – TRAPIGraphType, type of TRAPI graph component being validated</p></li>
+<li><p><strong>ignore_graph_type</strong> – bool, if strict validation is None (not set globally), then
+only apply graph-type-differential strict validation if ‘ignore_graph_type’ is False</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool, value of validation strictness set in the ValidationReporter.</p>
