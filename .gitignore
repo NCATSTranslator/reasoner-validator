@@ -9,6 +9,7 @@ __pycache__/
 venv/
 .vscode/
 gh-pages/
+tests/test_data/*.json
 
 # PyCharms IDE metadata
 .idea/
