@@ -41,12 +41,13 @@ include = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
-bmt = "^1.4.0"
+bmt = "^1.4.1"
 bioregistry = "^0.11.1"
 
 # jsonschema needs to be pinned to <= 4.18.0 for now,
 # since 4.18.0 appeared to break something for the
-# access and processing of JSON schemata
+# access and processing of JSON schemata;
+# maybe now try a later version 4.22.0(?)
 jsonschema = "~4.17.3"
 dictdiffer = "^0.9.0"
 PyYAML = "^6.0"

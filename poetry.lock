@@ -125,13 +125,13 @@ web = ["bootstrap-flask (<=2.0.0)", "curies[fastapi]", "fastapi", "flask (<2.2.4
 
 [[package]]
 name = "bmt"
-version = "1.4.0"
+version = "1.4.1"
 description = "Biolink Model Toolkit: A Python API for working with the Biolink Model"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "bmt-1.4.0-py3-none-any.whl", hash = "sha256:ca81f3e91b3a0312bed01692a93d343d828e556ae14fc00fb016f5a3f38f44c3"},
-    {file = "bmt-1.4.0.tar.gz", hash = "sha256:26a831eda3d64405d849f49ee579b44412e3e6b9c2e6587e2240a7605b28fc55"},
+    {file = "bmt-1.4.1-py3-none-any.whl", hash = "sha256:94016f64cdca85a65a83c45667313ffc83da9af31a3dab7b14e868c4cb6ab0bb"},
+    {file = "bmt-1.4.1.tar.gz", hash = "sha256:deb6dd64c6a57a77e727af6629b880116858d7303ec88e90723a488fac775735"},
 ]
 
 [package.dependencies]
@@ -1952,4 +1952,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "838f0c056c4b46bf8d93ef63de3814ff08a572a86be44b5bda4fe3a65c190803"
+content-hash = "f97be94adb10344d2d857e3f398aedcfb14c43639373d1988f1b98b8e9aae0f6"

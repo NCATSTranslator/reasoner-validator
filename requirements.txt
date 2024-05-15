@@ -7,9 +7,9 @@ attrs==23.2.0 ; python_version >= "3.9" and python_version < "3.12" \
 bioregistry==0.11.4 ; python_version >= "3.9" and python_version < "3.12" \
     --hash=sha256:531c3d8602e8a1446cdb8cd8f75279f3a0dab72dbd19a10465826c9464b7cee1 \
     --hash=sha256:a5f007fb44f42df1cff87464eda5f49dd16156a3606d8bcf28755db1db50fd82
-bmt==1.4.0 ; python_version >= "3.9" and python_version < "3.12" \
-    --hash=sha256:26a831eda3d64405d849f49ee579b44412e3e6b9c2e6587e2240a7605b28fc55 \
-    --hash=sha256:ca81f3e91b3a0312bed01692a93d343d828e556ae14fc00fb016f5a3f38f44c3
+bmt==1.4.1 ; python_version >= "3.9" and python_version < "3.12" \
+    --hash=sha256:94016f64cdca85a65a83c45667313ffc83da9af31a3dab7b14e868c4cb6ab0bb \
+    --hash=sha256:deb6dd64c6a57a77e727af6629b880116858d7303ec88e90723a488fac775735
 certifi==2024.2.2 ; python_version >= "3.9" and python_version < "3.12" \
     --hash=sha256:0569859f95fc761b18b45ef421b1290a0f65f147e92a1e5eb3e635f9a5e4e66f \
     --hash=sha256:dc383c07b76109f368f6106eee2b593b04a011ea4d55f652c6ca24a754d1cdd1
