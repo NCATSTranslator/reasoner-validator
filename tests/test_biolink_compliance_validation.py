@@ -3225,9 +3225,10 @@ def test_validate_agent_type(value: Optional[str], code: str):
                     }
                 }
             },
-            # The 'treats' mixin predicate is in the 'related_to' predicate hierarchy
+            # The 'interacts_with' mixin predicate is in the 'related_to' predicate hierarchy
             # from the 4.2.1 release, onwards, of the Biolink Model, hence, properly validated
-            "info.query_graph.edge.predicate.mixin"
+            # with an INFO message about its status as a mixin
+            "info.knowledge_graph.edge.predicate.mixin"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
