@@ -881,7 +881,7 @@ warning:
               - identifier
             $description: "Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes."
           deprecated:
-            $message: "Edge has a deprecated attribute_type_id"
+            $message: "Edge has a deprecated 'attribute_type_id'"
             $context:
               - identifier
             $description: "Edge 'attribute_type_id' is deprecated in current model, to be removed in the future. Review Biolink Model for replacement."
@@ -909,16 +909,23 @@ warning:
             $description: "Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP."
       knowledge_level:
         missing:
-          $message: "Edge is missing its required 'knowledge_level' property!"
+          $message: "Edge is missing its required 'knowledge_level' property"
           $context:
             - edge_id
           $description: "The 'knowledge_level' slot is currently optional but recommended for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!"
       agent_type:
         missing:
-          $message: "Edge is missing its required 'agent_type' property!"
+          $message: "Edge is missing its required 'agent_type' property"
           $context:
             - identifier
           $description: "The 'agent_type' slot is currently optional but recommended for all edges in knowledge graphs complying with the specified Biolink Model release!"
+      treats:
+        support_graph:
+          missing:
+            $message: "Edge with a treats-related predicate is missing its required 'support_graph' attribute"
+            $context:
+              - identifier
+            $description: "A 'support_graph' may be required as an explanation for a given 'treats' statement assertion."
 info:
   excluded:
     $message: "All test case S-P-O triples from resource test location, or specific user excluded S-P-O triples"
