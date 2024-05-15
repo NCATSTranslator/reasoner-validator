@@ -121,7 +121,7 @@ class BMTWrapper:
         if not name:
             return False
         element: Optional[Element] = self.bmt.get_element(name)
-        if element['symmetric']:
+        if element is not None and element['symmetric']:
             return True
         else:
             return False
@@ -785,6 +785,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             found_knowledge_level = False
             found_agent_type = False
 
+            # Track presence of 'support_graph' for some predicates (e.g. 'treats')
+            found_support_graph = False
+
             for attribute in attributes:
 
                 # Validate attribute_type_id
@@ -881,10 +884,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                             else:
                                                 # attribute_type_id is a Biolink 'association_slot': validate further...
 
-                                                # TODO: only check knowledge_source provenance here for now.
-                                                #       Are there other association_slots to be validated here too?
-                                                #       For example, once new terms with defined value ranges are published
-                                                #       in the Biolink Model, then perhaps 'value' validation will be feasible.
+                                                # TODO: only check knowledge_source provenance here for now. Are there
+                                                #       other association_slots to be validated here too? For example,
+                                                #       once new terms with defined value ranges are published in the
+                                                #       Biolink Model, then perhaps 'value' validation will be feasible.
 
                                                 # Edge provenance tags only recorded in
                                                 # Edge attributes prior to TRAPI 1.4.0-beta
@@ -923,13 +926,17 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                                         infores == kp_source:
                                                                     found_kp_knowledge_source = True
 
-                                                # We won't likely care if these shows up in
-                                                # graphs compliant with Biolink earlier than 4.2.0.
-                                                # But we validate their values anyhow...
+                                                # Check for 'support_graph'
+                                                if attribute_type_id == "biolink:support_graph":
+                                                    found_support_graph = False
 
-                                                # We expect at this point that the value should be a single scalar
+                                                # We expect at this point that, if 'attribute_type_id' is a
+                                                # 'knowledge_level' or 'agent_type', then the value is a scalar
                                                 value = value[0]
 
+                                                # We won't likely care if 'knowledge_level' or 'agent_type'
+                                                # show up in graphs compliant with Biolink earlier than 4.2.0,
+                                                # but we validate their values anyhow...
                                                 if attribute_type_id == "biolink:knowledge_level":
                                                     found_knowledge_level = \
                                                         self.validate_knowledge_level(
@@ -987,6 +994,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                             code="warning.knowledge_graph.edge.knowledge_level.missing",
                             identifier=edge_id
                         )
+
                 if not found_agent_type:
                     # Currently projected to be mandatory only in TRAPI 1.6.0
                     if self.minimum_required_trapi_version("1.6.0"):
@@ -999,6 +1007,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                             code="warning.knowledge_graph.edge.agent_type.missing",
                             identifier=edge_id
                         )
+
+                #
+                predicate = edge['predicate'] if 'predicate' in edge else None
+                if self.is_treats(predicate) and not found_support_graph:
+                    self.report(
+                        code="warning.knowledge_graph.edge.treats.support_graph.missing",
+                        identifier=edge_id
+                    )
 
         return source_trail  # may be 'None' if the required attributes are missing
 
@@ -1409,8 +1425,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         # PREDICATE_INCLUSIONS provides for selective override of
         # validation of particular predicates prior to Biolink 4.2.1
-        # TODO: hacky workaround for the day for 'treats'
-        if predicate.endswith("treats") or self.minimum_required_biolink_version("4.2.1") or \
+        if self.minimum_required_biolink_version("4.2.1") or \
                 predicate not in self.PREDICATE_INCLUSIONS:
 
             graph_type_context: str = graph_type.name.lower()
@@ -1433,8 +1448,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 ignore_graph_type=True
             )
             if biolink_class:
-                # TODO: another hacky workaround for the day for 'treats'
-                if not (predicate.endswith("treats") or self.bmt.is_predicate(predicate)):
+                if not self.bmt.is_predicate(predicate):
                     self.report(
                         code=f"error.{context}.invalid",
                         source_trail=source_trail,
@@ -1514,6 +1528,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         else:
             return None
 
+    def is_treats(self, predicate: Optional[str]) -> bool:
+        if not predicate:
+            return False
+        return predicate in self.bmt.get_descendants("treats", formatted=True)
+
     def validate_graph_edge(self, edge: Dict, graph_type: TRAPIGraphType):
         """
         Validate slot properties of a relationship ('biolink:Association') edge.
@@ -1565,7 +1584,12 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
                 # ...then the 'validate_sources' computed 'source_trail' is communicated
                 #    to 'validate_attributes' for use in attribute validation reporting
-                self.validate_attributes(graph_type=graph_type, edge_id=edge_id, edge=edge, source_trail=source_trail)
+                self.validate_attributes(
+                    graph_type=graph_type,
+                    edge_id=edge_id,
+                    edge=edge,
+                    source_trail=source_trail
+                )
             else:
                 # For TRAPI 1.3.0, the 'sources' are discovered internally by 'validate_attributes'
                 # and the resulting source_trail returned, for further external reporting purposes
@@ -1606,6 +1630,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         # Validate Subject node
         if not subject_id:
+            # This message may no longer be triggered
+            # for TRAPI release >= 1.4-beta since the
+            # schema deems the Edge.subject 'nullable: false'
             self.report(
                 code=f"error.{context}.edge.subject.missing",
                 source_trail=source_trail,
@@ -1638,10 +1665,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     graph_type=graph_type,
                     source_trail=source_trail
                 )
-                # TODO: Specifically validate provision of a
-                #       suitable support graph for 'treats' edges
-                if predicate in self.bmt.get_descendants("treats", formatted=True):
-                    pass
 
         else:  # is a Query Graph...
             if predicates is None:
@@ -1674,6 +1697,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         # Validate Object Node
         if not object_id:
+            # This message may no longer be triggered
+            # for TRAPI release >= 1.4-beta since the
+            # schema deems the Edge.object 'nullable: false'
             self.report(
                 code=f"error.{context}.edge.object.missing",
                 source_trail=source_trail,

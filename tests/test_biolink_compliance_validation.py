@@ -1068,9 +1068,8 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                     }
                 }
             },
-            # TODO: hacky override for 'treats' prior to release of
-            #       Biolink 4.2.1 (change to "" after 4.2.1 released)
-            "info.query_graph.edge.predicate.mixin"
+            # 'treats' mixin predicate ignored prior to release of Biolink 4.2.1
+            ""
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
@@ -3181,8 +3180,8 @@ def test_validate_agent_type(value: Optional[str], code: str):
                     }
                 }
             },
-            # TODO: validation skipped prior to Biolink 4.2.1 since this predicate is in PREDICATE_INCLUSIONS
-            #       (change to "info.query_graph.edge.predicate.mixin" after 4.2.1 released)
+            # Since 'interacts_with' mixin predicate is in PREDICATE_INCLUSIONS,
+            # it is ignored prior to the 4.2.1 release of the Biolink Model
             ""
         ),
         (
@@ -3226,9 +3225,9 @@ def test_validate_agent_type(value: Optional[str], code: str):
                     }
                 }
             },
-            # TODO: hacky override for 'treats' the validation for which is skipped prior to release of Biolink 4.2.1
-            #      (change to "info.query_graph.edge.predicate.mixin" after 4.2.1 released)
-            ""
+            # The 'treats' mixin predicate is in the 'related_to' predicate hierarchy
+            # from the 4.2.1 release, onwards, of the Biolink Model, hence, properly validated
+            "info.query_graph.edge.predicate.mixin"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
