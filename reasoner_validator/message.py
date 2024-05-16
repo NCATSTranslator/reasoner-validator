@@ -4,6 +4,7 @@ to avoid load order conflicts for other modules using these data types.
 """
 from enum import Enum
 from typing import Optional, List, Dict
+
 #
 # The MESSAGE_CATALOG data structure is something like the following:
 #
@@ -93,10 +94,10 @@ class MessageType(Enum):
 
 # A individual MESSAGE_CATALOG contains
 # the validation messages from
-# all four major categories of validation:
-# critical/errors/warnings/information
+# all five major categories of validation:
+# critical errors/errors/warnings/skipped tests/information
 MESSAGE_CATALOG = Dict[
-    str,  # message type (info/skipped/warning/error/critical)
+    str,  # message type (critical/error/warning/skipped/info)
     MESSAGE_PARTITION
 ]
 
