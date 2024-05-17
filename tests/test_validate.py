@@ -11,8 +11,7 @@ from reasoner_validator.trapi import (
     TRAPISchemaValidator,
     openapi_to_jsonschema,
     load_schema,
-    LATEST_TRAPI_RELEASE,
-    LATEST_TRAPI_MAJOR_MINOR_RELEASE
+    LATEST_TRAPI_RELEASE
 )
 from tests import (
     LATEST_TEST_RELEASES,

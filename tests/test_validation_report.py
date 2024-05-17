@@ -589,18 +589,18 @@ def test_source_trail_scoped_validation_message_report():
         code="error.knowledge_graph.edge.predicate.abstract",
         identifier="biolink:contributor",
         edge_id="Richard->biolink:contributor->Translator",
-        source_trail="infores:sri"
+        source_trail="infores:monarch"
     )
     reporter2.report(
         code="error.knowledge_graph.edge.predicate.abstract",
         identifier="biolink:contributor",
         edge_id="Tim->biolink:contributor->Translator",
-        source_trail="infores:sri"
+        source_trail="infores:monarch"
     )
     messages_by_code: MESSAGE_PARTITION = reporter2.get_messages_of_type(MessageType.error)
     assert len(messages_by_code) > 0
     assert "error.knowledge_graph.edge.predicate.abstract" in messages_by_code
-    assert "infores:sri" in messages_by_code['error.knowledge_graph.edge.predicate.abstract']
+    assert "infores:monarch" in messages_by_code['error.knowledge_graph.edge.predicate.abstract']
     assert "global" not in messages_by_code['error.knowledge_graph.edge.predicate.abstract']
 
 

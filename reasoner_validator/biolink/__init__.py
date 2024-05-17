@@ -11,7 +11,7 @@ from pprint import PrettyPrinter
 from bmt import Toolkit, utils
 from linkml_runtime.linkml_model import ClassDefinition, Element
 
-from reasoner_validator.sri.util import is_curie
+from reasoner_validator.utils import is_curie
 from reasoner_validator.versioning import SemVer, SemVerError
 from reasoner_validator.message import MESSAGES_BY_TARGET
 from reasoner_validator.trapi import TRAPISchemaValidator
@@ -877,7 +877,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                 )
                                             elif not self.bmt.is_association_slot(attribute_type_id):
                                                 self.report(
-                                                    code="warning.knowledge_graph.edge.attribute.type_id.not_association_slot",
+                                                    code="warning.knowledge_graph.edge." +
+                                                         "attribute.type_id.not_association_slot",
                                                     identifier=attribute_type_id,
                                                     edge_id=edge_id,
                                                     source_trail=source_trail
@@ -909,17 +910,20 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                         for infores in value:
                                                             if not infores.startswith("infores:"):
                                                                 self.report(
-                                                                   code="error.knowledge_graph.edge.provenance.infores.missing",
+                                                                   code="error.knowledge_graph.edge." +
+                                                                        "provenance.infores.missing",
                                                                    identifier=str(infores),
                                                                    edge_id=edge_id,
                                                                    source_trail=source_trail
                                                                 )
                                                             else:
-                                                                if attribute_type_id == "biolink:primary_knowledge_source":
+                                                                if attribute_type_id == \
+                                                                        "biolink:primary_knowledge_source":
                                                                     found_primary_knowledge_source.append(infores)
 
                                                                 if ara_source and \
-                                                                   attribute_type_id == "biolink:aggregator_knowledge_source" \
+                                                                   attribute_type_id == \
+                                                                        "biolink:aggregator_knowledge_source" \
                                                                         and infores == ara_source:
                                                                     found_ara_knowledge_source = True
                                                                 elif kp_source and \

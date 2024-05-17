@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.2.0
+
+- consolidated utility functions into 'utils'
+- extracted 'ontology_kp' from graph-validation-test-runners repository (former SRI_Testing ontology_kp) and into reasoner-validator under 'biolink'; copied associated unit tests over from graph-validation-test-runners repository.
+
 ## 4.1.9
 
 - temporarily removed **`biolink:treats`** predicate validation check for **`biolink:supporting_graphs`** attribute value, pending community-wide implementation of the recently specified 'treats' predicate knowledge graph annotation standards.

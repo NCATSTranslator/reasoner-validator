@@ -1450,7 +1450,7 @@ def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
                 "attributes": [
                     {
                         "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:sri-reference-kg"
+                        "value": "infores:monarch-kg"
                     },
                 ]
             },

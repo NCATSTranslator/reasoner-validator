@@ -3,7 +3,6 @@ FastAPI web service wrapper for TRAPI validator and Biolink Model compliance tes
 """
 from typing import Optional, Dict
 from sys import stderr
-from os import getenv
 from pydantic import BaseModel
 
 import uvicorn

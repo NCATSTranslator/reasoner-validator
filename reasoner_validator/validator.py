@@ -6,10 +6,14 @@ from reasoner_validator.biolink import (
 )
 
 from reasoner_validator.report import TRAPIGraphType
-from reasoner_validator.trapi import LATEST_TRAPI_RELEASE, TRAPI_1_4_0_SEMVER
-from reasoner_validator.trapi.mapping import MappingValidator, check_node_edge_mappings
+from reasoner_validator.trapi import (
+    LATEST_TRAPI_RELEASE,
+    TRAPI_1_4_0_SEMVER,
+    check_node_edge_mappings
+)
+from reasoner_validator.trapi.mapping import MappingValidator
 from reasoner_validator.versioning import SemVer, SemVerError, get_latest_version
-from reasoner_validator.sri.util import get_aliases
+from reasoner_validator.utils import get_aliases
 
 import logging
 logger = logging.getLogger(__name__)
@@ -442,7 +446,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                 if "categories" in node_details:
                     category = case[f"{target}_category"]
                     categories: List[str] = self.bmt.get_ancestors(category, formatted=True, mixin=False)
-                    if any([category in node_details["categories"] for category in categories]):
+                    if any([c in node_details["categories"] for c in categories]):
                         return True
 
         # Target node identifier or categories is missing,
