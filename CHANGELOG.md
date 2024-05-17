@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.1.8
+
+- BMT update to 1.4.1 (with default Biolink Model 4.2.1)
+- implemented rudimentary **`biolink:treats`** predicate validation check for **`biolink:supporting_graph`** attribute value.
+
 ## 4.1.7
 
 - Fixed mixin predicates to be allowed in both Query Graph and Knowledge Graph contexts; however, this may be overridden by explicitly setting strict_validation to true
