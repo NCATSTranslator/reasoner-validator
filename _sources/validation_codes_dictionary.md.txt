@@ -1114,7 +1114,7 @@
 
 ### warning.knowledge_graph.edge.attribute.type_id.deprecated
 
-**Message:** Edge has a deprecated attribute_type_id
+**Message:** Edge has a deprecated 'attribute_type_id'
 
 **Context:** identifier
 
@@ -1146,7 +1146,7 @@
 
 ### warning.knowledge_graph.edge.knowledge_level.missing
 
-**Message:** Edge is missing its required 'knowledge_level' property!
+**Message:** Edge is missing its required 'knowledge_level' property
 
 **Context:** edge_id
 
@@ -1154,11 +1154,19 @@
 
 ### warning.knowledge_graph.edge.agent_type.missing
 
-**Message:** Edge is missing its required 'agent_type' property!
+**Message:** Edge is missing its required 'agent_type' property
 
 **Context:** identifier
 
 **Description:** The 'agent_type' slot is currently optional but recommended for all edges in knowledge graphs complying with the specified Biolink Model release!
+
+### warning.knowledge_graph.edge.treats.support_graph.missing
+
+**Message:** Edge with a treats-related predicate is missing its required 'support_graph' attribute
+
+**Context:** identifier
+
+**Description:** A 'support_graph' may be required as an explanation for a given 'treats' statement assertion.
 
 ## Information
 

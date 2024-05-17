@@ -206,6 +206,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-kp-missing">warning.knowledge_graph.edge.provenance.kp.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-knowledge-level-missing">warning.knowledge_graph.edge.knowledge_level.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-agent-type-missing">warning.knowledge_graph.edge.agent_type.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-treats-support-graph-missing">warning.knowledge_graph.edge.treats.support_graph.missing</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#information">Information</a><ul>
@@ -1105,7 +1106,7 @@
 </section>
 <section id="warning-knowledge-graph-edge-attribute-type-id-deprecated">
 <h3>warning.knowledge_graph.edge.attribute.type_id.deprecated<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge has a deprecated attribute_type_id</p>
+<p><strong>Message:</strong> Edge has a deprecated ‘attribute_type_id’</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Edge ‘attribute_type_id’ is deprecated in current model, to be removed in the future. Review Biolink Model for replacement.</p>
 </section>
@@ -1129,15 +1130,21 @@
 </section>
 <section id="warning-knowledge-graph-edge-knowledge-level-missing">
 <h3>warning.knowledge_graph.edge.knowledge_level.missing<a class="headerlink" href="#warning-knowledge-graph-edge-knowledge-level-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge is missing its required ‘knowledge_level’ property!</p>
+<p><strong>Message:</strong> Edge is missing its required ‘knowledge_level’ property</p>
 <p><strong>Context:</strong> edge_id</p>
 <p><strong>Description:</strong> The ‘knowledge_level’ slot is currently optional but recommended for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!</p>
 </section>
 <section id="warning-knowledge-graph-edge-agent-type-missing">
 <h3>warning.knowledge_graph.edge.agent_type.missing<a class="headerlink" href="#warning-knowledge-graph-edge-agent-type-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge is missing its required ‘agent_type’ property!</p>
+<p><strong>Message:</strong> Edge is missing its required ‘agent_type’ property</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> The ‘agent_type’ slot is currently optional but recommended for all edges in knowledge graphs complying with the specified Biolink Model release!</p>
+</section>
+<section id="warning-knowledge-graph-edge-treats-support-graph-missing">
+<h3>warning.knowledge_graph.edge.treats.support_graph.missing<a class="headerlink" href="#warning-knowledge-graph-edge-treats-support-graph-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge with a treats-related predicate is missing its required ‘support_graph’ attribute</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> A ‘support_graph’ may be required as an explanation for a given ‘treats’ statement assertion.</p>
 </section>
 </section>
 <section id="information">
