@@ -785,8 +785,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             found_knowledge_level = False
             found_agent_type = False
 
-            # Track presence of 'support_graph' for some predicates (e.g. 'treats')
-            found_support_graph = False
+            # TODO: Defer tracking of the presence of 'biolink:support_graphs'
+            #       for specified predicates like 'treats' or its descendants
+            # found_support_graphs = False
 
             for attribute in attributes:
 
@@ -926,9 +927,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                                         infores == kp_source:
                                                                     found_kp_knowledge_source = True
 
-                                                # Check for 'support_graph'
-                                                if attribute_type_id == "biolink:support_graph":
-                                                    found_support_graph = False
+                                                # TODO: Defer tracking of the presence of 'biolink:support_graphs'
+                                                #       for specified predicates like 'treats' or its descendants
+                                                # if attribute_type_id == "biolink:support_graphs":
+                                                #     found_support_graphs = False
 
                                                 # We expect at this point that, if 'attribute_type_id' is a
                                                 # 'knowledge_level' or 'agent_type', then the value is a scalar
@@ -1008,13 +1010,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                             identifier=edge_id
                         )
 
-                #
-                predicate = edge['predicate'] if 'predicate' in edge else None
-                if self.is_treats(predicate) and not found_support_graph:
-                    self.report(
-                        code="warning.knowledge_graph.edge.treats.support_graph.missing",
-                        identifier=edge_id
-                    )
+                # TODO: Defer tracking of the presence of 'biolink:support_graphs'
+                #       for specified predicates like 'treats' or its descendants
+                # predicate = edge['predicate'] if 'predicate' in edge else None
+                # if self.is_treats(predicate) and not found_support_graphs:
+                #     self.report(
+                #         code="warning.knowledge_graph.edge.treats.support_graph.missing",
+                #         identifier=edge_id
+                #     )
 
         return source_trail  # may be 'None' if the required attributes are missing
 
