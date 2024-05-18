@@ -7,7 +7,8 @@ import pytest
 from reasoner_validator.utils.http import post_query
 from reasoner_validator.biolink.ontology import (
     ONTOLOGY_KP_TRAPI_SERVER,
-    NODE_NORMALIZER_SERVER
+    NODE_NORMALIZER_SERVER,
+    get_parent_concept
 )
 
 pytest_plugins = ('pytest_asyncio',)
@@ -77,3 +78,28 @@ async def test_post_query_to_node_normalization(curie: str, category: str):
     assert "equivalent_identifiers" in result[curie]
     assert len(result[curie]["equivalent_identifiers"])
     assert category in result[curie]["type"]
+
+
+@pytest.mark.parametrize(
+    "curie,category,result",
+    [
+        (   # Query 0 - chemical compounds are NOT in an ontology hierarchy
+            "CHEMBL.COMPOUND:CHEMBL2333026",
+            "biolink:SmallMolecule",
+            None
+        ),
+        (   # Query 1 - MONDO disease terms are in an ontology term hierarchy
+            "MONDO:0011027",
+            "biolink:Disease",
+            "MONDO:0015967"
+        ),
+        (   # Query 2 - HP phenotype terms are in an ontology term hierarchy
+            "HP:0040068",  # "Abnormality of limb bone"
+            "biolink:PhenotypicFeature",
+            "HP:0000924"  # Abnormality of the skeletal system
+        )
+    ]
+)
+def test_get_parent_concept(curie: str, category: str, result: Optional[str]):
+    # Just use default Biolink Model release for this test
+    assert get_parent_concept(curie=curie, category=category, biolink_version=None) == result
