@@ -1215,7 +1215,7 @@ def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(r
 def test_empty_case_input_found_in_response(case, response):
     validator = TRAPIResponseValidator()
     with pytest.raises(AssertionError):
-        validator.case_input_found_in_response(case, response)
+        validator.testcase_input_found_in_response(case, response)
 
 
 #
@@ -1458,5 +1458,5 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
 )
 def test_case_input_found_in_response(case, response, code):
     validator = TRAPIResponseValidator()
-    assert not validator.case_input_found_in_response(case, response) if code else True
+    assert not validator.testcase_input_found_in_response(case, response) if code else True
     check_messages(validator, code)

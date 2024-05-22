@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.2.1
+
+- Validator **`case_\*`** functions renamed to **`testcase_\*`** for clarity of function
+- **`testcase_node`** comparisons tweaked to check exact matches or matches against _all parent categories_ of the specified testcase category and observed KG node categories. Less precise (more generic) categorical matches trigger a validation warning.
+
 ## 4.2.0
 
 - consolidated utility functions into 'utils'
@@ -31,7 +36,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 ## 4.1.4
 
 - cleaned up predicate mixin handling distinguishing between Biolink Model 4.2.0 versus pre-4.2.0 validation.
-- Added more fine-grained validation reporting inside case_input_found_in_response() TRAPI Response validation method, also extracted "missing edge" validation message from graph-validation-tests module and embedded it into method(); added/refactored validation codes accordingly
+- Added more fine-grained validation reporting inside **`case_input_found_in_response()`** TRAPI Response validation method, also extracted "missing edge" validation message from graph-validation-tests module and embedded it into method(); added/refactored validation codes accordingly
 - Full TRAPI 1.5.0 unit tests still skipped (need rework); some other unit test temporarily skipped (due to TRAPI master branch schema bugs).
 - git action updates
 

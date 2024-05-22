@@ -694,6 +694,14 @@ warning:
           empty:
             $message: "Response returned an empty Message Knowledge Graph?"
             $description: "An empty Knowledge Graph is allowed but merits a boundary response warning?"
+          node:
+            category:
+              imprecise:
+                $message: "The category of the knowledge graph node matching an input node identifier is more generic than expected."
+                $context:
+                  - identifier
+                  - expected_category
+                  - observed_categories
         results:
           empty:
             $message: "Response returned empty Message.results?"
