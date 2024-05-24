@@ -40,6 +40,13 @@ def test_get_aliases_of_empty_identifier(identifier):
             "ORPHANET:33110",
             "MONDO:0011096"
         ),
+        (   # Test that the alias search is also
+            # input namespace case-insensitive:
+            # A modification of case of the input
+            # identifier is still properly returned.
+            "Orphanet:33110",
+            "MONDO:0011096"
+        ),
         (   # only CURIEs can be resolved to aliases
             # but just logs a warning but returns the identifier
             "not-a-curie",
@@ -66,5 +73,5 @@ def test_get_aliases(identifier: str, one_alias: str):
         ),
     ]
 )
-def test_get_aliases(identifier: str, reference: str):
+def test_get_reference(identifier: str, reference: str):
     assert get_reference(identifier) == reference

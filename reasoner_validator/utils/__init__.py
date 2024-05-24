@@ -81,16 +81,7 @@ def get_aliases(identifier: str) -> List[str]:
                         if "equivalent_identifiers" in clique.keys():
                             # Sanity check: returned aliases
                             # are all converted to upper case
-                            aliases = [
-                                str(entry["identifier"]).upper()
-                                for entry in clique["equivalent_identifiers"]
-                            ]
-                            #
-                            # Decided that it was a bad idea to remove
-                            # the original identifier from the aliases...
-                            # aliases.remove(identifier)
-                            #
-                            # print(dumps(aliases, indent=2))
+                            aliases = [entry["identifier"] for entry in clique["equivalent_identifiers"]]
                         else:
                             logging.warning(
                                 f"get_aliases(): missing the 'equivalent identifiers' for the '{identifier}' clique?"
@@ -108,6 +99,10 @@ def get_aliases(identifier: str) -> List[str]:
         # Logging various errors but always
         # return the identifier as its own alias
         aliases = [identifier]
+    elif identifier not in aliases:
+        # If the identifier itself is missing in the aliases, then
+        # could just be a letter case mismatch? See if you can correct for this...
+        aliases = [identifier if str(i).upper() == identifier.upper() else i for i in aliases]
 
     return aliases
 

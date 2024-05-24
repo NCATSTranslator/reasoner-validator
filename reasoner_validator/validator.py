@@ -778,8 +778,6 @@ class TRAPIResponseValidator(BiolinkValidator):
         # with expected categories, in nodes catalog
         nodes: Dict = knowledge_graph["nodes"]
         subject_id: str = testcase["subject_id"] if "subject_id" in testcase else testcase["subject"]
-        # Sanity check: convert identifier to upper case for further comparisons
-        subject_id = subject_id.upper()
         subject_aliases = get_aliases(subject_id)
         if not self.testcase_node_found("subject", subject_aliases, testcase, nodes):
             self.report(
@@ -790,8 +788,6 @@ class TRAPIResponseValidator(BiolinkValidator):
             return False
 
         object_id: str = testcase["object_id"] if "object_id" in testcase else testcase["object"]
-        # Sanity check: convert identifier to upper case for further comparisons
-        object_id = object_id.upper()
         object_aliases = get_aliases(object_id)
         if not self.testcase_node_found("object", object_aliases, testcase, nodes):
             self.report(
