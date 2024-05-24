@@ -419,11 +419,21 @@ class TRAPIResponseValidator(BiolinkValidator):
         return False if self.has_errors() else True
 
     def category_matched(self, source_categories: List[str], target_categories: List[str]) -> bool:
+        """
+        For each 'source' Biolink Model category given (list of CURIEs as strings?),
+        first get the union set of all parent (ancestral) categories, then check if
+        at least one of these categories is matched to the list of target categories.
+
+        :param source_categories: List[str], list of 'source' categories whose category hierarchy is to be matched.
+        :param target_categories: List[str], list of 'target' categories to be matched against 'source'
+                                             (or 'source parent' categories
+        :return: bool, True if a category match is found (as described above)
+        """
         source_category_set: Set = set()
         # gather all the possible exact and ancestor (parent)
         # categories of source_categories to match...
         for source_category in source_categories:
-            source_category_set.union(self.bmt.get_ancestors(source_category, formatted=True, mixin=False))
+            source_category_set.update(self.bmt.get_ancestors(source_category, formatted=True, mixin=False))
         # ...then check all the target categories against that source category set
         return any([c in target_categories for c in source_category_set])
 

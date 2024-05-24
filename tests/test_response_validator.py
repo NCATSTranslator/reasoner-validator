@@ -1,7 +1,7 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import Dict, Optional
+from typing import List, Dict, Optional
 from sys import stderr
 
 import logging
@@ -1203,6 +1203,45 @@ def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(r
     validator.check_compliance_of_trapi_response(response=response)
     validator.dump(file=stderr)
     print("\n"+"="*80+"\n", file=stderr)
+
+
+@pytest.mark.parametrize(
+    "source_categories,target_categories,outcome",
+    [
+        (   # query 0 - empty lists don't have anything to match?
+            [], [], False
+        ),
+        (   # query 1 - exact matches should be true
+            ["biolink:Gene"], ["biolink:Gene"], True
+        ),
+        (   # query 2 - biolink:Protein is **not** directly matched in the
+            #           'source' hierarchy (even though its parents could overlap)
+            ["biolink:Gene"], ["biolink:Drug"], False
+        ),
+        (   # query 3 - but a 'target' category list with at least one exact
+            #           match of category to source will also be matched,
+            #           even if other target entries don't match
+            ["biolink:Gene"], ["biolink:Gene", "biolink:Drug"], True
+        ),
+        (   # query 4 - 'target' category matches at least one
+            #           parent of the list of 'source' categories
+            ["biolink:Gene"], ["biolink:BiologicalEntity"], True
+        ),
+        (   # query 5 - a 'target' category list matches at least
+            #           one match to a parent of the list of the
+            #           'source' categories, will be matched,
+            #           even if other target entries don't match
+            #
+            ["biolink:Gene"], ["biolink:BiologicalEntity", "biolink:Drug"], True
+        )
+    ]
+)
+def test_category_matched(source_categories: List[str], target_categories: List[str], outcome: bool):
+    validator = TRAPIResponseValidator()
+    assert validator.category_matched(
+        source_categories,
+        target_categories,
+    ) is outcome
 
 
 @pytest.mark.parametrize(
