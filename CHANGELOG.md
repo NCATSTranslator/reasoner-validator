@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.2.2
+
+- In some fringe cases, the Node Normalizer sends by equivalent identifiers with CURIE namespaces letter case which departs from expectation. This makes comparisons to aliases a bit fragile. Normalization of the list of aliases and the original identifier all upper case, compensates for this situation.
+- Some missing unit tests added against utils
+
 ## 4.2.1
 
 - Validator **`case_\*`** functions renamed to **`testcase_\*`** for clarity of function

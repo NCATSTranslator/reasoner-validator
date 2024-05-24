@@ -79,7 +79,12 @@ def get_aliases(identifier: str) -> List[str]:
                         # preferred_curie = preferred_id["identifier"]
                         # preferred_name = preferred_id["label"]
                         if "equivalent_identifiers" in clique.keys():
-                            aliases = [entry["identifier"] for entry in clique["equivalent_identifiers"]]
+                            # Sanity check: returned aliases
+                            # are all converted to upper case
+                            aliases = [
+                                str(entry["identifier"]).upper()
+                                for entry in clique["equivalent_identifiers"]
+                            ]
                             #
                             # Decided that it was a bad idea to remove
                             # the original identifier from the aliases...
