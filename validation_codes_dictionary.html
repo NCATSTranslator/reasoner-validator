@@ -173,6 +173,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-schema-version-missing">warning.trapi.response.schema_version.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-biolink-version-missing">warning.trapi.response.biolink_version.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-knowledge-graph-empty">warning.trapi.response.message.knowledge_graph.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-knowledge-graph-node-category-imprecise">warning.trapi.response.message.knowledge_graph.node.category.imprecise</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-results-empty">warning.trapi.response.message.results.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-workflow-runner-parameters-missing">warning.trapi.response.workflow.runner_parameters.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-workflow-parameters-missing">warning.trapi.response.workflow.parameters.missing</a></li>
@@ -944,6 +945,11 @@
 <h3>warning.trapi.response.message.knowledge_graph.empty<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Response returned an empty Message Knowledge Graph?</p>
 <p><strong>Description:</strong> An empty Knowledge Graph is allowed but merits a boundary response warning?</p>
+</section>
+<section id="warning-trapi-response-message-knowledge-graph-node-category-imprecise">
+<h3>warning.trapi.response.message.knowledge_graph.node.category.imprecise<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-node-category-imprecise" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> The category of the knowledge graph node matching an input node identifier is more generic than expected.</p>
+<p><strong>Context:</strong> identifier, expected_category, observed_categories</p>
 </section>
 <section id="warning-trapi-response-message-results-empty">
 <h3>warning.trapi.response.message.results.empty<a class="headerlink" href="#warning-trapi-response-message-results-empty" title="Permalink to this heading"></a></h3>

@@ -902,6 +902,12 @@
 
 **Description:** An empty Knowledge Graph is allowed but merits a boundary response warning?
 
+### warning.trapi.response.message.knowledge_graph.node.category.imprecise
+
+**Message:** The category of the knowledge graph node matching an input node identifier is more generic than expected.
+
+**Context:** identifier, expected_category, observed_categories
+
 ### warning.trapi.response.message.results.empty
 
 **Message:** Response returned empty Message.results?

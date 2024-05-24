@@ -45,10 +45,7 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">TRAPI Response Validation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.case_edge_bindings"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.case_edge_bindings()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.case_input_found_in_response"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.case_input_found_in_response()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.case_node_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.case_node_found()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.case_result_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.case_result_found()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.category_matched"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.category_matched()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.check_compliance_of_trapi_response"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.check_compliance_of_trapi_response()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.has_valid_knowledge_graph()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_query_graph"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.has_valid_query_graph()</span></code></a></li>
@@ -57,6 +54,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sample_graph"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sample_graph()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sample_results"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sample_results()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sanitize_workflow"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sanitize_workflow()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_edge_bindings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_input_found_in_response"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_input_found_in_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_node_found()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_result_found()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -114,61 +115,52 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_source_trail</span></code>(sources)</p></td>
 <td><p>Returns a 'source_trail' path from 'primary_knowledge_source' upwards.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.case_edge_bindings" title="reasoner_validator.validator.TRAPIResponseValidator.case_edge_bindings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">case_edge_bindings</span></code></a>(q_edge_ids, ...)</p></td>
-<td><p>Check if target query edge id and knowledge graph edge id are in specified edge_bindings.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.category_matched" title="reasoner_validator.validator.TRAPIResponseValidator.category_matched"><code class="xref py py-obj docutils literal notranslate"><span class="pre">category_matched</span></code></a>(source_categories, ...)</p></td>
+<td><p>For each 'source' Biolink Model category given (list of CURIEs as strings?), first get the union set of all parent (ancestral) categories, then check if at least one of these categories is matched to the list of target categories.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.case_input_found_in_response" title="reasoner_validator.validator.TRAPIResponseValidator.case_input_found_in_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">case_input_found_in_response</span></code></a>(case, response)</p></td>
-<td><p>Predicate to validate if test data test case specified edge is returned in the Knowledge Graph of the TRAPI Response Message.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.case_node_found" title="reasoner_validator.validator.TRAPIResponseValidator.case_node_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">case_node_found</span></code></a>(target, identifiers, case, nodes)</p></td>
-<td><p>Check for presence of the target identifier, with expected categories, in the &quot;nodes&quot; catalog.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.case_result_found" title="reasoner_validator.validator.TRAPIResponseValidator.case_result_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">case_result_found</span></code></a>(query_graph, subject_id, ...)</p></td>
-<td><p>Validate that test case S--P-&gt;O edge is found bound to the Results? :param query_graph: Dict, query graph to which the results pertain :param subject_id: str, subject node (CURIE) identifier :param object_id:  str, subject node (CURIE) identifier :param edge_id:  str, subject node (CURIE) identifier :param results: List of (TRAPI-version specific) Result objects :return: bool, True if case S-P-O edge was found in the results</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_biolink_model_compliance</span></code>(graph, graph_type)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_biolink_model_compliance</span></code>(graph, graph_type)</p></td>
 <td><p>Validate a TRAPI-schema compliant Message graph-like data structure against the currently active Biolink Model Toolkit model version.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_biolink_model_compliance_of_input_edge</span></code>(edge)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_biolink_model_compliance_of_input_edge</span></code>(edge)</p></td>
 <td><p>Validate a templated test input edge contents against the current BMT Biolink Model release.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="reasoner_validator.validator.TRAPIResponseValidator.check_compliance_of_trapi_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_compliance_of_trapi_response</span></code></a>(response)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="reasoner_validator.validator.TRAPIResponseValidator.check_compliance_of_trapi_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_compliance_of_trapi_response</span></code></a>(response)</p></td>
 <td><p>One stop validation of all components of a TRAPI-schema compliant Query.Response, including its Message against a designated Biolink Model release.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code>([title, id_rows, msg_rows, ...])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code>([title, id_rows, msg_rows, ...])</p></td>
 <td><p>Dump all available messages captured by the ValidationReporter, printed as formatted human-readable text, on a specified file device.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_all_messages</span></code>([test, target, flat])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_all_messages</span></code>([test, target, flat])</p></td>
 <td><p>Dump <strong>all</strong> messages for a given test from a given target, as JSON.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_critical</span></code>([test, target, flat])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_critical</span></code>([test, target, flat])</p></td>
 <td><p>Dump critical error messages as JSON.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_errors</span></code>([test, target, flat])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_errors</span></code>([test, target, flat])</p></td>
 <td><p>Dump 'error' messages as JSON.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_info</span></code>([test, target, flat])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_info</span></code>([test, target, flat])</p></td>
 <td><p>Dump 'information' messages as JSON.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_messages_type</span></code>(message_type[, test, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_messages_type</span></code>(message_type[, test, ...])</p></td>
 <td><p>Dump ValidationReporter messages of type 'message_type' as JSON.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_skipped</span></code>([test, target, flat])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_skipped</span></code>([test, target, flat])</p></td>
 <td><p>Dump 'skipped test' messages as JSON.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_warnings</span></code>([test, target, flat])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_warnings</span></code>([test, target, flat])</p></td>
 <td><p>Dump 'warning' messages as JSON.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dumps</span></code>([id_rows, msg_rows, compact_format])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dumps</span></code>([id_rows, msg_rows, compact_format])</p></td>
 <td><p>Text string version of dump(): returns all available messages captured by the ValidationReporter, as a formatted human-readable text blob.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_messages</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_messages</span></code>()</p></td>
 <td><p>Get copy of all MESSAGES_BY_TARGET as a Python data structure.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_messages_of_type</span></code>(message_type)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_messages_of_type</span></code>(message_type)</p></td>
 <td><p>Get MESSAGE_PARTITION dictionary of all ValidationReporter messages of a given 'message_type', harvested from all target and test contexts.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_biolink_version</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_biolink_version</span></code>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Biolink Model version currently tracked by the TRAPISchemaValidator.</p>
@@ -176,40 +168,40 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_critical</span></code>([test, target])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_critical</span></code>([test, target])</p></td>
 <td><p>Get copy of all recorded 'critical' error messages, for a given test from a given target.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_default_target</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_default_target</span></code>()</p></td>
 <td><p>Returns the current target of the ValidationReporter.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_default_test</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_default_test</span></code>()</p></td>
 <td><p>Returns the current default test identifier of the ValidationReporter.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_errors</span></code>([test, target])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_errors</span></code>([test, target])</p></td>
 <td><p>Get copy of all recorded 'error' messages, for a given test from a given target.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_info</span></code>([test, target])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_info</span></code>([test, target])</p></td>
 <td><p>Get copy of all recorded 'information' messages, for a given test from a given target.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inverse_predicate</span></code>(predicate)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_inverse_predicate</span></code>(predicate)</p></td>
 <td><p>Utility wrapper of logic to robustly test if a predicate exists and has an inverse.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_message_type</span></code>(code)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_message_type</span></code>(code)</p></td>
 <td><p>Get type of message code.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages_by_target</span></code>([target])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages_by_target</span></code>([target])</p></td>
 <td><p>Returns a block of MESSAGES_BY_TEST corresponding to a given or default target.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages_by_test</span></code>([test, target])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages_by_test</span></code>([test, target])</p></td>
 <td><p>Returns MESSAGE_CATALOG corresponding to a given or default target. Note that the dictionary returned is not a copy of the original  thus caution should be taken not to mutate it! :param test: str, specified test (gets current 'default' test if not given) :param target: str, specified target (gets current 'default' test if not given) :return: MESSAGES_BY_TEST corresponding to a resolved target.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages_of_type</span></code>(message_type[, test, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages_of_type</span></code>(message_type[, test, ...])</p></td>
 <td><p>Get Python data dictionary of ValidationReporter messages of 'message_type', for a specified (or default?) target and test.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_categories</span></code>(node_id)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_categories</span></code>(node_id)</p></td>
 <td><p>Categories by 'node_id'. :param node_id: :return: For a given node_id, returns the associated categories;          None if node_id is currently unknown or has no categories.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_identifiers</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_identifiers</span></code>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List of currently registered node_ids</p>
@@ -217,16 +209,16 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_result</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_result</span></code>()</p></td>
 <td><p>Get result of validation.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_skipped</span></code>([test, target])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_skipped</span></code>([test, target])</p></td>
 <td><p>Get copy of all recorded 'skipped test' messages, for a given test from a given target.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_target_provenance</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_target_provenance</span></code>()</p></td>
 <td><p>Returns infores-prefix-normalized target provenance metadata.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trapi_version</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trapi_version</span></code>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str, TRAPI (SemVer) version currently targeted by the TRAPISchemaValidator.</p>
@@ -234,55 +226,55 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_warnings</span></code>([test, target])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_warnings</span></code>([test, target])</p></td>
 <td><p>Get copy of all recorded 'warning' messages, for a given test from a given target.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_critical</span></code>([test, target])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_critical</span></code>([test, target])</p></td>
 <td><p>Predicate to detect any recorded critical error messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_errors</span></code>([test, target])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_errors</span></code>([test, target])</p></td>
 <td><p>Predicate to detect any recorded error messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_information</span></code>([test, target])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_information</span></code>([test, target])</p></td>
 <td><p>Predicate to detect any recorded information messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_message_type</span></code>(message_type[, test, target])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_message_type</span></code>(message_type[, test, target])</p></td>
 <td><p>Predicate to detect if ValidationReporter has any non-empty messages of type 'message_type'.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_messages</span></code>([test, target])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_messages</span></code>([test, target])</p></td>
 <td><p>Predicate to detect any recorded validation messages.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_skipped</span></code>([test, target])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_skipped</span></code>([test, target])</p></td>
 <td><p>Predicate to detect any recorded 'skipped test' messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph" title="reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_valid_knowledge_graph</span></code></a>(message[, edges_limit])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph" title="reasoner_validator.validator.TRAPIResponseValidator.has_valid_knowledge_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_valid_knowledge_graph</span></code></a>(message[, edges_limit])</p></td>
 <td><p>Validate a TRAPI Knowledge Graph.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_query_graph" title="reasoner_validator.validator.TRAPIResponseValidator.has_valid_query_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_valid_query_graph</span></code></a>(message)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_query_graph" title="reasoner_validator.validator.TRAPIResponseValidator.has_valid_query_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_valid_query_graph</span></code></a>(message)</p></td>
 <td><p>Validate a TRAPI Query Graph.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_results" title="reasoner_validator.validator.TRAPIResponseValidator.has_valid_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_valid_results</span></code></a>(message[, sample_size])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.has_valid_results" title="reasoner_validator.validator.TRAPIResponseValidator.has_valid_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_valid_results</span></code></a>(message[, sample_size])</p></td>
 <td><p>Validate a TRAPI Results.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code>([test, target])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_warnings</span></code>([test, target])</p></td>
 <td><p>Predicate to detect any recorded warning messages.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>(graph_type[, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_strict_validation</span></code>(graph_type[, ...])</p></td>
 <td><p>Predicate to test if strict validation is to be applied.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_symmetric</span></code>(name)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_symmetric</span></code>(name)</p></td>
 <td><p>Checks if a given element identified by name, is a symmetric (predicate) slot.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_valid_trapi_query</span></code>(instance[, component])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_valid_trapi_query</span></code>(instance[, component])</p></td>
 <td><p>Make sure that the Message is a syntactically valid TRAPI Query JSON object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code>(reporter)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code>(reporter)</p></td>
 <td><p>Merge all messages and metadata from a second BiolinkValidator, into the calling TRAPISchemaValidator instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_coded_messages</span></code>(aggregated, additions)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_coded_messages</span></code>(aggregated, additions)</p></td>
 <td><p>Merge additional MESSAGE_PARTITION content into an already aggregate MESSAGE_PARTITION.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_biolink_version</span></code>(version)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_biolink_version</span></code>(version)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param version<span class="colon">:</span></dt>
 <dd class="field-odd"><p>simple 'major.minor.patch' Biolink Model SemVer</p>
@@ -290,7 +282,7 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_trapi_version</span></code>(version)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_required_trapi_version</span></code>(version)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param version<span class="colon">:</span></dt>
 <dd class="field-odd"><p>simple 'major.minor.patch' TRAPI schema release SemVer</p>
@@ -298,94 +290,106 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>(code[, test, target, source_trail])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>(code[, test, target, source_trail])</p></td>
 <td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextual parameters). :param code: str, dot delimited validation path code :param test: str, specified test (gets current 'default' test if not given) :param target: str, specified target (gets current 'default' test if not given) :param source_trail, Optional[str], audit trail of knowledge source provenance for                      a given Edge, as a string. Defaults to &quot;global&quot; if not specified. :param message: <a href="#id1"><span class="problematic" id="id2">**</span></a>Dict, named parameters representing extra (str-formatted) context for the given code message :return: None (internally record the validation message).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_header</span></code>([title, compact_format])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_header</span></code>([title, compact_format])</p></td>
 <td><p>Return a suitably generated report header. :param title: Optional[str], if title is None, then only the 'reasoner-validator' version is printed out               in the header. If the title is an empty string (the default), then 'Validation Report' used. :param compact_format: bool, whether to print the header in compact format (default: True). Extra line feeds are otherwise provided to provide space around the header                        and control characters are output to underline the header. :return: str, generated header.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_biolink_version</span></code>(version)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_biolink_version</span></code>(version)</p></td>
 <td><p>Reset Biolink Model version tracked by the ValidationReporter.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_default_target</span></code>(name)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_default_target</span></code>(name)</p></td>
 <td><p>Resets the default target identifier of the ValidationReporter to a new string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_default_test</span></code>(name)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_default_test</span></code>(name)</p></td>
 <td><p>Resets the default test identifier of the ValidationReporter to a new string.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_trapi_version</span></code>(version)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_trapi_version</span></code>(version)</p></td>
 <td><p>Reset TRAPI version tracked by the TRAPISchemaValidator.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sample_graph" title="reasoner_validator.validator.TRAPIResponseValidator.sample_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_graph</span></code></a>(graph[, edges_limit])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sample_graph" title="reasoner_validator.validator.TRAPIResponseValidator.sample_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_graph</span></code></a>(graph[, edges_limit])</p></td>
 <td><p>Only process a strict subsample of the TRAPI Response Message knowledge graph.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sample_results" title="reasoner_validator.validator.TRAPIResponseValidator.sample_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_results</span></code></a>(results[, sample_size])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sample_results" title="reasoner_validator.validator.TRAPIResponseValidator.sample_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_results</span></code></a>(results[, sample_size])</p></td>
 <td><p>Subsample the results to a maximum size of 'sample_size'</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sanitize_workflow" title="reasoner_validator.validator.TRAPIResponseValidator.sanitize_workflow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sanitize_workflow</span></code></a>(response)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sanitize_workflow" title="reasoner_validator.validator.TRAPIResponseValidator.sanitize_workflow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sanitize_workflow</span></code></a>(response)</p></td>
 <td><p>Workflows in TRAPI Responses cannot be validated further due to missing tags and None values.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_nodes</span></code>(nodes)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_nodes</span></code>(nodes)</p></td>
 <td><p>Records additional nodes, uniquely by node_id, with specified categories.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_case_has_validation_errors</span></code>(tag, case)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_case_has_validation_errors</span></code>(tag, case)</p></td>
 <td><p>Check if test case has validation errors.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_edge_bindings</span></code></a>(q_edge_ids, ...)</p></td>
+<td><p>Check if target query edge id and knowledge graph edge id are in specified edge_bindings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_input_found_in_response" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_input_found_in_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_input_found_in_response</span></code></a>(testcase, ...)</p></td>
+<td><p>Predicate to validate if test data test case specified edge is returned in the Knowledge Graph of the TRAPI Response Message.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_node_found</span></code></a>(target, identifiers, ...)</p></td>
+<td><p>Check for presence of the target identifier, with expected categories, in the &quot;nodes&quot; catalog.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_result_found</span></code></a>(query_graph, ...)</p></td>
+<td><p>Validate that test testcase S--P-&gt;O edge is found bound to the Results? :param query_graph: Dict, query graph to which the results pertain :param subject_id: str, subject node (CURIE) identifier :param object_id:  str, subject node (CURIE) identifier :param edge_id:  str, subject node (CURIE) identifier :param results: List of (TRAPI-version specific) Result objects :return: bool, True if testcase S-P-O edge was found in the results</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
 <td><p>Export BiolinkValidator contents as a Python dictionary (including Biolink version and parent class dictionary content).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code>(instance, component)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code>(instance, component)</p></td>
 <td><p>Validate instance against schema.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_agent_type</span></code>(edge_id, found, value)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_agent_type</span></code>(edge_id, found, value)</p></td>
 <td><p>Validate the value of a 'agent_type' of the given edge.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attribute_constraints</span></code>(edge_id, edge)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attribute_constraints</span></code>(edge_id, edge)</p></td>
 <td><p>Validate Query Edge Attributes.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attributes</span></code>(graph_type, edge_id, edge)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attributes</span></code>(graph_type, edge_id, edge)</p></td>
 <td><p>Validate Knowledge Edge Attributes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_biolink</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_biolink</span></code>()</p></td>
 <td><p>Predicate to check if the Biolink (version) is tagged to 'suppress' compliance validation.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_category</span></code>(context, node_id, category)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_category</span></code>(context, node_id, category)</p></td>
 <td><p>Validate a Biolink category.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_element_status</span></code>(graph_type, context, ...)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_element_status</span></code>(graph_type, context, ...)</p></td>
 <td><p>Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_edge</span></code>(edge, graph_type)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_edge</span></code>(edge, graph_type)</p></td>
 <td><p>Validate slot properties of a relationship ('biolink:Association') edge.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_node</span></code>(node_id, slots, graph_type)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_node</span></code>(node_id, slots, graph_type)</p></td>
 <td><p>Validate slot properties (mainly 'categories') of a node.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_infores</span></code>(context, edge_id, identifier)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_infores</span></code>(context, edge_id, identifier)</p></td>
 <td><p>Validate that the specified identifier is a well-formed Infores CURIE.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_knowledge_level</span></code>(edge_id, found, value)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_knowledge_level</span></code>(edge_id, found, value)</p></td>
 <td><p>Validate the value of a 'knowledge_level' of the given edge.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_predicate</span></code>(edge_id, predicate, ...)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_predicate</span></code>(edge_id, predicate, ...)</p></td>
 <td><p>Validates predicates based on their meta-nature: existence, mixin, deprecation, etc.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_provenance</span></code>(edge_id, ara_source, ...)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_provenance</span></code>(edge_id, ara_source, ...)</p></td>
 <td><p>Validates ARA and KP infores knowledge sources based on surveyed Edge slots (recorded in edge &quot;attributes&quot; pre-1.4.0; in &quot;sources&quot;, post-1.4.0).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_constraints</span></code>(edge_id, edge)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_constraints</span></code>(edge_id, edge)</p></td>
 <td><p>Validate Query Edge Qualifier Constraints.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_entry</span></code>(context, edge_id, ...)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_entry</span></code>(context, edge_id, ...)</p></td>
 <td><p>Validate Qualifier Entry (JSON Object).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifiers</span></code>(edge_id, edge[, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifiers</span></code>(edge_id, edge[, ...])</p></td>
 <td><p>Validate Knowledge Edge Qualifiers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_slot_value</span></code>(slot_name, context, ...)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_slot_value</span></code>(slot_name, context, ...)</p></td>
 <td><p>Validate the single-valued value of a specified slot of the given knowledge graph entity slot. :param slot_name, str, name of a valid slot, a value for which is to be validated :param context: str, context of the validation (e.g. node or edge id) :param found: bool, current status of slot detection,               Should be true if the slot was already previously seen :param value: Optional[str], the value to be validated :return: bool, True if valid slot and value (validation messages recorded in the BiolinkValidator).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_sources</span></code>(edge_id, edge)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_sources</span></code>(edge_id, edge)</p></td>
 <td><p>Validate (TRAPI 1.4.0-beta ++) Edge sources provenance.</p></td>
 </tr>
 </tbody>
@@ -428,65 +432,23 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 </tbody>
 </table>
 <dl class="py method">
-<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.case_edge_bindings">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">case_edge_bindings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_edge_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.case_edge_bindings" title="Permalink to this definition"></a></dt>
-<dd><p>Check if target query edge id and knowledge graph edge id are in specified edge_bindings.
-:rtype: object
-:param q_edge_ids: Tuple[str], expected query edge identifiers in a matching result
-:param target_edge_id:  str, expected knowledge edge identifier in a matching result
-:param data: TRAPI version-specific Response context from which the ‘edge_bindings’ may be retrieved
-:return: True, if found</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.case_input_found_in_response">
-<span class="sig-name descname"><span class="pre">case_input_found_in_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.case_input_found_in_response" title="Permalink to this definition"></a></dt>
-<dd><p>Predicate to validate if test data test case specified edge is returned
-in the Knowledge Graph of the TRAPI Response Message. This method assumes
-that the TRAPI response is already generally validated as well-formed.</p>
+<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.category_matched">
+<span class="sig-name descname"><span class="pre">category_matched</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.category_matched" title="Permalink to this definition"></a></dt>
+<dd><p>For each ‘source’ Biolink Model category given (list of CURIEs as strings?),
+first get the union set of all parent (ancestral) categories, then check if
+at least one of these categories is matched to the list of target categories.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>case</strong> – Dict, input data test case</p></li>
-<li><p><strong>response</strong> – Dict, TRAPI Response whose message ought to contain the test case edge</p></li>
+<li><p><strong>source_categories</strong> – List[str], list of ‘source’ categories whose category hierarchy is to be matched.</p></li>
+<li><p><strong>target_categories</strong> – List[str], list of ‘target’ categories to be matched against ‘source’
+(or ‘source parent’ categories</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if test case edge found; False otherwise</p>
+<dd class="field-even"><p>bool, True if a category match is found (as described above)</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.case_node_found">
-<span class="sig-name descname"><span class="pre">case_node_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifiers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.case_node_found" title="Permalink to this definition"></a></dt>
-<dd><p>Check for presence of the target identifier,
-with expected categories, in the “nodes” catalog.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> – ‘subject’ or ‘object’</p></li>
-<li><p><strong>identifiers</strong> – List of node (CURIE) identifiers to be checked in the “nodes” catalog</p></li>
-<li><p><strong>case</strong> – Dict, full test case (to access the target node ‘category’)</p></li>
-<li><p><strong>nodes</strong> – Dict, nodes category indexed by node identifiers.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.case_result_found">
-<span class="sig-name descname"><span class="pre">case_result_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.case_result_found" title="Permalink to this definition"></a></dt>
-<dd><p>Validate that test case S–P-&gt;O edge is found bound to the Results?
-:param query_graph: Dict, query graph to which the results pertain
-:param subject_id: str, subject node (CURIE) identifier
-:param object_id:  str, subject node (CURIE) identifier
-:param edge_id:  str, subject node (CURIE) identifier
-:param results: List of (TRAPI-version specific) Result objects
-:return: bool, True if case S-P-O edge was found in the results</p>
 </dd></dl>
 
 <dl class="py method">
@@ -620,6 +582,72 @@ This method is a temporary workaround to sanitize the query for additional valid
 triggers (temporarily) unwarranted TRAPI validation failures</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">testcase_edge_bindings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_edge_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings" title="Permalink to this definition"></a></dt>
+<dd><p>Check if target query edge id and knowledge graph edge id are in specified edge_bindings.
+:rtype: object
+:param q_edge_ids: List[str], expected query edge identifiers in a matching result
+:param target_edge_id:  str, expected knowledge edge identifier in a matching result
+:param data: TRAPI version-specific Response context from which the ‘edge_bindings’ may be retrieved
+:return: True, if found</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.testcase_input_found_in_response">
+<span class="sig-name descname"><span class="pre">testcase_input_found_in_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">testcase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_input_found_in_response" title="Permalink to this definition"></a></dt>
+<dd><p>Predicate to validate if test data test case specified edge is returned
+in the Knowledge Graph of the TRAPI Response Message. This method assumes
+that the TRAPI response is already generally validated as well-formed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>testcase</strong> – Dict, input data test case</p></li>
+<li><p><strong>response</strong> – Dict, TRAPI Response whose message ought to contain the test case edge</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if test case edge found; False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found">
+<span class="sig-name descname"><span class="pre">testcase_node_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifiers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testcase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found" title="Permalink to this definition"></a></dt>
+<dd><p>Check for presence of the target identifier, with expected categories, in the “nodes” catalog.
+If the identifier is found, and at least one KG node category is the expected category or a proper subclass
+category of the test testcase category, then return True; if the node is found but the testcase category is not
+the expected category but is a subclass category of the KG node categories (i.e. KG node categories
+are too general), then return False. If the identifier is NOT found in the nodes list or
+there is no overlap in the (expected or parent) testcase and node categories, then return False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – ‘subject’ or ‘object’</p></li>
+<li><p><strong>identifiers</strong> – List of node (CURIE) identifiers to be checked in the “nodes” catalog</p></li>
+<li><p><strong>testcase</strong> – Dict, full test testcase (to access the target node ‘category’)</p></li>
+<li><p><strong>nodes</strong> – Dict, nodes category indexed by node identifiers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool, True if feasible node identifier and category match; False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found">
+<span class="sig-name descname"><span class="pre">testcase_result_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found" title="Permalink to this definition"></a></dt>
+<dd><p>Validate that test testcase S–P-&gt;O edge is found bound to the Results?
+:param query_graph: Dict, query graph to which the results pertain
+:param subject_id: str, subject node (CURIE) identifier
+:param object_id:  str, subject node (CURIE) identifier
+:param edge_id:  str, subject node (CURIE) identifier
+:param results: List of (TRAPI-version specific) Result objects
+:return: bool, True if testcase S-P-O edge was found in the results</p>
 </dd></dl>
 
 </dd></dl>
