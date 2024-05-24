@@ -4,7 +4,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 
 ## 4.2.2
 
-- In some fringe cases, the Node Normalizer sends by equivalent identifiers with CURIE namespaces letter case which departs from expectation. This makes comparisons to aliases a bit fragile. Normalization of the list of aliases and the original identifier all upper case, compensates for this situation.
+- In some fringe cases, the Node Normalizer sends by equivalent identifiers with CURIE namespaces letter case which departs from expectation. This makes comparisons to aliases a bit fragile. In such cases, the original identifier letter case preference is taken as the desired one to return in the alias list.
 - Some missing unit tests added against utils
 
 ## 4.2.1
