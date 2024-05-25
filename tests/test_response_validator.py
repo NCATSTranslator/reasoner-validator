@@ -1206,42 +1206,42 @@ def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(r
 
 
 @pytest.mark.parametrize(
-    "source_categories,target_categories,outcome",
+    "source_categories,target_categories,category_matched",
     [
         (   # query 0 - empty lists don't have anything to match?
-            [], [], False
+            [], [], None
         ),
         (   # query 1 - exact matches should be true
-            ["biolink:Gene"], ["biolink:Gene"], True
+            ["biolink:Gene"], ["biolink:Gene"], "biolink:Gene"
         ),
         (   # query 2 - biolink:Protein is **not** directly matched in the
             #           'source' hierarchy (even though its parents could overlap)
-            ["biolink:Gene"], ["biolink:Drug"], False
+            ["biolink:Gene"], ["biolink:Drug"], None
         ),
         (   # query 3 - but a 'target' category list with at least one exact
             #           match of category to source will also be matched,
             #           even if other target entries don't match
-            ["biolink:Gene"], ["biolink:Gene", "biolink:Drug"], True
+            ["biolink:Gene"], ["biolink:Gene", "biolink:Drug"], "biolink:Gene"
         ),
         (   # query 4 - 'target' category matches at least one
             #           parent of the list of 'source' categories
-            ["biolink:Gene"], ["biolink:BiologicalEntity"], True
+            ["biolink:Gene"], ["biolink:BiologicalEntity"], "biolink:BiologicalEntity"
         ),
         (   # query 5 - a 'target' category list matches at least
             #           one match to a parent of the list of the
             #           'source' categories, will be matched,
             #           even if other target entries don't match
             #
-            ["biolink:Gene"], ["biolink:BiologicalEntity", "biolink:Drug"], True
+            ["biolink:Gene"], ["biolink:BiologicalEntity", "biolink:Drug"], "biolink:BiologicalEntity"
         )
     ]
 )
-def test_category_matched(source_categories: List[str], target_categories: List[str], outcome: bool):
+def test_category_matched(source_categories: List[str], target_categories: List[str], category_matched: Optional[str]):
     validator = TRAPIResponseValidator()
     assert validator.category_matched(
         source_categories,
         target_categories,
-    ) is outcome
+    ) == category_matched
 
 
 @pytest.mark.parametrize(

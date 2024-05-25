@@ -99,6 +99,10 @@ def get_ontology_parent(curie, btype):
 
 def get_parent_concept(curie, category, biolink_version) -> Optional[str]:
     """
+    Given a CURIE of a concept and its category,
+    attempt to return the parent concept if available
+    within the specified Biolink Model release.
+
     :param curie: CURIE of a concept instance
     :param category: Biolink Category of the concept instance
     :param biolink_version: Biolink Model version to use in validation (SemVer string specification)
