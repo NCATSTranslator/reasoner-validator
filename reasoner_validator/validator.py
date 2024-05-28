@@ -444,13 +444,61 @@ class TRAPIResponseValidator(BiolinkValidator):
         # Nothing matched
         return None
 
+    def testcase_node_category_found(
+            self,
+            target,
+            identifier,
+            testcase,
+            node_details
+    ) -> Optional[str]:
+        # For this comparison, we assume that a specified node category plus all its
+        # parent categories, may be used to match the test testcase specified category.
+        test_case_category: str = testcase[f"{target}_category"]
+        if "categories" in node_details:
+            category: Optional[str] = self.category_matched(
+                source_categories=node_details["categories"],
+                target_categories=[test_case_category]
+            )
+            if category is not None:
+                # The 'identifier' was present in the list of KG nodes, plus there was a match of the target
+                # testcase category either exactly to a specified one of the indicated KG node categories or to
+                # an ancestral ("parent") category of one of the node categories. This is a completely regular
+                # result. For example, if a KG node return is "biolink:Gene", but the testcase query is only
+                # expecting to see a "biolink:BiologicalEntity", however, since the identifier is matched
+                # exactly, since the node match is good with greater categorical precision than expected.
+                return category
+
+            # if a direct category match failed, try matching the inverse
+            category = self.category_matched(
+                source_categories=[test_case_category],
+                target_categories=node_details["categories"]
+            )
+            if category is not None:
+                # The 'identifier' was present in the list of KG nodes;
+                # however, there was likely only a more general ("parent-level") category match
+                # of at least one of the KG node categories, to a parent category of the testcase category
+                # (since the 'exact match' match scenario was handled above). This is a less precise
+                # node match, hence we issue a warning. For example, maybe the KG node returned is only
+                # tagged as "biolink:NamedThing" but we are looking for a testcase with "biolink:Gene".
+                # Since the testcase identifier was matched exactly, we assume that the node is matched,
+                # but just with less than desired data type categorical precision.
+                self.report(
+                    code="warning.trapi.response.message.knowledge_graph.node.category.imprecise",
+                    identifier=identifier,
+                    expected_category=test_case_category,
+                    observed_categories=",".join(node_details["categories"])
+                )
+                return category
+
+        return None
+
     def testcase_node_found(
             self,
             target: str,
-            identifiers: List[str],
+            target_id_aliases: List[str],
             testcase: Dict,
             nodes: Dict
-    ) -> Optional[Tuple[str, str]]:
+    ) -> Optional[Tuple[str, str, Optional[str]]]:
         """
         Check for presence of at least one of the given identifiers, with expected categories, in the "nodes" catalog.
         If such identifier is found, and at least one KG node category is the expected category or a proper subclass
@@ -459,12 +507,12 @@ class TRAPIResponseValidator(BiolinkValidator):
         are too general), then return False. If the identifier is NOT found in the nodes list or
         there is no overlap in the (expected or parent) testcase and node categories, then return False.
 
-        :param target: 'subject' or 'object'
-        :param identifiers: List of node (CURIE) identifiers to be checked in the "nodes" catalog
+        :param target: the concept node type of interest: the 'subject' or the 'object'
+        :param target_id_aliases: List of (CURIE) target identifier aliases to be matched against the "nodes" catalog
         :param testcase: Dict, full test testcase (to access the target node 'category')
         :param nodes: Dict, details about knowledge graph nodes, indexed by node identifiers.
-        :return: Optional[Tuple[str, str]], returns the identifier and category matched which could be an
-                                            alias identifier and/or a generic (parent) category; None otherwise
+        :return: Optional[Tuple[str, str, Optional[str]]], returns the KG node identifier, category, and
+                                                           query identifier matched (if applicable); None if no match
         """
         #
         #     "nodes": {
@@ -475,52 +523,38 @@ class TRAPIResponseValidator(BiolinkValidator):
 
         # Sanity check
         assert target in ["subject", "object"]
-        for identifier in identifiers:
-            if identifier in nodes.keys():
+        for node_id in nodes.keys():
+            node_details = nodes[node_id]
+            category: Optional[str]
+            if node_id in target_id_aliases:
                 # Found the target node identifier, but is the expected category present?
-                # For this comparison, we assume that a specified node category plus all its
-                # parent categories, may be used to match the test testcase specified category.
-                node_details = nodes[identifier]
-                test_case_category: str = testcase[f"{target}_category"]
-                if "categories" in node_details:
-
-                    category: Optional[str] = self.category_matched(
-                            source_categories=node_details["categories"],
-                            target_categories=[test_case_category]
+                category: Optional[str] = self.testcase_node_category_found(target, node_id, testcase, node_details)
+                if category:
+                    return node_id, category, None  # no query_id is given since the node is directly matched.
+            else:
+                # the current node identifier is not one of the target aliases, but we
+                # need to check whether the node_id is a subclass instance of an ontology
+                # term identifier which does match an alias of the target identifier
+                # For this search, we assume the testcase category
+                category = testcase[f"{target}_category"]
+                parent_of_node_id: Optional[str] = get_parent_concept(
+                    curie=node_id,
+                    category=category,
+                    biolink_version=self.get_biolink_version()
+                )
+                if parent_of_node_id and parent_of_node_id in target_id_aliases:
+                    self.report(
+                        code="info.trapi.response.message.knowledge_graph.node.parent.match",
+                        identifier=parent_of_node_id,
+                        query_id=parent_of_node_id,
+                        context=target
                     )
-                    if category is not None:
-                        # The 'identifier' was present in the list of KG nodes, plus there was a match of the target
-                        # testcase category either exactly to a specified one of the indicated KG node categories or to
-                        # an ancestral ("parent") category of one of the node categories. This is a completely regular
-                        # result. For example, if a KG node return is "biolink:Gene", but the testcase query is only
-                        # expecting to see a "biolink:BiologicalEntity", however, since the identifier is matched
-                        # exactly, since the node match is good with greater categorical precision than expected.
-                        return identifier, category
+                    return node_id, category, parent_of_node_id
 
-                    # if a direct category match failed, try matching the inverse
-                    category = self.category_matched(
-                            source_categories=[test_case_category],
-                            target_categories=node_details["categories"]
-                    )
-                    if category is not None:
-                        # The 'identifier' was present in the list of KG nodes;
-                        # however, there was likely only a more general ("parent-level") category match
-                        # of at least one of the KG node categories, to a parent category of the testcase category
-                        # (since the 'exact match' match scenario was handled above). This is a less precise
-                        # node match, hence we issue a warning. For example, maybe the KG node returned is only
-                        # tagged as "biolink:NamedThing" but we are looking for a testcase with "biolink:Gene".
-                        # Since the testcase identifier was matched exactly, we assume that the node is matched,
-                        # but just with less than desired data type categorical precision.
-                        self.report(
-                            code="warning.trapi.response.message.knowledge_graph.node.category.imprecise",
-                            identifier=identifier,
-                            expected_category=test_case_category,
-                            observed_categories=",".join(node_details["categories"])
-                        )
-                        return identifier, category
-
-        # Target node identifier is missing from the list of KG nodes or categories are either missing
-        # or not annotated with any compatible category, hence, we deem the node effectively missing.
+        # Target node identifier doesn't match directly or indirectly
+        # to node in the list of KG nodes or  categories are either
+        # missing or not annotated  with any compatible category,
+        # hence, we deem the node effectively missing.
         return None
 
     @staticmethod
@@ -548,7 +582,9 @@ class TRAPIResponseValidator(BiolinkValidator):
             self,
             query_graph: Dict,
             subject_id: str,
+            subject_query_id: Optional[str],
             object_id: str,
+            object_query_id: Optional[str],
             edge_id: str,
             results: List
     ) -> bool:
@@ -556,11 +592,14 @@ class TRAPIResponseValidator(BiolinkValidator):
         Validate that test testcase S--P->O edge is found bound to the Results?
         :param query_graph: Dict, query graph to which the results pertain
         :param subject_id: str, subject node (CURIE) identifier
-        :param object_id:  str, subject node (CURIE) identifier
-        :param edge_id:  str, subject node (CURIE) identifier
+        :param subject_query_id: Optional[str], subject node (CURIE) query node identifier (if applicable)
+        :param object_id:  str, object node (CURIE) identifier
+        :param object_query_id:  Optional[str], object node (CURIE) query node identifier (if applicable)
+        :param edge_id:  str, edge identifier
         :param results: List of (TRAPI-version specific) Result objects
         :return: bool, True if testcase S-P-O edge was found in the results
         """
+        # TODO: need to implement some kind of validation of 'subject_query_id' and 'object_query_id'
         assert query_graph, "testcase_result_found() encountered an empty query graph"
         q_edges: Dict = query_graph["edges"]
         q_edge_ids = list(q_edges.keys())
@@ -682,49 +721,38 @@ class TRAPIResponseValidator(BiolinkValidator):
             target: str,
             testcase: Dict,
             nodes: Dict
-    ) -> Optional[Tuple[str, str]]:
+    ) -> Optional[Tuple[str, str, Optional[str]]]:
         """
-        Resolve the knowledge graph nodes identifiers against the testcase identifier
-        of the 'target' context ('subject' or 'object' node). If a direct
-        match is not found for the testcase identifier, check if the nodes
-        identifiers returned in the knowledge graph are strict ontological
-        subclasses of the target testcase identifier (e.g. the knowledge graph
-        may return a subclass of the MONDO disease requested by the testcase)
-        Node matches must also be compatible in terms of Biolink Model category.
+        Resolve the knowledge graph node identifiers against the testcase
+        identifier of the 'target' context ('subject' or 'object' node).
+        If a direct match is not found for the testcase identifier,
+        check if the nodes identifiers returned in the knowledge graph
+        are strict ontological subclasses of the target testcase identifier
+        (e.g. the knowledge graph may return a subclass of an instance of
+        MONDO disease as requested by the testcase). Node matches must
+        also be compatible in terms of Biolink Model category.
 
         :param target: 'subject' or 'object'
         :param testcase: Dict, full test testcase (to access the target node 'category')
         :param nodes: Dict, details about knowledge graph nodes, indexed by node identifiers
-        :return: Optional[Tuple[str, str]], a 2-Tuple of node identifier matched and category matched; 'None' otherwise
+        :return: Optional[Tuple[str, str, Optional[str]]], returns the KG node identifier, category, and
+                                                           query identifier matched (if applicable); None if no match
         """
         target_id: str = testcase[f"{target}_id"] if f"{target}_id" in testcase else testcase[target]
-        target_aliases = get_aliases(target_id)
-        match: Optional[Tuple[str, str]] = self.testcase_node_found(target, target_aliases, testcase, nodes)
+        target_id_aliases = get_aliases(target_id)
+        match: Optional[Tuple[str, str, Optional[str]]] = \
+            self.testcase_node_found(target, target_id_aliases, testcase, nodes)
         if match:
-            # Direct match: return matched identifier and category
+            # Direct match! Return matched identifier and category
             return match
-
-        # Maybe try to find an ontology parent to the
-        # current 'target_id' then retry the match?
-        parent_of_target_id: Optional[str] = get_parent_concept(
-            curie=target_id,
-            category=testcase[f"{target}_category"],
-            biolink_version=self.get_biolink_version()
-        )
-        parent_of_target_aliases = get_aliases(parent_of_target_id) if parent_of_target_id else None
-        if parent_of_target_aliases:
-            # attempt a match against the parent aliases
-            match = self.testcase_node_found(target, parent_of_target_aliases, testcase, nodes)
-            if match:
-                # Indirect match: return matched identifier and category
-                return match
-
-        # Fall through: node matching failed... report the error
-        self.report(
-            code="error.trapi.response.message.knowledge_graph.node.missing",
-            identifier=target_id,
-            context=target
-        )
+        else:
+            # Node matching failed... report the error
+            self.report(
+                code="error.trapi.response.message.knowledge_graph.node.missing",
+                identifier=target_id,
+                context=target
+            )
+            return None
 
     def testcase_input_found_in_response(
             self,
@@ -847,17 +875,17 @@ class TRAPIResponseValidator(BiolinkValidator):
         # with expected categories, in nodes catalog
         nodes: Dict = knowledge_graph["nodes"]
 
-        subject_node_match: Optional[Tuple[str, str]] = \
+        subject_node_match: Optional[Tuple[str, str, Optional[str]]] = \
             self.resolve_testcase_node(target="subject", testcase=testcase, nodes=nodes)
         if not subject_node_match:
             return False
-        subject_match, subject_category_match = subject_node_match
+        subject_match, subject_category_match, subject_query_id = subject_node_match
 
-        object_node_match: Optional[Tuple[str, str]] = \
+        object_node_match: Optional[Tuple[str, str, Optional[str]]] = \
             self.resolve_testcase_node(target="object", testcase=testcase, nodes=nodes)
         if not object_node_match:
             return False
-        object_match, object_category_match = object_node_match
+        object_match, object_category_match, object_query_id = object_node_match
 
         # In the Knowledge Graph:
         #
@@ -888,14 +916,18 @@ class TRAPIResponseValidator(BiolinkValidator):
 
         edge_id_match: Optional[str] = None
         edge_subject_match: Optional[str] = None
+        edge_subject_query_id_match: Optional[str] = None
         edge_object_match: Optional[str] = None
+        edge_object_query_id_match: Optional[str] = None
         for edge_id, edge in edges.items():
             # Note: this edge search could be arduous on a big knowledge graph?
             if edge["subject"] == subject_match and \
                     edge["predicate"] in predicate_descendants and \
                     edge["object"] == object_match:
                 edge_id_match = edge_id
+                edge_subject_query_id_match = subject_query_id
                 edge_subject_match = subject_match
+                edge_object_query_id_match = object_query_id
                 edge_object_match = object_match
                 break
             elif edge["subject"] == object_match and \
@@ -903,7 +935,9 @@ class TRAPIResponseValidator(BiolinkValidator):
                     edge["object"] == subject_match:
                 # observation of the inverse edge is also counted as a match?
                 edge_subject_match = object_match
+                edge_subject_query_id_match = object_query_id
                 edge_object_match = subject_match
+                edge_object_query_id_match = subject_query_id
                 edge_id_match = edge_id
                 break
 
@@ -921,7 +955,15 @@ class TRAPIResponseValidator(BiolinkValidator):
             return False
 
         results: List = message["results"]
-        if not self.testcase_result_found(query_graph, edge_subject_match, edge_object_match, edge_id_match, results):
+        if not self.testcase_result_found(
+            query_graph,
+            edge_subject_match,
+            edge_subject_query_id_match,
+            edge_object_match,
+            edge_object_query_id_match,
+            edge_id_match,
+            results
+        ):
             self.report(
                 code="error.trapi.response.message.result.missing",
                 identifier=testcase_edge_id

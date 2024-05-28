@@ -697,7 +697,8 @@ warning:
           node:
             category:
               imprecise:
-                $message: "The category of the knowledge graph node matching an input node identifier is more generic than expected."
+                $message: "The category of the knowledge graph node is imprecise."
+                $description: "The category of the knowledge graph node matching an input node identifier is more generic than expected."
                 $context:
                   - identifier
                   - expected_category
@@ -935,6 +936,19 @@ warning:
               - identifier
             $description: "A 'support_graph' may be required as an explanation for a given 'treats' statement assertion."
 info:
+  trapi:
+    response:
+      message:
+        knowledge_graph:
+          node:
+            parent:
+              match:
+                $message: "Query node is ontological parent of its matching knowledge graph node"
+                $context:
+                  - identifier
+                  - query_id
+                  - context
+                $description: "The knowledge graph node identifier was matched as an ontological subclass of the specified query node identifier."
   excluded:
     $message: "All test case S-P-O triples from resource test location, or specific user excluded S-P-O triples"
     $context:
