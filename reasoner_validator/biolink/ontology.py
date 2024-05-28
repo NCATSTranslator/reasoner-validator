@@ -2,11 +2,15 @@
 Ontology KP interface
 """
 from typing import Optional
+from functools import lru_cache
+
 from reasoner_validator.biolink import get_biolink_model_toolkit
 from reasoner_validator.utils.http import post_query
 
 ONTOLOGY_KP_TRAPI_SERVER = "https://automat.renci.org/ubergraph/query"
 NODE_NORMALIZER_SERVER = "https://nodenormalization-sri.renci.org/get_normalized_nodes"
+
+CACHE_SIZE = 1024
 
 
 def convert_to_preferred(curie, allowed_list):
@@ -16,7 +20,7 @@ def convert_to_preferred(curie, allowed_list):
     """
     j = {'curies': [curie]}
     result = post_query(NODE_NORMALIZER_SERVER, j)
-    if not result:
+    if not (result and curie in result and result[curie] and 'equivalent_identifiers' in result[curie]):
         return None
     new_ids = [v['identifier'] for v in result[curie]['equivalent_identifiers']]
     for nid in new_ids:
@@ -97,6 +101,7 @@ def get_ontology_parent(curie, btype):
         return None
 
 
+@lru_cache(CACHE_SIZE)
 def get_parent_concept(curie, category, biolink_version) -> Optional[str]:
     """
     Given a CURIE of a concept and its category,
