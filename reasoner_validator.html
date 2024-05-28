@@ -57,6 +57,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sanitize_workflow"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sanitize_workflow()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_edge_bindings()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_input_found_in_response"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_input_found_in_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_category_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_node_category_found()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_node_found()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_result_found()</span></code></a></li>
 </ul>
@@ -310,7 +311,7 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 <td><p>Reset TRAPI version tracked by the TRAPISchemaValidator.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.resolve_testcase_node" title="reasoner_validator.validator.TRAPIResponseValidator.resolve_testcase_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_testcase_node</span></code></a>(target, testcase, nodes)</p></td>
-<td><p>Resolve the knowledge graph nodes identifiers against the testcase identifier of the 'target' context ('subject' or 'object' node).</p></td>
+<td><p>Resolve the knowledge graph node identifiers against the testcase identifier of the 'target' context ('subject' or 'object' node).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sample_graph" title="reasoner_validator.validator.TRAPIResponseValidator.sample_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_graph</span></code></a>(graph[, edges_limit])</p></td>
 <td><p>Only process a strict subsample of the TRAPI Response Message knowledge graph.</p></td>
@@ -333,11 +334,11 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_input_found_in_response" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_input_found_in_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_input_found_in_response</span></code></a>(testcase, ...)</p></td>
 <td><p>Predicate to validate if test data test case specified edge is returned in the Knowledge Graph of the TRAPI Response Message.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_node_found</span></code></a>(target, identifiers, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_node_found</span></code></a>(target, ...)</p></td>
 <td><p>Check for presence of at least one of the given identifiers, with expected categories, in the &quot;nodes&quot; catalog.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_result_found</span></code></a>(query_graph, ...)</p></td>
-<td><p>Validate that test testcase S--P-&gt;O edge is found bound to the Results? :param query_graph: Dict, query graph to which the results pertain :param subject_id: str, subject node (CURIE) identifier :param object_id:  str, subject node (CURIE) identifier :param edge_id:  str, subject node (CURIE) identifier :param results: List of (TRAPI-version specific) Result objects :return: bool, True if testcase S-P-O edge was found in the results</p></td>
+<td><p>Validate that test testcase S--P-&gt;O edge is found bound to the Results? :param query_graph: Dict, query graph to which the results pertain :param subject_id: str, subject node (CURIE) identifier :param subject_query_id: Optional[str], subject node (CURIE) query node identifier (if applicable) :param object_id:  str, object node (CURIE) identifier :param object_query_id:  Optional[str], object node (CURIE) query node identifier (if applicable) :param edge_id:  str, edge identifier :param results: List of (TRAPI-version specific) Result objects :return: bool, True if testcase S-P-O edge was found in the results</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
 <td><p>Export BiolinkValidator contents as a Python dictionary (including Biolink version and parent class dictionary content).</p></td>
@@ -430,7 +431,10 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-even"><td><p><strong>reset_node_info</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>validate_input_edge_node</strong></p></td>
+<tr class="row-odd"><td><p><strong>testcase_node_category_found</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>validate_input_edge_node</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -539,14 +543,15 @@ triggers validation of all edges in the knowledge graph (Default: 0 - use all ed
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.resolve_testcase_node">
-<span class="sig-name descname"><span class="pre">resolve_testcase_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testcase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.resolve_testcase_node" title="Permalink to this definition"></a></dt>
-<dd><p>Resolve the knowledge graph nodes identifiers against the testcase identifier
-of the ‘target’ context (‘subject’ or ‘object’ node). If a direct
-match is not found for the testcase identifier, check if the nodes
-identifiers returned in the knowledge graph are strict ontological
-subclasses of the target testcase identifier (e.g. the knowledge graph
-may return a subclass of the MONDO disease requested by the testcase)
-Node matches must also be compatible in terms of Biolink Model category.</p>
+<span class="sig-name descname"><span class="pre">resolve_testcase_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testcase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.resolve_testcase_node" title="Permalink to this definition"></a></dt>
+<dd><p>Resolve the knowledge graph node identifiers against the testcase
+identifier of the ‘target’ context (‘subject’ or ‘object’ node).
+If a direct match is not found for the testcase identifier,
+check if the nodes identifiers returned in the knowledge graph
+are strict ontological subclasses of the target testcase identifier
+(e.g. the knowledge graph may return a subclass of an instance of
+MONDO disease as requested by the testcase). Node matches must
+also be compatible in terms of Biolink Model category.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -556,7 +561,8 @@ Node matches must also be compatible in terms of Biolink Model category.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Optional[Tuple[str, str]], a 2-Tuple of node identifier matched and category matched; ‘None’ otherwise</p>
+<dd class="field-even"><p>Optional[Tuple[str, str, Optional[str]]], returns the KG node identifier, category, and
+query identifier matched (if applicable); None if no match</p>
 </dd>
 </dl>
 </dd></dl>
@@ -643,8 +649,13 @@ that the TRAPI response is already generally validated as well-formed.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_category_found">
+<span class="sig-name descname"><span class="pre">testcase_node_category_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testcase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_details</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_category_found" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found">
-<span class="sig-name descname"><span class="pre">testcase_node_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifiers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testcase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">testcase_node_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id_aliases</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testcase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found" title="Permalink to this definition"></a></dt>
 <dd><p>Check for presence of at least one of the given identifiers, with expected categories, in the “nodes” catalog.
 If such identifier is found, and at least one KG node category is the expected category or a proper subclass
 category of the test testcase category, then return True; if the node is found but the testcase category is not
@@ -654,27 +665,29 @@ there is no overlap in the (expected or parent) testcase and node categories, th
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> – ‘subject’ or ‘object’</p></li>
-<li><p><strong>identifiers</strong> – List of node (CURIE) identifiers to be checked in the “nodes” catalog</p></li>
+<li><p><strong>target</strong> – the concept node type of interest: the ‘subject’ or the ‘object’</p></li>
+<li><p><strong>target_id_aliases</strong> – List of (CURIE) target identifier aliases to be matched against the “nodes” catalog</p></li>
 <li><p><strong>testcase</strong> – Dict, full test testcase (to access the target node ‘category’)</p></li>
 <li><p><strong>nodes</strong> – Dict, details about knowledge graph nodes, indexed by node identifiers.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Optional[Tuple[str, str]], returns the identifier and category matched which could be an
-alias identifier and/or a generic (parent) category; None otherwise</p>
+<dd class="field-even"><p>Optional[Tuple[str, str, Optional[str]]], returns the KG node identifier, category, and
+query identifier matched (if applicable); None if no match</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found">
-<span class="sig-name descname"><span class="pre">testcase_result_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">testcase_result_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_query_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_query_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found" title="Permalink to this definition"></a></dt>
 <dd><p>Validate that test testcase S–P-&gt;O edge is found bound to the Results?
 :param query_graph: Dict, query graph to which the results pertain
 :param subject_id: str, subject node (CURIE) identifier
-:param object_id:  str, subject node (CURIE) identifier
-:param edge_id:  str, subject node (CURIE) identifier
+:param subject_query_id: Optional[str], subject node (CURIE) query node identifier (if applicable)
+:param object_id:  str, object node (CURIE) identifier
+:param object_query_id:  Optional[str], object node (CURIE) query node identifier (if applicable)
+:param edge_id:  str, edge identifier
 :param results: List of (TRAPI-version specific) Result objects
 :return: bool, True if testcase S-P-O edge was found in the results</p>
 </dd></dl>

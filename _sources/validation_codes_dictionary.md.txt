@@ -904,9 +904,11 @@
 
 ### warning.trapi.response.message.knowledge_graph.node.category.imprecise
 
-**Message:** The category of the knowledge graph node matching an input node identifier is more generic than expected.
+**Message:** The category of the knowledge graph node is imprecise.
 
 **Context:** identifier, expected_category, observed_categories
+
+**Description:** The category of the knowledge graph node matching an input node identifier is more generic than expected.
 
 ### warning.trapi.response.message.results.empty
 
@@ -1175,6 +1177,14 @@
 **Description:** A 'support_graph' may be required as an explanation for a given 'treats' statement assertion.
 
 ## Information
+
+### info.trapi.response.message.knowledge_graph.node.parent.match
+
+**Message:** Query node is ontological parent of its matching knowledge graph node
+
+**Context:** identifier, query_id, context
+
+**Description:** The knowledge graph node identifier was matched as an ontological subclass of the specified query node identifier.
 
 ### info.excluded
 

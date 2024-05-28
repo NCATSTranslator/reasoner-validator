@@ -211,6 +211,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#information">Information</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#info-trapi-response-message-knowledge-graph-node-parent-match">info.trapi.response.message.knowledge_graph.node.parent.match</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-excluded">info.excluded</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-compliant">info.compliant</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#info-input-edge-predicate-abstract">info.input_edge.predicate.abstract</a></li>
@@ -948,8 +949,9 @@
 </section>
 <section id="warning-trapi-response-message-knowledge-graph-node-category-imprecise">
 <h3>warning.trapi.response.message.knowledge_graph.node.category.imprecise<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-node-category-imprecise" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The category of the knowledge graph node matching an input node identifier is more generic than expected.</p>
+<p><strong>Message:</strong> The category of the knowledge graph node is imprecise.</p>
 <p><strong>Context:</strong> identifier, expected_category, observed_categories</p>
+<p><strong>Description:</strong> The category of the knowledge graph node matching an input node identifier is more generic than expected.</p>
 </section>
 <section id="warning-trapi-response-message-results-empty">
 <h3>warning.trapi.response.message.results.empty<a class="headerlink" href="#warning-trapi-response-message-results-empty" title="Permalink to this heading"></a></h3>
@@ -1155,6 +1157,12 @@
 </section>
 <section id="information">
 <h2>Information<a class="headerlink" href="#information" title="Permalink to this heading"></a></h2>
+<section id="info-trapi-response-message-knowledge-graph-node-parent-match">
+<h3>info.trapi.response.message.knowledge_graph.node.parent.match<a class="headerlink" href="#info-trapi-response-message-knowledge-graph-node-parent-match" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Query node is ontological parent of its matching knowledge graph node</p>
+<p><strong>Context:</strong> identifier, query_id, context</p>
+<p><strong>Description:</strong> The knowledge graph node identifier was matched as an ontological subclass of the specified query node identifier.</p>
+</section>
 <section id="info-excluded">
 <h3>info.excluded<a class="headerlink" href="#info-excluded" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> All test case S-P-O triples from resource test location, or specific user excluded S-P-O triples</p>
