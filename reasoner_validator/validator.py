@@ -542,6 +542,8 @@ class TRAPIResponseValidator(BiolinkValidator):
                     category=category,
                     biolink_version=self.get_biolink_version()
                 )
+                # TODO: do we need to worry about also making a more complete comparisons
+                #       of the aliases of the 'parent_of_node_id' against the 'target_id_aliases'?
                 if parent_of_node_id and parent_of_node_id in target_id_aliases:
                     self.report(
                         code="info.trapi.response.message.knowledge_graph.node.parent.match",
