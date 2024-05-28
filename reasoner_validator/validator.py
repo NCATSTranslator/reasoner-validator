@@ -700,32 +700,31 @@ class TRAPIResponseValidator(BiolinkValidator):
         target_id: str = testcase[f"{target}_id"] if f"{target}_id" in testcase else testcase[target]
         target_aliases = get_aliases(target_id)
         match: Optional[Tuple[str, str]] = self.testcase_node_found(target, target_aliases, testcase, nodes)
-        if not match:
-            # Maybe try to find an ontology parent to the
-            # current 'target_id' then retry the match?
-            parent_of_target_id: Optional[str] = get_parent_concept(
-                curie=target_id,
-                category=testcase[f"{target}_category"],
-                biolink_version=self.get_biolink_version()
-            )
-            parent_of_target_aliases = get_aliases(parent_of_target_id) if parent_of_target_id else None
-            if not parent_of_target_aliases:
-                # no aliases, can't any further resolution of the node
-                return None
-            else:
-                match = self.testcase_node_found(target, parent_of_target_aliases, testcase, nodes)
-                if not match:
-                    self.report(
-                        code="error.trapi.response.message.knowledge_graph.node.missing",
-                        identifier=target_id,
-                        context=target
-                    )
-                    return None
-                # else: we have an indirect match?
-        # else: we have a direct match!
+        if match:
+            # Direct match: return matched identifier and category
+            return match
 
-        # matched identifier, category and list of associated aliases
-        return match
+        # Maybe try to find an ontology parent to the
+        # current 'target_id' then retry the match?
+        parent_of_target_id: Optional[str] = get_parent_concept(
+            curie=target_id,
+            category=testcase[f"{target}_category"],
+            biolink_version=self.get_biolink_version()
+        )
+        parent_of_target_aliases = get_aliases(parent_of_target_id) if parent_of_target_id else None
+        if parent_of_target_aliases:
+            # attempt a match against the parent aliases
+            match = self.testcase_node_found(target, parent_of_target_aliases, testcase, nodes)
+            if match:
+                # Indirect match: return matched identifier and category
+                return match
+
+        # Fall through: node matching failed... report the error
+        self.report(
+            code="error.trapi.response.message.knowledge_graph.node.missing",
+            identifier=target_id,
+            context=target
+        )
 
     def testcase_input_found_in_response(
             self,
@@ -890,22 +889,22 @@ class TRAPIResponseValidator(BiolinkValidator):
         edge_id_match: Optional[str] = None
         edge_subject_match: Optional[str] = None
         edge_object_match: Optional[str] = None
-        for testcase_edge_id, edge in edges.items():
+        for edge_id, edge in edges.items():
             # Note: this edge search could be arduous on a big knowledge graph?
             if edge["subject"] == subject_match and \
                     edge["predicate"] in predicate_descendants and \
-                    edge["object"] in object_match:
-                edge_id_match = testcase_edge_id
-                edge_subject_match = edge["subject"]
-                edge_object_match = edge["object"]
+                    edge["object"] == object_match:
+                edge_id_match = edge_id
+                edge_subject_match = subject_match
+                edge_object_match = object_match
                 break
-            elif edge["subject"] in object_match and \
+            elif edge["subject"] == object_match and \
                     edge["predicate"] in inverse_predicate_descendants and \
-                    edge["object"] in subject_match:
+                    edge["object"] == subject_match:
                 # observation of the inverse edge is also counted as a match?
-                edge_subject_match = edge["subject"]
-                edge_object_match = edge["object"]
-                edge_id_match = testcase_edge_id
+                edge_subject_match = object_match
+                edge_object_match = subject_match
+                edge_id_match = edge_id
                 break
 
         testcase_edge_id: str = \

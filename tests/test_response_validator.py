@@ -1452,13 +1452,7 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
                             "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
                             # "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
                         },
-                        "edges": {
-                            "df87ff82": {
-                                "subject": "CHEBI:3002",
-                                "predicate": "biolink:treated_by",
-                                "object": "MESH:D001249"
-                            }
-                        }
+                        "edges": SAMPLE_TEST_EDGES
                     },
                     "results": SAMPLE_TEST_RESULTS
                 }
