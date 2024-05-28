@@ -408,13 +408,13 @@ class TRAPIResponseValidator(BiolinkValidator):
                     #     # the aliases of the testcase[output_element] identifier are in the object_ids list
                     #     output_aliases = get_aliases(testcase[output_element])
                     #     if not any([alias == object_id for alias in output_aliases for object_id in object_ids]):
-                    #         validator.report(
-                    #             code=error.results.missing_bindings,
-                    #             identifier=testcase[output_element],
-                    #             output_node_binding=output_node_binding
-                    #         )
-                    #         # data_dump=f"Resolved aliases:\n{','.join(output_aliases)}\n" +
-                    #         #           f"Result object IDs:\n{_output(object_ids,flat=True)}"
+                    # validator.report(
+                    #     code=error.results.missing_bindings,
+                    #     identifier=testcase[output_element],
+                    #     output_node_binding=output_node_binding
+                    # )
+                    # # data_dump=f"Resolved aliases:\n{','.join(output_aliases)}\n" +
+                    #         #   f"Result object IDs:\n{_output(object_ids,flat=True)}"
 
         # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
         return False if self.has_errors() else True
@@ -453,11 +453,11 @@ class TRAPIResponseValidator(BiolinkValidator):
     ) -> Optional[str]:
         # For this comparison, we assume that a specified node category plus all its
         # parent categories, may be used to match the test testcase specified category.
-        test_case_category: str = testcase[f"{target}_category"]
+        testcase_category: str = testcase[f"{target}_category"]
         if "categories" in node_details:
             category: Optional[str] = self.category_matched(
                 source_categories=node_details["categories"],
-                target_categories=[test_case_category]
+                target_categories=[testcase_category]
             )
             if category is not None:
                 # The 'identifier' was present in the list of KG nodes, plus there was a match of the target
@@ -470,7 +470,7 @@ class TRAPIResponseValidator(BiolinkValidator):
 
             # if a direct category match failed, try matching the inverse
             category = self.category_matched(
-                source_categories=[test_case_category],
+                source_categories=[testcase_category],
                 target_categories=node_details["categories"]
             )
             if category is not None:
@@ -485,7 +485,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                 self.report(
                     code="warning.trapi.response.message.knowledge_graph.node.category.imprecise",
                     identifier=identifier,
-                    expected_category=test_case_category,
+                    expected_category=testcase_category,
                     observed_categories=",".join(node_details["categories"])
                 )
                 return category
@@ -516,8 +516,8 @@ class TRAPIResponseValidator(BiolinkValidator):
         """
         #
         #     "nodes": {
-        #         "MONDO:0005148": {"name": "type-2 diabetes"},
-        #         "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
+                # "MONDO:0005148": {"name": "type-2 diabetes"},
+                # "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
         #     }
         #
 
@@ -560,7 +560,48 @@ class TRAPIResponseValidator(BiolinkValidator):
         return None
 
     @staticmethod
-    def testcase_edge_bindings(q_edge_ids: List[str], target_edge_id: str, data: Dict) -> bool:
+    def testcase_node_bindings(
+            subject_id: str,
+            subject_query_id: Optional[str],
+            object_id: str,
+            object_query_id: Optional[str],
+            data: Dict
+    ) -> bool:
+        """
+        Check if the specified subject and object identifier
+        are found in the result node bindings.
+        Expected query_id's are also validated.
+        :param subject_id: expected node identifier of the knowledge graph subject
+        :param subject_query_id: expected bound 'query_id' if not the 'subject_id' (see TRAPI spec)
+        :param object_id: expected node identifier of the knowledge graph object
+        :param object_query_id: expected bound 'query_id' if not the 'object_id' (see TRAPI spec)
+        :param data: the result object
+        :return:
+        """
+        # Sanity check (maybe unnecessary?)
+        if "node_bindings" not in data:
+            return False
+
+        node_bindings: Dict = data["node_bindings"]
+        subject_id_found: bool = False
+        object_id_found: bool = False
+        for node in node_bindings.values():
+            for details in node:
+                if "id" in details:
+                    if subject_id == details["id"]:
+                        subject_id_found = True
+                    if object_id == details["id"]:
+                        object_id_found = True
+                if subject_id_found and object_id_found:
+                    # short-cut return if and when both
+                    # subject and object are matched
+                    return True
+
+        # Either the subject_id or object_id
+        # failed to match any results: failure!
+        return False
+
+    def testcase_edge_bindings(self, q_edge_ids: List[str], target_edge_id: str, data: Dict) -> bool:
         """
         Check if target query edge id and knowledge graph edge id are in specified edge_bindings.
         :rtype: object
@@ -569,15 +610,38 @@ class TRAPIResponseValidator(BiolinkValidator):
         :param data: TRAPI version-specific Response context from which the 'edge_bindings' may be retrieved
         :return: True, if found
         """
+        # Sanity check (maybe unnecessary?)
+        if "edge_bindings" not in data:
+            return False
+
         edge_bindings: Dict = data["edge_bindings"]
         for bound_query_id, edge in edge_bindings.items():
             if bound_query_id in q_edge_ids:
                 for binding_details in edge:
-                    # TRAPI schema validation actually
+                    # TRAPI schema validation likely actually
                     # catches missing id's, but sanity check...
                     if "id" in binding_details:
                         if target_edge_id == binding_details["id"]:
                             return True
+                    if self.minimum_required_biolink_version("1.3.0"):
+                        #
+                        # TODO: for TRAPI 1.3.0 and later, validate 'query_id' settings here,
+                        #       using the node resolution information harvested elsewhere
+                        #
+                        # query_id:
+                        #   oneOf:
+                        #     - $ref: '#/components/schemas/CURIE'
+                        #   description: >-
+                        #     An optional property to provide the CURIE in the QueryGraph to
+                        #     which this binding applies. If the bound QNode does not have
+                        #     an 'id' property or if it is empty, then this query_id MUST be
+                        #     null or absent. If the bound QNode has one or more CURIEs
+                        #     as an 'id' and this NodeBinding's 'id' refers to a QNode 'id'
+                        #     in a manner where the CURIEs are different (typically due to
+                        #     the NodeBinding.id being a descendant of a QNode.id), then
+                        #     this query_id MUST be provided. In other cases, there is no
+                        #     ambiguity, and this query_id SHOULD NOT be provided.
+                        pass
         return False
 
     def testcase_result_found(
@@ -611,108 +675,107 @@ class TRAPIResponseValidator(BiolinkValidator):
 
         for result in results:
 
-            # Node binding validation still currently same for recent TRAPI versions
-            node_bindings: Dict = result["node_bindings"]
-            subject_id_found: bool = False
-            object_id_found: bool = False
-            edge_id_found: bool = False
-            for node in node_bindings.values():
-                for details in node:
-                    if "id" in details:
-                        if subject_id == details["id"]:
-                            subject_id_found = True
-                        if object_id == details["id"]:
-                            object_id_found = True
+            # Node binding validation still currently
+            # the same for most recent TRAPI versions
+            node_bindings_found: bool = \
+                self.testcase_node_bindings(
+                    subject_id,
+                    subject_query_id,
+                    object_id,
+                    object_query_id,
+                    result
+                )
 
             # However, TRAPI 1.4.0 Message 'Results' 'edge_bindings' are reported differently
-            #          from 1.3.0, rather, embedded in 'Analysis' objects (and 'Auxiliary Graphs')
+            # from 1.3.0, rather, embedded in 'Analysis' objects (and 'Auxiliary Graphs')
+            edge_binding_found: bool = False
             if self.is_trapi_1_4_or_later():
                 #
-                #     "auxiliary_graphs": {
-                #         "a0": {
-                #             "edges": [
-                #                 "e02",
-                #                 "e12"
-                #             ]
-                #         },
-                #         "a1": {
-                #             "edges": [
-                #                 "extra_edge0"
-                #             ]
-                #         },
-                #         "a2": {
-                #             "edges" [
-                #                 "extra_edge1"
-                #             ]
-                #         }
+                # "auxiliary_graphs": {
+                # "a0": {
+                #     "edges": [
+                #         "e02",
+                #         "e12"
+                #     ]
+                # },
+                # "a1": {
+                #     "edges": [
+                #         "extra_edge0"
+                #     ]
+                # },
+                # "a2": {
+                #     "edges" [
+                #         "extra_edge1"
+                #     ]
+                # }
                 #     },
                 #     "results": [
-                #         # Single result in list:
+                # # Single result in list:
+                #
+                # {
+                #     "node_bindings": {
+                #         "n0": [
+                #             "id": "diabetes"
+                #         ],
+                #         "n1": [
+                #             "id": "metformin"
+                #         ]
+                #     },
+                #     "analyses": [
                 #         {
-                #             "node_bindings": {
-                #                 "n0": [
-                #                     "id": "diabetes"
-                #                 ],
-                #                 "n1": [
-                #                     "id": "metformin"
+                #             "reasoner_id": "ara0",
+                #             "edge_bindings": {
+                #                 "e0": [
+                #                     {
+                #                         "id": "e01"
+                #                     },
+                #                     {
+                #                         "id": "creative_edge"
+                #                     }
                 #                 ]
                 #             },
-                #             "analyses":[
-                #                 {
-                #                     "reasoner_id": "ara0",
-                #                     "edge_bindings": {
-                #                         "e0": [
-                #                             {
-                #                                 "id": "e01"
-                #                             },
-                #                             {
-                #                                 "id": "creative_edge"
-                #                             }
-                #                         ]
-                #                     },
-                #                     "support_graphs": [
-                #                         "a1",
-                #                         "a2"
-                #                     ]
-                #                     "score": ".7"
-                #                 },
+                #             "support_graphs": [
+                #                 "a1",
+                #                 "a2"
                 #             ]
-                #         }
-                #     ]
+                #             "score": ".7"
+                #         },
+                #      ]
+                #    }
+                # ]
 
-                # result["analyses"] may be empty but prior TRAPI 1.4.0 schema validation ensures that
-                # the "analysis" key is at least present plus the objects themselves are 'well-formed'
+                # result["analyses"] may be empty but TRAPI 1.4.0 schema validation ensures that
+                # the "analysis" key is at least present and that the objects themselves are 'well-formed'
                 analyses: List = result["analyses"]
                 for analysis in analyses:
-                    edge_id_found: bool = self.testcase_edge_bindings(q_edge_ids, edge_id, analysis)
-                    if edge_id_found:
+                    edge_binding_found = self.testcase_edge_bindings(q_edge_ids, edge_id, analysis)
+                    if edge_binding_found:
                         break
-
             else:
                 # TRAPI 1.3.0 or earlier?
                 #
                 # Then, the TRAPI 1.3.0 Message Results (referencing the
                 # Response Knowledge Graph) could be something like this:
                 #
-                #     "results": [
-                #         # Single result in list:
-                #         {
-                #             "node_bindings": {
-                #                # node "id"'s in knowledge graph, in edge "id"
-                #                 "type-2 diabetes": [{"id": "MONDO:0005148"}],
-                #                 "drug": [{"id": "CHEBI:6801"}]
-                #             },
-                #             "edge_bindings": {
-                #                 # the edge binding key should be the query edge id
-                #                 # bounded edge "id" is from knowledge graph
-                #                 "treated_by": [{"id": "df87ff82"}]
-                #             }
+                # "results": [
+                # # Single result in list:
+                #     {
+                #         "node_bindings": {
+                #            # node "id"'s in knowledge graph, in edge "id"
+                #             "type-2 diabetes": [{"id": "MONDO:0005148"}],
+                #             "drug": [{"id": "CHEBI:6801"}]
+                #         },
+                #         "edge_bindings": {
+                #             # the edge binding key should be the query edge id
+                #             # bounded edge "id" is from knowledge graph
+                #             "treated_by": [{"id": "df87ff82"}]
                 #         }
-                #     ]
+                #     }
+                # ]
                 #
-                edge_id_found: bool = self.testcase_edge_bindings(q_edge_ids, edge_id, result)
+                edge_binding_found = self.testcase_edge_bindings(q_edge_ids, edge_id, result)
 
-            if subject_id_found and object_id_found and edge_id_found:
+            if node_bindings_found and edge_binding_found:
                 result_found = True
                 break
 
@@ -841,15 +904,15 @@ class TRAPIResponseValidator(BiolinkValidator):
         # The Message Query Graph could be something like:
         # "query_graph": {
         #     "nodes": {
-        #         "type-2 diabetes": {"ids": ["MONDO:0005148"]},
-        #         "drug": {"categories": ["biolink:Drug"]}
+                # "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                # "drug": {"categories": ["biolink:Drug"]}
         #     },
         #     "edges": {
-        #         "treated_by": {
-        #             "subject": "type-2 diabetes",
-        #             "predicates": ["biolink:treated_by"],
-        #             "object": "drug"
-        #         }
+                # "treated_by": {
+                #     "subject": "type-2 diabetes",
+                #     "predicates": ["biolink:treated_by"],
+                #     "object": "drug"
+                # }
         #     }
         # }
 
@@ -868,8 +931,8 @@ class TRAPIResponseValidator(BiolinkValidator):
         # In the Knowledge Graph:
         #
         #     "nodes": {
-        #         "MONDO:0005148": {"name": "type-2 diabetes"},
-        #         "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
+                # "MONDO:0005148": {"name": "type-2 diabetes"},
+                # "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
         #     }
         #
 
@@ -892,11 +955,11 @@ class TRAPIResponseValidator(BiolinkValidator):
         # In the Knowledge Graph:
         #
         #     "edges": {
-        #         "df87ff82": {
-        #             "subject": "CHEBI:6801",
-        #             "predicate": "biolink:treats",
-        #             "object": "MONDO:0005148"
-        #         }
+                # "df87ff82": {
+                #     "subject": "CHEBI:6801",
+                #     "predicate": "biolink:treats",
+                #     "object": "MONDO:0005148"
+                # }
         #     }
         #
         # Check in the edges catalog for an edge containing
