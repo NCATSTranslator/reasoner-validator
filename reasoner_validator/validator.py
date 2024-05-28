@@ -559,8 +559,8 @@ class TRAPIResponseValidator(BiolinkValidator):
         # hence, we deem the node effectively missing.
         return None
 
-    @staticmethod
     def testcase_node_bindings(
+            self,
             subject_id: str,
             subject_query_id: Optional[str],
             object_id: str,
@@ -592,6 +592,25 @@ class TRAPIResponseValidator(BiolinkValidator):
                         subject_id_found = True
                     if object_id == details["id"]:
                         object_id_found = True
+                if self.minimum_required_biolink_version("1.3.0"):
+                    #
+                    # TODO: for TRAPI 1.3.0 and later, validate 'query_id' settings here,
+                    #       using the node resolution information harvested elsewhere
+                    #
+                    # query_id:
+                    #   oneOf:
+                    #     - $ref: '#/components/schemas/CURIE'
+                    #   description: >-
+                    #     An optional property to provide the CURIE in the QueryGraph to
+                    #     which this binding applies. If the bound QNode does not have
+                    #     an 'id' property or if it is empty, then this query_id MUST be
+                    #     null or absent. If the bound QNode has one or more CURIEs
+                    #     as an 'id' and this NodeBinding's 'id' refers to a QNode 'id'
+                    #     in a manner where the CURIEs are different (typically due to
+                    #     the NodeBinding.id being a descendant of a QNode.id), then
+                    #     this query_id MUST be provided. In other cases, there is no
+                    #     ambiguity, and this query_id SHOULD NOT be provided.
+                    pass
                 if subject_id_found and object_id_found:
                     # short-cut return if and when both
                     # subject and object are matched
@@ -601,7 +620,8 @@ class TRAPIResponseValidator(BiolinkValidator):
         # failed to match any results: failure!
         return False
 
-    def testcase_edge_bindings(self, q_edge_ids: List[str], target_edge_id: str, data: Dict) -> bool:
+    @staticmethod
+    def testcase_edge_bindings(q_edge_ids: List[str], target_edge_id: str, data: Dict) -> bool:
         """
         Check if target query edge id and knowledge graph edge id are in specified edge_bindings.
         :rtype: object
@@ -623,25 +643,6 @@ class TRAPIResponseValidator(BiolinkValidator):
                     if "id" in binding_details:
                         if target_edge_id == binding_details["id"]:
                             return True
-                    if self.minimum_required_biolink_version("1.3.0"):
-                        #
-                        # TODO: for TRAPI 1.3.0 and later, validate 'query_id' settings here,
-                        #       using the node resolution information harvested elsewhere
-                        #
-                        # query_id:
-                        #   oneOf:
-                        #     - $ref: '#/components/schemas/CURIE'
-                        #   description: >-
-                        #     An optional property to provide the CURIE in the QueryGraph to
-                        #     which this binding applies. If the bound QNode does not have
-                        #     an 'id' property or if it is empty, then this query_id MUST be
-                        #     null or absent. If the bound QNode has one or more CURIEs
-                        #     as an 'id' and this NodeBinding's 'id' refers to a QNode 'id'
-                        #     in a manner where the CURIEs are different (typically due to
-                        #     the NodeBinding.id being a descendant of a QNode.id), then
-                        #     this query_id MUST be provided. In other cases, there is no
-                        #     ambiguity, and this query_id SHOULD NOT be provided.
-                        pass
         return False
 
     def testcase_result_found(
