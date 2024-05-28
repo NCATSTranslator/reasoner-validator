@@ -2,6 +2,13 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.2.3
+
+- Update TRAPI to full minor release 1.5
+- Refactored validator of test case node (onehop) a bit further to sharpen scope, including resolve_testcase_node() method for readability and to ensure full reporting of validation error message inside
+- Bug fix to ontology - test for null values returned from the node normalizer; add a lrucache for the parent concept lookup
+- refactor to break apart the testcase edge validation; added; added validation of subclassed instances of a query identifier (should be allowed); identified 'query_id' not yet used for results validation.
+
 ## 4.2.2
 
 - In some fringe cases, the Node Normalizer sends by equivalent identifiers with CURIE namespaces letter case which departs from expectation. This makes comparisons to aliases a bit fragile. In such cases, the original identifier letter case preference is taken as the desired one to return in the alias list.
