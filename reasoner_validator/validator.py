@@ -559,8 +559,81 @@ class TRAPIResponseValidator(BiolinkValidator):
         # hence, we deem the node effectively missing.
         return None
 
+    def validate_binding(
+            self,
+            q_node_entry: Dict,
+            target_id: str,
+            target_query_id: Optional[str],
+            node_binding_details: Dict
+    ) -> bool:
+        """
+        Validate that a specified target_id has a valid node_binding in specified node binding details.
+
+        :param q_node_entry: Dict, query node data currently being searched
+        :param target_id: str, target knowledge graph node identifier to be matched to node binding
+        :param target_query_id: Optional[str], query identifier related to the target identifier,
+                                               if not identical to the target_id
+        :param node_binding_details: Dict, data relating to a given node_binding of query to knowledge graph identifier
+        :return: bool, True if a valid node binding was found
+        """
+        #
+        # Example of node_bindings *without* and *with* a 'query_id':
+        #
+        # "node_bindings": {
+        #     "n0": [
+        #         {
+        #             "attributes": [],
+        #             "id": "CHEBI:16796"
+        #         }
+        #     ],
+        #     "n1": [
+        #         {
+        #             "attributes": [],
+        #             "id": "MONDO:0005258",
+        #             "query_id": "MONDO:0005260"
+        #         }
+        #     ]
+        # }
+        #
+        # In situations with a 'query_id', then the 'id' of the binding is the one
+        # associated with the knowledge graph node, while the 'query_id' is assumed to be a
+        # related identifier which was given in the query graph, but is not identical to the
+        # identifier of the knowledge graph edge node being matched. This may arise if the
+        # knowledge graph edge node identifier is an ontological subclass of the query identifier
+        # (e.g. a subtype of the MONDO disease requested in the QGraph)
+
+        # See also the TRAPI 'query_id' definition below, for other validation constraints.
+        #
+        # query_id:
+        #   oneOf:
+        #     - $ref: '#/components/schemas/CURIE'
+        #   description: >-
+        #     An optional property to provide the CURIE in the QueryGraph to
+        #     which this binding applies. If the bound QNode does not have
+        #     an 'id' property or if it is empty, then this query_id MUST be
+        #     null or absent. If the bound QNode has one or more CURIEs
+        #     as an 'id' and this NodeBinding's 'id' refers to a QNode 'id'
+        #     in a manner where the CURIEs are different (typically due to
+        #     the NodeBinding.id being a descendant of a QNode.id), then
+        #     this query_id MUST be provided. In other cases, there is no
+        #     ambiguity, and this query_id SHOULD NOT be provided.
+        #     TODO: unsure where a bound QNode is detected as 'empty'
+        if "id" in node_binding_details and node_binding_details["id"]:
+            if target_id == node_binding_details["id"]:
+                return True
+            else:
+                pass
+        else:
+            if self.minimum_required_biolink_version("1.3.0"):
+                # 'query_id'
+                if "query_id" in node_binding_details and node_binding_details["query_id"]:
+                    pass
+
+        return False
+
     def testcase_node_bindings(
             self,
+            query_nodes: Dict,
             subject_id: str,
             subject_query_id: Optional[str],
             object_id: str,
@@ -571,60 +644,63 @@ class TRAPIResponseValidator(BiolinkValidator):
         Check if the specified subject and object identifier
         are found in the result node bindings.
         Expected query_id's are also validated.
+
+        :param query_nodes: query nodes dictionary
         :param subject_id: expected node identifier of the knowledge graph subject
         :param subject_query_id: expected bound 'query_id' if not the 'subject_id' (see TRAPI spec)
         :param object_id: expected node identifier of the knowledge graph object
         :param object_query_id: expected bound 'query_id' if not the 'object_id' (see TRAPI spec)
         :param data: the result object
-        :return:
+        :return: bool, True if node_bindings found for specified subject and object
         """
-        # Sanity check (maybe unnecessary?)
-        if "node_bindings" not in data:
-            return False
-
+        # node_bindings:
+        #   type: object
+        #   description: >-
+        #     The dictionary of Input Query Graph to Result Knowledge Graph node
+        #     bindings where the dictionary keys are the key identifiers of the
+        #     Query Graph nodes and the associated values of those keys are
+        #     instances of NodeBinding schema type. This value is an
+        #     array of NodeBindings since a given query node may have multiple
+        #     knowledge graph Node bindings in the result.
+        #
         node_bindings: Dict = data["node_bindings"]
-        subject_id_found: bool = False
-        object_id_found: bool = False
-        for node in node_bindings.values():
-            for details in node:
-                if "id" in details:
-                    if subject_id == details["id"]:
-                        subject_id_found = True
-                    if object_id == details["id"]:
-                        object_id_found = True
-                if self.minimum_required_biolink_version("1.3.0"):
-                    #
-                    # TODO: for TRAPI 1.3.0 and later, validate 'query_id' settings here,
-                    #       using the node resolution information harvested elsewhere
-                    #
-                    # query_id:
-                    #   oneOf:
-                    #     - $ref: '#/components/schemas/CURIE'
-                    #   description: >-
-                    #     An optional property to provide the CURIE in the QueryGraph to
-                    #     which this binding applies. If the bound QNode does not have
-                    #     an 'id' property or if it is empty, then this query_id MUST be
-                    #     null or absent. If the bound QNode has one or more CURIEs
-                    #     as an 'id' and this NodeBinding's 'id' refers to a QNode 'id'
-                    #     in a manner where the CURIEs are different (typically due to
-                    #     the NodeBinding.id being a descendant of a QNode.id), then
-                    #     this query_id MUST be provided. In other cases, there is no
-                    #     ambiguity, and this query_id SHOULD NOT be provided.
-                    pass
+        for q_node_id, node_bindings in node_bindings.items():
+
+            # A basic expectation is for the node_binding keys
+            # to match one of the input query node keys
+            if q_node_id not in query_nodes:
+                self.report(
+                    code="error.trapi.response.message.result.node_binding.key.missing",
+                    identifier=q_node_id
+                )
+                continue
+
+            q_node_entry: Dict = query_nodes[q_node_id]
+
+            entry: Dict
+            subject_id_found: bool = False
+            object_id_found: bool = False
+            for entry in node_bindings:
+                # The subject and object id's will match separately...
+                if self.validate_binding(q_node_entry, subject_id, subject_query_id, entry):
+                    subject_id_found = True
+                if self.validate_binding(q_node_entry, object_id, object_query_id, entry):
+                    object_id_found = True
+
+                # ... but we need both to match, to succeed
                 if subject_id_found and object_id_found:
-                    # short-cut return if and when both
-                    # subject and object are matched
+                    # Short-cut tagging of search as successful if
+                    # and when both subject and object are matched
                     return True
 
         # Either the subject_id or object_id
-        # failed to match any results: failure!
+        # failed to match any node_bindings: failure!
         return False
 
     @staticmethod
-    def testcase_edge_bindings(q_edge_ids: List[str], target_edge_id: str, data: Dict) -> bool:
+    def testcase_edge_bindings(query_edges: Dict, target_edge_id: str, data: Dict) -> bool:
         """
         Check if target query edge id and knowledge graph edge id are in specified edge_bindings.
-        :rtype: object
         :param q_edge_ids: List[str], expected query edge identifiers in a matching result
         :param target_edge_id:  str, expected knowledge edge identifier in a matching result
         :param data: TRAPI version-specific Response context from which the 'edge_bindings' may be retrieved
@@ -634,9 +710,11 @@ class TRAPIResponseValidator(BiolinkValidator):
         if "edge_bindings" not in data:
             return False
 
+        query_edge_ids = list(query_edges.keys())
+
         edge_bindings: Dict = data["edge_bindings"]
         for bound_query_id, edge in edge_bindings.items():
-            if bound_query_id in q_edge_ids:
+            if bound_query_id in query_edge_ids:
                 for binding_details in edge:
                     # TRAPI schema validation likely actually
                     # catches missing id's, but sanity check...
@@ -668,18 +746,19 @@ class TRAPIResponseValidator(BiolinkValidator):
         """
         # TODO: need to implement some kind of validation of 'subject_query_id' and 'object_query_id'
         assert query_graph, "testcase_result_found() encountered an empty query graph"
-        q_edges: Dict = query_graph["edges"]
-        q_edge_ids = list(q_edges.keys())
 
         result_found: bool = False
         result: Dict
 
+        # At this point, a TRAPI Response.Message.Results
+        # is generally a non-empty list of Result objects
         for result in results:
 
             # Node binding validation still currently
-            # the same for most recent TRAPI versions
+            # the same for most recent TRAPI versions >= 1.3.0
             node_bindings_found: bool = \
                 self.testcase_node_bindings(
+                    query_graph["nodes"],
                     subject_id,
                     subject_query_id,
                     object_id,
@@ -687,7 +766,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                     result
                 )
 
-            # However, TRAPI 1.4.0 Message 'Results' 'edge_bindings' are reported differently
+            # However, TRAPI 1.4.0++ Message 'Results' 'edge_bindings' are reported differently
             # from 1.3.0, rather, embedded in 'Analysis' objects (and 'Auxiliary Graphs')
             edge_binding_found: bool = False
             if self.is_trapi_1_4_or_later():
@@ -749,7 +828,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                 # the "analysis" key is at least present and that the objects themselves are 'well-formed'
                 analyses: List = result["analyses"]
                 for analysis in analyses:
-                    edge_binding_found = self.testcase_edge_bindings(q_edge_ids, edge_id, analysis)
+                    edge_binding_found = self.testcase_edge_bindings(query_graph["edges"], edge_id, analysis)
                     if edge_binding_found:
                         break
             else:
@@ -774,12 +853,15 @@ class TRAPIResponseValidator(BiolinkValidator):
                 #     }
                 # ]
                 #
-                edge_binding_found = self.testcase_edge_bindings(q_edge_ids, edge_id, result)
+                edge_binding_found = self.testcase_edge_bindings(query_graph["edges"], edge_id, result)
 
+            # We declare 'success' after the first
+            # successful nodes/edges binding matches
             if node_bindings_found and edge_binding_found:
                 result_found = True
                 break
 
+        # If nothing matches, this result could still be False
         return result_found
 
     def resolve_testcase_node(
@@ -1020,16 +1102,20 @@ class TRAPIResponseValidator(BiolinkValidator):
             )
             return False
 
-        results: List = message["results"]
-        if not self.testcase_result_found(
-            query_graph,
-            edge_subject_match,
-            edge_subject_query_id_match,
-            edge_object_match,
-            edge_object_query_id_match,
-            edge_id_match,
-            results
-        ):
+        results_found: bool = False
+        # TRAPI Response.Message.Results is nullable but...then results are not found?
+        if "results" in message and message["results"]:
+            results: List = message["results"]
+            results_found = self.testcase_result_found(
+                query_graph,
+                edge_subject_match,
+                edge_subject_query_id_match,
+                edge_object_match,
+                edge_object_query_id_match,
+                edge_id_match,
+                results
+            )
+        if not results_found:
             self.report(
                 code="error.trapi.response.message.result.missing",
                 identifier=testcase_edge_id

@@ -81,6 +81,13 @@ error:
             $context:
               - identifier
             $description: "The given TRAPI Response is expected to return a specified edge - in its list of Results - relating to the original input data used to prepare the TRAPI Request!"
+          node_binding:
+            key:
+              missing:
+                $message: "Node binding entry key of TRAPI Result is missing in Query Graph"
+                $context:
+                  - identifier
+                $description: "The TRAPI Response Message Results entry has the specified node binding entry key missing in the corresponding TRAPI Message Query Graph."
         results:
           missing:
             $message: "TRAPI Message is missing its Results component!"
