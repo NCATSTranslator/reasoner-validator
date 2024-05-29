@@ -57,9 +57,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.sanitize_workflow"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.sanitize_workflow()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_edge_bindings()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_input_found_in_response"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_input_found_in_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_bindings"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_node_bindings()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_category_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_node_category_found()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_node_found()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.testcase_result_found()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.validate_binding"><code class="docutils literal notranslate"><span class="pre">TRAPIResponseValidator.validate_binding()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -328,32 +330,38 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_case_has_validation_errors</span></code>(tag, case)</p></td>
 <td><p>Check if test case has validation errors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_edge_bindings</span></code></a>(q_edge_ids, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_edge_bindings</span></code></a>(query_edges, ...)</p></td>
 <td><p>Check if target query edge id and knowledge graph edge id are in specified edge_bindings.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_input_found_in_response" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_input_found_in_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_input_found_in_response</span></code></a>(testcase, ...)</p></td>
 <td><p>Predicate to validate if test data test case specified edge is returned in the Knowledge Graph of the TRAPI Response Message.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_node_found</span></code></a>(target, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_bindings" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_bindings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_node_bindings</span></code></a>(query_nodes, ...)</p></td>
+<td><p>Check if the specified subject and object identifier are found in the result node bindings.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_node_found</span></code></a>(target, ...)</p></td>
 <td><p>Check for presence of at least one of the given identifiers, with expected categories, in the &quot;nodes&quot; catalog.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_result_found</span></code></a>(query_graph, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_result_found</span></code></a>(query_graph, ...)</p></td>
 <td><p>Validate that test testcase S--P-&gt;O edge is found bound to the Results? :param query_graph: Dict, query graph to which the results pertain :param subject_id: str, subject node (CURIE) identifier :param subject_query_id: Optional[str], subject node (CURIE) query node identifier (if applicable) :param object_id:  str, object node (CURIE) identifier :param object_query_id:  Optional[str], object node (CURIE) query node identifier (if applicable) :param edge_id:  str, edge identifier :param results: List of (TRAPI-version specific) Result objects :return: bool, True if testcase S-P-O edge was found in the results</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
 <td><p>Export BiolinkValidator contents as a Python dictionary (including Biolink version and parent class dictionary content).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code>(instance, component)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code>(instance, component)</p></td>
 <td><p>Validate instance against schema.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_agent_type</span></code>(edge_id, found, value)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_agent_type</span></code>(edge_id, found, value)</p></td>
 <td><p>Validate the value of a 'agent_type' of the given edge.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attribute_constraints</span></code>(edge_id, edge)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attribute_constraints</span></code>(edge_id, edge)</p></td>
 <td><p>Validate Query Edge Attributes.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attributes</span></code>(graph_type, edge_id, edge)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attributes</span></code>(graph_type, edge_id, edge)</p></td>
 <td><p>Validate Knowledge Edge Attributes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.validate_binding" title="reasoner_validator.validator.TRAPIResponseValidator.validate_binding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_binding</span></code></a>(q_node_entry, target_id, ...)</p></td>
+<td><p>Validate that a specified target_id has a valid node_binding in specified node binding details.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_biolink</span></code>()</p></td>
 <td><p>Predicate to check if the Biolink (version) is tagged to 'suppress' compliance validation.</p></td>
@@ -620,9 +628,8 @@ triggers (temporarily) unwarranted TRAPI validation failures</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">testcase_edge_bindings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_edge_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">testcase_edge_bindings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_edge_bindings" title="Permalink to this definition"></a></dt>
 <dd><p>Check if target query edge id and knowledge graph edge id are in specified edge_bindings.
-:rtype: object
 :param q_edge_ids: List[str], expected query edge identifiers in a matching result
 :param target_edge_id:  str, expected knowledge edge identifier in a matching result
 :param data: TRAPI version-specific Response context from which the ‘edge_bindings’ may be retrieved
@@ -644,6 +651,29 @@ that the TRAPI response is already generally validated as well-formed.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if test case edge found; False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_bindings">
+<span class="sig-name descname"><span class="pre">testcase_node_bindings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_query_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_query_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_bindings" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the specified subject and object identifier
+are found in the result node bindings.
+Expected query_id’s are also validated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query_nodes</strong> – query nodes dictionary</p></li>
+<li><p><strong>subject_id</strong> – expected node identifier of the knowledge graph subject</p></li>
+<li><p><strong>subject_query_id</strong> – expected bound ‘query_id’ if not the ‘subject_id’ (see TRAPI spec)</p></li>
+<li><p><strong>object_id</strong> – expected node identifier of the knowledge graph object</p></li>
+<li><p><strong>object_query_id</strong> – expected bound ‘query_id’ if not the ‘object_id’ (see TRAPI spec)</p></li>
+<li><p><strong>data</strong> – the result object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool, True if node_bindings found for specified subject and object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -690,6 +720,26 @@ query identifier matched (if applicable); None if no match</p>
 :param edge_id:  str, edge identifier
 :param results: List of (TRAPI-version specific) Result objects
 :return: bool, True if testcase S-P-O edge was found in the results</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.validate_binding">
+<span class="sig-name descname"><span class="pre">validate_binding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_node_entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_query_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_binding_details</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.validate_binding" title="Permalink to this definition"></a></dt>
+<dd><p>Validate that a specified target_id has a valid node_binding in specified node binding details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q_node_entry</strong> – Dict, query node data currently being searched</p></li>
+<li><p><strong>target_id</strong> – str, target knowledge graph node identifier to be matched to node binding</p></li>
+<li><p><strong>target_query_id</strong> – Optional[str], query identifier related to the target identifier,
+if not identical to the target_id</p></li>
+<li><p><strong>node_binding_details</strong> – Dict, data relating to a given node_binding of query to knowledge graph identifier</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool, True if a valid node binding was found</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

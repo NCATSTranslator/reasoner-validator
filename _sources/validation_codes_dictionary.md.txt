@@ -96,6 +96,14 @@
 
 **Description:** The given TRAPI Response is expected to return a specified edge - in its list of Results - relating to the original input data used to prepare the TRAPI Request!
 
+### error.trapi.response.message.result.node_binding.key.missing
+
+**Message:** Node binding entry key of TRAPI Result is missing in Query Graph
+
+**Context:** identifier
+
+**Description:** The TRAPI Response Message Results entry has the specified node binding entry key missing in the corresponding TRAPI Message Query Graph.
+
 ### error.trapi.response.message.results.missing
 
 **Message:** TRAPI Message is missing its Results component!
