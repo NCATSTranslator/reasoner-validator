@@ -3,11 +3,14 @@ from sys import stderr
 from os.path import abspath, dirname, sep
 from copy import deepcopy
 
+from bmt import Toolkit
+
 from reasoner_validator.trapi import (
     TRAPI_1_3_0,
     TRAPI_1_4_2,
     LATEST_TRAPI_RELEASE,
-    LATEST_TRAPI_MAJOR_MINOR_RELEASE, LATEST_TRAPI_MAJOR_MINOR_PATCH_RELEASE
+    LATEST_TRAPI_MAJOR_MINOR_RELEASE,
+    LATEST_TRAPI_MAJOR_MINOR_PATCH_RELEASE
 )
 
 TESTS_DIRECTORY = abspath(dirname(__file__))
@@ -30,6 +33,7 @@ LATEST_TEST_RELEASES: List = [
 
 ALL_TEST_VERSIONS: List[str] = PRE_1_5_0_TEST_VERSIONS + LATEST_TEST_RELEASES
 
+LATEST_BIOLINK_MODEL_VERSION = Toolkit().get_model_version()
 
 SIMPLE_SAMPLE_NODES = {
     "NCBIGene:29974": {

@@ -664,11 +664,13 @@ class TRAPIResponseValidator(BiolinkValidator):
         #     knowledge graph Node bindings in the result.
         #
         node_bindings: Dict = data["node_bindings"]
+        subject_id_found: bool = False
+        object_id_found: bool = False
         for q_node_id, node_bindings in node_bindings.items():
 
             # A basic expectation is for the node_binding keys
             # to match one of the input query node keys
-            if q_node_id not in query_nodes:
+            if q_node_id not in query_nodes.keys():
                 self.report(
                     code="error.trapi.response.message.result.node_binding.key.missing",
                     identifier=q_node_id
@@ -678,8 +680,6 @@ class TRAPIResponseValidator(BiolinkValidator):
             q_node_entry: Dict = query_nodes[q_node_id]
 
             entry: Dict
-            subject_id_found: bool = False
-            object_id_found: bool = False
             for entry in node_bindings:
                 # The subject and object id's will match separately...
                 if self.validate_binding(q_node_entry, subject_id, subject_query_id, entry):

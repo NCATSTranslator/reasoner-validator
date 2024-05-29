@@ -15,6 +15,7 @@ from reasoner_validator.biolink import BiolinkValidator, get_biolink_model_toolk
 
 from reasoner_validator.report import TRAPIGraphType
 from tests import (
+    LATEST_BIOLINK_MODEL_VERSION,
     SIMPLE_SAMPLE_NODES,
     SAMPLE_NODES_WITH_ATTRIBUTES,
     SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES,
@@ -35,7 +36,6 @@ pp = PrettyPrinter(indent=4)
 # we don't pretend to totally support Biolink Models any earlier than 3.1.1.
 # If earlier biolink model compliance testing is desired,
 # then perhaps reasoner-validator version 3.0.5 or earlier can be used.
-LATEST_BIOLINK_MODEL_VERSION = Toolkit().get_model_version()
 
 # special case of signalling suppression of validation
 SUPPRESS_BIOLINK_MODEL_VALIDATION = "suppress"

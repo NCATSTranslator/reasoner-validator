@@ -12,10 +12,15 @@ import pytest
 
 from dictdiffer import diff
 
-from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_2
+from reasoner_validator.trapi import (
+    TRAPI_1_3_0,
+    TRAPI_1_4_2
+)
 from reasoner_validator.validator import TRAPIResponseValidator
 
 from tests import (
+    LATEST_TRAPI_RELEASE,
+    LATEST_BIOLINK_MODEL_VERSION,
     PATCHED_140_SCHEMA_FILEPATH,
     SAMPLE_NODES_WITH_ATTRIBUTES,
     DEFAULT_KL_AND_AT_ATTRIBUTES
@@ -1274,8 +1279,8 @@ SAMPLE_TEST_CASE = {
 #
 SAMPLE_QUERY_GRAPH = {
     "nodes": {
-        "type-2 diabetes": {
-            "ids": ["diabetes"]
+        "diabetes mellitus": {
+            "ids": ["MONDO:0005015"]  # generic 'diabetes mellitus' MONDO term
         },
         "drug": {
             "categories": ["biolink:Drug"]
@@ -1283,7 +1288,7 @@ SAMPLE_QUERY_GRAPH = {
     },
     "edges": {
         "treated_by": {
-            "subject": "type-2 diabetes",
+            "subject": "diabetes mellitus",
             "predicates": ["biolink:treated_by"],
             "object": "drug"
         }
@@ -1310,19 +1315,33 @@ SAMPLE_TEST_GRAPH = {
 SAMPLE_TEST_RESULTS = [
     {
         "node_bindings": {
-            "type-2 diabetes": [{"id": "MONDO:0005148"}],
+            "diabetes mellitus": [
+                {
+                    "id": "MONDO:0005148",       # actually bound knowledge graph node is 'type 2 diabetes mellitus'
+                    "query_id": "MONDO:0005015"  # QNode identifier is the MONDO parent concept of 'diabetes mellitus'
+                }
+            ],
             "drug": [{"id": "ncats.drug:9100L32L2N"}]
         },
-        "edge_bindings": {
-            "treated_by": [{"id": "df879999"}]
-        }
+        "analyses": [
+            {
+                "resource_id": "infores:ara0",
+                "edge_bindings": {
+                    "treated_by": [
+                        {"id": "df879999"}
+                    ]
+                },
+                "support_graphs": [],
+                "score": 0.7
+            }
+        ]
     }
 ]
 
 SAMPLE_TEST_INCOMPLETE_RESULTS = [
     {
         "node_bindings": {
-            "type-2 diabetes": [{"id": "MONDO:0005148"}],
+            "diabetes mellitus": [{"id": "MONDO:0005148"}],
             "drug": [{"id": "ncats.drug:9100L32L2N"}]
         },
         "analyses": [
@@ -1339,9 +1358,20 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
 
 
 @pytest.mark.parametrize(
-    "case,response,code",
+    "testcase,response,code",
     [
-        (   # Query 0 - missing message 'knowledge_graph' property key
+        (   # Query 0 -  fully validating response
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": SAMPLE_QUERY_GRAPH,
+                    "knowledge_graph": SAMPLE_TEST_GRAPH,
+                    "results": SAMPLE_TEST_RESULTS
+                }
+            },
+            ""
+        ),
+        (   # Query 1 - missing message 'knowledge_graph' property key
             SAMPLE_TEST_CASE,
             {
                 "message": {
@@ -1351,7 +1381,7 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
             },
             "error.trapi.response.message.knowledge_graph.missing"
         ),
-        (  # Query 1 - empty message 'knowledge_graph' value
+        (  # Query 2 - empty message 'knowledge_graph' value
                 SAMPLE_TEST_CASE,
                 {
                     "message": {
@@ -1362,7 +1392,7 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
                 },
                 "error.trapi.response.message.knowledge_graph.empty"
         ),
-        (   # Query 2 - missing message 'results' property key
+        (   # Query 3 - missing message 'results' property key
             SAMPLE_TEST_CASE,
             {
                 "message": {
@@ -1372,7 +1402,7 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
             },
             "error.trapi.response.message.results.missing"
         ),
-        (   # Query 3 - empty message 'results' property value
+        (   # Query 4 - empty message 'results' property value
             SAMPLE_TEST_CASE,
             {
                 "message": {
@@ -1383,32 +1413,37 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
             },
             "error.trapi.response.message.results.empty"
         ),
-        (   # Query 4 - missing message subject node
+        (   # Query 5 - missing message subject node
             SAMPLE_TEST_CASE,
             {
                 "message": {
                     "query_graph": SAMPLE_QUERY_GRAPH,
                     "knowledge_graph": {
                         "nodes": {
-                            # "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
-                            "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
-                        },
-                        "edges": {
-                            "df87ff82": {
-                                "subject": "CHEBI:3002",
-                                "predicate": "biolink:treated_by",
-                                "object": "MESH:D001249"
+                            # "MONDO:0005148": {
+                            #     "name": "type-2 diabetes",
+                            #     "categories": [
+                            #         "biolink:Disease"
+                            #     ]
+                            # },
+                            "ncats.drug:9100L32L2N": {
+                                "name": "metformin",
+                                "categories": [
+                                    "biolink:Drug"
+                                ]
                             }
-                        }
+                        },
+                        "edges": SAMPLE_EDGES
                     },
                     "results": SAMPLE_TEST_RESULTS
                 }
             },
             "error.trapi.response.message.knowledge_graph.node.missing"
         ),
-        (   # Query 5 - the test case 'subject' node category is not an exact match against
+        (   # Query 6 - the test case 'subject' node category is not an exact match against
             #           the knowledge graph edge category; however, the test case has a
-            #           parent category which does match the knowledge graph, so we let it pass!
+            #           parent category which does match the knowledge graph,
+            #           so we just issue a suitable warning.
             SAMPLE_TEST_CASE,
             {
                 "message": {
@@ -1428,21 +1463,14 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
                                 ]
                             }
                         },
-                        "edges": {
-                            "df87ff82": {
-                                "subject": "CHEBI:3002",
-                                "predicate": "biolink:treated_by",
-                                "object": "MESH:D001249"
-                            }
-                        }
+                        "edges": SAMPLE_TEST_EDGES
                     },
                     "results": SAMPLE_TEST_RESULTS
                 }
             },
-            # NOT "error.trapi.response.message.knowledge_graph.node.missing"
-            ""
+            "warning.trapi.response.message.knowledge_graph.node.category.imprecise"
         ),
-        (   # Query 6 - missing message object node
+        (   # Query 7 - missing message object node
             SAMPLE_TEST_CASE,
             {
                 "message": {
@@ -1459,7 +1487,7 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
             },
             "error.trapi.response.message.knowledge_graph.node.missing"
         ),
-        (   # Query 7 - missing message edge
+        (   # Query 8 - missing message edge
             SAMPLE_TEST_CASE,
             {
                 "message": {
@@ -1476,7 +1504,7 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
             },
             "error.trapi.response.message.knowledge_graph.edge.missing"
         ),
-        (   # Query 8 -  missing specific result in messages results matching input values
+        (   # Query 9 -  missing specific result in messages results matching input values
             SAMPLE_TEST_CASE,
             {
                 "message": {
@@ -1489,7 +1517,11 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
         )
     ]
 )
-def test_case_input_found_in_response(case, response, code):
-    validator = TRAPIResponseValidator()
-    assert not validator.testcase_input_found_in_response(case, response) if code else True
+def test_case_input_found_in_response(testcase, response, code):
+    validator = TRAPIResponseValidator(
+        trapi_version=LATEST_TRAPI_RELEASE,
+        biolink_version=LATEST_BIOLINK_MODEL_VERSION
+    )
+    outcome: bool = validator.testcase_input_found_in_response(testcase=testcase, response=response)
+    assert not outcome if code.startswith("error") else True
     check_messages(validator, code)
