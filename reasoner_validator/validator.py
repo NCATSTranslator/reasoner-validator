@@ -453,7 +453,7 @@ class TRAPIResponseValidator(BiolinkValidator):
     ) -> Optional[str]:
         """
         Retrieve the most specific Biolink Model category match of knowledge graph node to testcase.
-        
+
         :param target: the concept node type of interest: the 'subject' or the 'object'
         :param node_id: str, identifier of node in "nodes" catalog whose category is to be matched against the testcase
         :param testcase: Dict, full test testcase against which the input node is being matched

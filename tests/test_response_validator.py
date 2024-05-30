@@ -1264,25 +1264,6 @@ def test_category_matched(
     ) == category_matched
 
 
-#         assert target in ["subject", "object"]
-#         for node_id in nodes.keys():
-#             node_details = nodes[node_id]
-#             category: Optional[str]
-#             if node_id in target_id_aliases:
-#                 # Found the target node identifier, but is the expected category present?
-#                 category: Optional[str] = self.testcase_node_category_found(target, node_id, testcase, node_details)
-#                 if category:
-#                     return node_id, category, None  # no 'query_id' is given since the node is directly matched.
-#
-#     def testcase_node_category_found(
-#             self,
-#             target,
-#             node_id,
-#             testcase,
-#             node_details
-#     ) -> Optional[str]:
-
-
 @pytest.mark.parametrize(
     "sample_node_id,subject_category,node_details,output_category,code",
     [
@@ -1360,6 +1341,25 @@ def test_testcase_node_category_found(
     )
     assert category == output_category
     check_messages(validator, code)
+
+
+def test_testcase_node_found():
+    validator = TRAPIResponseValidator(
+        trapi_version=LATEST_TRAPI_RELEASE,
+        biolink_version=LATEST_BIOLINK_MODEL_VERSION
+    )
+    #     def testcase_node_found(
+    #             self,
+    #             target: str,
+    #             target_id_aliases: List[str],
+    #             testcase: Dict,
+    #             nodes: Dict
+    #     ) -> Optional[Tuple[str, str, Optional[str]]]:
+    target: str = ""
+    target_id_aliases: List[str] = []
+    testcase: Dict = {}
+    nodes: Dict = {}
+    validator.testcase_node_found(target, target_id_aliases, testcase, nodes)
 
 
 @pytest.mark.parametrize(
