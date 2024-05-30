@@ -244,6 +244,7 @@ _TEST_KG_EDGE_SOURCES = [
 
 # From Implementation Guidelines circa June 2023
 _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
+    "schema_version": "1.5.0",
     "message": {
         "query_graph": {
             "nodes": {
