@@ -65,6 +65,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-missing">error.trapi.response.message.knowledge_graph.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-empty">error.trapi.response.message.knowledge_graph.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-node-missing">error.trapi.response.message.knowledge_graph.node.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-node-category-unmatched">error.trapi.response.message.knowledge_graph.node.category.unmatched</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-edge-missing">error.trapi.response.message.knowledge_graph.edge.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-result-missing">error.trapi.response.message.result.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-result-node-binding-key-missing">error.trapi.response.message.result.node_binding.key.missing</a></li>
@@ -324,6 +325,12 @@
 <p><strong>Message:</strong> Knowledge Graph of TRAPI Response Message Knowledge Graph is missing an expected Node</p>
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> The given TRAPI Response is expected to return specific node(s) related to the original input data used to prepare the TRAPI Request!</p>
+</section>
+<section id="error-trapi-response-message-knowledge-graph-node-category-unmatched">
+<h3>error.trapi.response.message.knowledge_graph.node.category.unmatched<a class="headerlink" href="#error-trapi-response-message-knowledge-graph-node-category-unmatched" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> The category of the knowledge graph node could not be matched against input node category.</p>
+<p><strong>Context:</strong> identifier, expected_category, observed_categories</p>
+<p><strong>Description:</strong> The category of the knowledge graph node failed to match that of the specified input node.</p>
 </section>
 <section id="error-trapi-response-message-knowledge-graph-edge-missing">
 <h3>error.trapi.response.message.knowledge_graph.edge.missing<a class="headerlink" href="#error-trapi-response-message-knowledge-graph-edge-missing" title="Permalink to this heading"></a></h3>
@@ -958,7 +965,7 @@
 <h3>warning.trapi.response.message.knowledge_graph.node.category.imprecise<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-node-category-imprecise" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The category of the knowledge graph node is imprecise.</p>
 <p><strong>Context:</strong> identifier, expected_category, observed_categories</p>
-<p><strong>Description:</strong> The category of the knowledge graph node matching an input node identifier is more generic than expected.</p>
+<p><strong>Description:</strong> The category of the knowledge graph node matching specified input node is more generic than expected.</p>
 </section>
 <section id="warning-trapi-response-message-results-empty">
 <h3>warning.trapi.response.message.results.empty<a class="headerlink" href="#warning-trapi-response-message-results-empty" title="Permalink to this heading"></a></h3>

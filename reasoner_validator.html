@@ -339,70 +339,73 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_bindings" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_bindings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_node_bindings</span></code></a>(query_nodes, ...)</p></td>
 <td><p>Check if the specified subject and object identifier are found in the result node bindings.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_node_found</span></code></a>(target, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_category_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_category_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_node_category_found</span></code></a>(target, ...)</p></td>
+<td><p>Retrieve the most specific Biolink Model category match of knowledge graph node to testcase.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_node_found</span></code></a>(target, ...)</p></td>
 <td><p>Check for presence of at least one of the given identifiers, with expected categories, in the &quot;nodes&quot; catalog.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_result_found</span></code></a>(query_graph, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_result_found</span></code></a>(query_graph, ...)</p></td>
 <td><p>Validate that test testcase S--P-&gt;O edge is found bound to the Results? :param query_graph: Dict, query graph to which the results pertain :param subject_id: str, subject node (CURIE) identifier :param subject_query_id: Optional[str], subject node (CURIE) query node identifier (if applicable) :param object_id:  str, object node (CURIE) identifier :param object_query_id:  Optional[str], object node (CURIE) query node identifier (if applicable) :param edge_id:  str, edge identifier :param results: List of (TRAPI-version specific) Result objects :return: bool, True if testcase S-P-O edge was found in the results</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
 <td><p>Export BiolinkValidator contents as a Python dictionary (including Biolink version and parent class dictionary content).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code>(instance, component)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code>(instance, component)</p></td>
 <td><p>Validate instance against schema.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_agent_type</span></code>(edge_id, found, value)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_agent_type</span></code>(edge_id, found, value)</p></td>
 <td><p>Validate the value of a 'agent_type' of the given edge.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attribute_constraints</span></code>(edge_id, edge)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attribute_constraints</span></code>(edge_id, edge)</p></td>
 <td><p>Validate Query Edge Attributes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attributes</span></code>(graph_type, edge_id, edge)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attributes</span></code>(graph_type, edge_id, edge)</p></td>
 <td><p>Validate Knowledge Edge Attributes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.validate_binding" title="reasoner_validator.validator.TRAPIResponseValidator.validate_binding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_binding</span></code></a>(q_node_entry, target_id, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.validate_binding" title="reasoner_validator.validator.TRAPIResponseValidator.validate_binding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_binding</span></code></a>(q_node_entry, target_id, ...)</p></td>
 <td><p>Validate that a specified target_id has a valid node_binding in specified node binding details.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_biolink</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_biolink</span></code>()</p></td>
 <td><p>Predicate to check if the Biolink (version) is tagged to 'suppress' compliance validation.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_category</span></code>(context, node_id, category)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_category</span></code>(context, node_id, category)</p></td>
 <td><p>Validate a Biolink category.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_element_status</span></code>(graph_type, context, ...)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_element_status</span></code>(graph_type, context, ...)</p></td>
 <td><p>Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_edge</span></code>(edge, graph_type)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_edge</span></code>(edge, graph_type)</p></td>
 <td><p>Validate slot properties of a relationship ('biolink:Association') edge.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_node</span></code>(node_id, slots, graph_type)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_node</span></code>(node_id, slots, graph_type)</p></td>
 <td><p>Validate slot properties (mainly 'categories') of a node.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_infores</span></code>(context, edge_id, identifier)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_infores</span></code>(context, edge_id, identifier)</p></td>
 <td><p>Validate that the specified identifier is a well-formed Infores CURIE.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_knowledge_level</span></code>(edge_id, found, value)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_knowledge_level</span></code>(edge_id, found, value)</p></td>
 <td><p>Validate the value of a 'knowledge_level' of the given edge.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_predicate</span></code>(edge_id, predicate, ...)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_predicate</span></code>(edge_id, predicate, ...)</p></td>
 <td><p>Validates predicates based on their meta-nature: existence, mixin, deprecation, etc.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_provenance</span></code>(edge_id, ara_source, ...)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_provenance</span></code>(edge_id, ara_source, ...)</p></td>
 <td><p>Validates ARA and KP infores knowledge sources based on surveyed Edge slots (recorded in edge &quot;attributes&quot; pre-1.4.0; in &quot;sources&quot;, post-1.4.0).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_constraints</span></code>(edge_id, edge)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_constraints</span></code>(edge_id, edge)</p></td>
 <td><p>Validate Query Edge Qualifier Constraints.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_entry</span></code>(context, edge_id, ...)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifier_entry</span></code>(context, edge_id, ...)</p></td>
 <td><p>Validate Qualifier Entry (JSON Object).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifiers</span></code>(edge_id, edge[, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_qualifiers</span></code>(edge_id, edge[, ...])</p></td>
 <td><p>Validate Knowledge Edge Qualifiers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_slot_value</span></code>(slot_name, context, ...)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_slot_value</span></code>(slot_name, context, ...)</p></td>
 <td><p>Validate the single-valued value of a specified slot of the given knowledge graph entity slot. :param slot_name, str, name of a valid slot, a value for which is to be validated :param context: str, context of the validation (e.g. node or edge id) :param found: bool, current status of slot detection,               Should be true if the slot was already previously seen :param value: Optional[str], the value to be validated :return: bool, True if valid slot and value (validation messages recorded in the BiolinkValidator).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_sources</span></code>(edge_id, edge)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_sources</span></code>(edge_id, edge)</p></td>
 <td><p>Validate (TRAPI 1.4.0-beta ++) Edge sources provenance.</p></td>
 </tr>
 </tbody>
@@ -439,10 +442,7 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 <tr class="row-even"><td><p><strong>reset_node_info</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>testcase_node_category_found</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>validate_input_edge_node</strong></p></td>
+<tr class="row-odd"><td><p><strong>validate_input_edge_node</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -680,8 +680,22 @@ Expected query_id’s are also validated.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_category_found">
-<span class="sig-name descname"><span class="pre">testcase_node_category_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testcase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_details</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_category_found" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">testcase_node_category_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testcase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_details</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_category_found" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve the most specific Biolink Model category match of knowledge graph node to testcase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – the concept node type of interest: the ‘subject’ or the ‘object’</p></li>
+<li><p><strong>node_id</strong> – str, identifier of node in “nodes” catalog whose category is to be matched against the testcase</p></li>
+<li><p><strong>testcase</strong> – Dict, full test testcase against which the input node is being matched</p></li>
+<li><p><strong>node_details</strong> – Dict, details about an individual knowledge graph node being processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str, most specific Biolink Model category match of knowledge graph node to testcase; None if not found</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found">
@@ -698,7 +712,7 @@ there is no overlap in the (expected or parent) testcase and node categories, th
 <li><p><strong>target</strong> – the concept node type of interest: the ‘subject’ or the ‘object’</p></li>
 <li><p><strong>target_id_aliases</strong> – List of (CURIE) target identifier aliases to be matched against the “nodes” catalog</p></li>
 <li><p><strong>testcase</strong> – Dict, full test testcase (to access the target node ‘category’)</p></li>
-<li><p><strong>nodes</strong> – Dict, details about knowledge graph nodes, indexed by node identifiers.</p></li>
+<li><p><strong>nodes</strong> – Dict, catalog of knowledge graph nodes, indexed by node identifiers, with node details as values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
