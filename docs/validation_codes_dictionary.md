@@ -80,6 +80,14 @@
 
 **Description:** The given TRAPI Response is expected to return specific node(s) related to the original input data used to prepare the TRAPI Request!
 
+### error.trapi.response.message.knowledge_graph.node.category.unmatched
+
+**Message:** The category of the knowledge graph node could not be matched against input node category.
+
+**Context:** identifier, expected_category, observed_categories
+
+**Description:** The category of the knowledge graph node failed to match that of the specified input node.
+
 ### error.trapi.response.message.knowledge_graph.edge.missing
 
 **Message:** Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Edge
@@ -95,6 +103,14 @@
 **Context:** identifier
 
 **Description:** The given TRAPI Response is expected to return a specified edge - in its list of Results - relating to the original input data used to prepare the TRAPI Request!
+
+### error.trapi.response.message.result.node_binding.key.missing
+
+**Message:** Node binding entry key of TRAPI Result is missing in Query Graph
+
+**Context:** identifier
+
+**Description:** The TRAPI Response Message Results entry has the specified node binding entry key missing in the corresponding TRAPI Message Query Graph.
 
 ### error.trapi.response.message.results.missing
 
@@ -908,7 +924,7 @@
 
 **Context:** identifier, expected_category, observed_categories
 
-**Description:** The category of the knowledge graph node matching an input node identifier is more generic than expected.
+**Description:** The category of the knowledge graph node matching specified input node is more generic than expected.
 
 ### warning.trapi.response.message.results.empty
 

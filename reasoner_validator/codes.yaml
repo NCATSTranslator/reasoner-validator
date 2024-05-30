@@ -69,6 +69,14 @@ error:
               $context:
                 - identifier
               $description: "The given TRAPI Response is expected to return specific node(s) related to the original input data used to prepare the TRAPI Request!"
+            category:
+              unmatched:
+                $message: "The category of the knowledge graph node could not be matched against input node category."
+                $description: "The category of the knowledge graph node failed to match that of the specified input node."
+                $context:
+                  - identifier
+                  - expected_category
+                  - observed_categories
           edge:
             missing:
               $message: "Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Edge"
@@ -705,7 +713,7 @@ warning:
             category:
               imprecise:
                 $message: "The category of the knowledge graph node is imprecise."
-                $description: "The category of the knowledge graph node matching an input node identifier is more generic than expected."
+                $description: "The category of the knowledge graph node matching specified input node is more generic than expected."
                 $context:
                   - identifier
                   - expected_category
@@ -826,7 +834,6 @@ warning:
           $context:
             - identifier
           $description: "Although TRAPI 1.4.0 states 'nullable: True', Translator user interface functionally requires that a non-empty 'name' property value ought to be specified in a knowledge graph node!"
-
       category:
         deprecated:
           $message: "Node has deprecated category"

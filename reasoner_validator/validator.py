@@ -447,16 +447,27 @@ class TRAPIResponseValidator(BiolinkValidator):
     def testcase_node_category_found(
             self,
             target,
-            identifier,
+            node_id,
             testcase,
             node_details
     ) -> Optional[str]:
+        """
+        Retrieve the most specific Biolink Model category match of knowledge graph node to testcase.
+        
+        :param target: the concept node type of interest: the 'subject' or the 'object'
+        :param node_id: str, identifier of node in "nodes" catalog whose category is to be matched against the testcase
+        :param testcase: Dict, full test testcase against which the input node is being matched
+        :param node_details: Dict, details about an individual knowledge graph node being processed.
+        :return: str, most specific Biolink Model category match of knowledge graph node to testcase; None if not found
+        """
         # For this comparison, we assume that a specified node category plus all its
         # parent categories, may be used to match the test testcase specified category.
         testcase_category: str = testcase[f"{target}_category"]
+        categories: List[str] = []
         if "categories" in node_details:
+            categories = node_details["categories"]
             category: Optional[str] = self.category_matched(
-                source_categories=node_details["categories"],
+                source_categories=categories,
                 target_categories=[testcase_category]
             )
             if category is not None:
@@ -471,7 +482,7 @@ class TRAPIResponseValidator(BiolinkValidator):
             # if a direct category match failed, try matching the inverse
             category = self.category_matched(
                 source_categories=[testcase_category],
-                target_categories=node_details["categories"]
+                target_categories=categories
             )
             if category is not None:
                 # The 'identifier' was present in the list of KG nodes;
@@ -481,15 +492,21 @@ class TRAPIResponseValidator(BiolinkValidator):
                 # node match, hence we issue a warning. For example, maybe the KG node returned is only
                 # tagged as "biolink:NamedThing" but we are looking for a testcase with "biolink:Gene".
                 # Since the testcase identifier was matched exactly, we assume that the node is matched,
-                # but just with less than desired data type categorical precision.
+                # but just with less than desired semantic data categorical precision.
                 self.report(
                     code="warning.trapi.response.message.knowledge_graph.node.category.imprecise",
-                    identifier=identifier,
+                    identifier=node_id,
                     expected_category=testcase_category,
                     observed_categories=",".join(node_details["categories"])
                 )
                 return category
 
+        self.report(
+            code="error.trapi.response.message.knowledge_graph.node.category.unmatched",
+            identifier=node_id,
+            expected_category=testcase_category,
+            observed_categories=",".join(categories) if categories else "Missing"
+        )
         return None
 
     def testcase_node_found(
@@ -510,17 +527,16 @@ class TRAPIResponseValidator(BiolinkValidator):
         :param target: the concept node type of interest: the 'subject' or the 'object'
         :param target_id_aliases: List of (CURIE) target identifier aliases to be matched against the "nodes" catalog
         :param testcase: Dict, full test testcase (to access the target node 'category')
-        :param nodes: Dict, details about knowledge graph nodes, indexed by node identifiers.
+        :param nodes: Dict, catalog of knowledge graph nodes, indexed by node identifiers, with node details as values.
         :return: Optional[Tuple[str, str, Optional[str]]], returns the KG node identifier, category, and
                                                            query identifier matched (if applicable); None if no match
         """
         #
         #     "nodes": {
-                # "MONDO:0005148": {"name": "type-2 diabetes"},
-                # "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
+        #           "MONDO:0005148": {"name": "type-2 diabetes"},
+        #           "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
         #     }
         #
-
         # Sanity check
         assert target in ["subject", "object"]
         for node_id in nodes.keys():
@@ -530,7 +546,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                 # Found the target node identifier, but is the expected category present?
                 category: Optional[str] = self.testcase_node_category_found(target, node_id, testcase, node_details)
                 if category:
-                    return node_id, category, None  # no query_id is given since the node is directly matched.
+                    return node_id, category, None  # no 'query_id' is given since the node is directly matched.
             else:
                 # the current node identifier is not one of the target aliases, but we
                 # need to check whether the node_id is a subclass instance of an ontology
@@ -891,7 +907,8 @@ class TRAPIResponseValidator(BiolinkValidator):
         match: Optional[Tuple[str, str, Optional[str]]] = \
             self.testcase_node_found(target, target_id_aliases, testcase, nodes)
         if match:
-            # Direct match! Return matched identifier and category
+            # Node match! Return matched node identifier,
+            # 'category' and (optional) 'query_id' match
             return match
         else:
             # Node matching failed... report the error
@@ -919,18 +936,18 @@ class TRAPIResponseValidator(BiolinkValidator):
         # sanity checks
         assert testcase, "testcase_input_found_in_response(): Empty or missing test testcase data!"
         assert response, "testcase_input_found_in_response(): Empty or missing TRAPI Response!"
-        assert "message" in response, "testcase_input_found_in_response(): TRAPI Response missing its Message component!"
+        assert "message" in response, "testcase_input_found_in_response(): TRAPI Response missing Message component!"
 
         #
         # testcase: Dict parameter contains something like:
-        #
+        # {
         #     idx: 0,
         #     subject_category: 'biolink:SmallMolecule',
         #     object_category: 'biolink:Disease',
         #     predicate: 'biolink:treats',
-        #     subject_id: 'CHEBI:3002',  # may have the deprecated key 'subject' here
-        #     object_id: 'MESH:D001249', # may have the deprecated key 'object' here
-        #
+        #     subject_id: 'CHEBI:3002',  # may also have the deprecated key 'subject' here
+        #     object_id: 'MESH:D001249', # may also have the deprecated key 'object' here
+        # }
         # the contents for which ought to be returned in
         # the TRAPI Knowledge Graph, with a Result mapping?
         #
@@ -1014,8 +1031,8 @@ class TRAPIResponseValidator(BiolinkValidator):
         # In the Knowledge Graph:
         #
         #     "nodes": {
-                # "MONDO:0005148": {"name": "type-2 diabetes"},
-                # "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
+        #           "MONDO:0005148": {"name": "type-2 diabetes"},
+        #           "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
         #     }
         #
 

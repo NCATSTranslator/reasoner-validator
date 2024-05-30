@@ -1217,31 +1217,46 @@ def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(r
             [], [], None
         ),
         (   # query 1 - exact matches should be true
-            ["biolink:Gene"], ["biolink:Gene"], "biolink:Gene"
+            ["biolink:Gene"],
+            ["biolink:Gene"],
+            "biolink:Gene"
         ),
         (   # query 2 - biolink:Protein is **not** directly matched in the
             #           'source' hierarchy (even though its parents could overlap)
-            ["biolink:Gene"], ["biolink:Drug"], None
+            ["biolink:Gene"],
+            ["biolink:Drug"],
+            None
         ),
         (   # query 3 - but a 'target' category list with at least one exact
             #           match of category to source will also be matched,
             #           even if other target entries don't match
-            ["biolink:Gene"], ["biolink:Gene", "biolink:Drug"], "biolink:Gene"
+            ["biolink:Gene"],
+            ["biolink:Gene",
+             "biolink:Drug"],
+            "biolink:Gene"
         ),
         (   # query 4 - 'target' category matches at least one
             #           parent of the list of 'source' categories
-            ["biolink:Gene"], ["biolink:BiologicalEntity"], "biolink:BiologicalEntity"
+            ["biolink:Gene"],
+            ["biolink:BiologicalEntity"],
+            "biolink:BiologicalEntity"
         ),
         (   # query 5 - a 'target' category list matches at least
             #           one match to a parent of the list of the
             #           'source' categories, will be matched,
             #           even if other target entries don't match
             #
-            ["biolink:Gene"], ["biolink:BiologicalEntity", "biolink:Drug"], "biolink:BiologicalEntity"
+            ["biolink:Gene"],
+            ["biolink:BiologicalEntity", "biolink:Drug"],
+            "biolink:BiologicalEntity"
         )
     ]
 )
-def test_category_matched(source_categories: List[str], target_categories: List[str], category_matched: Optional[str]):
+def test_category_matched(
+        source_categories: List[str],
+        target_categories: List[str],
+        category_matched: Optional[str]
+):
     validator = TRAPIResponseValidator()
     assert validator.category_matched(
         source_categories,
@@ -1249,17 +1264,115 @@ def test_category_matched(source_categories: List[str], target_categories: List[
     ) == category_matched
 
 
+#         assert target in ["subject", "object"]
+#         for node_id in nodes.keys():
+#             node_details = nodes[node_id]
+#             category: Optional[str]
+#             if node_id in target_id_aliases:
+#                 # Found the target node identifier, but is the expected category present?
+#                 category: Optional[str] = self.testcase_node_category_found(target, node_id, testcase, node_details)
+#                 if category:
+#                     return node_id, category, None  # no 'query_id' is given since the node is directly matched.
+#
+#     def testcase_node_category_found(
+#             self,
+#             target,
+#             node_id,
+#             testcase,
+#             node_details
+#     ) -> Optional[str]:
+
+
 @pytest.mark.parametrize(
-    "case,response",
+    "sample_node_id,subject_category,node_details,output_category,code",
+    [
+        (   # Query 0 - Exact match between knowledge graph node
+            #           categories and target test case category
+            "CHEBI:6801",
+            "biolink:Drug",
+            {"name": "metformin", "categories": ["biolink:Drug"]},
+            "biolink:Drug",
+            ""
+        ),
+        (   # Query 1 - Knowledge graph node details lack a
+            #           'categories' field, so cannot match it
+            "MONDO:0005148",
+            "biolink:Disease",
+            {"name": "type-2 diabetes"},
+            None,
+            "error.trapi.response.message.knowledge_graph.node.category.unmatched"
+        ),
+
+        (
+            # Query 2 - No knowledge graph node category overlaps with the
+            #           test case category (or any parent category thereof)
+            "NCBIGene:7486",  # WRN RecQ like helicase [ Homo sapiens (human) ]
+            "biolink:Gene",
+            {"name": "WRN", "categories": ["biolink:Drug"]},
+            None,
+            "error.trapi.response.message.knowledge_graph.node.category.unmatched"
+        ),
+        (
+            # Query 3 - At least one knowledge graph node category overlaps with at least a
+            #           parent (ancestor) of the test case category (but is deemed "imprecise")
+            "NCBIGene:7486",  # WRN RecQ like helicase [ Homo sapiens (human) ]
+            "biolink:Gene",
+            {"name": "WRN", "categories": ["biolink:BiologicalEntity"]},
+            "biolink:BiologicalEntity",
+            "warning.trapi.response.message.knowledge_graph.node.category.imprecise"
+        ),
+        (
+            # Query 4 - Knowledge graph node 'categories' and test case category don't overlap
+            "NCBIGene:7486",  # WRN RecQ like helicase [ Homo sapiens (human) ]
+            "biolink:BiologicalEntity",
+            {"name": "WRN", "categories": ["biolink:Gene"]},
+            "biolink:BiologicalEntity",
+            ""
+        )
+    ]
+)
+def test_testcase_node_category_found(
+        sample_node_id: str,
+        subject_category: str,
+        node_details: Dict,
+        output_category: Optional[str],
+        code: str
+):
+    # should work for both kinds of targets,
+    # but here, we just test 'subject'. We also
+    # just use one fixed 'node_id' and the
+    # distinct parametric tests are only varied with
+    # respect to testcase and node_details categories
+    validator = TRAPIResponseValidator(
+        trapi_version=LATEST_TRAPI_RELEASE,
+        biolink_version=LATEST_BIOLINK_MODEL_VERSION
+    )
+    testcase: Dict = {
+        "idx": 0,
+        'subject_id': subject_id,
+        "subject_category": subject_category,
+    }
+    category: Optional[str] = validator.testcase_node_category_found(
+            "subject",
+            sample_node_id,
+            testcase,
+            node_details
+    )
+    assert category == output_category
+    check_messages(validator, code)
+
+
+@pytest.mark.parametrize(
+    "testcase,response",
     [
         (dict(), {"empty": "nonsense"}),
         ({"empty": "nonsense"}, dict()),
     ]
 )
-def test_empty_case_input_found_in_response(case, response):
+def test_empty_case_input_found_in_response(testcase, response):
     validator = TRAPIResponseValidator()
     with pytest.raises(AssertionError):
-        validator.testcase_input_found_in_response(case, response)
+        validator.testcase_input_found_in_response(testcase, response)
 
 
 #
@@ -1371,7 +1484,29 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
             },
             ""
         ),
-        (   # Query 1 - missing message 'knowledge_graph' property key
+        (   # Query 1 - missing message 'query_graph' property key
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    # "query_graph": SAMPLE_QUERY_GRAPH,
+                    "knowledge_graph": SAMPLE_TEST_GRAPH,
+                    "results": SAMPLE_TEST_RESULTS
+                }
+            },
+            "error.trapi.response.message.query_graph.missing"
+        ),
+        (   # Query 2 - empty query_graph
+            SAMPLE_TEST_CASE,
+            {
+                "message": {
+                    "query_graph": {},
+                    "knowledge_graph": SAMPLE_TEST_GRAPH,
+                    "results": SAMPLE_TEST_RESULTS
+                }
+            },
+            "error.trapi.response.message.query_graph.empty"
+        ),
+        (   # Query 3 - missing message 'knowledge_graph' property key
             SAMPLE_TEST_CASE,
             {
                 "message": {
@@ -1381,7 +1516,8 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
             },
             "error.trapi.response.message.knowledge_graph.missing"
         ),
-        (  # Query 2 - empty message 'knowledge_graph' value
+        (  # Query 4 - empty message 'knowledge_graph' value
+           #           is an error for OneHop testcase output
                 SAMPLE_TEST_CASE,
                 {
                     "message": {
@@ -1392,28 +1528,29 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
                 },
                 "error.trapi.response.message.knowledge_graph.empty"
         ),
-        (   # Query 3 - missing message 'results' property key
+        (   # Query 5 - missing message 'results' property key
             SAMPLE_TEST_CASE,
             {
                 "message": {
                     "query_graph": SAMPLE_QUERY_GRAPH,
-                    "knowledge_graph": {"nodes": {}, "edges": {}}
+                    "knowledge_graph": SAMPLE_TEST_RESULTS
                 }
             },
             "error.trapi.response.message.results.missing"
         ),
-        (   # Query 4 - empty message 'results' property value
+        (   # Query 6 - empty message 'results' property value
+            #           is an error for OneHop testcase output
             SAMPLE_TEST_CASE,
             {
                 "message": {
                     "query_graph": SAMPLE_QUERY_GRAPH,
-                    "knowledge_graph": {"nodes": {}, "edges": {}},
+                    "knowledge_graph": SAMPLE_TEST_RESULTS,
                     "results": []
                 }
             },
             "error.trapi.response.message.results.empty"
         ),
-        (   # Query 5 - missing message subject node
+        (   # Query 7 - missing message 'subject' node
             SAMPLE_TEST_CASE,
             {
                 "message": {
@@ -1440,10 +1577,10 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
             },
             "error.trapi.response.message.knowledge_graph.node.missing"
         ),
-        (   # Query 6 - the test case 'subject' node category is not an exact match against
-            #           the knowledge graph edge category; however, the test case has a
-            #           parent category which does match the knowledge graph,
-            #           so we just issue a suitable warning.
+        (   # Query 8 - the test case 'subject' node category is not an exact match
+            #           against the knowledge graph edge category; however, the
+            #           testcase category has a parent category which does match
+            #           the knowledge graph, so we just issue a suitable warning.
             SAMPLE_TEST_CASE,
             {
                 "message": {
@@ -1470,15 +1607,25 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
             },
             "warning.trapi.response.message.knowledge_graph.node.category.imprecise"
         ),
-        (   # Query 7 - missing message object node
+        (   # Query 9 - missing message 'object' node
             SAMPLE_TEST_CASE,
             {
                 "message": {
                     "query_graph": SAMPLE_QUERY_GRAPH,
                     "knowledge_graph": {
                         "nodes": {
-                            "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
-                            # "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
+                            "MONDO:0005148": {
+                                "name": "type-2 diabetes",
+                                "categories": [
+                                    "biolink:Disease"
+                                ]
+                            },
+                            # "ncats.drug:9100L32L2N": {
+                            #     "name": "metformin",
+                            #     "categories": [
+                            #         "biolink:Drug"
+                            #     ]
+                            # }
                         },
                         "edges": SAMPLE_TEST_EDGES
                     },
@@ -1487,7 +1634,7 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
             },
             "error.trapi.response.message.knowledge_graph.node.missing"
         ),
-        (   # Query 8 - missing message edge
+        (   # Query 10 - missing message edge
             SAMPLE_TEST_CASE,
             {
                 "message": {
@@ -1504,7 +1651,7 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
             },
             "error.trapi.response.message.knowledge_graph.edge.missing"
         ),
-        (   # Query 9 -  missing specific result in messages results matching input values
+        (   # Query 11 -  missing specific result in messages results matching input values
             SAMPLE_TEST_CASE,
             {
                 "message": {
