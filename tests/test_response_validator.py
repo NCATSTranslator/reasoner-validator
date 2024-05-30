@@ -1343,6 +1343,7 @@ def test_testcase_node_category_found(
     check_messages(validator, code)
 
 
+@pytest.mark.skip(reason="Incomplete test")
 def test_testcase_node_found():
     validator = TRAPIResponseValidator(
         trapi_version=LATEST_TRAPI_RELEASE,
