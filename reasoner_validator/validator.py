@@ -21,70 +21,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@lru_cache(maxsize=1024)
-def get_aliases(curie: str) -> List[str]:
-    """
-    Get clique of related identifiers from the Node Normalizer
-    """
-    if not curie:
-        raise RuntimeError("get_aliases(): empty input curie?")
-
-    aliases: Optional[List[str]] = None
-    #
-    # TODO: maybe check for IRI's here and attempt to translate
-    #       (Q: now do we access the prefix map from BMT to do this?)
-    # if PrefixManager.is_iri(identifier):
-    #     identifier = PrefixManager.contract(identifier)
-
-    # We won't raise a RuntimeError for other various
-    # erroneous runtime conditions but simply report warnings
-    if not is_curie(curie):
-        logging.warning(f"get_aliases(): identifier '{curie}' is not a CURIE thus cannot resolve its aliases?")
-    else:
-        # Use the Translator Node Normalizer service to resolve the identifier clique
-        query = {'curies': [curie]}
-        result = post_query(url=NODE_NORMALIZER_SERVER, query=query, server="Node Normalizer")
-        if result:
-            if curie not in result.keys():
-                logging.warning(f"get_aliases(): Node Normalizer didn't return the identifier '{curie}' clique?")
-            else:
-                clique = result[curie]
-                if clique:
-                    if "id" in clique.keys():
-                        # TODO: Don't need the canonical identifier for method
-                        #       but when you do, this is how you'll get it?
-                        # clique_id = clique["id"]
-                        # preferred_curie = preferred_id["identifier"]
-                        # preferred_name = preferred_id["label"]
-                        if "equivalent_identifiers" in clique.keys():
-                            # Sanity check: returned aliases
-                            # are all converted to upper case
-                            aliases = [entry["identifier"] for entry in clique["equivalent_identifiers"]]
-                        else:
-                            logging.warning(
-                                f"get_aliases(): missing the 'equivalent identifiers' for the '{curie}' clique?"
-                            )
-                    else:
-                        logging.warning(
-                            f"get_aliases(): missing the preferred 'id' for the '{curie}' clique?"
-                        )
-                else:
-                    logging.warning(
-                        f"get_aliases(): '{curie}' is a singleton in its clique thus has no aliases..."
-                    )
-
-    if not aliases:
-        # Logging various errors but always
-        # return the identifier as its own alias
-        aliases = [curie]
-    elif curie not in aliases:
-        # If the identifier itself is missing in the aliases, then it could
-        # just be a letter case mismatch? See if you can correct for this...
-        aliases = [curie if str(i).upper() == curie.upper() else i for i in aliases]
-
-    return aliases
-
-
 # Unspoken assumption here is that validation of results returned for
 # Biolink Model release compliance only needs to be superficial
 RESULT_TEST_DATA_SAMPLE_SIZE = 10
@@ -945,6 +881,69 @@ class TRAPIResponseValidator(BiolinkValidator):
         # If nothing matches, this result could still be False
         return result_found
 
+    @lru_cache(maxsize=1024)
+    def get_aliases(self, curie: str) -> List[str]:
+        """
+        Get clique of related identifiers from the Node Normalizer
+        """
+        if not curie:
+            raise RuntimeError("get_aliases(): empty input curie?")
+
+        aliases: Optional[List[str]] = None
+        #
+        # TODO: maybe check for IRI's here and attempt to translate
+        #       (Q: now do we access the prefix map from BMT to do this?)
+        # if PrefixManager.is_iri(identifier):
+        #     identifier = PrefixManager.contract(identifier)
+
+        # We won't raise a RuntimeError for other various
+        # erroneous runtime conditions but simply report warnings
+        if not is_curie(curie):
+            logging.warning(f"get_aliases(): identifier '{curie}' is not a CURIE thus cannot resolve its aliases?")
+        else:
+            # Use the Translator Node Normalizer service to resolve the identifier clique
+            query = {'curies': [curie]}
+            result = post_query(url=NODE_NORMALIZER_SERVER, query=query, server="Node Normalizer")
+            if result:
+                if curie not in result.keys():
+                    logging.warning(f"get_aliases(): Node Normalizer didn't return the identifier '{curie}' clique?")
+                else:
+                    clique = result[curie]
+                    if clique:
+                        if "id" in clique.keys():
+                            # TODO: Don't need the canonical identifier for method
+                            #       but when you do, this is how you'll get it?
+                            # clique_id = clique["id"]
+                            # preferred_curie = preferred_id["identifier"]
+                            # preferred_name = preferred_id["label"]
+                            if "equivalent_identifiers" in clique.keys():
+                                # Sanity check: returned aliases
+                                # are all converted to upper case
+                                aliases = [entry["identifier"] for entry in clique["equivalent_identifiers"]]
+                            else:
+                                logging.warning(
+                                    f"get_aliases(): missing the 'equivalent identifiers' for the '{curie}' clique?"
+                                )
+                        else:
+                            logging.warning(
+                                f"get_aliases(): missing the preferred 'id' for the '{curie}' clique?"
+                            )
+                    else:
+                        logging.warning(
+                            f"get_aliases(): '{curie}' is a singleton in its clique thus has no aliases..."
+                        )
+
+        if not aliases:
+            # Logging various errors but always
+            # return the identifier as its own alias
+            aliases = [curie]
+        elif curie not in aliases:
+            # If the identifier itself is missing in the aliases, then it could
+            # just be a letter case mismatch? See if you can correct for this...
+            aliases = [curie if str(i).upper() == curie.upper() else i for i in aliases]
+
+        return aliases
+
     def resolve_testcase_node(
             self,
             target: str,
@@ -968,7 +967,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                                                            query identifier matched (if applicable); None if no match
         """
         target_id: str = testcase[f"{target}_id"] if f"{target}_id" in testcase else testcase[target]
-        target_id_aliases = get_aliases(target_id)
+        target_id_aliases = self.get_aliases(target_id)
         match: Optional[Tuple[str, str, Optional[str]]] = \
             self.testcase_node_found(target, target_id_aliases, testcase, nodes)
         if match:

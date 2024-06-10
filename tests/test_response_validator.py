@@ -16,7 +16,7 @@ from reasoner_validator.trapi import (
     TRAPI_1_3_0,
     TRAPI_1_4_2
 )
-from reasoner_validator.validator import get_aliases, TRAPIResponseValidator
+from reasoner_validator.validator import TRAPIResponseValidator
 
 from tests import (
     LATEST_TRAPI_RELEASE,
@@ -40,8 +40,9 @@ logger.setLevel("DEBUG")
     ]
 )
 def test_get_aliases_of_empty_identifier(identifier):
+    validator: TRAPIResponseValidator = TRAPIResponseValidator()
     with pytest.raises(RuntimeError):
-        get_aliases(identifier)
+        validator.get_aliases(identifier)
 
 
 @pytest.mark.parametrize(
@@ -68,7 +69,8 @@ def test_get_aliases_of_empty_identifier(identifier):
     ]
 )
 def test_get_aliases(identifier: str, one_alias: str):
-    aliases: List[str] = get_aliases(identifier)
+    validator: TRAPIResponseValidator = TRAPIResponseValidator()
+    aliases: List[str] = validator.get_aliases(identifier)
     assert identifier in aliases
     assert one_alias in aliases if one_alias in aliases else True
 
