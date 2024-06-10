@@ -11,7 +11,12 @@ from bmt import Toolkit
 from linkml_runtime.linkml_model import SlotDefinition
 
 from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0_BETA
-from reasoner_validator.biolink import BiolinkValidator, get_biolink_model_toolkit
+from reasoner_validator.biolink import (
+    is_curie,
+    get_reference,
+    BiolinkValidator,
+    get_biolink_model_toolkit
+)
 
 from reasoner_validator.report import TRAPIGraphType
 from tests import (
@@ -29,6 +34,35 @@ from tests.test_validation_report import check_messages
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
+
+
+@pytest.mark.parametrize(
+    "identifier,outcome",
+    [
+        (None, False),
+        ("foo:bar", True),
+        ("not-a-curie", False),
+    ]
+)
+def test_is_curie(identifier: str, outcome: bool):
+    assert is_curie(identifier) is outcome
+
+
+@pytest.mark.parametrize(
+    "identifier,reference",
+    [
+        (   # Valid CURIE has a reference
+            "ORPHANET:33110",
+            "33110"
+        ),
+        (   # Only CURIEs can be resolved to references
+            "not-a-curie",
+            None
+        ),
+    ]
+)
+def test_get_reference(identifier: str, reference: str):
+    assert get_reference(identifier) == reference
 
 pp = PrettyPrinter(indent=4)
 

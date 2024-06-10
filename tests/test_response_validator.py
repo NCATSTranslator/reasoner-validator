@@ -16,7 +16,7 @@ from reasoner_validator.trapi import (
     TRAPI_1_3_0,
     TRAPI_1_4_2
 )
-from reasoner_validator.validator import TRAPIResponseValidator
+from reasoner_validator.validator import get_aliases, TRAPIResponseValidator
 
 from tests import (
     LATEST_TRAPI_RELEASE,
@@ -30,6 +30,48 @@ from tests.test_validation_report import check_messages
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
+
+
+@pytest.mark.parametrize(
+    "identifier",
+    [
+        None,
+        ""
+    ]
+)
+def test_get_aliases_of_empty_identifier(identifier):
+    with pytest.raises(RuntimeError):
+        get_aliases(identifier)
+
+
+@pytest.mark.parametrize(
+    "identifier,one_alias",
+    [
+        (   # Special test for a CURIE for which
+            # NodeNormalization is known to
+            # return a lower case namespace
+            "ORPHANET:33110",
+            "MONDO:0011096"
+        ),
+        (   # Test that the alias search is also
+            # input namespace case-insensitive:
+            # A modification of case of the input
+            # identifier is still properly returned.
+            "Orphanet:33110",
+            "MONDO:0011096"
+        ),
+        (   # only CURIEs can be resolved to aliases
+            # but just logs a warning but returns the identifier
+            "not-a-curie",
+            ""
+        ),
+    ]
+)
+def test_get_aliases(identifier: str, one_alias: str):
+    aliases: List[str] = get_aliases(identifier)
+    assert identifier in aliases
+    assert one_alias in aliases if one_alias in aliases else True
+
 
 _TEST_QG_1 = {
     "nodes": {

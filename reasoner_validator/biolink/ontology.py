@@ -5,10 +5,9 @@ from typing import Optional
 from functools import lru_cache
 
 from reasoner_validator.biolink import get_biolink_model_toolkit
-from reasoner_validator.utils.http import post_query
+from reasoner_validator import post_query, NODE_NORMALIZER_SERVER
 
 ONTOLOGY_KP_TRAPI_SERVER = "https://automat.renci.org/ubergraph/query"
-NODE_NORMALIZER_SERVER = "https://nodenormalization-sri.renci.org/get_normalized_nodes"
 
 CACHE_SIZE = 1024
 
@@ -18,8 +17,8 @@ def convert_to_preferred(curie, allowed_list):
     :param curie
     :param allowed_list
     """
-    j = {'curies': [curie]}
-    result = post_query(NODE_NORMALIZER_SERVER, j)
+    query = {'curies': [curie]}
+    result = post_query(url=NODE_NORMALIZER_SERVER, query=query, server="Node Normalizer")
     if not (result and curie in result and result[curie] and 'equivalent_identifiers' in result[curie]):
         return None
     new_ids = [v['identifier'] for v in result[curie]['equivalent_identifiers']]
@@ -34,7 +33,7 @@ def get_ontology_ancestors(curie, btype):
     :param curie:
     :param btype:
     """
-    m = {
+    query = {
         "message": {
             "query_graph": {
                 "nodes": {
@@ -55,10 +54,10 @@ def get_ontology_ancestors(curie, btype):
             }
         }
     }
-    response = post_query(ONTOLOGY_KP_TRAPI_SERVER, m, server="Ontology KP")
-    original_prefix = curie.split(':')[0]
+    response = post_query(url=ONTOLOGY_KP_TRAPI_SERVER, query=query, server="Ontology KP")
     ancestors = []
     if response:
+        original_prefix = curie.split(':')[0]
         for result in response['message']['results']:
             parent_id = result['node_bindings']['b'][0]['id']
             if parent_id == curie:

@@ -4,10 +4,9 @@ Unit tests of the low level ontology and node normalization calling subsystem.
 from typing import Optional
 import pytest
 
-from reasoner_validator.utils.http import post_query
+from reasoner_validator import post_query, NODE_NORMALIZER_SERVER
 from reasoner_validator.biolink.ontology import (
     ONTOLOGY_KP_TRAPI_SERVER,
-    NODE_NORMALIZER_SERVER,
     get_parent_concept
 )
 
@@ -71,8 +70,8 @@ async def test_post_query_to_ontology(curie: str, category: str, result: Optiona
 )
 @pytest.mark.asyncio
 async def test_post_query_to_node_normalization(curie: str, category: str):
-    j = {'curies': [curie]}
-    result = post_query(url=NODE_NORMALIZER_SERVER, query=j, server="Post Node Normalizer Query")
+    params = {'curies': [curie]}
+    result = post_query(url=NODE_NORMALIZER_SERVER, query=params, server="Node Normalizer")
     assert result
     assert curie in result
     assert "equivalent_identifiers" in result[curie]

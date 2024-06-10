@@ -4,6 +4,7 @@ Version-specific Biolink Model semantic validation of knowledge graph components
 from typing import Optional, Any, Dict, List, Tuple
 from numbers import Number
 from functools import lru_cache
+import re
 from urllib.error import HTTPError
 from pprint import PrettyPrinter
 
@@ -11,7 +12,6 @@ from pprint import PrettyPrinter
 from bmt import Toolkit, utils
 from linkml_runtime.linkml_model import ClassDefinition, Element
 
-from reasoner_validator.utils import is_curie
 from reasoner_validator.versioning import SemVer, SemVerError
 from reasoner_validator.message import MESSAGES_BY_TARGET
 from reasoner_validator.trapi import TRAPISchemaValidator
@@ -21,6 +21,46 @@ import logging
 logger = logging.getLogger(__name__)
 
 pp = PrettyPrinter(indent=4)
+
+
+CURIE_PATTERN = re.compile(r"^[^ <()>:]*:[^/ :]+$")
+
+
+def is_curie(s: str) -> bool:
+    """
+    Check if a given string is a CURIE.
+
+    :param s: str, string to be validated as a CURIE
+    :return: bool, whether the given string is a CURIE
+    """
+    # Method copied from kgx.prefix_manager.PrefixManager...
+    if isinstance(s, str):
+        m = CURIE_PATTERN.match(s)
+        return bool(m)
+    else:
+        return False
+
+
+def get_reference(curie: str) -> Optional[str]:
+    """
+    Get the object_id reference of a given CURIE.
+
+    Parameters
+    ----------
+    curie: str
+        The CURIE
+
+    Returns
+    -------
+    Optional[str]
+        The reference of a CURIE
+
+    """
+    # Method adapted from kgx.prefix_manager.PrefixManager...
+    reference: Optional[str] = None
+    if is_curie(curie):
+        reference = curie.split(":", 1)[1]
+    return reference
 
 
 def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional[str]:

@@ -1,11 +1,13 @@
 from typing import Optional, List, Dict, Set, Tuple
-
+from functools import lru_cache
 from reasoner_validator.biolink import (
     BiolinkValidator,
     get_biolink_model_toolkit
 )
-from reasoner_validator.biolink.ontology import get_parent_concept
 
+from reasoner_validator import post_query, NODE_NORMALIZER_SERVER
+from reasoner_validator.biolink import is_curie
+from reasoner_validator.biolink.ontology import get_parent_concept
 from reasoner_validator.report import TRAPIGraphType
 from reasoner_validator.trapi import (
     LATEST_TRAPI_RELEASE,
@@ -14,10 +16,73 @@ from reasoner_validator.trapi import (
 )
 from reasoner_validator.trapi.mapping import MappingValidator
 from reasoner_validator.versioning import SemVer, SemVerError, get_latest_version
-from reasoner_validator.utils import get_aliases
 
 import logging
 logger = logging.getLogger(__name__)
+
+
+@lru_cache(maxsize=1024)
+def get_aliases(curie: str) -> List[str]:
+    """
+    Get clique of related identifiers from the Node Normalizer
+    """
+    if not curie:
+        raise RuntimeError("get_aliases(): empty input curie?")
+
+    aliases: Optional[List[str]] = None
+    #
+    # TODO: maybe check for IRI's here and attempt to translate
+    #       (Q: now do we access the prefix map from BMT to do this?)
+    # if PrefixManager.is_iri(identifier):
+    #     identifier = PrefixManager.contract(identifier)
+
+    # We won't raise a RuntimeError for other various
+    # erroneous runtime conditions but simply report warnings
+    if not is_curie(curie):
+        logging.warning(f"get_aliases(): identifier '{curie}' is not a CURIE thus cannot resolve its aliases?")
+    else:
+        # Use the Translator Node Normalizer service to resolve the identifier clique
+        query = {'curies': [curie]}
+        result = post_query(url=NODE_NORMALIZER_SERVER, query=query, server="Node Normalizer")
+        if result:
+            if curie not in result.keys():
+                logging.warning(f"get_aliases(): Node Normalizer didn't return the identifier '{curie}' clique?")
+            else:
+                clique = result[curie]
+                if clique:
+                    if "id" in clique.keys():
+                        # TODO: Don't need the canonical identifier for method
+                        #       but when you do, this is how you'll get it?
+                        # clique_id = clique["id"]
+                        # preferred_curie = preferred_id["identifier"]
+                        # preferred_name = preferred_id["label"]
+                        if "equivalent_identifiers" in clique.keys():
+                            # Sanity check: returned aliases
+                            # are all converted to upper case
+                            aliases = [entry["identifier"] for entry in clique["equivalent_identifiers"]]
+                        else:
+                            logging.warning(
+                                f"get_aliases(): missing the 'equivalent identifiers' for the '{curie}' clique?"
+                            )
+                    else:
+                        logging.warning(
+                            f"get_aliases(): missing the preferred 'id' for the '{curie}' clique?"
+                        )
+                else:
+                    logging.warning(
+                        f"get_aliases(): '{curie}' is a singleton in its clique thus has no aliases..."
+                    )
+
+    if not aliases:
+        # Logging various errors but always
+        # return the identifier as its own alias
+        aliases = [curie]
+    elif curie not in aliases:
+        # If the identifier itself is missing in the aliases, then it could
+        # just be a letter case mismatch? See if you can correct for this...
+        aliases = [curie if str(i).upper() == curie.upper() else i for i in aliases]
+
+    return aliases
 
 
 # Unspoken assumption here is that validation of results returned for
@@ -717,7 +782,7 @@ class TRAPIResponseValidator(BiolinkValidator):
     def testcase_edge_bindings(query_edges: Dict, target_edge_id: str, data: Dict) -> bool:
         """
         Check if target query edge id and knowledge graph edge id are in specified edge_bindings.
-        :param q_edge_ids: List[str], expected query edge identifiers in a matching result
+        :param query_edges: List[str], expected query edge identifiers in a matching result
         :param target_edge_id:  str, expected knowledge edge identifier in a matching result
         :param data: TRAPI version-specific Response context from which the 'edge_bindings' may be retrieved
         :return: True, if found
@@ -1004,15 +1069,15 @@ class TRAPIResponseValidator(BiolinkValidator):
         # The Message Query Graph could be something like:
         # "query_graph": {
         #     "nodes": {
-                # "type-2 diabetes": {"ids": ["MONDO:0005148"]},
-                # "drug": {"categories": ["biolink:Drug"]}
+        #         "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+        #         "drug": {"categories": ["biolink:Drug"]}
         #     },
         #     "edges": {
-                # "treated_by": {
-                #     "subject": "type-2 diabetes",
-                #     "predicates": ["biolink:treated_by"],
-                #     "object": "drug"
-                # }
+        #         "treated_by": {
+        #             "subject": "type-2 diabetes",
+        #             "predicates": ["biolink:treated_by"],
+        #             "object": "drug"
+        #         }
         #     }
         # }
 
@@ -1055,11 +1120,11 @@ class TRAPIResponseValidator(BiolinkValidator):
         # In the Knowledge Graph:
         #
         #     "edges": {
-                # "df87ff82": {
-                #     "subject": "CHEBI:6801",
-                #     "predicate": "biolink:treats",
-                #     "object": "MONDO:0005148"
-                # }
+        #         "df87ff82": {
+        #             "subject": "CHEBI:6801",
+        #             "predicate": "biolink:treats",
+        #             "object": "MONDO:0005148"
+        #         }
         #     }
         #
         # Check in the edges catalog for an edge containing
