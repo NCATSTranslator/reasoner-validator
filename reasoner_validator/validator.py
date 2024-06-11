@@ -882,12 +882,18 @@ class TRAPIResponseValidator(BiolinkValidator):
         return result_found
 
     @lru_cache(maxsize=1024)
-    def get_aliases(self, curie: str) -> List[str]:
+    def get_aliases(self, curie: Optional[str]) -> List[str]:
         """
-        Get clique of related identifiers from the Node Normalizer
+        Get clique of related identifiers from the Node Normalizer. Note that
+        except for the cases of a missing or invalid CURIE input, this method
+        is guaranteed to succeed in returning at least the input CURIE as one
+        of the aliases; however, the method reports various validation warnings
+        based on the completeness of the entry reported by the Node Normalizer.
+        :param curie: str, CURIE of node identifier for which aliases are needed.
+        :return: List[str], of all aliases (including at least the CURIE itself)
         """
         if not curie:
-            raise RuntimeError("get_aliases(): empty input curie?")
+            self.report(code="error.trapi.response.message.knowledge_graph.node.identifier.missing")
 
         aliases: Optional[List[str]] = None
         #
@@ -896,17 +902,22 @@ class TRAPIResponseValidator(BiolinkValidator):
         # if PrefixManager.is_iri(identifier):
         #     identifier = PrefixManager.contract(identifier)
 
-        # We won't raise a RuntimeError for other various
-        # erroneous runtime conditions but simply report warnings
         if not is_curie(curie):
-            logging.warning(f"get_aliases(): identifier '{curie}' is not a CURIE thus cannot resolve its aliases?")
+            self.report(
+                code="error.trapi.response.message.knowledge_graph.node.identifier.not_curie",
+                identifier=curie
+            )
         else:
-            # Use the Translator Node Normalizer service to resolve the identifier clique
+            # Use the Translator Node Normalizer service to resolve
+            # the identifier clique associated with the CURIE
             query = {'curies': [curie]}
             result = post_query(url=NODE_NORMALIZER_SERVER, query=query, server="Node Normalizer")
             if result:
                 if curie not in result.keys():
-                    logging.warning(f"get_aliases(): Node Normalizer didn't return the identifier '{curie}' clique?")
+                    self.report(
+                        code="warning.trapi.response.message.knowledge_graph.node.identifier.unresolved",
+                        identifier=curie
+                    )
                 else:
                     clique = result[curie]
                     if clique:
@@ -921,26 +932,45 @@ class TRAPIResponseValidator(BiolinkValidator):
                                 # are all converted to upper case
                                 aliases = [entry["identifier"] for entry in clique["equivalent_identifiers"]]
                             else:
-                                logging.warning(
-                                    f"get_aliases(): missing the 'equivalent identifiers' for the '{curie}' clique?"
+                                self.report(
+                                    code="warning.trapi.response.message.knowledge_graph." +
+                                         "node.identifier.no_equivalent_identifiers",
+                                    identifier=curie
                                 )
                         else:
-                            logging.warning(
-                                f"get_aliases(): missing the preferred 'id' for the '{curie}' clique?"
+                            self.report(
+                                code="warning.trapi.response.message.knowledge_graph." +
+                                     "node.identifier.no_preferred_identifier",
+                                identifier=curie
                             )
                     else:
-                        logging.warning(
-                            f"get_aliases(): '{curie}' is a singleton in its clique thus has no aliases..."
+                        self.report(
+                            code="warning.trapi.response.message.knowledge_graph.node.identifier.no_clique",
+                            identifier=curie
                         )
 
         if not aliases:
-            # Logging various errors but always
-            # return the identifier as its own alias
+            # If you didn't find any aliases, you can still return the identifier as its own alias
             aliases = [curie]
+            self.report(
+                code="warning.trapi.response.message.knowledge_graph.node.identifier.no_aliases",
+                identifier=curie
+            )
+
         elif curie not in aliases:
             # If the identifier itself is missing in the aliases, then it could
             # just be a letter case mismatch? See if you can correct for this...
             aliases = [curie if str(i).upper() == curie.upper() else i for i in aliases]
+            if aliases:
+                self.report(
+                        code="warning.trapi.response.message.knowledge_graph.node.identifier.namespace.non_canonical",
+                        identifier=curie
+                    )
+            else:
+                self.report(
+                        code="warning.trapi.response.message.knowledge_graph.node.identifier.namespace.missing",
+                        identifier=curie
+                    )
 
         return aliases
 
