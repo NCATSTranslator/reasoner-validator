@@ -970,6 +970,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                         code="warning.trapi.response.message.knowledge_graph.node.identifier.namespace.missing",
                         identifier=curie
                     )
+
             # either way, just return the input
             # curie as a 'lettercase' alias
             aliases.append(curie)
@@ -1000,15 +1001,17 @@ class TRAPIResponseValidator(BiolinkValidator):
         """
         target_id: str = testcase[f"{target}_id"] if f"{target}_id" in testcase else testcase[target]
         if target_id:
-            target_id_aliases = self.get_aliases(target_id)
-            match: Optional[Tuple[str, str, Optional[str]]] = \
-                self.testcase_node_found(target, target_id_aliases, testcase, nodes)
-            if match:
-                # Node match! Return matched node identifier,
-                # 'category' and (optional) 'query_id' match
-                return match
+            target_id_aliases: Optional[List[str]] = self.get_aliases(target_id)
+            if target_id_aliases is not None:
+                match: Optional[Tuple[str, str, Optional[str]]] = \
+                    self.testcase_node_found(target, target_id_aliases, testcase, nodes)
+                if match:
+                    # Node match! Return matched node identifier,
+                    # 'category' and (optional) 'query_id' match
+                    return match
 
-        # Node matching failed... report the error
+        # Else there was an error either in getting the 'target_id'
+        # or the 'target_id_aliases', thus node matching is impossible?
         self.report(
             code="error.trapi.response.message.knowledge_graph.node.missing",
             identifier=str(target_id),
