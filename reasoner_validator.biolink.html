@@ -99,6 +99,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.get_biolink_model_toolkit"><code class="docutils literal notranslate"><span class="pre">get_biolink_model_toolkit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.get_reference"><code class="docutils literal notranslate"><span class="pre">get_reference()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.is_curie"><code class="docutils literal notranslate"><span class="pre">is_curie()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reasoner_validator.report.html">Validator Reporter</a></li>
@@ -1052,6 +1054,40 @@ Biolink association subclasses possibly related to the current edge.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Toolkit</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.get_reference">
+<span class="sig-prename descclassname"><span class="pre">reasoner_validator.biolink.</span></span><span class="sig-name descname"><span class="pre">get_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curie</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.get_reference" title="Permalink to this definition"></a></dt>
+<dd><p>Get the object_id reference of a given CURIE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>curie: str</strong></dt><dd><p>The CURIE</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Optional[str]</dt><dd><p>The reference of a CURIE</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.is_curie">
+<span class="sig-prename descclassname"><span class="pre">reasoner_validator.biolink.</span></span><span class="sig-name descname"><span class="pre">is_curie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.is_curie" title="Permalink to this definition"></a></dt>
+<dd><p>Check if a given string is a CURIE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> – str, string to be validated as a CURIE</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool, whether the given string is a CURIE</p>
 </dd>
 </dl>
 </dd></dl>

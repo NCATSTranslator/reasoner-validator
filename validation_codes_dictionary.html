@@ -66,6 +66,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-empty">error.trapi.response.message.knowledge_graph.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-node-missing">error.trapi.response.message.knowledge_graph.node.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-node-category-unmatched">error.trapi.response.message.knowledge_graph.node.category.unmatched</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-node-identifier-not-curie">error.trapi.response.message.knowledge_graph.node.identifier.not_curie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-knowledge-graph-edge-missing">error.trapi.response.message.knowledge_graph.edge.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-result-missing">error.trapi.response.message.result.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-trapi-response-message-result-node-binding-key-missing">error.trapi.response.message.result.node_binding.key.missing</a></li>
@@ -176,6 +177,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-biolink-version-missing">warning.trapi.response.biolink_version.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-knowledge-graph-empty">warning.trapi.response.message.knowledge_graph.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-knowledge-graph-node-category-imprecise">warning.trapi.response.message.knowledge_graph.node.category.imprecise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-knowledge-graph-node-identifier-unresolved">warning.trapi.response.message.knowledge_graph.node.identifier.unresolved</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-knowledge-graph-node-identifier-no-equivalent-identifiers">warning.trapi.response.message.knowledge_graph.node.identifier.no_equivalent_identifiers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-knowledge-graph-node-identifier-no-preferred-identifier">warning.trapi.response.message.knowledge_graph.node.identifier.no_preferred_identifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-knowledge-graph-node-identifier-no-aliases">warning.trapi.response.message.knowledge_graph.node.identifier.no_aliases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-knowledge-graph-node-identifier-namespace-non-canonical">warning.trapi.response.message.knowledge_graph.node.identifier.namespace.non_canonical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-knowledge-graph-node-identifier-namespace-missing">warning.trapi.response.message.knowledge_graph.node.identifier.namespace.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-message-results-empty">warning.trapi.response.message.results.empty</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-workflow-runner-parameters-missing">warning.trapi.response.workflow.runner_parameters.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-trapi-response-workflow-parameters-missing">warning.trapi.response.workflow.parameters.missing</a></li>
@@ -267,19 +274,19 @@
 <h3>critical.trapi.validation<a class="headerlink" href="#critical-trapi-validation" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Schema validation error</p>
 <p><strong>Context:</strong> identifier, component, json_path, reason</p>
-<p><strong>Description:</strong> Critical JSON Schema validation error reported for specified TRAPI query component at a specific JSON path locationy.</p>
+<p><strong>Description:</strong> Critical JSON Schema validation error reported for specified TRAPI query component at a specific JSON path location</p>
 </section>
 <section id="critical-trapi-request-invalid">
 <h3>critical.trapi.request.invalid<a class="headerlink" href="#critical-trapi-request-invalid" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Test could not generate a valid TRAPI query request object using identified element</p>
 <p><strong>Context:</strong> identifier, test, reason</p>
-<p><strong>Description:</strong> Specified TRAPI query unit ‘test’ query could not be prepared for the indicated reason, using the identified Biolink starting element.</p>
+<p><strong>Description:</strong> Specified TRAPI query unit ‘test’ query could not be prepared for the indicated reason, using the identified Biolink starting element</p>
 </section>
 <section id="critical-trapi-response-unexpected-http-code">
 <h3>critical.trapi.response.unexpected_http_code<a class="headerlink" href="#critical-trapi-response-unexpected-http-code" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Unexpected HTTP status code</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted.</p>
+<p><strong>Description:</strong> TRAPI query attempt returned an abnormal (non-200) server HTTP status code as noted</p>
 </section>
 </section>
 <section id="error">
@@ -288,568 +295,574 @@
 <h3>error.biolink.model.noncompliance<a class="headerlink" href="#error-biolink-model-noncompliance" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> S-P-O statement is not compliant to Biolink Model release</p>
 <p><strong>Context:</strong> identifier, biolink_release</p>
-<p><strong>Description:</strong> This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause!</p>
+<p><strong>Description:</strong> This knowledge statement is not compliant to the specified release of the Biolink Model. Review associated messages for underlying cause</p>
 </section>
 <section id="error-trapi-response-empty">
 <h3>error.trapi.response.empty<a class="headerlink" href="#error-trapi-response-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> TRAPI Response is missing!</p>
-<p><strong>Description:</strong> TRAPI Response to be validated should not be totally empty but should have a Message body.</p>
+<p><strong>Message:</strong> TRAPI Response is missing</p>
+<p><strong>Description:</strong> TRAPI Response to be validated should not be totally empty but should have a Message body</p>
 </section>
 <section id="error-trapi-response-message-empty">
 <h3>error.trapi.response.message.empty<a class="headerlink" href="#error-trapi-response-message-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> TRAPI Response missing its Message!</p>
-<p><strong>Description:</strong> TRAPI Response should at least have non-empty original TRAPI request Message in its reply.</p>
+<p><strong>Message:</strong> TRAPI Response missing its Message</p>
+<p><strong>Description:</strong> TRAPI Response should at least have non-empty original TRAPI request Message in its reply</p>
 </section>
 <section id="error-trapi-response-message-query-graph-missing">
 <h3>error.trapi.response.message.query_graph.missing<a class="headerlink" href="#error-trapi-response-message-query-graph-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> TRAPI Message is missing its Query Graph!</p>
-<p><strong>Description:</strong> TRAPI Response should generally have a TRAPI request message Query Graph key value in its reply.</p>
+<p><strong>Message:</strong> TRAPI Message is missing its Query Graph</p>
+<p><strong>Description:</strong> TRAPI Response should generally have a TRAPI request message Query Graph key value in its reply</p>
 </section>
 <section id="error-trapi-response-message-query-graph-empty">
 <h3>error.trapi.response.message.query_graph.empty<a class="headerlink" href="#error-trapi-response-message-query-graph-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Response returned an empty Message Query Graph!</p>
-<p><strong>Description:</strong> TRAPI Response should at least have original non-empty TRAPI request message Query Graph in its reply.</p>
+<p><strong>Message:</strong> Response returned an empty Message Query Graph</p>
+<p><strong>Description:</strong> TRAPI Response should at least have original non-empty TRAPI request message Query Graph in its reply</p>
 </section>
 <section id="error-trapi-response-message-knowledge-graph-missing">
 <h3>error.trapi.response.message.knowledge_graph.missing<a class="headerlink" href="#error-trapi-response-message-knowledge-graph-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> TRAPI Message is missing its Knowledge Graph component!</p>
-<p><strong>Description:</strong> TRAPI Response should generally have a TRAPI request message Knowledge Graph key value in its reply.</p>
+<p><strong>Message:</strong> TRAPI Message is missing its Knowledge Graph component</p>
+<p><strong>Description:</strong> TRAPI Response should generally have a TRAPI request message Knowledge Graph key value in its reply</p>
 </section>
 <section id="error-trapi-response-message-knowledge-graph-empty">
 <h3>error.trapi.response.message.knowledge_graph.empty<a class="headerlink" href="#error-trapi-response-message-knowledge-graph-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Response returned an empty Message Knowledge Graph, which is an error in this context!</p>
-<p><strong>Description:</strong> An empty Knowledge Graph is considered an error in this validation context!</p>
+<p><strong>Message:</strong> Response returned an empty Message Knowledge Graph, which is an error in this context</p>
+<p><strong>Description:</strong> An empty Knowledge Graph is considered an error in this validation context</p>
 </section>
 <section id="error-trapi-response-message-knowledge-graph-node-missing">
 <h3>error.trapi.response.message.knowledge_graph.node.missing<a class="headerlink" href="#error-trapi-response-message-knowledge-graph-node-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Knowledge Graph of TRAPI Response Message Knowledge Graph is missing an expected Node</p>
+<p><strong>Message:</strong> Knowledge Graph of the TRAPI Response Message is missing an expected Node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The given TRAPI Response is expected to return specific node(s) related to the original input data used to prepare the TRAPI Request!</p>
+<p><strong>Description:</strong> The given TRAPI Response is expected to return specific node(s) related to the original input data used to prepare the TRAPI Request</p>
 </section>
 <section id="error-trapi-response-message-knowledge-graph-node-category-unmatched">
 <h3>error.trapi.response.message.knowledge_graph.node.category.unmatched<a class="headerlink" href="#error-trapi-response-message-knowledge-graph-node-category-unmatched" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The category of the knowledge graph node could not be matched against input node category.</p>
+<p><strong>Message:</strong> The category of the knowledge graph node could not be matched against input node category</p>
 <p><strong>Context:</strong> identifier, expected_category, observed_categories</p>
-<p><strong>Description:</strong> The category of the knowledge graph node failed to match that of the specified input node.</p>
+<p><strong>Description:</strong> The category of the knowledge graph node failed to match that of the specified input node</p>
+</section>
+<section id="error-trapi-response-message-knowledge-graph-node-identifier-not-curie">
+<h3>error.trapi.response.message.knowledge_graph.node.identifier.not_curie<a class="headerlink" href="#error-trapi-response-message-knowledge-graph-node-identifier-not-curie" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Node identifier is not a CURIE</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> A knowledge graph node identifier must be a CURIE</p>
 </section>
 <section id="error-trapi-response-message-knowledge-graph-edge-missing">
 <h3>error.trapi.response.message.knowledge_graph.edge.missing<a class="headerlink" href="#error-trapi-response-message-knowledge-graph-edge-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Knowledge Graph of TRAPI Response Message Knowledge Graph is missing expected Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The given TRAPI Response is expected to return specific edge(s) related to the original input data used to prepare the TRAPI Request!</p>
+<p><strong>Description:</strong> The given TRAPI Response is expected to return specific edge(s) related to the original input data used to prepare the TRAPI Request</p>
 </section>
 <section id="error-trapi-response-message-result-missing">
 <h3>error.trapi.response.message.result.missing<a class="headerlink" href="#error-trapi-response-message-result-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> TRAPI Response Message is missing expected knowledge graph edge mapping in its Results</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The given TRAPI Response is expected to return a specified edge - in its list of Results - relating to the original input data used to prepare the TRAPI Request!</p>
+<p><strong>Description:</strong> The given TRAPI Response is expected to return a specified edge - in its list of Results - relating to the original input data used to prepare the TRAPI Request</p>
 </section>
 <section id="error-trapi-response-message-result-node-binding-key-missing">
 <h3>error.trapi.response.message.result.node_binding.key.missing<a class="headerlink" href="#error-trapi-response-message-result-node-binding-key-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node binding entry key of TRAPI Result is missing in Query Graph</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The TRAPI Response Message Results entry has the specified node binding entry key missing in the corresponding TRAPI Message Query Graph.</p>
+<p><strong>Description:</strong> The TRAPI Response Message Results entry has the specified node binding entry key missing in the corresponding TRAPI Message Query Graph</p>
 </section>
 <section id="error-trapi-response-message-results-missing">
 <h3>error.trapi.response.message.results.missing<a class="headerlink" href="#error-trapi-response-message-results-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> TRAPI Message is missing its Results component!</p>
-<p><strong>Description:</strong> In this context, the TRAPI Response should generally have a non-empty TRAPI Response Message Results component.</p>
+<p><strong>Message:</strong> TRAPI Message is missing its Results component</p>
+<p><strong>Description:</strong> In this context, the TRAPI Response should generally have a non-empty TRAPI Response Message Results component</p>
 </section>
 <section id="error-trapi-response-message-results-empty">
 <h3>error.trapi.response.message.results.empty<a class="headerlink" href="#error-trapi-response-message-results-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Response returned an empty Message Results, which is an error in this context!</p>
-<p><strong>Description:</strong> An empty block of Results is considered an error in the specific validation context!</p>
+<p><strong>Message:</strong> Response returned an empty Message Results, which is an error in this context</p>
+<p><strong>Description:</strong> An empty block of Results is considered an error in the specific validation context</p>
 </section>
 <section id="error-trapi-response-message-results-not-array">
 <h3>error.trapi.response.message.results.not_array<a class="headerlink" href="#error-trapi-response-message-results-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Response returned a non-array Message.Results!</p>
+<p><strong>Message:</strong> Response returned a non-array Message.Results</p>
 <p><strong>Description:</strong> TRAPI Message.Results must be an array data type (even if empty)</p>
 </section>
 <section id="error-trapi-response-message-results-missing-bindings">
 <h3>error.trapi.response.message.results.missing_bindings<a class="headerlink" href="#error-trapi-response-message-results-missing-bindings" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Result object IDs for output node binding did not return the original identifier nor aliases for input id</p>
 <p><strong>Context:</strong> identifier, output_node_binding</p>
-<p><strong>Description:</strong> TRAPI Message.Results cannot resolve its reported identifier mappings to the original query.</p>
+<p><strong>Description:</strong> TRAPI Message.Results cannot resolve its reported identifier mappings to the original query</p>
 </section>
 <section id="error-input-edge-node-category-missing">
 <h3>error.input_edge.node.category.missing<a class="headerlink" href="#error-input-edge-node-category-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Category missing for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Category value must be specified in an input test data edge!</p>
+<p><strong>Description:</strong> Category value must be specified in an input test data edge</p>
 </section>
 <section id="error-input-edge-node-category-not-a-category">
 <h3>error.input_edge.node.category.not_a_category<a class="headerlink" href="#error-input-edge-node-category-not-a-category" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Asserted category is not a proper category class for node</p>
 <p><strong>Context:</strong> node_id, identifier</p>
-<p><strong>Description:</strong> Category specified in input test data edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!</p>
+<p><strong>Description:</strong> Category specified in input test data edge node is not recorded as a category term in specified version of Biolink. Replace with a known category</p>
 </section>
 <section id="error-input-edge-node-category-unknown">
 <h3>error.input_edge.node.category.unknown<a class="headerlink" href="#error-input-edge-node-category-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node has unknown category</p>
 <p><strong>Context:</strong> node_id, identifier</p>
-<p><strong>Description:</strong> Category specified in input test data edge node is not a model element recorded in specified version of Biolink. Replace with a known category!</p>
+<p><strong>Description:</strong> Category specified in input test data edge node is not a model element recorded in specified version of Biolink. Replace with a known category</p>
 </section>
 <section id="error-input-edge-node-id-missing">
 <h3>error.input_edge.node.id.missing<a class="headerlink" href="#error-input-edge-node-id-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node identifier is missing for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Input test data edge data needs to have a specific node identifier for testing!</p>
+<p><strong>Description:</strong> Input test data edge data needs to have a specific node identifier for testing</p>
 </section>
 <section id="error-input-edge-predicate-missing">
 <h3>error.input_edge.predicate.missing<a class="headerlink" href="#error-input-edge-predicate-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has missing or empty predicate</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Input test edge data needs to have a specific edge predicate for testing!</p>
+<p><strong>Description:</strong> Input test edge data needs to have a specific edge predicate for testing</p>
 </section>
 <section id="error-input-edge-predicate-unknown">
 <h3>error.input_edge.predicate.unknown<a class="headerlink" href="#error-input-edge-predicate-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has unknown predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Predicate specified in input test data edge is not recorded in specified version of Biolink. Replace with a known predicate!</p>
+<p><strong>Description:</strong> Predicate specified in input test data edge is not recorded in specified version of Biolink. Replace with a known predicate</p>
 </section>
 <section id="error-input-edge-predicate-abstract">
 <h3>error.input_edge.predicate.abstract<a class="headerlink" href="#error-input-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge is not permitted to have ‘abstract’ predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Edge data validation is currently strict: predicates cannot be ‘abstract’! Replace with a concrete predicate.</p>
+<p><strong>Description:</strong> Edge data validation is currently strict: predicates cannot be ‘abstract’! Replace with a concrete predicate</p>
 </section>
 <section id="error-input-edge-predicate-mixin">
 <h3>error.input_edge.predicate.mixin<a class="headerlink" href="#error-input-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge is not permitted to have an ‘mixin’ predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Edge data validation is currently strict: predicates cannot be of type ‘mixin’! Replace with a concrete predicate.</p>
+<p><strong>Description:</strong> Edge data validation is currently strict: predicates cannot be of type ‘mixin’! Replace with a concrete predicate</p>
 </section>
 <section id="error-input-edge-predicate-invalid">
 <h3>error.input_edge.predicate.invalid<a class="headerlink" href="#error-input-edge-predicate-invalid" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has invalid predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Predicate specified in Input Edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!</p>
+<p><strong>Description:</strong> Predicate specified in Input Edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate</p>
 </section>
 <section id="error-query-graph-nodes-uninformative">
 <h3>error.query_graph.nodes.uninformative<a class="headerlink" href="#error-query-graph-nodes-uninformative" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Missing informative node information</p>
-<p><strong>Description:</strong> Query graph must have at least one node with identifiers and/or categories available for query!</p>
+<p><strong>Description:</strong> Query graph must have at least one node with identifiers and/or categories available for query</p>
 </section>
 <section id="error-query-graph-node-category-missing">
 <h3>error.query_graph.node.category.missing<a class="headerlink" href="#error-query-graph-node-category-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Category is missing from node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Category value must be specified in an query graph edge!</p>
+<p><strong>Description:</strong> Category value must be specified in an query graph edge</p>
 </section>
 <section id="error-query-graph-node-category-not-a-category">
 <h3>error.query_graph.node.category.not_a_category<a class="headerlink" href="#error-query-graph-node-category-not-a-category" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node has invalid category</p>
 <p><strong>Context:</strong> node_id, identifier</p>
-<p><strong>Description:</strong> Category specified in query graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!</p>
+<p><strong>Description:</strong> Category specified in query graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category</p>
 </section>
 <section id="error-query-graph-node-category-unknown">
 <h3>error.query_graph.node.category.unknown<a class="headerlink" href="#error-query-graph-node-category-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node has unknown category</p>
 <p><strong>Context:</strong> node_id, identifier</p>
-<p><strong>Description:</strong> Category specified in query graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!</p>
+<p><strong>Description:</strong> Category specified in query graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category</p>
 </section>
 <section id="error-query-graph-node-ids-not-array">
 <h3>error.query_graph.node.ids.not_array<a class="headerlink" href="#error-query-graph-node-ids-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘ids’ property value is not an array in node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘ids’ property in Query Graph node must be an array data type (even if empty)!</p>
+<p><strong>Description:</strong> Value of ‘ids’ property in Query Graph node must be an array data type (even if empty)</p>
 </section>
 <section id="error-query-graph-node-categories-not-array">
 <h3>error.query_graph.node.categories.not_array<a class="headerlink" href="#error-query-graph-node-categories-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘categories’ property value is not an array in node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘categories’ property in Query Graph node must be an array data type (even if empty)!</p>
+<p><strong>Description:</strong> Value of ‘categories’ property in Query Graph node must be an array data type (even if empty)</p>
 </section>
 <section id="error-query-graph-node-is-set-not-boolean">
 <h3>error.query_graph.node.is_set.not_boolean<a class="headerlink" href="#error-query-graph-node-is-set-not-boolean" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘is_set’ property is not a boolean value in node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The ‘is_set’ field in node of Query Graph, if present, must be a boolean value!</p>
+<p><strong>Description:</strong> The ‘is_set’ field in node of Query Graph, if present, must be a boolean value</p>
 </section>
 <section id="error-query-graph-edge-subject-missing">
 <h3>error.query_graph.edge.subject.missing<a class="headerlink" href="#error-query-graph-edge-subject-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘subject’ property value is missing or empty in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Edge must have a ‘subject’ key with a non-empty associated value!</p>
+<p><strong>Description:</strong> Edge must have a ‘subject’ key with a non-empty associated value</p>
 </section>
 <section id="error-query-graph-edge-subject-missing-from-nodes">
 <h3>error.query_graph.edge.subject.missing_from_nodes<a class="headerlink" href="#error-query-graph-edge-subject-missing-from-nodes" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The nodes catalog of query graph for missing the subject id recorded on Edge</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Every ‘subject’ identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph!</p>
+<p><strong>Description:</strong> Every ‘subject’ identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph</p>
 </section>
 <section id="error-query-graph-edge-object-missing">
 <h3>error.query_graph.edge.object.missing<a class="headerlink" href="#error-query-graph-edge-object-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘object’ property value is missing or empty in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Edge must have a ‘object’ key with a non-empty associated value!</p>
+<p><strong>Description:</strong> Edge must have a ‘object’ key with a non-empty associated value</p>
 </section>
 <section id="error-query-graph-edge-object-missing-from-nodes">
 <h3>error.query_graph.edge.object.missing_from_nodes<a class="headerlink" href="#error-query-graph-edge-object-missing-from-nodes" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The nodes catalog of query graph for missing the object id recorded on Edge</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Every ‘object’ identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph!</p>
+<p><strong>Description:</strong> Every ‘object’ identifier of every edge in a Query Graph must also be recorded in the list of nodes for that graph</p>
 </section>
 <section id="error-query-graph-edge-predicate-missing">
 <h3>error.query_graph.edge.predicate.missing<a class="headerlink" href="#error-query-graph-edge-predicate-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Predicate is missing or empty for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The predicate of Query Graph edge needs to specified using a ‘predicate’ key with an array list of one or more predicates!</p>
+<p><strong>Description:</strong> The predicate of Query Graph edge needs to specified using a ‘predicate’ key with an array list of one or more predicates</p>
 </section>
 <section id="error-query-graph-edge-predicate-unknown">
 <h3>error.query_graph.edge.predicate.unknown<a class="headerlink" href="#error-query-graph-edge-predicate-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has unknown predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Predicate specified in Query Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!</p>
+<p><strong>Description:</strong> Predicate specified in Query Graph edge is not defined in specified version of Biolink. Replace with a defined predicate</p>
 </section>
 <section id="error-query-graph-edge-predicate-not-array">
 <h3>error.query_graph.edge.predicate.not_array<a class="headerlink" href="#error-query-graph-edge-predicate-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Predicate property value is not an array for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘predicate’ property value in Query Graph must be an array data type!</p>
+<p><strong>Description:</strong> Value of ‘predicate’ property value in Query Graph must be an array data type</p>
 </section>
 <section id="error-query-graph-edge-predicate-empty-array">
 <h3>error.query_graph.edge.predicate.empty_array<a class="headerlink" href="#error-query-graph-edge-predicate-empty-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Predicate property value is an empty array for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘predicate’ array property value in Query Graph must contain one or more predicates!</p>
+<p><strong>Description:</strong> Value of ‘predicate’ array property value in Query Graph must contain one or more predicates</p>
 </section>
 <section id="error-query-graph-edge-predicate-abstract">
 <h3>error.query_graph.edge.predicate.abstract<a class="headerlink" href="#error-query-graph-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge is not permitted to have an ‘abstract’ predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Query Graph data validation is currently strict: cannot have ‘abstract’ predicates! Replace with a concrete predicate.</p>
+<p><strong>Description:</strong> Query Graph data validation is currently strict: cannot have ‘abstract’ predicates! Replace with a concrete predicate</p>
 </section>
 <section id="error-query-graph-edge-predicate-mixin">
 <h3>error.query_graph.edge.predicate.mixin<a class="headerlink" href="#error-query-graph-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge is not permitted to have an ‘mixin’ predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Query Graph data validation is currently strict: cannot have ‘mixin’ predicates! Replace with a concrete predicate.</p>
+<p><strong>Description:</strong> Query Graph data validation is currently strict: cannot have ‘mixin’ predicates! Replace with a concrete predicate</p>
 </section>
 <section id="error-query-graph-edge-predicate-invalid">
 <h3>error.query_graph.edge.predicate.invalid<a class="headerlink" href="#error-query-graph-edge-predicate-invalid" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has invalid predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Predicate specified in Query Graph edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate!</p>
+<p><strong>Description:</strong> Predicate specified in Query Graph edge is not defined as a predicate in specified version of Biolink. Replace with a proper predicate</p>
 </section>
 <section id="error-query-graph-edge-attribute-constraints-not-array">
 <h3>error.query_graph.edge.attribute_constraints.not_array<a class="headerlink" href="#error-query-graph-edge-attribute-constraints-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Attribute_constraints property value is not an array for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘attribute_constraints’ property value in a Query Graph must be an array data type!</p>
+<p><strong>Description:</strong> Value of ‘attribute_constraints’ property value in a Query Graph must be an array data type</p>
 </section>
 <section id="error-query-graph-edge-qualifier-constraints-qualifier-set-empty">
 <h3>error.query_graph.edge.qualifier_constraints.qualifier_set.empty<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Qualifier_set property value is empty for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of a ‘qualifier_constraints.qualifier_set’ property in a Query Graph must not be non-empty array!</p>
+<p><strong>Description:</strong> Value of a ‘qualifier_constraints.qualifier_set’ property in a Query Graph must not be non-empty array</p>
 </section>
 <section id="error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-type-id-unknown">
 <h3>error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-type-id-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has unknown qualifier_type_id</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A qualifier qualifier_type_id must be defined in the specified version of Biolink!</p>
+<p><strong>Description:</strong> A qualifier qualifier_type_id must be defined in the specified version of Biolink</p>
 </section>
 <section id="error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-value-not-a-predicate">
 <h3>error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.not_a_predicate<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-value-not-a-predicate" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Qualifier_type_id ‘biolink:qualified_predicate’ for edge has a qualifier_value which is not a Biolink predicate.</p>
+<p><strong>Message:</strong> Qualifier_type_id ‘biolink:qualified_predicate’ for edge has a qualifier_value which is not a Biolink predicate</p>
 <p><strong>Context:</strong> identifier, qualifier_value</p>
-<p><strong>Description:</strong> The ‘qualifier_value’ for ‘biolink:qualified_predicate’ should be a Biolink predicate term!</p>
+<p><strong>Description:</strong> The ‘qualifier_value’ for ‘biolink:qualified_predicate’ should be a Biolink predicate term</p>
 </section>
 <section id="error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-invalid">
 <h3>error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.invalid<a class="headerlink" href="#error-query-graph-edge-qualifier-constraints-qualifier-set-qualifier-invalid" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Validation of qualifier in a qualifier_constraints qualifier_set threw an unexpected exception!</p>
+<p><strong>Message:</strong> Validation of qualifier in a qualifier_constraints qualifier_set threw an unexpected exception</p>
 <p><strong>Context:</strong> identifier, qualifier_type_id, qualifier_value, reason</p>
-<p><strong>Description:</strong> Validation of a specified ‘qualifier_type_id’ and ‘qualifier_value’ failed for a given exceptional reason!</p>
+<p><strong>Description:</strong> Validation of a specified ‘qualifier_type_id’ and ‘qualifier_value’ failed for a given exceptional reason</p>
 </section>
 <section id="error-knowledge-graph-nodes-empty">
 <h3>error.knowledge_graph.nodes.empty<a class="headerlink" href="#error-knowledge-graph-nodes-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> No nodes found</p>
-<p><strong>Description:</strong> Knowledge graph in TRAPI messages must have a ‘nodes’ key and non-empty associated value!</p>
+<p><strong>Description:</strong> Knowledge graph in TRAPI messages must have a ‘nodes’ key and non-empty associated value</p>
 </section>
 <section id="error-knowledge-graph-nodes-uninformative">
 <h3>error.knowledge_graph.nodes.uninformative<a class="headerlink" href="#error-knowledge-graph-nodes-uninformative" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Missing informative node information!</p>
-<p><strong>Description:</strong> All nodes in a knowledge graph must have categories!</p>
+<p><strong>Message:</strong> Missing informative node information</p>
+<p><strong>Description:</strong> All nodes in a knowledge graph must have categories</p>
 </section>
 <section id="error-knowledge-graph-edges-empty">
 <h3>error.knowledge_graph.edges.empty<a class="headerlink" href="#error-knowledge-graph-edges-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> No edges found</p>
-<p><strong>Description:</strong> Knowledge graph in TRAPI messages must have a ‘edges’ key and non-empty associated value!</p>
+<p><strong>Description:</strong> Knowledge graph in TRAPI messages must have a ‘edges’ key and non-empty associated value</p>
 </section>
 <section id="error-knowledge-graph-node-id-missing">
 <h3>error.knowledge_graph.node.id.missing<a class="headerlink" href="#error-knowledge-graph-node-id-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node identifier is missing for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Knowledge graph node must have a ‘id’ key with a non-empty associated value!</p>
+<p><strong>Description:</strong> Knowledge graph node must have a ‘id’ key with a non-empty associated value</p>
 </section>
 <section id="error-knowledge-graph-node-category-missing">
 <h3>error.knowledge_graph.node.category.missing<a class="headerlink" href="#error-knowledge-graph-node-category-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Category is missing for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Category value must be specified in a knowledge graph node!</p>
+<p><strong>Description:</strong> Category value must be specified in a knowledge graph node</p>
 </section>
 <section id="error-knowledge-graph-node-category-not-a-category">
 <h3>error.knowledge_graph.node.category.not_a_category<a class="headerlink" href="#error-knowledge-graph-node-category-not-a-category" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node has invalid category</p>
 <p><strong>Context:</strong> node_id, identifier</p>
-<p><strong>Description:</strong> Category specified in knowledge graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category!</p>
+<p><strong>Description:</strong> Category specified in knowledge graph edge node is not recorded as a category term in specified version of Biolink. Replace with a known category</p>
 </section>
 <section id="error-knowledge-graph-node-category-unknown">
 <h3>error.knowledge_graph.node.category.unknown<a class="headerlink" href="#error-knowledge-graph-node-category-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node has unknown category</p>
 <p><strong>Context:</strong> node_id, identifier</p>
-<p><strong>Description:</strong> Category specified in knowledge graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category!</p>
+<p><strong>Description:</strong> Category specified in knowledge graph edge node is not a model element recorded in specified version of Biolink. Replace with a known category</p>
 </section>
 <section id="error-knowledge-graph-node-missing-categories">
 <h3>error.knowledge_graph.node.missing_categories<a class="headerlink" href="#error-knowledge-graph-node-missing-categories" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Categories are missing for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Knowledge graph node must have a ‘categories’ key with a non-empty associated value!</p>
+<p><strong>Description:</strong> Knowledge graph node must have a ‘categories’ key with a non-empty associated value</p>
 </section>
 <section id="error-knowledge-graph-node-ids-not-array">
 <h3>error.knowledge_graph.node.ids.not_array<a class="headerlink" href="#error-knowledge-graph-node-ids-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘ids’ property value is not an array for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘ids’ property in Query Graph node must be an array data type!</p>
+<p><strong>Description:</strong> Value of ‘ids’ property in Query Graph node must be an array data type</p>
 </section>
 <section id="error-knowledge-graph-node-empty-ids">
 <h3>error.knowledge_graph.node.empty_ids<a class="headerlink" href="#error-knowledge-graph-node-empty-ids" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘ids’ property array is empty for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘ids’ array property in Knowledge Graph node must contain one or more node identifiers!</p>
+<p><strong>Description:</strong> Value of ‘ids’ array property in Knowledge Graph node must contain one or more node identifiers</p>
 </section>
 <section id="error-knowledge-graph-node-categories-not-array">
 <h3>error.knowledge_graph.node.categories.not_array<a class="headerlink" href="#error-knowledge-graph-node-categories-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The categories property value is not an array for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘categories’ property in Knowledge Graph node must be an array data type!</p>
+<p><strong>Description:</strong> Value of ‘categories’ property in Knowledge Graph node must be an array data type</p>
 </section>
 <section id="error-knowledge-graph-node-categories-not-concrete">
 <h3>error.knowledge_graph.node.categories.not_concrete<a class="headerlink" href="#error-knowledge-graph-node-categories-not-concrete" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> None of the asserted categories are concrete for node</p>
 <p><strong>Context:</strong> identifier, categories</p>
-<p><strong>Description:</strong> Categories specified in knowledge graph edge node may not resolve to any (non-abstract, non-mixin) category terms in the specified version of Biolink. Add at least one ‘concrete’ category (as the most specific category?)!</p>
+<p><strong>Description:</strong> Categories specified in knowledge graph edge node may not resolve to any (non-abstract, non-mixin) category terms in the specified version of Biolink. Add at least one ‘concrete’ category (as the most specific category?)</p>
 </section>
 <section id="error-knowledge-graph-node-empty-categories">
 <h3>error.knowledge_graph.node.empty_categories<a class="headerlink" href="#error-knowledge-graph-node-empty-categories" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘categories’ property array is empty for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘categories’ array property in Knowledge Graph node must contain one or more node category terms!</p>
+<p><strong>Description:</strong> Value of ‘categories’ array property in Knowledge Graph node must contain one or more node category terms</p>
 </section>
 <section id="error-knowledge-graph-node-is-set-not-boolean">
 <h3>error.knowledge_graph.node.is_set.not_boolean<a class="headerlink" href="#error-knowledge-graph-node-is-set-not-boolean" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘is_set’ property is not a boolean value for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The ‘is_set’ field in node of Knowledge Graph, if present, must be a boolean value!</p>
+<p><strong>Description:</strong> The ‘is_set’ field in node of Knowledge Graph, if present, must be a boolean value</p>
 </section>
 <section id="error-knowledge-graph-edge-subject-missing">
 <h3>error.knowledge_graph.edge.subject.missing<a class="headerlink" href="#error-knowledge-graph-edge-subject-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘subject’ property value is missing or empty for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Edge must have a ‘subject’ key with a non-empty associated value!</p>
+<p><strong>Description:</strong> Edge must have a ‘subject’ key with a non-empty associated value</p>
 </section>
 <section id="error-knowledge-graph-edge-subject-missing-from-nodes">
 <h3>error.knowledge_graph.edge.subject.missing_from_nodes<a class="headerlink" href="#error-knowledge-graph-edge-subject-missing-from-nodes" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The nodes catalog of query graph for missing the subject id recorded on Edge</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Every ‘subject’ identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph!</p>
+<p><strong>Description:</strong> Every ‘subject’ identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph</p>
 </section>
 <section id="error-knowledge-graph-edge-object-missing">
 <h3>error.knowledge_graph.edge.object.missing<a class="headerlink" href="#error-knowledge-graph-edge-object-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘object’ property value  is missing or empty for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Edge must have a ‘object’ key with a non-empty associated value!</p>
+<p><strong>Description:</strong> Edge must have a ‘object’ key with a non-empty associated value</p>
 </section>
 <section id="error-knowledge-graph-edge-object-missing-from-nodes">
 <h3>error.knowledge_graph.edge.object.missing_from_nodes<a class="headerlink" href="#error-knowledge-graph-edge-object-missing-from-nodes" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The nodes catalog of query graph for missing the object id recorded on Edge</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Every ‘object’ identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph!</p>
+<p><strong>Description:</strong> Every ‘object’ identifier of every edge in a Knowledge Graph must also be recorded in the list of nodes for that graph</p>
 </section>
 <section id="error-knowledge-graph-edge-predicate-missing">
 <h3>error.knowledge_graph.edge.predicate.missing<a class="headerlink" href="#error-knowledge-graph-edge-predicate-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The predicate is missing or empty for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Edge must have a ‘predicate’ key with a non-empty associated value!</p>
+<p><strong>Description:</strong> Edge must have a ‘predicate’ key with a non-empty associated value</p>
 </section>
 <section id="error-knowledge-graph-edge-predicate-unknown">
 <h3>error.knowledge_graph.edge.predicate.unknown<a class="headerlink" href="#error-knowledge-graph-edge-predicate-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has unknown predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Predicate specified in Knowledge Graph edge is not defined in specified version of Biolink. Replace with a defined predicate!</p>
+<p><strong>Description:</strong> Predicate specified in Knowledge Graph edge is not defined in specified version of Biolink. Replace with a defined predicate</p>
 </section>
 <section id="error-knowledge-graph-edge-predicate-invalid">
 <h3>error.knowledge_graph.edge.predicate.invalid<a class="headerlink" href="#error-knowledge-graph-edge-predicate-invalid" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has invalid predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Predicate specified in Knowledge Graph edge is not defined as a predicate in specified version of Biolink. Replace with a defined predicate!</p>
+<p><strong>Description:</strong> Predicate specified in Knowledge Graph edge is not defined as a predicate in specified version of Biolink. Replace with a defined predicate</p>
 </section>
 <section id="error-knowledge-graph-edge-predicate-not-array">
 <h3>error.knowledge_graph.edge.predicate.not_array<a class="headerlink" href="#error-knowledge-graph-edge-predicate-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The predicate property value is not an array for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of the ‘predicate’ property in Knowledge Graph edge must be an array data type!</p>
+<p><strong>Description:</strong> Value of the ‘predicate’ property in Knowledge Graph edge must be an array data type</p>
 </section>
 <section id="error-knowledge-graph-edge-predicate-empty-array">
 <h3>error.knowledge_graph.edge.predicate.empty_array<a class="headerlink" href="#error-knowledge-graph-edge-predicate-empty-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The predicate property value is an empty array for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of the ‘predicate’ array property in Knowledge Graph edge must contain one or more predicates!</p>
+<p><strong>Description:</strong> Value of the ‘predicate’ array property in Knowledge Graph edge must contain one or more predicates</p>
 </section>
 <section id="error-knowledge-graph-edge-predicate-abstract">
 <h3>error.knowledge_graph.edge.predicate.abstract<a class="headerlink" href="#error-knowledge-graph-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge is not permitted to have an ‘abstract’ predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Knowledge Graph data validation is currently strict: cannot have ‘abstract’ predicates! Replace with a concrete predicate.</p>
+<p><strong>Description:</strong> Knowledge Graph data validation is currently strict: cannot have ‘abstract’ predicates! Replace with a concrete predicate</p>
 </section>
 <section id="error-knowledge-graph-edge-predicate-mixin">
 <h3>error.knowledge_graph.edge.predicate.mixin<a class="headerlink" href="#error-knowledge-graph-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge is not permitted to have an ‘mixin’ predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Knowledge Graph data validation is currently strict: cannot have ‘mixin’ predicates! Replace with a concrete predicate.</p>
+<p><strong>Description:</strong> Knowledge Graph data validation is currently strict: cannot have ‘mixin’ predicates! Replace with a concrete predicate</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-missing">
 <h3>error.knowledge_graph.edge.attribute.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Missing ‘attributes’ key for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Edge must have a ‘attributes’ key with a non-empty associated value!</p>
+<p><strong>Description:</strong> Edge must have a ‘attributes’ key with a non-empty associated value</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-empty">
 <h3>error.knowledge_graph.edge.attribute.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Empty attributes in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘attributes’ property in Knowledge Graph edge must contain a list of one or more attributes!</p>
+<p><strong>Description:</strong> Value of ‘attributes’ property in Knowledge Graph edge must contain a list of one or more attributes</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-not-array">
 <h3>error.knowledge_graph.edge.attribute.not_array<a class="headerlink" href="#error-knowledge-graph-edge-attribute-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The attributes are not an array in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of the ‘attributes’ property in Knowledge Graph edge must be an array of attributes!</p>
+<p><strong>Description:</strong> Value of the ‘attributes’ property in Knowledge Graph edge must be an array of attributes</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-type-id-unknown">
 <h3>error.knowledge_graph.edge.attribute.type_id.unknown<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has unknown attribute_type_id</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Edge Attribute type identifier specified in knowledge graph edge is not recorded in specified version of Biolink. Replace with a known term!</p>
+<p><strong>Description:</strong> Edge Attribute type identifier specified in knowledge graph edge is not recorded in specified version of Biolink. Replace with a known term</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-type-id-abstract">
 <h3>error.knowledge_graph.edge.attribute.type_id.abstract<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-abstract" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge is not permitted to have an ‘abstract’ attribute_type_id</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Edge data validation is currently strict: attribute type identifiers cannot be ‘abstract’. Replace with a concrete attribute_type_id!</p>
+<p><strong>Description:</strong> Edge data validation is currently strict: attribute type identifiers cannot be ‘abstract’. Replace with a concrete attribute_type_id</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-type-id-mixin">
 <h3>error.knowledge_graph.edge.attribute.type_id.mixin<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-mixin" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge is not permitted to have an ‘mixin’ attribute_type_id</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Edge data validation is currently strict: attribute type identifiers cannot be of type ‘mixin’. Replace with a concrete attribute_type_id!</p>
+<p><strong>Description:</strong> Edge data validation is currently strict: attribute type identifiers cannot be of type ‘mixin’. Replace with a concrete attribute_type_id</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-type-id-missing">
 <h3>error.knowledge_graph.edge.attribute.type_id.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> An attribute is missing its ‘attribute_type_id’ property in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The attribute of a Knowledge graph edge must have a ‘attribute_type_id’ key with a non-empty associated value!</p>
+<p><strong>Description:</strong> The attribute of a Knowledge graph edge must have a ‘attribute_type_id’ key with a non-empty associated value</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-type-id-empty">
 <h3>error.knowledge_graph.edge.attribute.type_id.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> An attribute has empty ‘attribute_type_id’ property in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The value of the ‘attribute_type_id’ of an attribute of a Knowledge graph edge must not be empty!</p>
+<p><strong>Description:</strong> The value of the ‘attribute_type_id’ of an attribute of a Knowledge graph edge must not be empty</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-type-id-not-curie">
 <h3>error.knowledge_graph.edge.attribute.type_id.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-not-curie" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has a value that is not a CURIE for attribute_type_id</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> The ‘attribute_type_id’ of a Knowledge graph edge attribute must be a controlled vocabulary term specified by a CURIE!</p>
+<p><strong>Description:</strong> The ‘attribute_type_id’ of a Knowledge graph edge attribute must be a controlled vocabulary term specified by a CURIE</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-value-missing">
 <h3>error.knowledge_graph.edge.attribute.value.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-value-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> An attribute is missing its ‘value’ property in Edge</p>
 <p><strong>Context:</strong> identifier, attribute_id</p>
-<p><strong>Description:</strong> An attribute of a Knowledge graph edge must have a ‘value’ key with a non-empty associated value!</p>
+<p><strong>Description:</strong> An attribute of a Knowledge graph edge must have a ‘value’ key with a non-empty associated value</p>
 </section>
 <section id="error-knowledge-graph-edge-attribute-value-empty">
 <h3>error.knowledge_graph.edge.attribute.value.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-value-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> An attribute has an empty value in Edge</p>
 <p><strong>Context:</strong> identifier, attribute_id</p>
-<p><strong>Description:</strong> The value of an attribute of a Knowledge graph edge must not be empty!</p>
+<p><strong>Description:</strong> The value of an attribute of a Knowledge graph edge must not be empty</p>
 </section>
 <section id="error-knowledge-graph-edge-provenance-infores-missing">
 <h3>error.knowledge_graph.edge.provenance.infores.missing<a class="headerlink" href="#error-knowledge-graph-edge-provenance-infores-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has provenance value which is not a well-formed InfoRes CURIE</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> The value of an attribute specifying the provenance of a Knowledge graph edge must be the well-formed InfoRes CURIE of a knowledge source!</p>
+<p><strong>Description:</strong> The value of an attribute specifying the provenance of a Knowledge graph edge must be the well-formed InfoRes CURIE of a knowledge source</p>
 </section>
 <section id="error-knowledge-graph-edge-provenance-missing-primary">
 <h3>error.knowledge_graph.edge.provenance.missing_primary<a class="headerlink" href="#error-knowledge-graph-edge-provenance-missing-primary" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> A ‘primary’ knowledge source is missing for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Edge attributes should record the ‘infores’ identifier of their primary knowledge source provenance with respect to KP.</p>
+<p><strong>Description:</strong> Edge attributes should record the ‘infores’ identifier of their primary knowledge source provenance with respect to KP</p>
 </section>
 <section id="error-knowledge-graph-edge-qualifiers-not-array">
 <h3>error.knowledge_graph.edge.qualifiers.not_array<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘qualifiers’ property is not an array in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of the ‘qualifiers’ property in Knowledge Graph edge must be an array of attributes!</p>
+<p><strong>Description:</strong> Value of the ‘qualifiers’ property in Knowledge Graph edge must be an array of attributes</p>
 </section>
 <section id="error-knowledge-graph-edge-qualifiers-empty">
 <h3>error.knowledge_graph.edge.qualifiers.empty<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The qualifiers property value is empty in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of a ‘qualifiers’ property in a Knowledge Graph must not be non-empty array!</p>
+<p><strong>Description:</strong> Value of a ‘qualifiers’ property in a Knowledge Graph must not be non-empty array</p>
 </section>
 <section id="error-knowledge-graph-edge-qualifiers-qualifier-type-id-unknown">
 <h3>error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-qualifier-type-id-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has unknown qualifier_type_id</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A qualifier qualifier_type_id must be defined in the specified version of Biolink!</p>
+<p><strong>Description:</strong> A qualifier qualifier_type_id must be defined in the specified version of Biolink</p>
 </section>
 <section id="error-knowledge-graph-edge-qualifiers-qualifier-value-not-a-predicate">
 <h3>error.knowledge_graph.edge.qualifiers.qualifier.value.not_a_predicate<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-qualifier-value-not-a-predicate" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Qualifier_type_id ‘biolink:qualified_predicate’ for edge has a qualifier_value which is not a Biolink predicate.</p>
+<p><strong>Message:</strong> Qualifier_type_id ‘biolink:qualified_predicate’ for edge has a qualifier_value which is not a Biolink predicate</p>
 <p><strong>Context:</strong> identifier, qualifier_value</p>
-<p><strong>Description:</strong> The ‘qualifier_value’ for ‘biolink:qualified_predicate’ should be a Biolink predicate term!</p>
+<p><strong>Description:</strong> The ‘qualifier_value’ for ‘biolink:qualified_predicate’ should be a Biolink predicate term</p>
 </section>
 <section id="error-knowledge-graph-edge-qualifiers-qualifier-invalid">
 <h3>error.knowledge_graph.edge.qualifiers.qualifier.invalid<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-qualifier-invalid" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Validation of qualifier in qualifiers threw an unexpected exception</p>
 <p><strong>Context:</strong> identifier, qualifier_type_id, qualifier_value, reason</p>
-<p><strong>Description:</strong> Validation of a specified ‘qualifier_type_id’ and ‘qualifier_value’ failed for a given exceptional reason!</p>
+<p><strong>Description:</strong> Validation of a specified ‘qualifier_type_id’ and ‘qualifier_value’ failed for a given exceptional reason</p>
 </section>
 <section id="error-knowledge-graph-edge-knowledge-level-missing">
 <h3>error.knowledge_graph.edge.knowledge_level.missing<a class="headerlink" href="#error-knowledge-graph-edge-knowledge-level-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge is missing its required ‘knowledge_level’ property!</p>
+<p><strong>Message:</strong> Edge is missing its required ‘knowledge_level’ property</p>
 <p><strong>Context:</strong> edge_id</p>
-<p><strong>Description:</strong> The ‘knowledge_level’ slot is required for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!</p>
+<p><strong>Description:</strong> The ‘knowledge_level’ slot is required for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release</p>
 </section>
 <section id="error-knowledge-graph-edge-knowledge-level-duplicated">
 <h3>error.knowledge_graph.edge.knowledge_level.duplicated<a class="headerlink" href="#error-knowledge-graph-edge-knowledge-level-duplicated" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘knowledge_level’ slot is duplicated for the given edge!</p>
+<p><strong>Message:</strong> The ‘knowledge_level’ slot is duplicated for the given edge</p>
 <p><strong>Context:</strong> identifier, edge_id</p>
 <p><strong>Description:</strong> Each edge should only have one ‘knowledge_level’ attribute value. Additional ones are ignored</p>
 </section>
 <section id="error-knowledge-graph-edge-knowledge-level-invalid">
 <h3>error.knowledge_graph.edge.knowledge_level.invalid<a class="headerlink" href="#error-knowledge-graph-edge-knowledge-level-invalid" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The indicated ‘knowledge_level’ slot value is invalid for the given edge!</p>
+<p><strong>Message:</strong> The indicated ‘knowledge_level’ slot value is invalid for the given edge</p>
 <p><strong>Context:</strong> identifier, context</p>
 <p><strong>Description:</strong> Acceptable values of the ‘knowledge_level’ slot are only as enumerated in the specified Biolink Model</p>
 </section>
 <section id="error-knowledge-graph-edge-agent-type-missing">
 <h3>error.knowledge_graph.edge.agent_type.missing<a class="headerlink" href="#error-knowledge-graph-edge-agent-type-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge is missing its required ‘agent_type’ property!</p>
+<p><strong>Message:</strong> Edge is missing its required ‘agent_type’ property</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The ‘agent_type’ slot is required for all edges in knowledge graphs complying with the specified Biolink Model release!</p>
+<p><strong>Description:</strong> The ‘agent_type’ slot is required for all edges in knowledge graphs complying with the specified Biolink Model release</p>
 </section>
 <section id="error-knowledge-graph-edge-agent-type-duplicated">
 <h3>error.knowledge_graph.edge.agent_type.duplicated<a class="headerlink" href="#error-knowledge-graph-edge-agent-type-duplicated" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The ‘agent_type’ slot is duplicated for the given edge!</p>
+<p><strong>Message:</strong> The ‘agent_type’ slot is duplicated for the given edge</p>
 <p><strong>Context:</strong> identifier, edge_id</p>
-<p><strong>Description:</strong> Each edge should only have one ‘agent_type’ attribute value. Additional ones are ignored.</p>
+<p><strong>Description:</strong> Each edge should only have one ‘agent_type’ attribute value. Additional ones are ignored</p>
 </section>
 <section id="error-knowledge-graph-edge-agent-type-invalid">
 <h3>error.knowledge_graph.edge.agent_type.invalid<a class="headerlink" href="#error-knowledge-graph-edge-agent-type-invalid" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The indicated ‘agent_type’ slot value is invalid for the given edge!</p>
+<p><strong>Message:</strong> The indicated ‘agent_type’ slot value is invalid for the given edge</p>
 <p><strong>Context:</strong> identifier, context</p>
 <p><strong>Description:</strong> Acceptable values of the ‘agent_type’ slot are only as enumerated in the specified Biolink Model</p>
 </section>
@@ -857,79 +870,79 @@
 <h3>error.knowledge_graph.edge.sources.missing<a class="headerlink" href="#error-knowledge-graph-edge-sources-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Missing ‘sources’ key for Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Edge must have a ‘sources’ key with a non-empty associated value!</p>
+<p><strong>Description:</strong> Edge must have a ‘sources’ key with a non-empty associated value</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-empty">
 <h3>error.knowledge_graph.edge.sources.empty<a class="headerlink" href="#error-knowledge-graph-edge-sources-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Empty ‘sources’ property in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘sources’ property in Knowledge Graph edge must contain a list of one or more RetrievalSource entries!</p>
+<p><strong>Description:</strong> Value of ‘sources’ property in Knowledge Graph edge must contain a list of one or more RetrievalSource entries</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-not-array">
 <h3>error.knowledge_graph.edge.sources.not_array<a class="headerlink" href="#error-knowledge-graph-edge-sources-not-array" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘sources’ are not an array in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of the ‘sources’ property in Knowledge Graph edge must be an array of RetrievalSource entries!</p>
+<p><strong>Description:</strong> Value of the ‘sources’ property in Knowledge Graph edge must be an array of RetrievalSource entries</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-missing">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.missing<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> RetrievalSource ‘resource_id’ identifier is missing!</p>
+<p><strong>Message:</strong> RetrievalSource ‘resource_id’ identifier is missing</p>
 <p><strong>Context:</strong> edge_id</p>
-<p><strong>Description:</strong> A RetrievalSource ‘resource_id’ value should not be None or empty!</p>
+<p><strong>Description:</strong> A RetrievalSource ‘resource_id’ value should not be None or empty</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-not-curie">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-not-curie" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> One (or more) Infores value(s) is not a valid well-formed CURIE</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A RetrievalSource ‘resource_id’ Infores value must be a well-formed CURIE!</p>
+<p><strong>Description:</strong> A RetrievalSource ‘resource_id’ Infores value must be a well-formed CURIE</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-invalid">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-invalid" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Invalid Infores namespace</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A RetrievalSource ‘resource_id’ Infores CURIE must come from the Infores namespace!</p>
+<p><strong>Description:</strong> A RetrievalSource ‘resource_id’ Infores CURIE must come from the Infores namespace</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-unknown">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Unregistered infores</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A ‘retrieval_source.resource_id’ value must be a registered Infores identifier!</p>
+<p><strong>Description:</strong> A ‘retrieval_source.resource_id’ value must be a registered Infores identifier</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-empty">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.empty<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Empty ‘resource_id’ property in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of the ‘resource_id’ property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty Infores identifier!</p>
+<p><strong>Description:</strong> Value of the ‘resource_id’ property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty Infores identifier</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-missing">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.missing<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> A RetrievalSource ‘upstream_resource_ids’ identifier is missing!</p>
+<p><strong>Message:</strong> A RetrievalSource ‘upstream_resource_ids’ identifier is missing</p>
 <p><strong>Context:</strong> edge_id</p>
-<p><strong>Description:</strong> A RetrievalSource ‘upstream_resource_ids’ value should not be None or empty!</p>
+<p><strong>Description:</strong> A RetrievalSource ‘upstream_resource_ids’ value should not be None or empty</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-not-curie">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-not-curie" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> One (or more) Infores value(s) is not a valid well-formed CURIE</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A RetrievalSource ‘upstream_resource_ids’ Infores value must be a well-formed CURIE!</p>
+<p><strong>Description:</strong> A RetrievalSource ‘upstream_resource_ids’ Infores value must be a well-formed CURIE</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-invalid">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.invalid<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-invalid" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Invalid Infores namespace</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A RetrievalSource ‘upstream_resource_ids’ Infores CURIE must come from the Infores namespace!</p>
+<p><strong>Description:</strong> A RetrievalSource ‘upstream_resource_ids’ Infores CURIE must come from the Infores namespace</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-unknown">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.upstream_resource_ids.infores.unknown<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-upstream-resource-ids-infores-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Unregistered Infores</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A ‘retrieval_source.upstream_resource_ids’ values must be registered infores identifiers!</p>
+<p><strong>Description:</strong> A ‘retrieval_source.upstream_resource_ids’ values must be registered infores identifiers</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-role-empty">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_role.empty<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-role-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Empty ‘resource_role’ property in Edge</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of the ‘resource_role’ property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty ResourceRole enum value!</p>
+<p><strong>Description:</strong> Value of the ‘resource_role’ property in the RetrievalSource of a Knowledge Graph Edge must be a non-empty ResourceRole enum value</p>
 </section>
 </section>
 <section id="warning">
@@ -938,7 +951,7 @@
 <h3>warning.biolink.element.range.unspecified<a class="headerlink" href="#warning-biolink-element-range-unspecified" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Undefined slot range specification</p>
 <p><strong>Context:</strong> identifier, context, value</p>
-<p><strong>Description:</strong> Biolink Model error: the range slot of the specified element is missing or its value is not a known enum?</p>
+<p><strong>Description:</strong> Biolink Model error: the range slot of the specified element is missing or its value is not a known enum</p>
 </section>
 <section id="warning-trapi-response-status-unknown">
 <h3>warning.trapi.response.status.unknown<a class="headerlink" href="#warning-trapi-response-status-unknown" title="Permalink to this heading"></a></h3>
@@ -949,224 +962,260 @@
 <section id="warning-trapi-response-schema-version-missing">
 <h3>warning.trapi.response.schema_version.missing<a class="headerlink" href="#warning-trapi-response-schema-version-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> TRAPI Response is missing its TRAPI schema version</p>
-<p><strong>Description:</strong> The TRAPI Response should specify its TRAPI version compliance.</p>
+<p><strong>Description:</strong> The TRAPI Response should specify its TRAPI version compliance</p>
 </section>
 <section id="warning-trapi-response-biolink-version-missing">
 <h3>warning.trapi.response.biolink_version.missing<a class="headerlink" href="#warning-trapi-response-biolink-version-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> TRAPI Response is missing its Biolink Model version</p>
-<p><strong>Description:</strong> The TRAPI Response should specify its Biolink Model version compliance.</p>
+<p><strong>Description:</strong> The TRAPI Response should specify its Biolink Model version compliance</p>
 </section>
 <section id="warning-trapi-response-message-knowledge-graph-empty">
 <h3>warning.trapi.response.message.knowledge_graph.empty<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Response returned an empty Message Knowledge Graph?</p>
-<p><strong>Description:</strong> An empty Knowledge Graph is allowed but merits a boundary response warning?</p>
+<p><strong>Message:</strong> Response returned an empty Message Knowledge Graph</p>
+<p><strong>Description:</strong> An empty Knowledge Graph is allowed but merits a boundary response warning</p>
 </section>
 <section id="warning-trapi-response-message-knowledge-graph-node-category-imprecise">
 <h3>warning.trapi.response.message.knowledge_graph.node.category.imprecise<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-node-category-imprecise" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The category of the knowledge graph node is imprecise.</p>
+<p><strong>Message:</strong> The category of the knowledge graph node is imprecise</p>
 <p><strong>Context:</strong> identifier, expected_category, observed_categories</p>
-<p><strong>Description:</strong> The category of the knowledge graph node matching specified input node is more generic than expected.</p>
+<p><strong>Description:</strong> The category of the knowledge graph node matching specified input node is more generic than expected</p>
+</section>
+<section id="warning-trapi-response-message-knowledge-graph-node-identifier-unresolved">
+<h3>warning.trapi.response.message.knowledge_graph.node.identifier.unresolved<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-node-identifier-unresolved" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Node identifier unresolved by node normalization</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> Node Normalizer didn’t return an identifier clique for the specified CURIE</p>
+</section>
+<section id="warning-trapi-response-message-knowledge-graph-node-identifier-no-equivalent-identifiers">
+<h3>warning.trapi.response.message.knowledge_graph.node.identifier.no_equivalent_identifiers<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-node-identifier-no-equivalent-identifiers" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> No equivalent identifiers found for node identifier</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> Node Normalizer didn’t return any equivalent identifiers for the specified CURIE</p>
+</section>
+<section id="warning-trapi-response-message-knowledge-graph-node-identifier-no-preferred-identifier">
+<h3>warning.trapi.response.message.knowledge_graph.node.identifier.no_preferred_identifier<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-node-identifier-no-preferred-identifier" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Preferred identifier not provided for node identifier</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> Node Normalizer didn’t return a preferred identifier for the specified CURIE</p>
+</section>
+<section id="warning-trapi-response-message-knowledge-graph-node-identifier-no-aliases">
+<h3>warning.trapi.response.message.knowledge_graph.node.identifier.no_aliases<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-node-identifier-no-aliases" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Node identifier has no reported aliases</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> Node Normalizer didn’t return any aliases for the specified CURIE</p>
+</section>
+<section id="warning-trapi-response-message-knowledge-graph-node-identifier-namespace-non-canonical">
+<h3>warning.trapi.response.message.knowledge_graph.node.identifier.namespace.non_canonical<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-node-identifier-namespace-non-canonical" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Non-canonical node identifier namespace in aliases</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> The letter case of the namespace of the specified CURIE is not canonical to that reported by the Node Normalizer. Check the prefix map of the Biolink Model for correct version.</p>
+</section>
+<section id="warning-trapi-response-message-knowledge-graph-node-identifier-namespace-missing">
+<h3>warning.trapi.response.message.knowledge_graph.node.identifier.namespace.missing<a class="headerlink" href="#warning-trapi-response-message-knowledge-graph-node-identifier-namespace-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> CURIE missing from reported aliases</p>
+<p><strong>Context:</strong> identifier</p>
+<p><strong>Description:</strong> The list of aliases returned by the Node Normalizer didn’t include the specified CURIE</p>
 </section>
 <section id="warning-trapi-response-message-results-empty">
 <h3>warning.trapi.response.message.results.empty<a class="headerlink" href="#warning-trapi-response-message-results-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Response returned empty Message.results?</p>
-<p><strong>Description:</strong> Empty Results is allowed but merits a boundary response warning?</p>
+<p><strong>Message:</strong> Response returned empty Message.results</p>
+<p><strong>Description:</strong> Empty Results is allowed but merits a boundary response warning</p>
 </section>
 <section id="warning-trapi-response-workflow-runner-parameters-missing">
 <h3>warning.trapi.response.workflow.runner_parameters.missing<a class="headerlink" href="#warning-trapi-response-workflow-runner-parameters-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> TRAPI Response.workflow.runner_parameters property is missing?</p>
-<p><strong>Description:</strong> If a ‘runner_parameters’ property value is given for a workflow step specification, it should not be null. This field will be ignored?</p>
+<p><strong>Message:</strong> TRAPI Response.workflow.runner_parameters property is missing</p>
+<p><strong>Description:</strong> If a ‘runner_parameters’ property value is given for a workflow step specification, it should not be null. This field will be ignored</p>
 </section>
 <section id="warning-trapi-response-workflow-parameters-missing">
 <h3>warning.trapi.response.workflow.parameters.missing<a class="headerlink" href="#warning-trapi-response-workflow-parameters-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> TRAPI Response.workflow.parameters property is missing?</p>
-<p><strong>Description:</strong> If a ‘parameters’ property value is given for a workflow step specification, it should not be null. This field will be ignored?</p>
+<p><strong>Message:</strong> TRAPI Response.workflow.parameters property is missing</p>
+<p><strong>Description:</strong> If a ‘parameters’ property value is given for a workflow step specification, it should not be null. This field will be ignored</p>
 </section>
 <section id="warning-graph-empty">
 <h3>warning.graph.empty<a class="headerlink" href="#warning-graph-empty" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Empty graph</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> An empty graph in this particular context is allowed but merits a boundary response warning?</p>
+<p><strong>Description:</strong> An empty graph in this particular context is allowed but merits a boundary response warning</p>
 </section>
 <section id="warning-input-edge-node-category-deprecated">
 <h3>warning.input_edge.node.category.deprecated<a class="headerlink" href="#warning-input-edge-node-category-deprecated" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node category had deprecated category</p>
 <p><strong>Context:</strong> node_id, identifier</p>
-<p><strong>Description:</strong> Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?</p>
+<p><strong>Description:</strong> Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement</p>
 </section>
 <section id="warning-input-edge-node-category-not-concrete">
 <h3>warning.input_edge.node.category.not_concrete<a class="headerlink" href="#warning-input-edge-node-category-not-concrete" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node has unknown, abstract or mixin category</p>
 <p><strong>Context:</strong> node_id, identifier</p>
-<p><strong>Description:</strong> Node category may be unknown, abstract or a mixin in the current model. TRAPI Responses using this edge may not resolve any Knowledge Graph nodes with this category. Review Biolink Model for ‘concrete’ replacement?</p>
+<p><strong>Description:</strong> Node category may be unknown, abstract or a mixin in the current model. TRAPI Responses using this edge may not resolve any Knowledge Graph nodes with this category. Review Biolink Model for ‘concrete’ replacement</p>
 </section>
 <section id="warning-input-edge-node-id-unmapped-to-category">
 <h3>warning.input_edge.node.id.unmapped_to_category<a class="headerlink" href="#warning-input-edge-node-id-unmapped-to-category" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node identifier found unmapped to target categories for node</p>
 <p><strong>Context:</strong> identifier, unmapped_ids, categories</p>
-<p><strong>Description:</strong> The namespaces of Biolink model node of specified category may be incomplete with respect to identifiers being used in input edge data?</p>
+<p><strong>Description:</strong> The namespaces of Biolink model node of specified category may be incomplete with respect to identifiers being used in input edge data</p>
 </section>
 <section id="warning-input-edge-predicate-deprecated">
 <h3>warning.input_edge.predicate.deprecated<a class="headerlink" href="#warning-input-edge-predicate-deprecated" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has deprecated predicate</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?</p>
+<p><strong>Description:</strong> Input data edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement</p>
 </section>
 <section id="warning-input-edge-predicate-non-canonical">
 <h3>warning.input_edge.predicate.non_canonical<a class="headerlink" href="#warning-input-edge-predicate-non-canonical" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has non-canonical predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A predicate selected for use as input data should preferably be tagged as ‘canonical’ in the specified Biolink Model release?</p>
+<p><strong>Description:</strong> A predicate selected for use as input data should preferably be tagged as ‘canonical’ in the specified Biolink Model release</p>
 </section>
 <section id="warning-query-graph-nodes-dangling">
 <h3>warning.query_graph.nodes.dangling<a class="headerlink" href="#warning-query-graph-nodes-dangling" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Dangling nodes</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> At least one query node is unused in the query graph!</p>
+<p><strong>Description:</strong> At least one query node is unused in the query graph</p>
 </section>
 <section id="warning-query-graph-node-category-deprecated">
 <h3>warning.query_graph.node.category.deprecated<a class="headerlink" href="#warning-query-graph-node-category-deprecated" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node has deprecated category</p>
 <p><strong>Context:</strong> node_id, identifier</p>
-<p><strong>Description:</strong> Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement?</p>
+<p><strong>Description:</strong> Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for suitable replacement</p>
 </section>
 <section id="warning-query-graph-node-ids-unmapped-prefix">
 <h3>warning.query_graph.node.ids.unmapped_prefix<a class="headerlink" href="#warning-query-graph-node-ids-unmapped-prefix" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node identifiers found unmapped to target categories for node</p>
 <p><strong>Context:</strong> identifier, unmapped_ids, categories</p>
-<p><strong>Description:</strong> One or more node CURIE identifier namespaces are not found among any ‘id_prefix’ slot values in specified categories in the validating Biolink Model version?</p>
+<p><strong>Description:</strong> One or more node CURIE identifier namespaces are not found among any ‘id_prefix’ slot values in specified categories in the validating Biolink Model version</p>
 </section>
 <section id="warning-query-graph-edge-predicate-deprecated">
 <h3>warning.query_graph.edge.predicate.deprecated<a class="headerlink" href="#warning-query-graph-edge-predicate-deprecated" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has deprecated predicate</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?</p>
+<p><strong>Description:</strong> Edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement</p>
 </section>
 <section id="warning-query-graph-edge-predicate-non-canonical">
 <h3>warning.query_graph.edge.predicate.non_canonical<a class="headerlink" href="#warning-query-graph-edge-predicate-non-canonical" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has non-canonical predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A predicate selected for use in a query graph should preferably be tagged as ‘canonical’ in the specified Biolink Model release?</p>
+<p><strong>Description:</strong> A predicate selected for use in a query graph should preferably be tagged as ‘canonical’ in the specified Biolink Model release</p>
 </section>
 <section id="warning-query-graph-edge-qualifier-constraints-qualifier-set-qualifiers-qualifier-value-unresolved">
 <h3>warning.query_graph.edge.qualifier_constraints.qualifier_set.qualifiers.qualifier.value.unresolved<a class="headerlink" href="#warning-query-graph-edge-qualifier-constraints-qualifier-set-qualifiers-qualifier-value-unresolved" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘qualifier_type_id’ for edge has unresolved ‘qualifier_value’</p>
 <p><strong>Context:</strong> edge_id, identifier, qualifier_type_id</p>
-<p><strong>Description:</strong> A ‘qualifier_value’ for the specified ‘qualifier_type_id’ of a qualifier likely could not be resolved without knowledge of the edge category!</p>
+<p><strong>Description:</strong> A ‘qualifier_value’ for the specified ‘qualifier_type_id’ of a qualifier likely could not be resolved without knowledge of the edge category</p>
 </section>
 <section id="warning-knowledge-graph-nodes-dangling">
 <h3>warning.knowledge_graph.nodes.dangling<a class="headerlink" href="#warning-knowledge-graph-nodes-dangling" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Dangling nodes</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> At least one query node is unused in the knowledge graph!</p>
+<p><strong>Description:</strong> At least one query node is unused in the knowledge graph</p>
 </section>
 <section id="warning-knowledge-graph-node-name-missing">
 <h3>warning.knowledge_graph.node.name.missing<a class="headerlink" href="#warning-knowledge-graph-node-name-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Name is missing for node</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Although TRAPI 1.4.0 states ‘nullable: True’, Translator user interface functionally requires that a non-empty ‘name’ property value ought to be specified in a knowledge graph node!</p>
+<p><strong>Description:</strong> Although TRAPI 1.4.0 states ‘nullable: True’, Translator user interface functionally requires that a non-empty ‘name’ property value ought to be specified in a knowledge graph node</p>
 </section>
 <section id="warning-knowledge-graph-node-category-deprecated">
 <h3>warning.knowledge_graph.node.category.deprecated<a class="headerlink" href="#warning-knowledge-graph-node-category-deprecated" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node has deprecated category</p>
 <p><strong>Context:</strong> node_id, identifier</p>
-<p><strong>Description:</strong> Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?</p>
+<p><strong>Description:</strong> Node category is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement</p>
 </section>
 <section id="warning-knowledge-graph-node-category-abstract-or-mixin">
 <h3>warning.knowledge_graph.node.category.abstract_or_mixin<a class="headerlink" href="#warning-knowledge-graph-node-category-abstract-or-mixin" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node has a abstract or mixin category</p>
 <p><strong>Context:</strong> node_id, identifier</p>
-<p><strong>Description:</strong> Node category is abstract or a mixin in the current model. Please consider selecting a more specific, concrete Biolink Model category?</p>
+<p><strong>Description:</strong> Node category is abstract or a mixin in the current model. Please consider selecting a more specific, concrete Biolink Model category</p>
 </section>
 <section id="warning-knowledge-graph-node-id-unmapped-prefix">
 <h3>warning.knowledge_graph.node.id.unmapped_prefix<a class="headerlink" href="#warning-knowledge-graph-node-id-unmapped-prefix" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Node identifier found unmapped to target categories for node</p>
 <p><strong>Context:</strong> identifier, node_id</p>
-<p><strong>Description:</strong> Node CURIE identifier namespace not found among any ‘id_prefix’ slot values in specified categories in the validating Biolink Model version?</p>
+<p><strong>Description:</strong> Node CURIE identifier namespace not found among any ‘id_prefix’ slot values in specified categories in the validating Biolink Model version</p>
 </section>
 <section id="warning-knowledge-graph-edge-predicate-deprecated">
 <h3>warning.knowledge_graph.edge.predicate.deprecated<a class="headerlink" href="#warning-knowledge-graph-edge-predicate-deprecated" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has deprecated predicate</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement?</p>
+<p><strong>Description:</strong> Edge predicate is deprecated in the current model, to be removed in the future. Review Biolink Model for a suitable replacement</p>
 </section>
 <section id="warning-knowledge-graph-edge-predicate-non-canonical">
 <h3>warning.knowledge_graph.edge.predicate.non_canonical<a class="headerlink" href="#warning-knowledge-graph-edge-predicate-non-canonical" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has non-canonical predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A predicate selected for use in a knowledge graph should preferably be tagged as ‘canonical’ in the specified Biolink Model release?</p>
+<p><strong>Description:</strong> A predicate selected for use in a knowledge graph should preferably be tagged as ‘canonical’ in the specified Biolink Model release</p>
 </section>
 <section id="warning-knowledge-graph-edge-qualifiers-qualifier-value-unresolved">
 <h3>warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved<a class="headerlink" href="#warning-knowledge-graph-edge-qualifiers-qualifier-value-unresolved" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘qualifier_type_id’ for edge has unresolved ‘qualifier_value’</p>
 <p><strong>Context:</strong> edge_id, identifier, qualifier_type_id</p>
-<p><strong>Description:</strong> A ‘qualifier_value’ for the specified ‘qualifier_type_id’ of a qualifier likely could not be resolved without knowledge of the edge category!</p>
+<p><strong>Description:</strong> A ‘qualifier_value’ for the specified ‘qualifier_type_id’ of a qualifier likely could not be resolved without knowledge of the edge category</p>
 </section>
 <section id="warning-knowledge-graph-edge-attribute-type-id-is-category">
 <h3>warning.knowledge_graph.edge.attribute.type_id.is_category<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-is-category" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an ‘attribute_type_id’ that is a category</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Edge ‘attribute_type_id’ value is usually not drawn from the node category hierarchy.</p>
+<p><strong>Description:</strong> Edge ‘attribute_type_id’ value is usually not drawn from the node category hierarchy</p>
 </section>
 <section id="warning-knowledge-graph-edge-attribute-type-id-is-predicate">
 <h3>warning.knowledge_graph.edge.attribute.type_id.is_predicate<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-is-predicate" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an ‘attribute_type_id’ that is a predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Edge ‘attribute_type_id’ value is usually not drawn from the node predicate hierarchy.</p>
+<p><strong>Description:</strong> Edge ‘attribute_type_id’ value is usually not drawn from the node predicate hierarchy</p>
 </section>
 <section id="warning-knowledge-graph-edge-attribute-type-id-not-association-slot">
 <h3>warning.knowledge_graph.edge.attribute.type_id.not_association_slot<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an attribute_type_id that is not an association slot</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Edge ‘attribute_type_id’ value should generally be a term defined within the biolink:association_slot hierarchy.</p>
+<p><strong>Description:</strong> Edge ‘attribute_type_id’ value should generally be a term defined within the biolink:association_slot hierarchy</p>
 </section>
 <section id="warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix">
 <h3>warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an attribute_type_id that has a non-Biolink CURIE prefix mapped to Biolink</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes.</p>
+<p><strong>Description:</strong> Non-Biolink CURIEs are tolerated, but not preferred, as term value for the attribute_type_id properties of edge attributes</p>
 </section>
 <section id="warning-knowledge-graph-edge-attribute-type-id-deprecated">
 <h3>warning.knowledge_graph.edge.attribute.type_id.deprecated<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has a deprecated ‘attribute_type_id’</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Edge ‘attribute_type_id’ is deprecated in current model, to be removed in the future. Review Biolink Model for replacement.</p>
+<p><strong>Description:</strong> Edge ‘attribute_type_id’ is deprecated in current model, to be removed in the future. Review Biolink Model for replacement</p>
 </section>
 <section id="warning-knowledge-graph-edge-provenance-multiple-primary">
 <h3>warning.knowledge_graph.edge.provenance.multiple_primary<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-multiple-primary" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has recorded multiple ‘primary’ knowledge sources</p>
 <p><strong>Context:</strong> identifier, sources</p>
-<p><strong>Description:</strong> Edge attributes should record only a single primary knowledge source provenance attribute value.</p>
+<p><strong>Description:</strong> Edge attributes should record only a single primary knowledge source provenance attribute value</p>
 </section>
 <section id="warning-knowledge-graph-edge-provenance-ara-missing">
 <h3>warning.knowledge_graph.edge.provenance.ara.missing<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-ara-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge is missing ARA knowledge source provenance</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Edge attributes ARAs should record the Infores identifier of their knowledge source provenance with respect to ARA.</p>
+<p><strong>Description:</strong> Edge attributes ARAs should record the Infores identifier of their knowledge source provenance with respect to ARA</p>
 </section>
 <section id="warning-knowledge-graph-edge-provenance-kp-missing">
 <h3>warning.knowledge_graph.edge.provenance.kp.missing<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-kp-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge attribute values are missing expected Knowledge Provider provenance</p>
 <p><strong>Context:</strong> edge_id, identifier, kp_source_type</p>
-<p><strong>Description:</strong> Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP.</p>
+<p><strong>Description:</strong> Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP</p>
 </section>
 <section id="warning-knowledge-graph-edge-knowledge-level-missing">
 <h3>warning.knowledge_graph.edge.knowledge_level.missing<a class="headerlink" href="#warning-knowledge-graph-edge-knowledge-level-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge is missing its required ‘knowledge_level’ property</p>
 <p><strong>Context:</strong> edge_id</p>
-<p><strong>Description:</strong> The ‘knowledge_level’ slot is currently optional but recommended for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release!</p>
+<p><strong>Description:</strong> The ‘knowledge_level’ slot is currently optional but recommended for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release</p>
 </section>
 <section id="warning-knowledge-graph-edge-agent-type-missing">
 <h3>warning.knowledge_graph.edge.agent_type.missing<a class="headerlink" href="#warning-knowledge-graph-edge-agent-type-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge is missing its required ‘agent_type’ property</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The ‘agent_type’ slot is currently optional but recommended for all edges in knowledge graphs complying with the specified Biolink Model release!</p>
+<p><strong>Description:</strong> The ‘agent_type’ slot is currently optional but recommended for all edges in knowledge graphs complying with the specified Biolink Model release</p>
 </section>
 <section id="warning-knowledge-graph-edge-treats-support-graph-missing">
 <h3>warning.knowledge_graph.edge.treats.support_graph.missing<a class="headerlink" href="#warning-knowledge-graph-edge-treats-support-graph-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge with a treats-related predicate is missing its required ‘support_graph’ attribute</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> A ‘support_graph’ may be required as an explanation for a given ‘treats’ statement assertion.</p>
+<p><strong>Description:</strong> A ‘support_graph’ may be required as an explanation for a given ‘treats’ statement assertion</p>
 </section>
 </section>
 <section id="information">
@@ -1175,75 +1224,75 @@
 <h3>info.trapi.response.message.knowledge_graph.node.parent.match<a class="headerlink" href="#info-trapi-response-message-knowledge-graph-node-parent-match" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Query node is ontological parent of its matching knowledge graph node</p>
 <p><strong>Context:</strong> identifier, query_id, context</p>
-<p><strong>Description:</strong> The knowledge graph node identifier was matched as an ontological subclass of the specified query node identifier.</p>
+<p><strong>Description:</strong> The knowledge graph node identifier was matched as an ontological subclass of the specified query node identifier</p>
 </section>
 <section id="info-excluded">
 <h3>info.excluded<a class="headerlink" href="#info-excluded" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> All test case S-P-O triples from resource test location, or specific user excluded S-P-O triples</p>
 <p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Check the JSON KP test edge data file for specific ‘exclude_tests’ directives, either global to the file, or on specific edges.</p>
+<p><strong>Description:</strong> Check the JSON KP test edge data file for specific ‘exclude_tests’ directives, either global to the file, or on specific edges</p>
 </section>
 <section id="info-compliant">
 <h3>info.compliant<a class="headerlink" href="#info-compliant" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Biolink Model-compliant TRAPI Message</p>
-<p><strong>Description:</strong> Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards.</p>
+<p><strong>Description:</strong> Specified TRAPI message completely satisfies the target TRAPI schema and Biolink Model semantics for specified releases of these standards</p>
 </section>
 <section id="info-input-edge-predicate-abstract">
 <h3>info.input_edge.predicate.abstract<a class="headerlink" href="#info-input-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an ‘abstract’ predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Input edge data can have ‘abstract’ predicates, when the mode of validation is ‘non-strict’.</p>
+<p><strong>Description:</strong> Input edge data can have ‘abstract’ predicates, when the mode of validation is ‘non-strict’</p>
 </section>
 <section id="info-input-edge-predicate-mixin">
 <h3>info.input_edge.predicate.mixin<a class="headerlink" href="#info-input-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an ‘mixin’ predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Input edge data can have ‘mixin’ predicates, when the mode of validation is ‘non-strict’.</p>
+<p><strong>Description:</strong> Input edge data can have ‘mixin’ predicates, when the mode of validation is ‘non-strict’</p>
 </section>
 <section id="info-query-graph-edge-predicate-abstract">
 <h3>info.query_graph.edge.predicate.abstract<a class="headerlink" href="#info-query-graph-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an ‘abstract’ predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> TRAPI Messages in Query Graphs can have ‘abstract’ predicates, when the mode of validation is ‘non-strict’.</p>
+<p><strong>Description:</strong> TRAPI Messages in Query Graphs can have ‘abstract’ predicates, when the mode of validation is ‘non-strict’</p>
 </section>
 <section id="info-query-graph-edge-predicate-mixin">
 <h3>info.query_graph.edge.predicate.mixin<a class="headerlink" href="#info-query-graph-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an ‘mixin’ predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> TRAPI Messages in Query Graphs can have ‘mixin’ predicates, when the mode of validation is ‘non-strict’.</p>
+<p><strong>Description:</strong> TRAPI Messages in Query Graphs can have ‘mixin’ predicates, when the mode of validation is ‘non-strict’</p>
 </section>
 <section id="info-knowledge-graph-edge-predicate-abstract">
 <h3>info.knowledge_graph.edge.predicate.abstract<a class="headerlink" href="#info-knowledge-graph-edge-predicate-abstract" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an ‘abstract’ predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘abstract’ predicates, when the mode of validation is ‘non-strict’.</p>
+<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘abstract’ predicates, when the mode of validation is ‘non-strict’</p>
 </section>
 <section id="info-knowledge-graph-edge-predicate-mixin">
 <h3>info.knowledge_graph.edge.predicate.mixin<a class="headerlink" href="#info-knowledge-graph-edge-predicate-mixin" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an ‘mixin’ predicate</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘mixin’ predicates, when the mode of validation is ‘non-strict’.</p>
+<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘mixin’ predicates, when the mode of validation is ‘non-strict’</p>
 </section>
 <section id="info-knowledge-graph-edge-attribute-type-id-abstract">
 <h3>info.knowledge_graph.edge.attribute.type_id.abstract<a class="headerlink" href="#info-knowledge-graph-edge-attribute-type-id-abstract" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an ‘abstract’ attribute_type_id</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘abstract’ attribute type identifiers, when the mode of validation is ‘non-strict’.</p>
+<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘abstract’ attribute type identifiers, when the mode of validation is ‘non-strict’</p>
 </section>
 <section id="info-knowledge-graph-edge-attribute-type-id-mixin">
 <h3>info.knowledge_graph.edge.attribute.type_id.mixin<a class="headerlink" href="#info-knowledge-graph-edge-attribute-type-id-mixin" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an ‘mixin’ attribute_type_id</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘mixin’ attribute type identifiers, when the mode of validation is ‘non-strict’.</p>
+<p><strong>Description:</strong> TRAPI Messages in Knowledge Graphs can have ‘mixin’ attribute type identifiers, when the mode of validation is ‘non-strict’</p>
 </section>
 </section>
 <section id="skipped-test">
 <h2>Skipped Test<a class="headerlink" href="#skipped-test" title="Permalink to this heading"></a></h2>
 <section id="id1">
 <h3>skipped.test<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Test case skipped for a test asset, for a specified reason.</p>
+<p><strong>Message:</strong> Test case skipped for a test asset, for a specified reason</p>
 <p><strong>Context:</strong> identifier, context, reason</p>
-<p><strong>Description:</strong> Test was skipped for the documented ‘reason’, for the test specified by the ‘identifier’ in the ‘context’ indicated.</p>
+<p><strong>Description:</strong> Test was skipped for the documented ‘reason’, for the test specified by the ‘identifier’ in the ‘context’ indicated</p>
 </section>
 </section>
 </section>
