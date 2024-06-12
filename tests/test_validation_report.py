@@ -675,7 +675,7 @@ def test_messages():
         ),
         (
             MessageType.skipped,
-            "SKIPPED - Test: Test case skipped for a test asset, for a specified reason."
+            "SKIPPED - Test: Test case skipped for a test asset, for a specified reason"
         ),
         (
             MessageType.warning,
