@@ -62,9 +62,12 @@ def test_get_aliases(identifier: str, one_alias: str):
     assert one_alias in aliases if one_alias in aliases else True
 
 
+TYPE_2_DIABETES_CURIE = "MONDO:0005148"
+METFORMIN_CURIE = "RXCUI:1043563"
+
 _TEST_QG_1 = {
     "nodes": {
-        "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+        "type-2 diabetes": {"ids": [TYPE_2_DIABETES_CURIE]},
         "drug": {
             "categories": ["biolink:Drug"]
         }
@@ -112,11 +115,12 @@ _TEST_KG_1 = {
     "edges": _TEST_EDGES_1
 }
 
+
 _TEST_RESULTS_1 = [
     {
         "node_bindings": {
-            "type-2 diabetes": [{"id": "MONDO:0005148"}],
-            "drug": [{"id": "ncats.drug:9100L32L2N"}]
+            "type-2 diabetes": [{"id": TYPE_2_DIABETES_CURIE}],
+            "drug": [{"id": METFORMIN_CURIE}]
         },
         "edge_bindings": {
             "treats": [{"id": "df87ff82"}]
@@ -279,7 +283,7 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
     "message": {
         "query_graph": {
             "nodes": {
-                "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                "type-2 diabetes": {"ids": [TYPE_2_DIABETES_CURIE]},
                 "drug": {"categories": ["biolink:Drug"]}
             },
             "edges": {
@@ -289,14 +293,14 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
         },
         "knowledge_graph": {
             "nodes": {
-                "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
-                "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
+                TYPE_2_DIABETES_CURIE: {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
+                METFORMIN_CURIE: {"name": "metformin", "categories": ["biolink:Drug"]}
             },
             "edges": {
                 "df87ff82": {
-                    "subject": "ncats.drug:9100L32L2N",
+                    "subject": METFORMIN_CURIE,
                     "predicate": "biolink:ameliorates_condition",
-                    "object": "MONDO:0005148",
+                    "object": TYPE_2_DIABETES_CURIE,
                     "sources": _TEST_KG_EDGE_SOURCES
                 }
             }
@@ -322,8 +326,8 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
         "results": [
             {
                 "node_bindings": {
-                    "type-2 diabetes": [{"id": "MONDO:0005148"}],
-                    "drug": [{"id": "ncats.drug:9100L32L2N"}]
+                    "type-2 diabetes": [{"id": TYPE_2_DIABETES_CURIE}],
+                    "drug": [{"id": METFORMIN_CURIE}]
                 },
                 "analyses": [
                     {
@@ -349,7 +353,7 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
     "message": {
         "query_graph": {
             "nodes": {
-                "type-2 diabetes": {"ids": ["MONDO:0005148"]},
+                "type-2 diabetes": {"ids": [TYPE_2_DIABETES_CURIE]},
                 "drug": {"categories": ["biolink:Drug"]}
             },
             "edges": {
@@ -362,14 +366,14 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
         },
         "knowledge_graph": {
             "nodes": {
-                "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
-                "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
+                TYPE_2_DIABETES_CURIE: {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
+                METFORMIN_CURIE: {"name": "metformin", "categories": ["biolink:Drug"]}
             },
             "edges": {
                 "df87ff82": {
-                    "subject": "MONDO:0005148",
+                    "subject": TYPE_2_DIABETES_CURIE,
                     "predicate": "biolink:treated_by",
-                    "object": "ncats.drug:9100L32L2N",
+                    "object": METFORMIN_CURIE,
                     "sources": _TEST_KG_EDGE_SOURCES
                 }
             }
@@ -395,8 +399,8 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
         "results": [
             {
                 "node_bindings": {
-                    "type-2 diabetes": [{"id": "MONDO:0005148"}],
-                    "drug": [{"id": "ncats.drug:9100L32L2N"}]
+                    "type-2 diabetes": [{"id": TYPE_2_DIABETES_CURIE}],
+                    "drug": [{"id": METFORMIN_CURIE}]
                 },
                 "analyses": [
                     {
@@ -1223,7 +1227,7 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_REPORTABLE_ERRORS = deepcopy(_TEST_TRAPI_1_4_
 sample_message = _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_REPORTABLE_ERRORS["message"]
 sample_qgraph = sample_message["query_graph"]
 sample_kg = sample_message["knowledge_graph"]
-sample_kg_node_missing_category = sample_kg["nodes"]["MONDO:0005148"].pop("categories")
+sample_kg_node_missing_category = sample_kg["nodes"][TYPE_2_DIABETES_CURIE].pop("categories")
 sample_kg_edge_missing_node_subject = sample_kg["edges"]["df87ff82"].pop("subject")
 sample_kg_edge_abstract_predicate = sample_kg["edges"]["df87ff82"]["predicate"] = "biolink:not_a_predicate"
 
@@ -1309,7 +1313,7 @@ def test_category_matched(
         ),
         (   # Query 1 - Knowledge graph node details lack a
             #           'categories' field, so cannot match it
-            "MONDO:0005148",
+            TYPE_2_DIABETES_CURIE,
             "biolink:Disease",
             {"name": "type-2 diabetes"},
             None,
@@ -1413,10 +1417,10 @@ def test_empty_case_input_found_in_response(testcase, response):
 #
 SAMPLE_TEST_CASE = {
     "idx": 0,
-    "subject_id": "MONDO:0005148",
+    "subject_id": TYPE_2_DIABETES_CURIE,
     "subject_category": "biolink:Disease",
     "predicate_id": 'biolink:treated_by',
-    "object_id": "ncats.drug:9100L32L2N",
+    "object_id": METFORMIN_CURIE,
     "object_category": "biolink:Drug"
 }
 #
@@ -1442,15 +1446,15 @@ SAMPLE_QUERY_GRAPH = {
 }
 
 SAMPLE_TEST_NODES = {
-    "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
-    "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
+    TYPE_2_DIABETES_CURIE: {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
+    METFORMIN_CURIE: {"name": "metformin", "categories": ["biolink:Drug"]}
 }
 
 SAMPLE_TEST_EDGES = {
     "df879999": {
-        "subject": "MONDO:0005148",
+        "subject": TYPE_2_DIABETES_CURIE,
         "predicate": "biolink:treated_by",
-        "object": "ncats.drug:9100L32L2N"
+        "object": METFORMIN_CURIE
     }
 }
 SAMPLE_TEST_GRAPH = {
@@ -1463,11 +1467,11 @@ SAMPLE_TEST_RESULTS = [
         "node_bindings": {
             "diabetes mellitus": [
                 {
-                    "id": "MONDO:0005148",       # actually bound knowledge graph node is 'type 2 diabetes mellitus'
-                    "query_id": "MONDO:0005015"  # QNode identifier is the MONDO parent concept of 'diabetes mellitus'
+                    "id": TYPE_2_DIABETES_CURIE,  # actually bound knowledge graph node is 'type 2 diabetes mellitus'
+                    "query_id": "MONDO:0005015"   # QNode identifier is the MONDO parent concept of 'diabetes mellitus'
                 }
             ],
-            "drug": [{"id": "ncats.drug:9100L32L2N"}]
+            "drug": [{"id": METFORMIN_CURIE}]
         },
         "analyses": [
             {
@@ -1487,8 +1491,8 @@ SAMPLE_TEST_RESULTS = [
 SAMPLE_TEST_INCOMPLETE_RESULTS = [
     {
         "node_bindings": {
-            "diabetes mellitus": [{"id": "MONDO:0005148"}],
-            "drug": [{"id": "ncats.drug:9100L32L2N"}]
+            "diabetes mellitus": [{"id": TYPE_2_DIABETES_CURIE}],
+            "drug": [{"id": METFORMIN_CURIE}]
         },
         "analyses": [
             {
@@ -1590,13 +1594,13 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
                     "query_graph": SAMPLE_QUERY_GRAPH,
                     "knowledge_graph": {
                         "nodes": {
-                            # "MONDO:0005148": {
+                            # TYPE_2_DIABETES_CURIE: {
                             #     "name": "type-2 diabetes",
                             #     "categories": [
                             #         "biolink:Disease"
                             #     ]
                             # },
-                            "ncats.drug:9100L32L2N": {
+                            METFORMIN_CURIE: {
                                 "name": "metformin",
                                 "categories": [
                                     "biolink:Drug"
@@ -1620,13 +1624,13 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
                     "query_graph": SAMPLE_QUERY_GRAPH,
                     "knowledge_graph": {
                         "nodes": {
-                            "MONDO:0005148": {
+                            TYPE_2_DIABETES_CURIE: {
                                 "name": "type-2 diabetes",
                                 "categories": [
                                     "biolink:DiseaseOrPhenotypicFeature"
                                 ]
                             },
-                            "ncats.drug:9100L32L2N": {
+                            METFORMIN_CURIE: {
                                 "name": "metformin",
                                 "categories": [
                                     "biolink:Drug"
@@ -1647,13 +1651,13 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
                     "query_graph": SAMPLE_QUERY_GRAPH,
                     "knowledge_graph": {
                         "nodes": {
-                            "MONDO:0005148": {
+                            TYPE_2_DIABETES_CURIE: {
                                 "name": "type-2 diabetes",
                                 "categories": [
                                     "biolink:Disease"
                                 ]
                             },
-                            # "ncats.drug:9100L32L2N": {
+                            # METFORMIN_CURIE: {
                             #     "name": "metformin",
                             #     "categories": [
                             #         "biolink:Drug"
@@ -1674,8 +1678,8 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
                     "query_graph": SAMPLE_QUERY_GRAPH,
                     "knowledge_graph": {
                         "nodes": {
-                            "MONDO:0005148": {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
-                            "ncats.drug:9100L32L2N": {"name": "metformin", "categories": ["biolink:Drug"]}
+                            TYPE_2_DIABETES_CURIE: {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
+                            METFORMIN_CURIE: {"name": "metformin", "categories": ["biolink:Drug"]}
                         },
                         "edges": {}
                     },
