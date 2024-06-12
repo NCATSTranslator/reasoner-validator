@@ -33,19 +33,6 @@ logger.setLevel("DEBUG")
 
 
 @pytest.mark.parametrize(
-    "identifier",
-    [
-        None,
-        ""
-    ]
-)
-def test_get_aliases_of_empty_identifier(identifier):
-    validator: TRAPIResponseValidator = TRAPIResponseValidator()
-    with pytest.raises(RuntimeError):
-        validator.get_aliases(identifier)
-
-
-@pytest.mark.parametrize(
     "identifier,one_alias",
     [
         (   # Special test for a CURIE for which

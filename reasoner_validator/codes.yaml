@@ -78,9 +78,6 @@ error:
                   - expected_category
                   - observed_categories
             identifier:
-              missing:
-                $message: "Missing node identifier"
-                $description: "Given node of the Knowledge Graph of TRAPI Response Message Knowledge Graph is missing its identifier"
               not_curie:
                 $message: "Node identifier is not a CURIE"
                 $description: "A knowledge graph node identifier must be a CURIE"

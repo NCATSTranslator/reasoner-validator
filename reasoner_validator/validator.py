@@ -882,7 +882,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         return result_found
 
     @lru_cache(maxsize=1024)
-    def get_aliases(self, curie: Optional[str]) -> List[str]:
+    def get_aliases(self, curie: str) -> List[str]:
         """
         Get clique of related identifiers from the Node Normalizer. Note that
         except for the cases of a missing or invalid CURIE input, this method
@@ -892,9 +892,6 @@ class TRAPIResponseValidator(BiolinkValidator):
         :param curie: str, CURIE of node identifier for which aliases are needed.
         :return: List[str], of all aliases (including at least the CURIE itself)
         """
-        if not curie:
-            self.report(code="error.trapi.response.message.knowledge_graph.node.identifier.missing")
-
         aliases: Optional[List[str]] = None
         #
         # TODO: maybe check for IRI's here and attempt to translate
@@ -997,21 +994,22 @@ class TRAPIResponseValidator(BiolinkValidator):
                                                            query identifier matched (if applicable); None if no match
         """
         target_id: str = testcase[f"{target}_id"] if f"{target}_id" in testcase else testcase[target]
-        target_id_aliases = self.get_aliases(target_id)
-        match: Optional[Tuple[str, str, Optional[str]]] = \
-            self.testcase_node_found(target, target_id_aliases, testcase, nodes)
-        if match:
-            # Node match! Return matched node identifier,
-            # 'category' and (optional) 'query_id' match
-            return match
-        else:
-            # Node matching failed... report the error
-            self.report(
-                code="error.trapi.response.message.knowledge_graph.node.missing",
-                identifier=target_id,
-                context=target
-            )
-            return None
+        if target_id:
+            target_id_aliases = self.get_aliases(target_id)
+            match: Optional[Tuple[str, str, Optional[str]]] = \
+                self.testcase_node_found(target, target_id_aliases, testcase, nodes)
+            if match:
+                # Node match! Return matched node identifier,
+                # 'category' and (optional) 'query_id' match
+                return match
+
+        # Node matching failed... report the error
+        self.report(
+            code="error.trapi.response.message.knowledge_graph.node.missing",
+            identifier=str(target_id),
+            context=target
+        )
+        return None
 
     def testcase_input_found_in_response(
             self,

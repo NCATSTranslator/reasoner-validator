@@ -88,12 +88,6 @@
 
 **Description:** The category of the knowledge graph node failed to match that of the specified input node
 
-### error.trapi.response.message.knowledge_graph.node.identifier.missing
-
-**Message:** Missing node identifier
-
-**Description:** Given node of the Knowledge Graph of TRAPI Response Message Knowledge Graph is missing its identifier
-
 ### error.trapi.response.message.knowledge_graph.node.identifier.not_curie
 
 **Message:** Node identifier is not a CURIE
