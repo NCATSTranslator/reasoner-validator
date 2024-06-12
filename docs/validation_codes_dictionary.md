@@ -958,14 +958,6 @@
 
 **Description:** Node Normalizer didn't return a preferred identifier for the specified CURIE
 
-### warning.trapi.response.message.knowledge_graph.node.identifier.no_clique
-
-**Message:** Node identifier has no reported clique
-
-**Context:** identifier
-
-**Description:** Node Normalizer didn't return a clique for the specified CURIE
-
 ### warning.trapi.response.message.knowledge_graph.node.identifier.no_aliases
 
 **Message:** Node identifier has no reported aliases

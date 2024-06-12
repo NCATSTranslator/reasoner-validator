@@ -33,33 +33,44 @@ logger.setLevel("DEBUG")
 
 
 @pytest.mark.parametrize(
-    "identifier,one_alias",
+    "identifier,find_aliases,code",
     [
-        (   # Special test for a CURIE for which
-            # NodeNormalization is known to
-            # return a lower case namespace
+        (   # Query 0 - Canonical namespace 'orphanet' CURIE, returns itself
+            #           and another alias, without validation error
+            "orphanet:33110",
+            ["orphanet:33110", "MONDO:0011096"],
+            ""
+        ),
+        (   # Query 1 - Input CURIE differs in namespace letter case from
+            # the 'orphanet' lower case returned by NodeNormalization.
+            # Returns itself, plus the identifier with canonical 'orphanet'
+            # plus at least another alias, but with a validation warning
             "ORPHANET:33110",
-            "MONDO:0011096"
+            ["ORPHANET:33110", "orphanet:33110", "MONDO:0011096"],
+            "warning.trapi.response.message.knowledge_graph.node.identifier.namespace.non_canonical"
         ),
-        (   # Test that the alias search is also
-            # input namespace case-insensitive:
-            # A modification of case of the input
-            # identifier is still properly returned.
-            "Orphanet:33110",
-            "MONDO:0011096"
-        ),
-        (   # only CURIEs can be resolved to aliases
+        (   # Query 2 - only CURIEs can be resolved to aliases
             # but just logs a warning but returns the identifier
             "not-a-curie",
-            ""
+            None,
+            "error.trapi.response.message.knowledge_graph.node.identifier.not_curie"
+        ),
+        (   # Query 3 - valid CURIE but Node Normalization
+            # doesn't know anything about it, so just return itself
+            "ncats.drug:9100L32L2N",
+            ["ncats.drug:9100L32L2N"],
+            "warning.trapi.response.message.knowledge_graph.node.identifier.no_aliases"
         ),
     ]
 )
-def test_get_aliases(identifier: str, one_alias: str):
+def test_get_aliases(identifier: str, find_aliases: Optional[List[str]], code: str):
     validator: TRAPIResponseValidator = TRAPIResponseValidator()
-    aliases: List[str] = validator.get_aliases(identifier)
-    assert identifier in aliases
-    assert one_alias in aliases if one_alias in aliases else True
+    aliases: Optional[List[str]] = validator.get_aliases(identifier)
+    if find_aliases is not None:
+        assert aliases is not None and identifier in aliases, "Original CURIE missing in aliases?"
+        for alias in find_aliases:
+            assert alias in aliases, f"Expected alias {alias} missing in aliases?"
+    check_messages(validator, code)
 
 
 TYPE_2_DIABETES_CURIE = "MONDO:0005148"

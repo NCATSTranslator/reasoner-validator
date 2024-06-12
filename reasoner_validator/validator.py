@@ -882,7 +882,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         return result_found
 
     @lru_cache(maxsize=1024)
-    def get_aliases(self, curie: str) -> List[str]:
+    def get_aliases(self, curie: str) -> Optional[List[str]]:
         """
         Get clique of related identifiers from the Node Normalizer. Note that
         except for the cases of a missing or invalid CURIE input, this method
@@ -890,7 +890,8 @@ class TRAPIResponseValidator(BiolinkValidator):
         of the aliases; however, the method reports various validation warnings
         based on the completeness of the entry reported by the Node Normalizer.
         :param curie: str, CURIE of node identifier for which aliases are needed.
-        :return: List[str], of all aliases (including at least the CURIE itself)
+        :return: List[str], of all aliases (including at least the CURIE itself,
+                            unless validation error is encountered, then None)
         """
         aliases: Optional[List[str]] = None
         #
@@ -904,6 +905,8 @@ class TRAPIResponseValidator(BiolinkValidator):
                 code="error.trapi.response.message.knowledge_graph.node.identifier.not_curie",
                 identifier=curie
             )
+            return None
+
         else:
             # Use the Translator Node Normalizer service to resolve
             # the identifier clique associated with the CURIE
@@ -929,25 +932,23 @@ class TRAPIResponseValidator(BiolinkValidator):
                                 # are all converted to upper case
                                 aliases = [entry["identifier"] for entry in clique["equivalent_identifiers"]]
                             else:
+                                # TODO: is this rather a Node Normalization error: not a well-formed entry?
                                 self.report(
                                     code="warning.trapi.response.message.knowledge_graph." +
                                          "node.identifier.no_equivalent_identifiers",
                                     identifier=curie
                                 )
                         else:
+                            # TODO: is this rather a Node Normalization error: not a well-formed entry?
                             self.report(
                                 code="warning.trapi.response.message.knowledge_graph." +
                                      "node.identifier.no_preferred_identifier",
                                 identifier=curie
                             )
-                    else:
-                        self.report(
-                            code="warning.trapi.response.message.knowledge_graph.node.identifier.no_clique",
-                            identifier=curie
-                        )
 
         if not aliases:
-            # If you didn't find any aliases, you can still return the identifier as its own alias
+            # If you didn't find any aliases, you can
+            # still return the identifier as its own alias
             aliases = [curie]
             self.report(
                 code="warning.trapi.response.message.knowledge_graph.node.identifier.no_aliases",
@@ -956,18 +957,22 @@ class TRAPIResponseValidator(BiolinkValidator):
 
         elif curie not in aliases:
             # If the identifier itself is missing in the aliases, then it could
-            # just be a letter case mismatch? See if you can correct for this...
-            aliases = [curie if str(i).upper() == curie.upper() else i for i in aliases]
-            if aliases:
+            # just be a namespace letter case mismatch? See if you can detect this...
+            if curie.upper() in [c.upper() for c in aliases]:
                 self.report(
                         code="warning.trapi.response.message.knowledge_graph.node.identifier.namespace.non_canonical",
                         identifier=curie
                     )
             else:
+                # TODO: is this rather a Node Normalization error:
+                #       incomplete alias list, missing the input curie?
                 self.report(
                         code="warning.trapi.response.message.knowledge_graph.node.identifier.namespace.missing",
                         identifier=curie
                     )
+            # either way, just return the input
+            # curie as a 'lettercase' alias
+            aliases.append(curie)
 
         return aliases
 

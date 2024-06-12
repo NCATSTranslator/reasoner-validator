@@ -740,11 +740,6 @@ warning:
                 $description: "Node Normalizer didn't return a preferred identifier for the specified CURIE"
                 $context:
                   - identifier
-              no_clique:
-                $message: "Node identifier has no reported clique"
-                $description: "Node Normalizer didn't return a clique for the specified CURIE"
-                $context:
-                  - identifier
               no_aliases:
                 $message: "Node identifier has no reported aliases"
                 $description: "Node Normalizer didn't return any aliases for the specified CURIE"
