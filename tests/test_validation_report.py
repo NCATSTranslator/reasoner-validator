@@ -121,7 +121,7 @@ def test_get_code_subtree_facet_description():
     assert all([key in ["abstract", "mixin"] for key in subtree])
     assert CodeDictionary.DESCRIPTION in subtree["mixin"]
     assert subtree["mixin"][CodeDictionary.DESCRIPTION] == \
-           "Input edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'."
+           "Input edge data can have 'mixin' predicates, when the mode of validation is 'non-strict'"
     assert CodeDictionary.MESSAGE not in subtree["mixin"]
 
 
