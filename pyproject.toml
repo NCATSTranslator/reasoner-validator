@@ -41,7 +41,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
-bmt = "^1.4.1"
+bmt = "^1.4.3"
 bioregistry = "^0.11.1"
 
 # jsonschema needs to be pinned to <= 4.18.0 for now,

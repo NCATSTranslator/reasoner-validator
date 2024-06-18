@@ -4,7 +4,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 
 ## 4.2.4
 
-- **`resolve_testcase_node()`** method calling **`get_aliases()`** now reports certain outlier cases of missing or fuzzy ("non-canonical"namespace letter case)  matching of subject or object concept node identifier matching.
+- **`resolve_testcase_node()`** method calling **`get_aliases()`** now reports certain outlier cases of missing or fuzzy ("non-canonical" namespace letter case) matching of subject or object concept node identifier matching.
 
 ## 4.2.3
 

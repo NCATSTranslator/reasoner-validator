@@ -96,13 +96,13 @@ dev = ["freezegun (>=1.0,<2.0)", "pytest (>=6.0)", "pytest-cov"]
 
 [[package]]
 name = "bioregistry"
-version = "0.11.8"
+version = "0.11.9"
 description = "Integrated registry of biological databases and nomenclatures"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "bioregistry-0.11.8-py3-none-any.whl", hash = "sha256:a4a07ba75db6d2245eb7ebd4c28afd242e4477d0a5c221509e1daca1481467f8"},
-    {file = "bioregistry-0.11.8.tar.gz", hash = "sha256:104fd08800a65f4121896a4fc6cb571bf5667418ee46414fca41092c230ddb87"},
+    {file = "bioregistry-0.11.9-py3-none-any.whl", hash = "sha256:b46462ab37faceaab3493f006ec3bcc51f07401676aa90101a67247282c0ae48"},
+    {file = "bioregistry-0.11.9.tar.gz", hash = "sha256:a89b88121759586fd599204d06bbbc453de9b134f8e7f0a86732c0b537022da5"},
 ]
 
 [package.dependencies]
@@ -126,13 +126,13 @@ web = ["bootstrap-flask (<=2.0.0)", "curies[fastapi]", "fastapi", "flask (<2.2.4
 
 [[package]]
 name = "bmt"
-version = "1.4.2"
+version = "1.4.3"
 description = "Biolink Model Toolkit: A Python API for working with the Biolink Model"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "bmt-1.4.2-py3-none-any.whl", hash = "sha256:488583cfccab0d733b18f524a896e771e648deea032ae9d434f06e83ea64d329"},
-    {file = "bmt-1.4.2.tar.gz", hash = "sha256:bc0714fe9a4072edbdee3f95ef929d2254c039e663567f02185944b55666f7c4"},
+    {file = "bmt-1.4.3-py3-none-any.whl", hash = "sha256:a5cbae7918e481eba985fee2de01b7c4d5c6b8d5590b587f52852ad6e0e2ffff"},
+    {file = "bmt-1.4.3.tar.gz", hash = "sha256:96bb9a6a6b979e46432282ac52b96ae530b52cd31a6d650f9faadc2b56424be9"},
 ]
 
 [package.dependencies]
@@ -669,13 +669,13 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 
 [[package]]
 name = "linkml-runtime"
-version = "1.7.6"
+version = "1.7.7"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "linkml_runtime-1.7.6-py3-none-any.whl", hash = "sha256:71403ca655733ec4697147e18a7b108d864bd7f285c472f2f25bf401567886a4"},
-    {file = "linkml_runtime-1.7.6.tar.gz", hash = "sha256:c7a82ab6eb5082a7861e91ff547bb6e70b9d4ed5eedf0fc45ffa15d01b380b8d"},
+    {file = "linkml_runtime-1.7.7-py3-none-any.whl", hash = "sha256:1556db30cda1191de2f70c3b949eb45c31b2ed66ca525bf38ee99f992f2451d7"},
+    {file = "linkml_runtime-1.7.7.tar.gz", hash = "sha256:f471b765056b38ff3eb1372d167b86a67e188ef472c16abf4f6cd91097a82a11"},
 ]
 
 [package.dependencies]
@@ -1854,13 +1854,13 @@ files = [
 
 [[package]]
 name = "urllib3"
-version = "1.26.18"
+version = "1.26.19"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7"
 files = [
-    {file = "urllib3-1.26.18-py2.py3-none-any.whl", hash = "sha256:34b97092d7e0a3a8cf7cd10e386f401b3737364026c45e622aa02903dffe0f07"},
-    {file = "urllib3-1.26.18.tar.gz", hash = "sha256:f8ecc1bba5667413457c529ab955bf8c67b45db799d159066261719e328580a0"},
+    {file = "urllib3-1.26.19-py2.py3-none-any.whl", hash = "sha256:37a0344459b199fce0e80b0d3569837ec6b6937435c5244e7fd73fa6006830f3"},
+    {file = "urllib3-1.26.19.tar.gz", hash = "sha256:3e3d753a8618b86d7de333b4223005f68720bcd6a7d2bcb9fbd2229ec7c1e429"},
 ]
 
 [package.extras]
@@ -1984,4 +1984,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "3547069ca159cc4811f070c14e3096e5b910800244efed314549341a1d2297e3"
+content-hash = "dad4b8d5ef76634aa7181e261b6e52aa6691fddce3a84fa88b132759ab4977cd"
