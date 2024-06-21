@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.2.5
+
+- Extracted test (from the **graph-validation-test-runner** project a.k.a. former **SRI_Testing** harness) for schema-level validation of TRAPI and Biolink Model versioning, moved into **`check_compliance_of_trapi_response()`** method.
+
 ## 4.2.4
 
 - **`resolve_testcase_node()`** method calling **`get_aliases()`** now reports certain outlier cases of missing or fuzzy ("non-canonical" namespace letter case) matching of subject or object concept node identifier matching.

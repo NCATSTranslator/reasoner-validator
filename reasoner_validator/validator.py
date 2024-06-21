@@ -136,6 +136,26 @@ class TRAPIResponseValidator(BiolinkValidator):
             # nothing more to validate?
             return
 
+        # Note the 'trapi_version' and 'biolink_version' recorded
+        # in the 'response_json' (if the tags are provided; issue warning otherwise)
+        if 'schema_version' not in response:
+            self.report(code="warning.trapi.response.schema_version.missing")
+        else:
+            trapi_version: str = response['schema_version'] \
+                if not self.trapi_version else self.trapi_version
+            logger.debug(
+                f"TRAPI Response reported TRAPI version is: '{trapi_version}'"
+            )
+
+        if 'biolink_version' not in response:
+            self.report(code="warning.trapi.response.biolink_version.missing")
+        else:
+            biolink_version = response['biolink_version'] \
+                if not self.biolink_version else self.biolink_version
+            logger.debug(
+                f"TRAPI Response reported Biolink Model version is: '{biolink_version}'"
+            )
+
         # Here, we split the TRAPI Response.Message out from the other
         # Response components, to allow for independent TRAPI Schema
         # validation of those non-Message components versus the Message
