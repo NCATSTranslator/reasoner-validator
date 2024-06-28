@@ -13,9 +13,9 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 ## 4.2.3
 
 - Update TRAPI to full minor release 1.5
-- Refactored validator of test case node (onehop) a bit further to sharpen scope, including resolve_testcase_node() method for readability and to ensure full reporting of validation error message inside
+- Refactored validator of test case node (one hop) a bit further to sharpen scope, including resolve_testcase_node() method for readability and to ensure full reporting of validation error message inside
 - Bug fix to ontology - test for null values returned from the node normalizer; add a lrucache for the parent concept lookup
-- refactor to break apart the testcase edge validation; added; added validation of subclassed instances of a query identifier (should be allowed); identified 'query_id' not yet used for results validation.
+- refactor to break apart the testcase edge validation; added validation of subclassed instances of a query identifier (should be allowed); identified 'query_id' not yet used for results validation.
 
 ## 4.2.2
 
