@@ -64,6 +64,7 @@ def test_is_curie(identifier: str, outcome: bool):
 def test_get_reference(identifier: str, reference: str):
     assert get_reference(identifier) == reference
 
+
 pp = PrettyPrinter(indent=4)
 
 # January 25, 2023 - as of reasoner-validator 3.1.0,
@@ -122,6 +123,12 @@ def test_message():
     assert not reporter.has_messages()
     reporter.report("info.compliant")
     assert reporter.has_messages()
+    reporter.report(
+        code="warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved",
+        edge_id="test_message edge",
+        identifier="activity_or_abundance",
+        qualifier_type_id="subject aspect qualifier"
+    )
     reporter.dump()
 
 
@@ -266,7 +273,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             "info.input_edge.predicate.abstract"
         ),
         (   # Query 10 - Predicate is a mixin; default 'strict_validation' == False for input_edge
-            LATEST_BIOLINK_MODEL_VERSION,
+            "4.1.7",  # LATEST_BIOLINK_MODEL_VERSION,
             {
                 'subject_category': 'biolink:Drug',
                 'object_category': 'biolink:BiologicalProcess',
@@ -372,7 +379,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
             },
             ""
         ),
-        # (   # Query xx - Deprecated node category - no example of this in BIolink 3.1.1
+        # (   # Query xx - Deprecated node category - no example of this in Biolink 3.1.1
         #     LATEST_BIOLINK_MODEL,
         #     {
         #         'subject_category': 'biolink:Nutrient',
@@ -1169,7 +1176,7 @@ def test_check_biolink_model_default_compliance_of_query_graph(
     "biolink_version,query_graph,validation_code",
     [
         (
-            LATEST_BIOLINK_MODEL_VERSION,
+            "4.1.7",  # LATEST_BIOLINK_MODEL_VERSION,
             # Query 0: Query edge predicate is a mixin - non-strict validation
             {
                 "nodes": {
@@ -1719,7 +1726,7 @@ def qualifier_validator(
         tested_method,
         edge_model: str,
         edge: Dict,
-        message: str,
+        validation_code: str,
         trapi_version: Optional[str] = None,
         biolink_version: Optional[str] = LATEST_BIOLINK_MODEL_VERSION,
         associations: Optional[List[str]] = None,
@@ -1790,13 +1797,13 @@ def qualifier_validator(
 
     check_messages(
         validator,
-        message,
+        validation_code,
         source_trail=source_trail
     )
 
 
 @pytest.mark.parametrize(
-    "edge,message",
+    "edge,validation_code",
     [
         (  # Query 0 - no 'qualifier_constraints' key - since nullable: true, this should pass
             {},
@@ -2027,13 +2034,13 @@ def qualifier_validator(
         )
     ]
 )
-def test_validate_qualifier_constraints(edge: Dict, message: str):
+def test_validate_qualifier_constraints(edge: Dict, validation_code: str):
     # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
         edge=edge,
-        message=message
+        validation_code=validation_code
     )
 
 
@@ -2083,7 +2090,7 @@ def test_validate_infores(identifier: str, validation_code: str):
 
 
 @pytest.mark.parametrize(
-    "edge,message",
+    "edge,validation_code",
     [
         (   # Query 0 - 'qualifier_type_id' is the special qualifier case 'biolink:qualified_predicate'
             #            an incorrect value, which is not a Biolink predicate,  but...
@@ -2122,12 +2129,12 @@ def test_validate_infores(identifier: str, validation_code: str):
         )
     ]
 )
-def test_biolink_validation_suppressed_validate_qualifier_constraints(edge: Dict, message: str):
+def test_biolink_validation_suppressed_validate_qualifier_constraints(edge: Dict, validation_code: str):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
         edge=edge,
-        message=message,
+        validation_code=validation_code,
         biolink_version="suppress"
     )
 
@@ -2147,7 +2154,7 @@ QC_QS_NOT_A_CURIE = {
 
 
 @pytest.mark.parametrize(
-    "trapi_version,edge,message",
+    "trapi_version,edge,validation_code",
     [
         (  # Query 0 - 'qualifier_type_id' value not a Biolink CURIE - seen as 'unknown' in TRAPI < 1.4.0-beta
             TRAPI_1_3_0,
@@ -2161,18 +2168,18 @@ QC_QS_NOT_A_CURIE = {
         )
     ]
 )
-def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edge: Dict, message: str):
+def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edge: Dict, validation_code: str):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
         edge=edge,
-        message=message,
+        validation_code=validation_code,
         trapi_version=trapi_version
     )
 
 
 @pytest.mark.parametrize(
-    "edge,message,source_trail",
+    "edge,validation_code,source_trail",
     [
         (  # Query 0 - no 'qualifiers' key - since nullable: true, this should pass
             {},
@@ -2306,12 +2313,12 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
         # )
     ]
 )
-def test_validate_qualifiers(edge: Dict, message: str, source_trail: str):
+def test_validate_qualifiers(edge: Dict, validation_code: str, source_trail: str):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         edge=edge,
-        message=message,
+        validation_code=validation_code,
         source_trail=source_trail
     )
 
@@ -2449,7 +2456,7 @@ def test_validate_qualifiers_with_association(
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         edge=edge,
-        message=message,
+        validation_code=message,
         associations=associations,
         source_trail=source_trail
     )
@@ -2489,7 +2496,7 @@ def test_validate_biolink_curie_in_qualifiers(
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         edge=edge,
-        message=message,
+        validation_code=message,
         trapi_version=trapi_version
     )
 
@@ -3265,7 +3272,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
             "info.knowledge_graph.edge.predicate.mixin"
         ),
         (
-            LATEST_BIOLINK_MODEL_VERSION,
+            "4.1.7",  # LATEST_BIOLINK_MODEL_VERSION,
             # Query 22: 'biolink:treats' is a beast with special behaviours to be vetted
             {
                 "nodes": {
