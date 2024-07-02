@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.2.6
+
+- Consolidating TRAPI and Biolink Model version decision code in one location in **`check_compliance_of_trapi_response()`** method for review and tech debt cleanup.
+
 ## 4.2.5
 
 - Extracted test (from the **graph-validation-test-runner** project a.k.a. former **SRI_Testing** harness) for schema-level validation of TRAPI and Biolink Model versioning, moved into **`check_compliance_of_trapi_response()`** method.
