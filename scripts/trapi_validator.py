@@ -222,7 +222,7 @@ def retrieve_ars_result(response_id: str, verbose: bool):
 
     if 'fields' in response_dict:
         if 'actor' in response_dict['fields'] and str(response_dict['fields']['actor']) == '9':
-            print("The supplied response id is a collection id. Please supply the UUID for a response")
+            print("The supplied response id is a collection id. Please supply the ARS PK for a specific response")
         elif 'data' in response_dict['fields']:
             print(f"Validating ARS PK '{response_id}' TRAPI Response result...")
             trapi_response = response_dict['fields']['data']

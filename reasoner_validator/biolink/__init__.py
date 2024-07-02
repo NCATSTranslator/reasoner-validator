@@ -147,6 +147,8 @@ class BMTWrapper:
         :return: None
         """
         self.biolink_version = version
+        if self.biolink_version != "suppress":
+            self.bmt = get_biolink_model_toolkit(biolink_version=version)
 
     def get_bmt(self) -> Optional[Toolkit]:
         return self.bmt

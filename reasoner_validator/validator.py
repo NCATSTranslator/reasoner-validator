@@ -141,6 +141,11 @@ class TRAPIResponseValidator(BiolinkValidator):
         if 'schema_version' not in response:
             self.report(code="warning.trapi.response.schema_version.missing")
         else:
+            # TODO: this section feels a bit confusing:  What's the *real*
+            #       TRAPI versioning precedence needed here?
+            # TRAPI JSON specified versions override default versions
+            if self.default_trapi:
+                self.trapi_version = get_latest_version(response["schema_version"])
             trapi_version: str = response['schema_version'] \
                 if not self.trapi_version else self.trapi_version
             logger.debug(
@@ -150,8 +155,13 @@ class TRAPIResponseValidator(BiolinkValidator):
         if 'biolink_version' not in response:
             self.report(code="warning.trapi.response.biolink_version.missing")
         else:
+            # TODO: this section feels a bit confusing:  What's the *real*
+            #       Biolink Model versioning precedence needed here?
+            if self.default_biolink:
+                self.bmt = get_biolink_model_toolkit(biolink_version=response["biolink_version"])
+                self.biolink_version = self.bmt.get_model_version()
             biolink_version = response['biolink_version'] \
-                if not self.biolink_version else self.biolink_version
+                if not self.get_biolink_version() else self.get_biolink_version()
             logger.debug(
                 f"TRAPI Response reported Biolink Model version is: '{biolink_version}'"
             )
@@ -166,17 +176,6 @@ class TRAPIResponseValidator(BiolinkValidator):
         # validation of the remainder of the Response
         response['message'] = {}
         if message:
-
-            # TRAPI JSON specified versions override default versions
-            if "schema_version" in response and response["schema_version"]:
-                if self.default_trapi:
-                    self.trapi_version = get_latest_version(response["schema_version"])
-
-            if "biolink_version" in response and response["biolink_version"]:
-                if self.default_biolink:
-                    self.bmt = get_biolink_model_toolkit(biolink_version=response["biolink_version"])
-                    self.biolink_version = self.bmt.get_model_version()
-
             response = self.sanitize_workflow(response)
 
             self.is_valid_trapi_query(instance=response, component="Response")
