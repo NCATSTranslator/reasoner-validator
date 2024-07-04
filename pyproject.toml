@@ -16,7 +16,7 @@ readme = "README.md"
 
 homepage = "https://github.com/NCATSTranslator"
 repository = "https://github.com/NCATSTranslator/reasoner-validator"
-documentation = "https://translator-reasoner-validator.readthedocs.io/en/latest/"
+documentation = "https://ncatstranslator.github.io/reasoner-validator/"
 keywords = [
     "NCATS",
     "Biomedical Data Translator",
