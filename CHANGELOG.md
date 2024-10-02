@@ -2,6 +2,12 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.2.7
+
+- Fix validation reporting to handle odd validation message parameters which are not scalars
+- Also coerce a few specific validation message report call parameter inputs to strings
+- Skipping Ontology (UberGraph) unit tests due to some unknown change in the resource (requires review since this could break some extended use cases of the library)
+
 ## 4.2.6
 
 - Consolidating TRAPI and Biolink Model version decision code in one location in **`check_compliance_of_trapi_response()`** method for review and tech debt cleanup.

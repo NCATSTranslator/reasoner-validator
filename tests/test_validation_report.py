@@ -620,6 +620,24 @@ def _validate_full_messages(
     assert full_message in full_messages_list
 
 
+def test_non_scalar_message_parameter_dump():
+    # Loading and checking reporter
+    tm_default_test = "test_non_scalar_message_parameter_dump"
+    tm_default_target = "test_dump"
+    reporter = ValidationReporter(
+        default_test=tm_default_test,
+        default_target=tm_default_target
+    )
+    reporter.report(
+        code="info.compliant",
+        identifier="test edge",
+        qualifier_type_id='biolink:subject_aspect_qualifier',
+        qualifier_value=['degradation', 'activity_or_abundance', 'stability', 'expression', 'abundance', 'activity'],
+        reason="Qualifier value must be a scalar!"
+    )
+    reporter.dump()
+
+
 def test_messages():
     # Loading and checking a first reporter
     tm_default_test = "test_messages"

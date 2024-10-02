@@ -1112,20 +1112,20 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             qualifier_type_id: str = qualifier['qualifier_type_id']
             qualifier_value: str = qualifier['qualifier_value']
             try:
-                if not self.bmt.is_qualifier(name=qualifier_type_id):
+                if not self.bmt.is_qualifier(name=str(qualifier_type_id)):
                     self.report(
                         code=f"error.{context}.qualifier.type_id.unknown",
                         source_trail=source_trail,
-                        identifier=qualifier_type_id,
+                        identifier=str(qualifier_type_id),
                         edge_id=edge_id
                     )
                 elif qualifier_type_id == "biolink:qualified_predicate":
-                    if not self.bmt.is_predicate(qualifier_value):
+                    if not self.bmt.is_predicate(str(qualifier_value)):
                         # special case of qualifier must have Biolink predicates as values
                         self.report(
                             code=f"error.{context}.qualifier.value.not_a_predicate",
                             source_trail=source_trail,
-                            identifier=qualifier_value,
+                            identifier=str(qualifier_value),
                             edge_id=edge_id
                         )
 
@@ -1134,7 +1134,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 elif context.startswith("knowledge_graph") and \
                         not self.bmt.validate_qualifier(
                             qualifier_type_id=qualifier_type_id,
-                            qualifier_value=qualifier_value,
+                            qualifier_value=str(qualifier_value),
                             associations=associations
                         ):
                     # TODO: to review (as of release  3.8.9) we demoted this validation message to a 'warning',
@@ -1143,9 +1143,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     self.report(
                         code=f"warning.{context}.qualifier.value.unresolved",
                         source_trail=source_trail,
-                        identifier=qualifier_value,
+                        identifier=str(qualifier_value),
                         edge_id=edge_id,
-                        qualifier_type_id=qualifier_type_id
+                        qualifier_type_id=str(qualifier_type_id)
                     )
             except Exception as e:
                 # broad spectrum exception to trap anticipated short term issues with BMT validation
@@ -1154,8 +1154,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     code=f"error.{context}.qualifier.invalid",
                     source_trail=source_trail,
                     identifier=edge_id,
-                    qualifier_type_id=qualifier_type_id,
-                    qualifier_value=qualifier_value,
+                    qualifier_type_id=str(qualifier_type_id),
+                    # we coerce qualifier values to strings here, in case
+                    # the value is not already a simple string scalar
+                    qualifier_value=str(qualifier_value),
                     reason=str(e)
                 )
 

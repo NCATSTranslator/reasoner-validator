@@ -1778,7 +1778,7 @@ def qualifier_validator(
     else:
         # Only validate_qualifiers() has formal parameters
         # 'source_trail' and 'associations', so to be safe...
-        if source_trail is not None:
+        if source_trail:
             tested_method(
                 validator,
                 edge_id=f"{tested_method.__name__} unit test",
@@ -2291,6 +2291,25 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "",   # this particular use case should pass,
+            ""
+        ),
+        (   # Query 12 - "qualifier_value" should be a scalar (string), not an array of scalars
+            {
+                'qualifiers': [
+                    {
+                        "qualifier_type_id": "biolink:subject_aspect_qualifier",
+                        "qualifier_value": [
+                            "degradation",
+                            "activity_or_abundance",
+                            "stability",
+                            "expression",
+                            "abundance",
+                            "activity"
+                        ]
+                    }
+                ]
+            },
+            "critical.trapi.validation",
             ""
         ),
         # (   # This use case was discussed with Sierra on 11 April 2023 and )

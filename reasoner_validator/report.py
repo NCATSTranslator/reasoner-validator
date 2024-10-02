@@ -842,6 +842,9 @@ class ValidationReporter:
                                                     tags = tuple(parameters.keys())
                                                     print(f"\t\t\t\t- {' | '.join(tags)}: ", file=file)
                                                     first_message = False
+                                                # Sanitize the parameter values for the report
+                                                # (in case non-string values sneak through)
+                                                parameters = {tag: str(value) for tag, value in parameters.items()}
                                                 print(f"\t\t\t\t\t{' | '.join(parameters.values())}", file=file)
                                                 messages_per_row += 1
                                                 if msg_rows and messages_per_row >= msg_rows:
