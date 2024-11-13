@@ -917,6 +917,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                     edge_id=edge_id,
                                                     source_trail=source_trail
                                                 )
+                                            # elif not self.bmt.is_node_property(attribute_type_id):
                                             elif not self.bmt.is_association_slot(attribute_type_id):
                                                 self.report(
                                                     code="warning.knowledge_graph.edge." +

@@ -3576,7 +3576,34 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 32: 'attribute_type_id' has a 'biolink' CURIE prefix and
+            # Query 32: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
+            {
+                "nodes": SIMPLE_SAMPLE_NODES,
+                "edges": {
+                    "edge_1": {
+                        "subject": "NCBIGene:29974",
+                        "predicate": "biolink:physically_interacts_with",
+                        "object": "PUBCHEM.COMPOUND:597",
+                        "attributes": [
+                            {
+                                "attribute_type_id": "biolink:iri",
+                                "value": "some IRI"
+                            }
+                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        "sources": [
+                            {
+                                "resource_id": "infores:molepro",
+                                "resource_role": "primary_knowledge_source"
+                            }
+                        ]
+                    }
+                }
+            },
+            "warning.knowledge_graph.edge.attribute.type_id.not_association_slot"
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 33: 'attribute_type_id' has a 'biolink' CURIE prefix and
             #           is an association_slot, so it should pass
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3608,7 +3635,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 33: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
+            # Query 34: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3633,7 +3660,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
             },
             "warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix"
         ),
-        (   # Query 34:  # An earlier Biolink Model won't recognize a category not found in its specified release
+        (   # Query 35:  # An earlier Biolink Model won't recognize a category not found in its specified release
             "1.8.2",
             {
                 # Sample nodes
@@ -3662,7 +3689,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
             },
             "error.knowledge_graph.node.category.unknown"
         ),
-        (   # Query 35:  # 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
+        (   # Query 36:  # 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3692,7 +3719,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 36: 'attribute_type_id' is not a 'biolink:association_slot'
+            # Query 37: 'attribute_type_id' is not a 'biolink:association_slot'
             #           (biolink:synonym is a node property) but...
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3723,7 +3750,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 37: Knowledge Graph dangling nodes error
+            # Query 38: Knowledge Graph dangling nodes error
             {
                 # Sample nodes with extra  unused node
                 'nodes': SAMPLE_NODES_WITH_UNUSED_NODE,
@@ -3735,7 +3762,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 38: Knowledge Graph edge duplicated Knowledge Level
+            # Query 39: Knowledge Graph edge duplicated Knowledge Level
             {
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 'edges': sample_edge_with_attributes(
@@ -3751,7 +3778,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 39: Knowledge Graph edge missing Knowledge Level
+            # Query 40: Knowledge Graph edge missing Knowledge Level
             {
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 'edges': sample_edge_with_attributes(
@@ -3766,7 +3793,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 40: Knowledge Graph edge invalid Knowledge Level
+            # Query 41: Knowledge Graph edge invalid Knowledge Level
             {
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 'edges': sample_edge_with_attributes(
@@ -3784,7 +3811,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 41: Knowledge Graph edge duplicated Agent Type
+            # Query 42: Knowledge Graph edge duplicated Agent Type
             {
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 'edges': sample_edge_with_attributes(
@@ -3800,7 +3827,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 42: Knowledge Graph edge missing Agent Type
+            # Query 43: Knowledge Graph edge missing Agent Type
             {
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 'edges': sample_edge_with_attributes(
@@ -3815,7 +3842,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             LATEST_BIOLINK_MODEL_VERSION,
 
-            # Query 43: Knowledge Graph edge invalid Agent Type
+            # Query 44: Knowledge Graph edge invalid Agent Type
             {
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
                 'edges': sample_edge_with_attributes(
@@ -3833,7 +3860,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         (
             "4.1.6",
 
-            # Query 44: Sample full valid TRAPI Knowledge Graph
+            # Query 45: Sample full valid TRAPI Knowledge Graph
             {
                 # Sample nodes
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
