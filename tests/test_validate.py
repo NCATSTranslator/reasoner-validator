@@ -94,7 +94,6 @@ def test_load_schema(trapi_version: str):
     assert schema, f"TRAPI Schema for release '{trapi_version}' is not available?"
 
 
-@pytest.mark.skip("May 9, 2024 master branch of ReasonerAPI has a schema bug which crashes this test")
 def test_load_master_schema():
     """Test load_schema('master')."""
     schema = load_schema("master")
