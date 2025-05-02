@@ -1,6 +1,6 @@
 """Test validation."""
 from sys import stderr
-from typing import Tuple, Dict, Optional
+from typing import Tuple, List, Dict, Optional
 from copy import deepcopy
 
 import pytest
@@ -207,7 +207,8 @@ def test_nullable_query_level_properties(trapi_version: str):
 SAMPLE_QUERY = {
         "message": {
         },
-        "log_level": "INFO"
+        "log_level": "INFO",
+        "workflow": [{}]
     }
 
 
@@ -273,96 +274,82 @@ SAMPLE_WORKFLOW_1_3_4 = [
         "id": "lookup",
         "runner_parameters": {
             "allowlist": {
-                "allowlist": ["infores:aragorn"]
+                "allowlist": {
+                    "allowlist": ["infores:aragorn"]
+                }
             }
         }
     }
 ]
 
 
+SAMPLE_WORKFLOW_1_5 = [
+    {
+        "id": "sort_results_score",
+        "parameters": {
+            "ascending_or_descending": "ascending"
+        }
+    },
+    {
+        "id": "lookup",
+        "runner_parameters": {
+            "allowlist":  ["infores:aragorn"]
+        }
+    }
+]
+
+
+def _query_trapi_workflow_properties_template(trapi_version: str, sample_workflow: List[Dict]):
+    """Test flawed TRAPI Query workflow properties."""
+    validator = TRAPISchemaValidator(trapi_version=trapi_version)
+    query = deepcopy(SAMPLE_QUERY)
+    query["workflow"] = sample_workflow
+    validator.validate(query, "Query")
+    with pytest.raises(ValidationError):
+        faulty_query_wf = deepcopy(query)
+        # ...and the 'id' object key should have a schema-defined enum as its value,...
+        faulty_query_wf["workflow"] = [
+            {
+                "id": "not-a-workflow-enum"
+            }
+        ]
+        validator.validate(faulty_query_wf, "Query")
+    with pytest.raises(ValidationError):
+        faulty_query_wf = deepcopy(query)
+        # ...and if 'runner_parameters' key is present and has a non-empty value,
+        # it needs oneOf the "allowlist" or "denylist" keys...
+        faulty_query_wf["workflow"] = [
+            {
+                "id": "sort_results_score",
+                "runner_parameters": {}
+            }
+        ]
+        validator.validate(faulty_query_wf, "Query")
+    # TODO: TRAPI validation doesn't seem to detect
+    #       non-compliance with allowlist "minLength": 1
+    # with pytest.raises(ValidationError):
+    #     faulty_query_wf = deepcopy(query)
+    #     # ...and if 'runner_parameters' object "allowlist" or "denylist"
+    #     # is present, they must have a non-empty value, of at least one infores CURIE.
+    #     faulty_query_wf["workflow"] = [
+    #         {
+    #             "id": "lookup",
+    #             "runner_parameters": {
+    #                 "allowlist": []
+    #             }
+    #         }
+    #     ]
+    #     validator.validate(faulty_query_wf, "Query")
+
+
 @pytest.mark.parametrize("trapi_version", TRAPI_1_4_TEST_VERSIONS)
 def test_pre_1_5_query_latest_trapi_workflow_properties(trapi_version: str):
-    """Test flawed TRAPI Query workflow properties."""
-    validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    query = deepcopy(SAMPLE_QUERY)
-    query["workflow"] = SAMPLE_WORKFLOW_1_3_4
-    validator.validate(query, "Query")
-    with pytest.raises(ValidationError):
-        faulty_query_wf = deepcopy(query)
-        # ...and the 'id' object key should have a schema-defined enum as its value,...
-        faulty_query_wf["workflow"] = [
-            {
-                "id": "not-a-workflow-enum"
-            }
-        ]
-        validator.validate(faulty_query_wf, "Query")
-    with pytest.raises(ValidationError):
-        faulty_query_wf = deepcopy(query)
-        # ...and if 'runner_parameters' key is present and has a non-empty value,
-        # it needs oneOf the "allowlist" or "denylist" keys...
-        faulty_query_wf["workflow"] = [
-            {
-                "id": "sort_results_score",
-                "runner_parameters": {}
-            }
-        ]
-        validator.validate(faulty_query_wf, "Query")
-    with pytest.raises(ValidationError):
-        faulty_query_wf = deepcopy(query)
-        # ...and if 'runner_parameters' object "allowlist" or "denylist"
-        # is present, they must have a non-empty value, of at least one infores CURIE.
-        faulty_query_wf["workflow"] = [
-            {
-                "id": "lookup",
-                "runner_parameters": {
-                    "allowlist": []
-                }
-            }
-        ]
-        validator.validate(faulty_query_wf, "Query")
+    _query_trapi_workflow_properties_template(trapi_version, SAMPLE_WORKFLOW_1_3_4)
 
 
-@pytest.mark.skip(reason="Not updated to work correctly with TRAPI 1.5.0")
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
 def test_1_5_query_latest_trapi_workflow_properties(trapi_version: str):
-    """Test flawed TRAPI Query workflow properties."""
-    validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    query = deepcopy(SAMPLE_QUERY)
-    query["workflow"] = SAMPLE_WORKFLOW_1_3_4
-    validator.validate(query, "Query")
-    with pytest.raises(ValidationError):
-        faulty_query_wf = deepcopy(query)
-        # ...and the 'id' object key should have a schema-defined enum as its value,...
-        faulty_query_wf["workflow"] = [
-            {
-                "id": "not-a-workflow-enum"
-            }
-        ]
-        validator.validate(faulty_query_wf, "Query")
-    with pytest.raises(ValidationError):
-        faulty_query_wf = deepcopy(query)
-        # ...and if 'runner_parameters' key is present and has a non-empty value,
-        # it needs oneOf the "allowlist" or "denylist" keys...
-        faulty_query_wf["workflow"] = [
-            {
-                "id": "sort_results_score",
-                "runner_parameters": {}
-            }
-        ]
-        validator.validate(faulty_query_wf, "Query")
-    with pytest.raises(ValidationError):
-        faulty_query_wf = deepcopy(query)
-        # ...and if 'runner_parameters' object "allowlist" or "denylist"
-        # is present, they must have a non-empty value, of at least one infores CURIE.
-        faulty_query_wf["workflow"] = [
-            {
-                "id": "lookup",
-                "runner_parameters": {
-                    "allowlist": []
-                }
-            }
-        ]
-        validator.validate(faulty_query_wf, "Query")
+    _query_trapi_workflow_properties_template(trapi_version, SAMPLE_WORKFLOW_1_5)
 
 
 @pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)

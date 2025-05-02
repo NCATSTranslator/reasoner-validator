@@ -3,7 +3,7 @@ This test file overlaps a bit with test_validate.py but intentionally isolates
 basic TRAPI Query 'workflow' testing to help troubleshoot the validation.
 """
 import pytest
-from typing import Dict
+from typing import Any, List, Tuple, Dict
 from itertools import product
 from json import dumps
 
@@ -11,6 +11,42 @@ from reasoner_validator.trapi import TRAPISchemaValidator
 from reasoner_validator.validator import TRAPIResponseValidator
 
 from tests import LATEST_TEST_RELEASES, TRAPI_1_4_TEST_VERSIONS
+
+
+# TODO: this TRAPI 1.4 workflow snippet, validating against 1.3.4,
+#       seems essentially wrong in needing (and validating)
+#       the "dont_care" to pass the validation test for 1.4
+#       The correct intent is expressed in SAMPLE_QUERY_1
+SAMPLE_1_4_QUERY_1 = {
+    "message": {
+        "knowledge_graph": None,
+        "query_graph": None,
+        "results": None,
+    },
+    "log_level": None,
+    "workflow":  [
+        {
+            "id": "sort_results_score",
+            "parameters": {
+                "ascending_or_descending": "ascending"
+            },
+            "runner_parameters": {
+                "allowlist": {
+                    "dont_care": ["infores:aragorn"]
+                }
+            }
+        },
+        {
+            "id": "lookup",
+            "runner_parameters": {
+                "allowlist": {
+                    "dont_care": ["infores:aragorn"]
+                }
+            }
+        }
+    ]
+}
+
 
 SAMPLE_QUERY_1 = {
     "message": {
@@ -63,10 +99,18 @@ SAMPLE_QUERY_2 = {
     ]
 }
 
-TRAPI_1_4_QUERY_VERSION = [qv for qv in product(TRAPI_1_4_TEST_VERSIONS, (SAMPLE_QUERY_1, SAMPLE_QUERY_2))]
+
+def _generate_workflow_sample_data(versions: List[str], queries: Tuple[Dict, Dict]) -> List:
+    return [qv for qv in product(versions, queries)]
 
 
-@pytest.mark.parametrize("trapi_version,query", TRAPI_1_4_QUERY_VERSION)
+@pytest.mark.parametrize(
+    "trapi_version,query",
+    _generate_workflow_sample_data(
+        versions=TRAPI_1_4_TEST_VERSIONS,
+        queries=(SAMPLE_1_4_QUERY_1, SAMPLE_QUERY_2)
+    )
+)
 def test_trapi_1_4_query_trapi_workflow_properties(trapi_version: str, query: Dict):
     """Test flawed TRAPI Query workflow properties."""
 
@@ -77,11 +121,14 @@ def test_trapi_1_4_query_trapi_workflow_properties(trapi_version: str, query: Di
     validator.validate(query, "Query")
 
 
-TRAPI_LATEST_TRAPI_QUERY_VERSION = [qv for qv in product(LATEST_TEST_RELEASES, (SAMPLE_QUERY_1, SAMPLE_QUERY_2))]
-
-
 # @pytest.mark.skip(reason="Not updated to work correctly with TRAPI 1.5.0")
-@pytest.mark.parametrize("trapi_version,query", TRAPI_LATEST_TRAPI_QUERY_VERSION)
+@pytest.mark.parametrize(
+    "trapi_version,query",
+    _generate_workflow_sample_data(
+        versions=LATEST_TEST_RELEASES,
+        queries=(SAMPLE_QUERY_1, SAMPLE_QUERY_2)
+    )
+)
 def test_query_latest_trapi_workflow_properties(trapi_version: str, query: Dict):
     """Test flawed TRAPI Query workflow properties."""
 
