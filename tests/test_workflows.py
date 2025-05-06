@@ -3,7 +3,7 @@ This test file overlaps a bit with test_validate.py but intentionally isolates
 basic TRAPI Query 'workflow' testing to help troubleshoot the validation.
 """
 import pytest
-from typing import Any, List, Tuple, Dict
+from typing import List, Tuple, Dict
 from itertools import product
 from json import dumps
 
