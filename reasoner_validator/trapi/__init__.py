@@ -7,6 +7,8 @@ from functools import lru_cache
 
 import jsonschema
 import requests
+from urllib3 import connection_from_url
+from urllib3.exceptions import HTTPError
 
 try:
     from yaml import load, CLoader as Loader
@@ -24,6 +26,11 @@ logger = logging.getLogger(__name__)
 # For testing, set TRAPI API query POST timeouts to 10 minutes == 600 seconds
 DEFAULT_TRAPI_POST_TIMEOUT = 600.0
 
+# TRAPI schemata validation depends on access to
+# workflow and operations schemata residing on
+# the 'standards.ncats.io' endpoint
+STANDARDS_HOST = "standards.ncats.io"
+STANDARDS_URL = f"https://{STANDARDS_HOST}"
 
 TRAPI_1_3_0_SEMVER = SemVer.from_string("v1.3.0")
 TRAPI_1_3_0: str = str(TRAPI_1_3_0_SEMVER)
@@ -251,6 +258,25 @@ class TRAPISchemaValidator(ValidationReporter):
     TRAPI Validator is a wrapper class for validating
     conformance of JSON messages to the Translator Reasoner API.
     """
+
+    _validation_metadata_checked: bool = False
+
+    @classmethod
+    def check_validation_metadata(cls):
+        if not cls._validation_metadata_checked:
+            cls._validation_metadata_checked = True
+            # TODO: check access to STANDARDS_URL here. Raise a RuntimeException
+            #       since, if unavailable, the TRAPI validation will fail.
+            conn = connection_from_url(STANDARDS_URL)
+            try:
+                response = conn.request('GET', '/')
+                logger.debug(f"'{STANDARDS_URL}' Status: {response.status}")
+                logger.debug(f"'{STANDARDS_URL}' Data: {response.data.decode('utf-8')}")
+            except HTTPError as exc:
+                raise TRAPIAccessError(f"HTTP error occurred with '{STANDARDS_URL}': {exc}")
+            except Exception as exc:
+                raise TRAPIAccessError(f"An error occurred with '{STANDARDS_URL}': {exc}")
+
     def __init__(
             self,
             default_test: Optional[str] = None,
@@ -268,6 +294,10 @@ class TRAPISchemaValidator(ValidationReporter):
                                   'info' message; A value of 'None' uses the default value for specific graph contexts.
 
         """
+        # The following class method checks whether the application
+        # has working access to key validation metadata
+        self.check_validation_metadata()
+
         self.default_trapi: bool = False
         if trapi_version is None:
             self.default_trapi = True
