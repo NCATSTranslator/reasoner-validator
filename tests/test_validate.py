@@ -590,7 +590,6 @@ def test_trapi_1_4_message_results_component_validation(trapi_version: str):
         }, "Result")
 
 
-# @pytest.mark.skip(reason="Not updated to work correctly with TRAPI 1.5.0")
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
 def test_latest_trapi_message_results_component_validation(trapi_version: str):
     """Test Message.Results component in TRAPIValidator(trapi_version=query).validate()."""
@@ -763,17 +762,19 @@ def test_message_pre_1_5_node_binding_component_validation(trapi_version: str):
         }, "NodeBinding")
 
 
-@pytest.mark.skip(reason="Not updated to work correctly with TRAPI 1.5.0")
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
 def test_latest_trapi_message_node_binding_component_validation(trapi_version: str):
     """Test NodeBinding component in TRAPIValidator(trapi_version=query).validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     sample_node_binding = {
         "id": "SGD:S000000065",
+        # Attributes are a "required, nullable: false"
+        # value of type array (but which may be empty)
+        "attributes": [],
         # 'qnode_id' is not formally specified in spec, but it is an
         # example of an additionalProperties: true permitted field
         "qnode_id": "SGD:S000000065",
-        "query_id": None
+        # "query_id": "not required"
     }
 
     validator.validate(sample_node_binding, "NodeBinding")
