@@ -149,7 +149,9 @@ def test_trapi_1_5_edgebinding(trapi_version: str):
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     validator.validate({
         "id": "hello",
-        "attributes": []  # "attributes" are "required" but may be an empty JSON Array
+        "attributes": [
+            {"id": "some-edge-id"}
+        ]  # "attributes" are "required" but may be an empty JSON Array
     }, "EdgeBinding")
     with pytest.raises(ValidationError):
         validator.validate({
