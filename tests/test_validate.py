@@ -147,11 +147,21 @@ def test_trapi_pre_1_5_edgebinding(trapi_version: str):
 def test_trapi_1_5_edgebinding(trapi_version: str):
     """Test TRAPIValidator(trapi_version=query).validate_EdgeBinding()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
+    # EdgeBinding "attributes" are "required" but may be an empty JSON Array...
+    validator.validate({
+        "id": "hello",
+        "attributes": []
+    }, "EdgeBinding")
+    # ... but if 'attributes' are provided, they must be well-formed,
+    #     with valid 'attribute_type_id' and 'value' JSON properties
     validator.validate({
         "id": "hello",
         "attributes": [
-            {"id": "some-edge-id"}
-        ]  # "attributes" are "required" but may be an empty JSON Array
+            {
+                "attribute_type_id": "biolink:synonym",
+                "value": "some-synonym"
+            }
+        ]
     }, "EdgeBinding")
     with pytest.raises(ValidationError):
         validator.validate({
