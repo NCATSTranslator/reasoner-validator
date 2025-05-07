@@ -143,13 +143,13 @@ def test_trapi_pre_1_5_edgebinding(trapi_version: str):
         }, "EdgeBinding")
 
 
-@pytest.mark.skip(reason="Not updated to work correctly with TRAPI 1.5.0")
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
 def test_trapi_1_5_edgebinding(trapi_version: str):
     """Test TRAPIValidator(trapi_version=query).validate_EdgeBinding()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     validator.validate({
         "id": "hello",
+        "attributes": []  # "attributes" are "required" but may be an empty JSON Array
     }, "EdgeBinding")
     with pytest.raises(ValidationError):
         validator.validate({
