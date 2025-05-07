@@ -929,12 +929,18 @@ warning:
               - edge_id
               - identifier
             $description: "Edge 'attribute_type_id' value is usually not drawn from the node predicate hierarchy"
+          is_node_property:
+            $message: "Edge has an 'attribute_type_id' that is a node property"
+            $context:
+              - edge_id
+              - identifier
+            $description: "Edge 'attribute_type_id' value is usually not drawn from the node property hierarchy"
           not_association_slot:
             $message: "Edge has an attribute_type_id that is not an association slot"
             $context:
               - edge_id
               - identifier
-            $description: "Edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy"
+            $description: "Edge 'attribute_type_id' value should generally be a Biolink term defined within the biolink:association_slot hierarchy"
           non_biolink_prefix:
             $message: "Edge has an attribute_type_id that has a non-Biolink CURIE prefix mapped to Biolink"
             $context:

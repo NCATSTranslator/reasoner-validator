@@ -50,7 +50,6 @@ def test_load_schema_with_semver_trapi_version():
     assert schema
 
 
-@pytest.mark.skip("May 9, 2024 master branch of ReasonerAPI has a schema bug which crashes this test")
 def test_load_schema_with_branch_name_as_trapi_version():
     trapi_version: str = get_latest_version(release_tag="master")
     schema: Dict = load_schema(trapi_version)

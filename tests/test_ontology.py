@@ -13,7 +13,6 @@ from reasoner_validator.biolink.ontology import (
 pytest_plugins = ('pytest_asyncio',)
 
 
-@pytest.mark.skip()
 @pytest.mark.parametrize(
     "curie,category,result",
     [
@@ -80,7 +79,6 @@ async def test_post_query_to_node_normalization(curie: str, category: str):
     assert category in result[curie]["type"]
 
 
-@pytest.mark.skip()
 @pytest.mark.parametrize(
     "curie,category,result",
     [

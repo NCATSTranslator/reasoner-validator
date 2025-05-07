@@ -3549,7 +3549,8 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 31: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
+            # Query 31: 'attribute_type_id' is not a 'biolink:association_slot'
+            #           (biolink:provided_by is a node property)
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3559,8 +3560,8 @@ def test_validate_agent_type(value: Optional[str], code: str):
                         "object": "PUBCHEM.COMPOUND:597",
                         "attributes": [
                             {
-                                "attribute_type_id": "biolink:synonym",
-                                "value": "some synonym"
+                                "attribute_type_id": "biolink:provided_by",
+                                "value": "some provider"
                             }
                         ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
                         "sources": [
@@ -3572,11 +3573,12 @@ def test_validate_agent_type(value: Optional[str], code: str):
                     }
                 }
             },
-            "warning.knowledge_graph.edge.attribute.type_id.not_association_slot"
+            "warning.knowledge_graph.edge.attribute.type_id.is_node_property"
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 32: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
+            # Query 32: 'attribute_type_id' is not a 'biolink:association_slot'
+            #           (biolink:iri is neither a node property nor an association_slot, but is in Biolink)
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {

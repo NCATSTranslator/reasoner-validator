@@ -905,20 +905,30 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                         if biolink_class:
                                             if self.bmt.is_category(name=biolink_class.name):
                                                 self.report(
-                                                    code="warning.knowledge_graph.edge.attribute.type_id.is_category",
+                                                    code="warning.knowledge_graph.edge."
+                                                         "attribute.type_id.is_category",
                                                     identifier=attribute_type_id,
                                                     edge_id=edge_id,
                                                     source_trail=source_trail
                                                 )
                                             elif self.bmt.is_predicate(name=biolink_class.name):
                                                 self.report(
-                                                    code="warning.knowledge_graph.edge.attribute.type_id.is_predicate",
+                                                    code="warning.knowledge_graph.edge."
+                                                         "attribute.type_id.is_predicate",
                                                     identifier=attribute_type_id,
                                                     edge_id=edge_id,
                                                     source_trail=source_trail
                                                 )
-                                            # elif not self.bmt.is_node_property(attribute_type_id):
-                                            elif not self.bmt.is_association_slot(attribute_type_id):
+
+                                            elif self.bmt.is_node_property(name=biolink_class.name):
+                                                self.report(
+                                                    code="warning.knowledge_graph.edge." +
+                                                         "attribute.type_id.is_node_property",
+                                                    identifier=attribute_type_id,
+                                                    edge_id=edge_id,
+                                                    source_trail=source_trail
+                                                )
+                                            elif not self.bmt.is_association_slot(name=biolink_class.name):
                                                 self.report(
                                                     code="warning.knowledge_graph.edge." +
                                                          "attribute.type_id.not_association_slot",
