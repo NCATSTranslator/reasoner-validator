@@ -1403,6 +1403,21 @@ def test_testcase_node_found():
     #             testcase: Dict,
     #             nodes: Dict
     #     ) -> Optional[Tuple[str, str, Optional[str]]]:
+    # """
+    # Find at least one of the given "target_id_aliases", with expected categories, in the "nodes" catalog.
+    # If such identifier is found, and at least one KG node category is the expected category or a proper subclass
+    # category of the test testcase category, then return a result; if the node is found but the testcase category
+    # is not the expected category but is a subclass category of the KG node categories (i.e. KG node categories
+    # are too general), then return None. If the identifier is NOT found in the nodes list or
+    # there is no overlap in the (expected or parent) testcase and node categories, then also return None.
+    #
+    # :param target: the concept node type of interest: the 'subject' or the 'object'
+    # :param target_id_aliases: List of (CURIE) target identifier aliases to be matched against the "nodes" catalog
+    # :param testcase: Dict, full test testcase (to access the target node 'category')
+    # :param nodes: Dict, catalog of knowledge graph nodes, indexed by node identifiers, with node details as values.
+    # :return: Optional[Tuple[str, str, Optional[str]]], returns the KG node identifier, category, and
+    #                                                    query identifier matched (if applicable); None if no match
+    # """
     target: str = ""
     target_id_aliases: List[str] = []
     testcase: Dict = {}
