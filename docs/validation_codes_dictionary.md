@@ -1190,7 +1190,7 @@
 
 **Context:** edge_id, identifier
 
-**Description:** Edge 'attribute_type_id' value should generally be a term defined within the biolink:association_slot hierarchy
+**Description:** Edge 'attribute_type_id' value should generally be a Biolink term defined within the biolink:association_slot hierarchy
 
 ### warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix
 

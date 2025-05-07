@@ -3549,7 +3549,8 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 31: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
+            # Query 31: 'attribute_type_id' is not a 'biolink:association_slot'
+            #           (biolink:provided_by is a node property)
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3576,7 +3577,8 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 32: 'attribute_type_id' is not a 'biolink:association_slot' (biolink:synonym is a node property)
+            # Query 32: 'attribute_type_id' is not a 'biolink:association_slot'
+            #           (biolink:iri is neither a node property nor an association_slot, but is in Biolink)
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
