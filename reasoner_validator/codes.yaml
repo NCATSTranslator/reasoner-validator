@@ -929,6 +929,12 @@ warning:
               - edge_id
               - identifier
             $description: "Edge 'attribute_type_id' value is usually not drawn from the node predicate hierarchy"
+          is_node_property:
+            $message: "Edge has an 'attribute_type_id' that is a node property"
+            $context:
+              - edge_id
+              - identifier
+            $description: "Edge 'attribute_type_id' value is usually not drawn from the node property hierarchy"
           not_association_slot:
             $message: "Edge has an attribute_type_id that is not an association slot"
             $context:

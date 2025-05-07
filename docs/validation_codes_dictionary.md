@@ -1176,6 +1176,14 @@
 
 **Description:** Edge 'attribute_type_id' value is usually not drawn from the node predicate hierarchy
 
+### warning.knowledge_graph.edge.attribute.type_id.is_node_property
+
+**Message:** Edge has an 'attribute_type_id' that is a node property
+
+**Context:** edge_id, identifier
+
+**Description:** Edge 'attribute_type_id' value is usually not drawn from the node property hierarchy
+
 ### warning.knowledge_graph.edge.attribute.type_id.not_association_slot
 
 **Message:** Edge has an attribute_type_id that is not an association slot
