@@ -590,7 +590,7 @@ def test_trapi_1_4_message_results_component_validation(trapi_version: str):
         }, "Result")
 
 
-@pytest.mark.skip(reason="Not updated to work correctly with TRAPI 1.5.0")
+# @pytest.mark.skip(reason="Not updated to work correctly with TRAPI 1.5.0")
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
 def test_latest_trapi_message_results_component_validation(trapi_version: str):
     """Test Message.Results component in TRAPIValidator(trapi_version=query).validate()."""
@@ -696,17 +696,21 @@ def test_latest_trapi_message_results_component_validation(trapi_version: str):
         "node_bindings": {
             "a": [
                 {
-                    "attributes": None,
+                    # Attributes are a "required, nullable: false"
+                    # value of type array (but which may be empty)
+                    "attributes": [],
                     "id": "SGD:S000000065",
                     "qnode_id": "SGD:S000000065",
-                    "query_id": None
+                    # "query_id": "not required"
                 }
             ],
             "b": [
                 {
-                    "attributes": None,
+                    # Attributes are a "required, nullable: false"
+                    # value of type array (but which may be empty)
+                    "attributes": [],
                     "id": "GO:1905776",
-                    "query_id": None
+                    # "query_id": "not required"
                 }
             ]
         },
@@ -716,7 +720,9 @@ def test_latest_trapi_message_results_component_validation(trapi_version: str):
                 "edge_bindings": {
                     "ab": [
                         {
-                            "attributes": None,
+                            # Attributes are a "required, nullable: false"
+                            # value of type array (but which may be empty)
+                            "attributes": [],
                             "id": "uuid:7884e454-d09c-11ec-b00f-0242ac110002"
                         }
                     ]
