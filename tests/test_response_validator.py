@@ -1,7 +1,7 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import List, Dict, Optional
+from typing import Optional, Tuple, List, Dict
 from sys import stderr
 
 import logging
@@ -1390,8 +1390,79 @@ def test_testcase_node_category_found(
     check_messages(validator, code)
 
 
-@pytest.mark.skip(reason="Incomplete test")
-def test_testcase_node_found():
+@pytest.mark.parametrize(
+    "target,target_id_aliases,testcase,nodes,result",
+    [
+        (   # Query 1 - Gene example - direct matching target
+            "subject",  # 'target'
+            [   # sample 'target_id_aliases'
+                "HGNC:12791", "WRN", "MIM:604611", "RECQ3", "RECQL2", "ENSEMBL:ENSG00000165392"
+            ],
+            {   # minimal 'testcase' metadata (for this test)
+                "subject_category": "biolink:Gene",
+            },
+            {   # minimal 'nodes' metadata
+                "HGNC:12791": {
+                    "categories": [
+                        "biolink:Entity",
+                        "biolink:NamedThing",
+                        "biolink:BiologicalEntity",
+                        "biolink:Gene"
+                    ]
+                },
+                "HGNC:1058": {
+                    "categories": [
+                        "biolink:Entity",
+                        "biolink:NamedThing",
+                        "biolink:BiologicalEntity",
+                        "biolink:Gene"
+                    ]
+                }
+            },
+            (   # 'result' Tuple
+                "HGNC:12791",  # "matched_target_id"
+                "biolink:Gene",  # "matched_category"
+                None  # "parent_id"
+            )
+        ),
+        (   # Query 2 - TODO: MONDO disease (hierarchical) ontology terms
+            "subject",  # 'target'
+            [  # sample 'target_id_aliases'
+                "HGNC:12791", "WRN", "MIM:604611", "RECQ3", "RECQL2", "ENSEMBL:ENSG00000165392"
+            ],
+            {  # minimal 'testcase' metadata (for this test)
+                "subject_category": "biolink:Gene",
+            },
+            {  # minimal 'nodes' metadata
+                "HGNC:12791": {
+                    "categories": [
+                        "biolink:Entity",
+                        "biolink:NamedThing",
+                        "biolink:BiologicalEntity",
+                        "biolink:Disease"
+                    ]
+                },
+                "HGNC:1058": {
+                    "categories": [
+                        "biolink:Entity",
+                        "biolink:NamedThing",
+                        "biolink:BiologicalEntity",
+                        "biolink:Gene"
+                    ]
+                }
+            },
+            (   # 'result' Tuple
+                "HGNC:12791",  # "matched_target_id"
+                "biolink:Gene",  # "matched_category"
+                None  # "parent_id"
+            )
+        )
+    ]
+)
+def test_testcase_node_found(
+        target: str, target_id_aliases: List[str], testcase: Dict,
+        nodes: Dict, result: Tuple[str, str, Optional[str]]
+):
     validator = TRAPIResponseValidator(
         trapi_version=LATEST_TRAPI_RELEASE,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION
@@ -1418,11 +1489,11 @@ def test_testcase_node_found():
     # :return: Optional[Tuple[str, str, Optional[str]]], returns the KG node identifier, category, and
     #                                                    query identifier matched (if applicable); None if no match
     # """
-    target: str = ""
-    target_id_aliases: List[str] = []
-    testcase: Dict = {}
-    nodes: Dict = {}
-    validator.testcase_node_found(target, target_id_aliases, testcase, nodes)
+    matched_target_id, matched_category, parent_id = \
+        validator.testcase_node_found(target, target_id_aliases, testcase, nodes)
+    assert matched_target_id == result[0], "Wrong target id"
+    assert matched_category == result[1], "Wrong target category"
+    assert parent_id is result[2], "Unexpected Parent Id"
 
 
 @pytest.mark.parametrize(

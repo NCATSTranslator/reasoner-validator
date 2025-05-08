@@ -564,7 +564,7 @@ class TRAPIResponseValidator(BiolinkValidator):
             category: Optional[str]
             if node_id in target_id_aliases:
                 # Directly found the target node identifier, but is the expected category present?
-                category: Optional[str] = self.testcase_node_category_found(target, node_id, testcase, node_details)
+                category = self.testcase_node_category_found(target, node_id, testcase, node_details)
                 if category:
                     return node_id, category, None  # no 'parent of node' is given, since the node is directly matched.
             else:
