@@ -1427,19 +1427,19 @@ def test_testcase_node_category_found(
         ),
         (   # Query 2 - TODO: MONDO disease (hierarchical) ontology terms
             "subject",  # 'target'
-            [  # sample 'target_id_aliases'
+            [   # sample 'target_id_aliases'
                 "HGNC:12791", "WRN", "MIM:604611", "RECQ3", "RECQL2", "ENSEMBL:ENSG00000165392"
             ],
-            {  # minimal 'testcase' metadata (for this test)
+            {   # minimal 'testcase' metadata (for this test)
                 "subject_category": "biolink:Gene",
             },
-            {  # minimal 'nodes' metadata
+            {   # minimal 'nodes' metadata
                 "HGNC:12791": {
                     "categories": [
                         "biolink:Entity",
                         "biolink:NamedThing",
                         "biolink:BiologicalEntity",
-                        "biolink:Disease"
+                        "biolink:Gene"
                     ]
                 },
                 "HGNC:1058": {
