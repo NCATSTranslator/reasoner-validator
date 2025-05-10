@@ -7,7 +7,7 @@ import pytest
 from reasoner_validator import post_query, NODE_NORMALIZER_SERVER
 from reasoner_validator.biolink.ontology import (
     ONTOLOGY_KP_TRAPI_SERVER,
-    get_parent_concept
+    get_parent_concepts
 )
 
 pytest_plugins = ('pytest_asyncio',)
@@ -101,4 +101,5 @@ async def test_post_query_to_node_normalization(curie: str, category: str):
 )
 def test_get_parent_concept(curie: str, category: str, result: Optional[str]):
     # Just use default Biolink Model release for this test
-    assert get_parent_concept(curie=curie, category=category, biolink_version=None) == result
+    parent_concepts = get_parent_concepts(curie=curie, category=category, biolink_version=None)
+    assert (result is None and parent_concepts is None) or result in parent_concepts

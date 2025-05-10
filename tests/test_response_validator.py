@@ -1403,6 +1403,7 @@ def test_testcase_node_category_found(
             },
             {   # minimal 'nodes' metadata
                 "HGNC:12791": {
+                    "name": "WRN",
                     "categories": [
                         "biolink:Entity",
                         "biolink:NamedThing",
@@ -1411,6 +1412,7 @@ def test_testcase_node_category_found(
                     ]
                 },
                 "HGNC:1058": {
+                    "name": "BLM RecQ-like Helicase",
                     "categories": [
                         "biolink:Entity",
                         "biolink:NamedThing",
@@ -1426,35 +1428,29 @@ def test_testcase_node_category_found(
             )
         ),
         (   # Query 2 - TODO: MONDO disease (hierarchical) ontology terms
-            "subject",  # 'target'
+            "subject",  # 'target' is a parent of a member of the nodes list?
             [   # sample 'target_id_aliases'
-                "HGNC:12791", "WRN", "MIM:604611", "RECQ3", "RECQL2", "ENSEMBL:ENSG00000165392"
+                "MONDO:0015333"  # progeroid syndrome
             ],
             {   # minimal 'testcase' metadata (for this test)
-                "subject_category": "biolink:Gene",
+                "subject_category": "biolink:Disease",
             },
             {   # minimal 'nodes' metadata
-                "HGNC:12791": {
+                "MONDO:0010196": {  # WRN - Werner Syndrome
+                    "name": "Werner Syndrome",
                     "categories": [
                         "biolink:Entity",
                         "biolink:NamedThing",
                         "biolink:BiologicalEntity",
-                        "biolink:Gene"
-                    ]
-                },
-                "HGNC:1058": {
-                    "categories": [
-                        "biolink:Entity",
-                        "biolink:NamedThing",
-                        "biolink:BiologicalEntity",
-                        "biolink:Gene"
+                        "biolink:DiseaseOrPhenotypicFeature",
+                        "biolink:Disease"
                     ]
                 }
             },
             (   # 'result' Tuple
-                "HGNC:12791",  # "matched_target_id"
-                "biolink:Gene",  # "matched_category"
-                None  # "parent_id"
+                "MONDO:0010196",  # "matched_target_id"
+                "biolink:Disease",  # "matched_category"
+                "MONDO:0015333"  # "parent_id"
             )
         )
     ]
@@ -1467,33 +1463,13 @@ def test_testcase_node_found(
         trapi_version=LATEST_TRAPI_RELEASE,
         biolink_version=LATEST_BIOLINK_MODEL_VERSION
     )
-    #     def testcase_node_found(
-    #             self,
-    #             target: str,
-    #             target_id_aliases: List[str],
-    #             testcase: Dict,
-    #             nodes: Dict
-    #     ) -> Optional[Tuple[str, str, Optional[str]]]:
-    # """
-    # Find at least one of the given "target_id_aliases", with expected categories, in the "nodes" catalog.
-    # If such identifier is found, and at least one KG node category is the expected category or a proper subclass
-    # category of the test testcase category, then return a result; if the node is found but the testcase category
-    # is not the expected category but is a subclass category of the KG node categories (i.e. KG node categories
-    # are too general), then return None. If the identifier is NOT found in the nodes list or
-    # there is no overlap in the (expected or parent) testcase and node categories, then also return None.
-    #
-    # :param target: the concept node type of interest: the 'subject' or the 'object'
-    # :param target_id_aliases: List of (CURIE) target identifier aliases to be matched against the "nodes" catalog
-    # :param testcase: Dict, full test testcase (to access the target node 'category')
-    # :param nodes: Dict, catalog of knowledge graph nodes, indexed by node identifiers, with node details as values.
-    # :return: Optional[Tuple[str, str, Optional[str]]], returns the KG node identifier, category, and
-    #                                                    query identifier matched (if applicable); None if no match
-    # """
-    matched_target_id, matched_category, parent_id = \
+    node_found: Optional[Tuple[str, str, Optional[str]]] = \
         validator.testcase_node_found(target, target_id_aliases, testcase, nodes)
-    assert matched_target_id == result[0], "Wrong target id"
-    assert matched_category == result[1], "Wrong target category"
-    assert parent_id is result[2], "Unexpected Parent Id"
+    assert node_found is not None, "Result is None?"
+    matched_target_id, matched_category, parent_id = node_found
+    assert matched_target_id == result[0], "Wrong target id?"
+    assert matched_category == result[1], "Wrong target category?"
+    assert parent_id == result[2], "Unexpected Parent identifier?"
 
 
 @pytest.mark.parametrize(

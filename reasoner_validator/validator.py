@@ -7,7 +7,7 @@ from reasoner_validator.biolink import (
 
 from reasoner_validator import post_query, NODE_NORMALIZER_SERVER
 from reasoner_validator.biolink import is_curie
-from reasoner_validator.biolink.ontology import get_parent_concept
+from reasoner_validator.biolink.ontology import get_parent_concepts
 from reasoner_validator.report import TRAPIGraphType
 from reasoner_validator.trapi import (
     LATEST_TRAPI_RELEASE,
@@ -568,26 +568,29 @@ class TRAPIResponseValidator(BiolinkValidator):
                 if category:
                     return node_id, category, None  # no 'parent of node' is given, since the node is directly matched.
             else:
-                # the current node identifier is not one of the target aliases, but we
-                # need to check whether the node_id is a subclass instance of an ontology
-                # term identifier which does match an alias of the target identifier
-                # For this search, we assume the testcase category
+                # The currently viewed node identifier is NOT equal to one of the target aliases, but
+                # we check whether the node identifier is within an ontology DAG hierarchy which
+                # includes an aliases of the target identifier as a child term. For this search, we assume
+                # that the matching terms have the same category as the term of the specified testcase 'target'.
                 category = testcase[f"{target}_category"]
-                parent_of_node_id: Optional[str] = get_parent_concept(
+                parents_of_node_id: Optional[List[str]] = get_parent_concepts(
                     curie=node_id,
                     category=category,
                     biolink_version=self.get_biolink_version()
                 )
-                # TODO: do we need to worry about also making a more complete comparisons
-                #       of the aliases of the 'parent_of_node_id' against the 'target_id_aliases'?
-                if parent_of_node_id and parent_of_node_id in target_id_aliases:
-                    self.report(
-                        code="info.trapi.response.message.knowledge_graph.node.parent.match",
-                        identifier=parent_of_node_id,
-                        query_id=parent_of_node_id,
-                        context=target
-                    )
-                    return node_id, category, parent_of_node_id
+                if parents_of_node_id:
+                    match: Optional[str] = None
+                    for identifier in parents_of_node_id:
+                        if identifier in target_id_aliases:
+                            match = identifier
+                    if match is not None:
+                        self.report(
+                            code="info.trapi.response.message.knowledge_graph.node.parent.match",
+                            identifier=match,
+                            query_id=node_id,
+                            context=target
+                        )
+                        return node_id, category, match
 
         # Target node identifier doesn't match directly or indirectly
         # to node in the list of KG nodes or categories are either
@@ -1006,7 +1009,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         Resolve the knowledge graph node identifiers against the testcase
         identifier of the 'target' context ('subject' or 'object' node).
         If a direct match is not found for the testcase identifier,
-        check if the nodes identifiers returned in the knowledge graph
+        check whether the nodes identifiers returned in the knowledge graph
         are strict ontological subclasses of the target testcase identifier
         (e.g. the knowledge graph may return a subclass of an instance of
         MONDO disease as requested by the testcase). Node matches must

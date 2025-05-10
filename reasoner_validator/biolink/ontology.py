@@ -1,7 +1,7 @@
 """
 Ontology KP interface
 """
-from typing import Optional
+from typing import Optional, List
 from functools import lru_cache
 
 from reasoner_validator.biolink import get_biolink_model_toolkit
@@ -28,7 +28,7 @@ def convert_to_preferred(curie, allowed_list):
     return None
 
 
-def get_ontology_ancestors(curie, btype):
+def get_ontology_ancestors(curie, btype) -> List[str]:
     """
     :param curie:
     :param btype:
@@ -74,13 +74,16 @@ def get_ontology_ancestors(curie, btype):
     return ancestors
 
 
-def get_ontology_parent(curie, btype):
+# **Deprecated** strategy here of looking for the "closest" parent since within a
+# Directed Acyclic Graph (DAG) structured ontology, a given term may have multiple parents.
+def get_ontology_parents(curie, category):
     """
-    :param btype
-    :param curie
+    :param curie, str CURIE identifier
+    :param category, Biolink category of the CURIE
+    :return List of ontology term ancestors of the curie
     """
     # Here's a bunch of ancestors
-    ancestors = get_ontology_ancestors(curie, btype)
+    ancestors = get_ontology_ancestors(curie, category)
 
     if not ancestors:
         return None
@@ -89,7 +92,7 @@ def get_ontology_parent(curie, btype):
     # how many ancestors each ancestor has.  Largest number == lowest down
     ancestor_count = []
     for anc in ancestors:
-        second_ancestors = get_ontology_ancestors(anc, btype)
+        second_ancestors = get_ontology_ancestors(anc, category)
         if not second_ancestors:
             continue
         ancestor_count.append((len(second_ancestors), anc))
@@ -101,15 +104,16 @@ def get_ontology_parent(curie, btype):
 
 
 @lru_cache(CACHE_SIZE)
-def get_parent_concept(curie, category, biolink_version) -> Optional[str]:
+def get_parent_concepts(curie, category, biolink_version) -> Optional[List[str]]:
     """
     Given a CURIE of a concept and its category,
     attempt to return the parent concept if available
-    within the specified Biolink Model release.
+    within an ontology modelled by specified Biolink Model release.
 
     :param curie: CURIE of a concept instance
     :param category: Biolink Category of the concept instance
     :param biolink_version: Biolink Model version to use in validation (SemVer string specification)
+    :return List of parent concept identifiers, if the input CURIE lies within an ontology (DAG) hierarchy
     """
     tk = get_biolink_model_toolkit(biolink_version=biolink_version)
     if not tk.is_category(category):
@@ -121,6 +125,7 @@ def get_parent_concept(curie, category, biolink_version) -> Optional[str]:
     # preferred_prefixes = {'CHEBI', 'HP', 'MONDO', 'UBERON', 'CL', 'EFO', 'NCIT'}
     preferred_prefixes = tk.get_element(category).id_prefixes
 
+    # Normalize the input curie identifier
     input_prefix = curie.split(':')[0]
     if input_prefix in preferred_prefixes:
         query_entity = curie
@@ -128,10 +133,19 @@ def get_parent_concept(curie, category, biolink_version) -> Optional[str]:
         query_entity = convert_to_preferred(curie, preferred_prefixes)
     if query_entity is None:
         return None
-    preferred_parent = get_ontology_parent(query_entity, category)
-    if preferred_parent is None:
+
+    # A "query_entity" within a DAG ontology hierarchy
+    # may return a List of zero or more general ontology terms
+    ancestors: List[str] = get_ontology_ancestors(query_entity, category)
+    if not ancestors:
         return None
-    original_parent_prefix = preferred_parent.split(':')[0]
-    if original_parent_prefix == input_prefix:
-        return preferred_parent
-    return convert_to_preferred(preferred_parent, [input_prefix])
+
+    # Sanity check for mixed ontology namespaces, return
+    # identifiers only from the preferred input namespace?
+    ancestors = [
+        convert_to_preferred(term, [input_prefix])
+        for term in ancestors
+        if term.split(':')[0] == input_prefix
+    ]
+
+    return ancestors
