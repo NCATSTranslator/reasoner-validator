@@ -47,16 +47,13 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">TRAPI Schema Validation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.trapi.TRAPIAccessError"><code class="docutils literal notranslate"><span class="pre">TRAPIAccessError</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.default_target"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.default_target</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.default_test"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.default_test</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.check_validation_metadata"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.check_validation_metadata()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.get_trapi_version"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.get_trapi_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.is_valid_trapi_query"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.is_valid_trapi_query()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.merge"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.merge()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.messages"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.messages</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.minimum_required_trapi_version"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.minimum_required_trapi_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.report_header"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.report_header()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.reset_trapi_version"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.reset_trapi_version()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.strict_validation"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.strict_validation</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.to_dict"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.to_dict()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.validate"><code class="docutils literal notranslate"><span class="pre">TRAPISchemaValidator.validate()</span></code></a></li>
 </ul>
@@ -268,22 +265,20 @@ conformance of JSON messages to the Translator Reasoner API.</p>
 </table>
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><strong>merge_identified_messages</strong></p></td>
+<tr class="row-odd"><td><p><strong>check_validation_metadata</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>merge_scoped_messages</strong></p></td>
+<tr class="row-even"><td><p><strong>merge_identified_messages</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>merge_scoped_messages</strong></p></td>
 <td></td>
 </tr>
 </tbody>
 </table>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPISchemaValidator.default_target">
-<span class="sig-name descname"><span class="pre">default_target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.default_target" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPISchemaValidator.default_test">
-<span class="sig-name descname"><span class="pre">default_test</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.default_test" title="Permalink to this definition"></a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPISchemaValidator.check_validation_metadata">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_validation_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.check_validation_metadata" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -333,11 +328,6 @@ into the calling TRAPISchemaValidator instance.</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPISchemaValidator.messages">
-<span class="sig-name descname"><span class="pre">messages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MESSAGES_BY_TARGET</span></em><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.messages" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPISchemaValidator.minimum_required_trapi_version">
 <span class="sig-name descname"><span class="pre">minimum_required_trapi_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.minimum_required_trapi_version" title="Permalink to this definition"></a></dt>
@@ -378,11 +368,6 @@ and control characters are output to underline the header.</p>
 :param version: new version
 :return: None</p>
 </dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPISchemaValidator.strict_validation">
-<span class="sig-name descname"><span class="pre">strict_validation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.strict_validation" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPISchemaValidator.to_dict">

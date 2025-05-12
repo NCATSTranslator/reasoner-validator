@@ -347,7 +347,7 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 <td><p>Retrieve the most specific Biolink Model category match of knowledge graph node to testcase.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_node_found</span></code></a>(target, ...)</p></td>
-<td><p>Check for presence of at least one of the given identifiers, with expected categories, in the &quot;nodes&quot; catalog.</p></td>
+<td><p>Find at least one of the given &quot;target_id_aliases&quot;, with expected categories, in the &quot;nodes&quot; catalog.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found" title="reasoner_validator.validator.TRAPIResponseValidator.testcase_result_found"><code class="xref py py-obj docutils literal notranslate"><span class="pre">testcase_result_found</span></code></a>(query_graph, ...)</p></td>
 <td><p>Validate that test testcase S--P-&gt;O edge is found bound to the Results? :param query_graph: Dict, query graph to which the results pertain :param subject_id: str, subject node (CURIE) identifier :param subject_query_id: Optional[str], subject node (CURIE) query node identifier (if applicable) :param object_id:  str, object node (CURIE) identifier :param object_query_id:  Optional[str], object node (CURIE) query node identifier (if applicable) :param edge_id:  str, edge identifier :param results: List of (TRAPI-version specific) Result objects :return: bool, True if testcase S-P-O edge was found in the results</p></td>
@@ -416,37 +416,40 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 </table>
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><strong>count_node</strong></p></td>
+<tr class="row-odd"><td><p><strong>check_validation_metadata</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>get_attribute_type_exclusions</strong></p></td>
+<tr class="row-even"><td><p><strong>count_node</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>get_bmt</strong></p></td>
+<tr class="row-odd"><td><p><strong>get_attribute_type_exclusions</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>has_dangling_nodes</strong></p></td>
+<tr class="row-even"><td><p><strong>get_bmt</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>has_valid_node_information</strong></p></td>
+<tr class="row-odd"><td><p><strong>has_dangling_nodes</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>is_trapi_1_4_or_later</strong></p></td>
+<tr class="row-even"><td><p><strong>has_valid_node_information</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>is_treats</strong></p></td>
+<tr class="row-odd"><td><p><strong>is_trapi_1_4_or_later</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>merge_identified_messages</strong></p></td>
+<tr class="row-even"><td><p><strong>is_treats</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>merge_scoped_messages</strong></p></td>
+<tr class="row-odd"><td><p><strong>merge_identified_messages</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>reset_node_info</strong></p></td>
+<tr class="row-even"><td><p><strong>merge_scoped_messages</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>validate_input_edge_node</strong></p></td>
+<tr class="row-odd"><td><p><strong>reset_node_info</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>validate_input_edge_node</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -574,7 +577,7 @@ triggers validation of all edges in the knowledge graph (Default: 0 - use all ed
 <dd><p>Resolve the knowledge graph node identifiers against the testcase
 identifier of the ‘target’ context (‘subject’ or ‘object’ node).
 If a direct match is not found for the testcase identifier,
-check if the nodes identifiers returned in the knowledge graph
+check whether the nodes identifiers returned in the knowledge graph
 are strict ontological subclasses of the target testcase identifier
 (e.g. the knowledge graph may return a subclass of an instance of
 MONDO disease as requested by the testcase). Node matches must
@@ -719,12 +722,12 @@ Expected query_id’s are also validated.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found">
 <span class="sig-name descname"><span class="pre">testcase_node_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id_aliases</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testcase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.validator.TRAPIResponseValidator.testcase_node_found" title="Permalink to this definition"></a></dt>
-<dd><p>Check for presence of at least one of the given identifiers, with expected categories, in the “nodes” catalog.
+<dd><p>Find at least one of the given “target_id_aliases”, with expected categories, in the “nodes” catalog.
 If such identifier is found, and at least one KG node category is the expected category or a proper subclass
-category of the test testcase category, then return True; if the node is found but the testcase category is not
-the expected category but is a subclass category of the KG node categories (i.e. KG node categories
-are too general), then return False. If the identifier is NOT found in the nodes list or
-there is no overlap in the (expected or parent) testcase and node categories, then return False.</p>
+category of the test testcase category, then return a result; if the node is found but the testcase category
+is not the expected category but is a subclass category of the KG node categories (i.e. KG node categories
+are too general), then return None. If the identifier is NOT found in the nodes list or
+there is no overlap in the (expected or parent) testcase and node categories, then also return None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -736,7 +739,7 @@ there is no overlap in the (expected or parent) testcase and node categories, th
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Optional[Tuple[str, str, Optional[str]]], returns the KG node identifier, category, and
-query identifier matched (if applicable); None if no match</p>
+parent identifier matched (if applicable); None if no match</p>
 </dd>
 </dl>
 </dd></dl>

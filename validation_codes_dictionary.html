@@ -208,6 +208,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-qualifiers-qualifier-value-unresolved">warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-is-category">warning.knowledge_graph.edge.attribute.type_id.is_category</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-is-predicate">warning.knowledge_graph.edge.attribute.type_id.is_predicate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-is-node-property">warning.knowledge_graph.edge.attribute.type_id.is_node_property</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot">warning.knowledge_graph.edge.attribute.type_id.not_association_slot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix">warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated">warning.knowledge_graph.edge.attribute.type_id.deprecated</a></li>
@@ -1163,11 +1164,17 @@
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> Edge ‘attribute_type_id’ value is usually not drawn from the node predicate hierarchy</p>
 </section>
+<section id="warning-knowledge-graph-edge-attribute-type-id-is-node-property">
+<h3>warning.knowledge_graph.edge.attribute.type_id.is_node_property<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-is-node-property" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge has an ‘attribute_type_id’ that is a node property</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> Edge ‘attribute_type_id’ value is usually not drawn from the node property hierarchy</p>
+</section>
 <section id="warning-knowledge-graph-edge-attribute-type-id-not-association-slot">
 <h3>warning.knowledge_graph.edge.attribute.type_id.not_association_slot<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-not-association-slot" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has an attribute_type_id that is not an association slot</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> Edge ‘attribute_type_id’ value should generally be a term defined within the biolink:association_slot hierarchy</p>
+<p><strong>Description:</strong> Edge ‘attribute_type_id’ value should generally be a Biolink term defined within the biolink:association_slot hierarchy</p>
 </section>
 <section id="warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix">
 <h3>warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix<a class="headerlink" href="#warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix" title="Permalink to this heading"></a></h3>
