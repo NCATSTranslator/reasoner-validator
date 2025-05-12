@@ -2,6 +2,13 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.3.0
+
+- Validation warning given if an Edge.Attributes.attribute_type_id is a node property.
+- Checkpoint code embedded in the TRAPIValidator to check if standards.ncats.io is online for use for TRAPI validation (mitigates previously reported runtime error related to same).
+- Reviewed and updated (some previously skipped) unit tests for 1.5, Ontology, etc.
+- Fixed logic of  testcase_node_found() method for validation of ontology terms: TRAPI Response Node identifiers can match TestCase node identifiers if the latter is a parent concept in an ontology (i.e. the TRAPI returned identifier has the TestCase node as an ontology ancestor). The coded solution works for multi-parent Directed Acyclic Graph ontology hierarchies. A validator "information" message reports the indirect match.
+
 ## 4.2.7
 
 - Fix validation reporting to handle odd validation message parameters which are not scalars
