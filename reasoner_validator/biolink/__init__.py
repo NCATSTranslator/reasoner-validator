@@ -1659,8 +1659,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
             associations: Optional[List[str]] = None
             if self.validate_biolink():
-                # We need to look up the biolink:Association subclass
-                # matching the subject and object categories of the edge.
+                # We need to look up the biolink:Association subclasses
+                # that match the subject and object categories of the edge.
                 # We don't here filter for empty *_categories, so in some
                 # fringe cases, misleading downstream validation may occur.
                 associations = self.bmt.get_associations(
