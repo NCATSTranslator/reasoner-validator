@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 4.3.1
+
+- Update BMT dependency to 1.4.5 to mitigate spurious association matching log warnings
+
 ## 4.3.0
 
 - Validation warning given if an Edge.Attributes.attribute_type_id is a node property.

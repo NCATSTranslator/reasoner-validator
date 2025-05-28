@@ -2179,47 +2179,53 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
 
 
 @pytest.mark.parametrize(
-    "edge,validation_code,source_trail",
+    "edge,validation_code,source_trail,associations",
     [
         (  # Query 0 - no 'qualifiers' key - since nullable: true, this should pass
             {},
             "",
-            ""
+            "",
+            None
         ),
         (  # Query 1 - 'qualifiers' value is nullable: true, this should pass
             {
                 'qualifiers': None
             },
             "",
-            ""
+            "",
+            None
         ),
         (  # Query 2 - 'qualifiers' value is not an array - invalidated by TRAPI schema
             {
                 'qualifiers': {}
             },
             "critical.trapi.validation",
-            "global"
+            "global",
+            None
         ),
         (  # Query 3 - empty 'qualifiers' array value - since nullable: true, this should pass
             {
                 'qualifiers': []
             },
             "",
-            "global"
+            "global",
+            None
         ),
         (  # Query 4 - empty 'qualifier_set' entry - invalidated by TRAPI schema
             {
                 'qualifiers': [{}]
             },
             "critical.trapi.validation",
-            "global"
+            "global",
+            None
         ),
         (  # Query 5 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
             {
                 'qualifiers': [[]]
             },
             "critical.trapi.validation",
-            "global"
+            "global",
+            None
         ),
         (  # Query 6 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
             {
@@ -2231,7 +2237,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "critical.trapi.validation",
-            "global"
+            "global",
+            None
         ),
         (  # Query 7 - 'qualifier_type_id' property value is unknown
             {
@@ -2243,7 +2250,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown",
-            SAMPLE_SOURCE_TRAIL
+            SAMPLE_SOURCE_TRAIL,
+            None
         ),
         (  # Query 8 - 'qualifier_type_id' property value is valid but abstract
             {
@@ -2255,7 +2263,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved",
-            SAMPLE_SOURCE_TRAIL
+            SAMPLE_SOURCE_TRAIL,
+            None
         ),
         (  # Query 9 - 'qualifier_type_id' property value is not a Biolink qualifier term
             {
@@ -2267,7 +2276,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown",
-            SAMPLE_SOURCE_TRAIL
+            SAMPLE_SOURCE_TRAIL,
+            None
         ),
         (  # Query 10 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
             {
@@ -2278,7 +2288,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "critical.trapi.validation",
-            "global"
+            "global",
+            None
         ),
         (   # Query 11 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
             #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
@@ -2291,7 +2302,8 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "",   # this particular use case should pass,
-            ""
+            "",
+            None
         ),
         (   # Query 12 - "qualifier_value" should be a scalar (string), not an array of scalars
             {
@@ -2310,35 +2322,57 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "critical.trapi.validation",
-            ""
+            "",
+            None
         ),
-        # (   # This use case was discussed with Sierra on 11 April 2023 and )
-        #     # decided to be out-of-scope of enum values for is_permissible_value_of_enum
-        #
-        #     # Query ## - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
-        #     #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'.
-        #     #            This unit test won't pass without a modification of the Biolink Model Toolkit
-        #     #            method for validating qualifier values to accept mapped values.
-        #     {
-        #         'qualifiers': [
-        #             {
-        #                 'qualifier_type_id': "biolink:object_direction_qualifier",
-        #                 'qualifier_value': "RO:0002213"   # RO 'exact match' term for 'upregulated'
-        #             }
-        #         ]
-        #     },
-        #     "",
-        #     ""
-        # )
+        (   # Query 13 - "gene to expression site association" based qualifier
+            #            alongside "expressed in" predicate
+            {
+                'qualifiers': [
+                    {
+                        'qualifier_type_id': "biolink:stage_qualifier",
+                        'qualifier_value': "UBERON:0000069"
+                    }
+                ]
+            },
+            "",
+            "",
+            ["biolink:GeneToExpressionSiteAssociation"]
+        ),
+        #         # (   # This use case was discussed with Sierra on 11 April 2023 and )
+        #         #     # decided to be out-of-scope of enum values for is_permissible_value_of_enum
+        #         #
+        #         #     # Query ## - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
+        #         #     #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'.
+        #         #     #            This unit test won't pass without a modification of the Biolink Model Toolkit
+        #         #     #            method for validating qualifier values to accept mapped values.
+        #         #     {
+        #         #         'qualifiers': [
+        #         #             {
+        #         #                 'qualifier_type_id': "biolink:object_direction_qualifier",
+        #         #                 'qualifier_value': "RO:0002213"   # RO 'exact match' term for 'upregulated'
+        #         #             }
+        #         #         ]
+        #         #     },
+        #         #     "",
+        #         #     "",
+        #         #     None
+        #         # )
     ]
 )
-def test_validate_qualifiers(edge: Dict, validation_code: str, source_trail: str):
+def test_validate_qualifiers(
+        edge: Dict,
+        validation_code: str,
+        source_trail: str,
+        associations: Optional[List[str]]
+):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         edge=edge,
         validation_code=validation_code,
-        source_trail=source_trail
+        source_trail=source_trail,
+        associations=associations
     )
 
 

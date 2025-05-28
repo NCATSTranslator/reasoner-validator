@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "reasoner-validator"
-version = "4.3.0"
+version = "4.3.1"
 description = "Validation tools for Reasoner API"
 authors = [
     "Richard Bruskiewich <richard.bruskiewich@delphinai.com>",
@@ -41,13 +41,13 @@ include = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
-bmt = "^1.4.4"
+bmt = "^1.4.5"
 bioregistry = "^0.11.17"
 
 # jsonschema needs to be pinned to <= 4.18.0 for now,
 # since 4.18.0 appeared to break something for the
 # access and processing of JSON schemata;
-# maybe now try a later version 4.22.0(?)
+# maybe now try a later version 4.24.0(?)
 jsonschema = "~4.17.3"
 dictdiffer = "^0.9.0"
 PyYAML = "^6.0"
