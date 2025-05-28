@@ -50,7 +50,7 @@ poetry install --without dev,docs
 If you plan to run the web service API,  then install it with the optional web group:
 
 ```bash
-poetry install reasoner-validator --with web
+poetry install --with web
 ```
 
 ## Running Validation against an ARS UUID Result(*) or using a Local TRAPI Request Query
@@ -157,7 +157,7 @@ The request body consists of JSON data structure with two top level tag:
 First install the web-specific dependencies, if not already done (e.g. by **`--all-extras`** above):
 
 ```bash
-poetry install --extras web  # or poetry install --all-extras
+poetry install --with web
 ```
 
 The service may be run directly as a Python module. The web services module may be directly run, as follows. 
