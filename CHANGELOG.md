@@ -5,6 +5,7 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 ## 4.3.1
 
 - Update BMT dependency to 1.4.5 to mitigate spurious association matching log warnings
+- Fixed dependabot dependency vulnerabilities
 
 ## 4.3.0
 
