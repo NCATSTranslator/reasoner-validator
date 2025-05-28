@@ -1,7 +1,7 @@
 Reasoner Validator
 ==================
 
-This documentation describes the use and API for the  3.0.* releases of the Reasoner-Validator Library.
+This documentation describes the use and API for the  4.*.* releases of the Reasoner-Validator Library.
 
 In particular, this package provides various methods for validating any component *in any version* of the
 `Translator Reasoner API (TRAPI) <https://github.com/NCATSTranslator/ReasonerAPI/blob/master/README.md>`_ and `Biolink Model <https://github.com/biolink/biolink-model/blob/master/README.md>`_.
@@ -291,8 +291,8 @@ The service may be run directly as a Python module after certain dependencies ar
 
 .. code-block:: bash
 
-    poetry install
     poetry shell
+    poetry install --with web
 
 The module may afterwards be run, as follows:
 

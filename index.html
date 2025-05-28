@@ -78,7 +78,7 @@
              
   <section id="reasoner-validator">
 <h1>Reasoner Validator<a class="headerlink" href="#reasoner-validator" title="Permalink to this heading"></a></h1>
-<p>This documentation describes the use and API for the  3.0.* releases of the Reasoner-Validator Library.</p>
+<p>This documentation describes the use and API for the  4.*.* releases of the Reasoner-Validator Library.</p>
 <p>In particular, this package provides various methods for validating any component <em>in any version</em> of the
 <a class="reference external" href="https://github.com/NCATSTranslator/ReasonerAPI/blob/master/README.md">Translator Reasoner API (TRAPI)</a> and <a class="reference external" href="https://github.com/biolink/biolink-model/blob/master/README.md">Biolink Model</a>.</p>
 <p>This project has two dimensions of validation: one for TRAPI OpenAPI schema validation and the other for Biolink Model semantic validation.</p>
@@ -376,8 +376,8 @@ text file or a locally triggered query Request against an directly specified TRA
 <section id="running-the-web-service-directly">
 <h2>Running the Web Service Directly<a class="headerlink" href="#running-the-web-service-directly" title="Permalink to this heading"></a></h2>
 <p>The service may be run directly as a Python module after certain dependencies are installed using poetry, as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install
-poetry<span class="w"> </span>shell
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>shell
+poetry<span class="w"> </span>install<span class="w"> </span>--with<span class="w"> </span>web
 </pre></div>
 </div>
 <p>The module may afterwards be run, as follows:</p>
