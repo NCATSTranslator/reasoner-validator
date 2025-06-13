@@ -6,8 +6,8 @@ from copy import deepcopy
 from bmt import Toolkit
 
 from reasoner_validator.trapi import (
-    TRAPI_1_3_0,
-    TRAPI_1_4_2,
+    TRAPI_1_5_0,
+    TRAPI_1_6_0_BETA,
     LATEST_TRAPI_RELEASE,
     LATEST_TRAPI_MAJOR_MINOR_RELEASE,
     LATEST_TRAPI_MAJOR_MINOR_PATCH_RELEASE
@@ -16,13 +16,13 @@ from reasoner_validator.trapi import (
 TESTS_DIRECTORY = abspath(dirname(__file__))
 print(f"Test Directory: {TESTS_DIRECTORY}", file=stderr)
 
-PATCHED_SCHEMA_VERSION = "v1.4.0-beta5"
-PATCHED_140_SCHEMA_FILEPATH = f"{TESTS_DIRECTORY}{sep}test_data{sep}patched_trapi_schema_{PATCHED_SCHEMA_VERSION}.yaml"
-BROKEN_SCHEMA_FILEPATH = f"broken-{PATCHED_SCHEMA_VERSION}.yaml"
+LOCAL_SCHEMA_VERSION = "v1.5.0"
+LOCAL_TRAPI_150_SCHEMA_FILEPATH = f"{TESTS_DIRECTORY}{sep}test_data{sep}trapi_schema_v1.5.0.yaml"
+BROKEN_SCHEMA_FILEPATH = f"broken-{LOCAL_SCHEMA_VERSION}.yaml"
 
-PRE_1_4_0_TEST_VERSIONS: List = ["1.2", "1.2.0", "1.3", TRAPI_1_3_0]
-TRAPI_1_4_TEST_VERSIONS: List = ["1.4", TRAPI_1_4_2]
-PRE_1_5_0_TEST_VERSIONS: List = PRE_1_4_0_TEST_VERSIONS + TRAPI_1_4_TEST_VERSIONS
+TRAPI_1_5_TEST_VERSIONS: List = ["1.5", TRAPI_1_5_0]
+PRE_1_6_0_TEST_VERSIONS: List = TRAPI_1_5_TEST_VERSIONS
+TRAPI_1_6_TEST_VERSIONS: List = ["1.6", TRAPI_1_6_0_BETA]
 
 LATEST_TEST_RELEASES: List = [
     "1",
@@ -31,7 +31,7 @@ LATEST_TEST_RELEASES: List = [
     LATEST_TRAPI_RELEASE
 ]
 
-ALL_TEST_VERSIONS: List[str] = PRE_1_5_0_TEST_VERSIONS + LATEST_TEST_RELEASES
+ALL_TEST_VERSIONS: List[str] = PRE_1_6_0_TEST_VERSIONS + LATEST_TEST_RELEASES
 
 LATEST_BIOLINK_MODEL_VERSION = Toolkit().get_model_version()
 

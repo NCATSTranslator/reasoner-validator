@@ -2,6 +2,10 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 5.0.0
+
+- Removed validation of any TRAPI version prior to TRAPI 1.5
+
 ## 4.3.1
 
 - Update BMT dependency to 1.4.5 to mitigate spurious association matching log warnings

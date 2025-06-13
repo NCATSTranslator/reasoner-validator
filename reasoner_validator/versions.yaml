@@ -1,21 +1,20 @@
 branches:
-- '1.3'
 - '1.4'
 - '1.5'
+- 1.6-path_bindings-A
+- 1.6-path_bindings-B
 - '1.6'
 - add_sources_to_meta_edge
+- cx-pathfinder-edits
 - edeutsch-analysis
-- edeutsch-exclude
 - edeutsch-qnode-qedge
 - extended
 - gh-pages
 - master
-- mbrush-patch-1
-- mbrush-patch-2
 - negation
 - uriorcurie
-- vd-sets
 releases:
+- v1.6.0-beta
 - v1.5.0
 - v1.5.0-beta
 - v1.4.2

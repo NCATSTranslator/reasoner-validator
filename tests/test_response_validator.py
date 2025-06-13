@@ -12,16 +12,11 @@ import pytest
 
 from dictdiffer import diff
 
-from reasoner_validator.trapi import (
-    TRAPI_1_3_0,
-    TRAPI_1_4_2
-)
 from reasoner_validator.validator import TRAPIResponseValidator
 
 from tests import (
     LATEST_TRAPI_RELEASE,
     LATEST_BIOLINK_MODEL_VERSION,
-    PATCHED_140_SCHEMA_FILEPATH,
     SAMPLE_NODES_WITH_ATTRIBUTES,
     DEFAULT_KL_AND_AT_ATTRIBUTES
 )
@@ -289,7 +284,7 @@ _TEST_KG_EDGE_SOURCES = [
 ]
 
 # From Implementation Guidelines circa June 2023
-_TEST_TRAPI_1_4_2_FULL_SAMPLE = {
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
     "schema_version": "1.5.0",
     "message": {
         "query_graph": {
@@ -353,13 +348,13 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
     }
 }
 
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
 
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION["schema_version"] = "1.3.0"
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION["schema_version"] = "1.3.0"
 
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
     "biolink_version": "2.2.0",
     "message": {
         "query_graph": {
@@ -451,30 +446,11 @@ TEST_GRAPH: Dict = {
 # this unit test checks that the original response object is returned verbatim
 def test_conservation_of_response_object():
     validator: TRAPIResponseValidator = TRAPIResponseValidator()
-    input_response = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
-    reference_response = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
+    input_response = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
+    reference_response = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
     assert input_response == reference_response
     validator.check_compliance_of_trapi_response(response=input_response)
     assert not list(diff(input_response, reference_response))
-
-
-@pytest.mark.parametrize(
-    "trapi_version,outcome",
-    [
-        ("1.3.0", False),
-        ("1.4.0", True),
-        ("1.4.2", True),
-        ("1.5.0-beta", True),
-        ("1.5.0", True),
-
-        # since the latest default (as of test creation)
-        # is 1.5 something, then 'None' should also be true
-        (None, True)
-    ]
-)
-def test_is_trapi_1_4_or_later(trapi_version: Optional[str], outcome: bool):
-    validator: TRAPIResponseValidator = TRAPIResponseValidator(trapi_version=trapi_version)
-    assert validator.is_trapi_1_4_or_later() is outcome
 
 
 @pytest.mark.parametrize(
@@ -514,7 +490,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
 
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -528,7 +504,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -543,7 +519,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -560,7 +536,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -577,7 +553,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -594,7 +570,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     # "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -611,7 +587,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -628,7 +604,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": {"invalid results"}
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -645,7 +621,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": []
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -661,7 +637,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -676,7 +652,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -691,7 +667,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
                 "ara_source": None,
@@ -710,7 +686,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
                 "ara_source": None,
@@ -729,7 +705,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
                 "ara_source": "infores:aragorn",
@@ -748,7 +724,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
                 "ara_source": "infores:molepro",
@@ -767,7 +743,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
                 "ara_source": None,
@@ -787,7 +763,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
                 "ara_source": None,
@@ -807,7 +783,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
                 "ara_source": None,
@@ -830,7 +806,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_2
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -845,7 +821,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_2
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -862,7 +838,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                 },
                 "workflow": "workflows-not-an-array"
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -881,7 +857,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                 },
                 "workflow": ["not-a-valid-workflow-spec"]
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -902,7 +878,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                 },
                 "workflow": [{"id": "annotate"}]
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -944,7 +920,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     }
                 ]
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -988,7 +964,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     }
                 ]
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -1012,7 +988,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     }
                 ]
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -1021,8 +997,8 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
         ),
         (   # Query 26 - We throw a full TRAPI JSON example here (taken directly from the
             #            TRAPI implementation guidelines...) just for fun and profit
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE,
-            TRAPI_1_4_2,
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -1030,7 +1006,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
         ),
         (   # Query 27 - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
             #            guidelines...) but add the 'schema_version' just for fun and profit
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION,
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION,
             None,
             "4.1.4",
             None,
@@ -1039,8 +1015,8 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
         ),
         (   # Query 28 - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
             #            guidelines...) but explicitly specify the 'biolink_version == 2.5.8' just for fun and profit
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION,
-            TRAPI_1_4_2,
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -1076,7 +1052,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
 
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1089,7 +1065,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1103,7 +1079,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1119,7 +1095,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1135,7 +1111,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1151,7 +1127,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
                     # "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1167,7 +1143,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1175,48 +1151,26 @@ def test_check_biolink_model_compliance_of_trapi_response(
         ),
         (
             # Query 7 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE,
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE,
             # 25 June 2023 1.4.0 trapi_version with
             # defective auxiliary_graphs schema model
             # now temporarily patched?
-            TRAPI_1_4_2,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
             ""  # would be a "critical.trapi.validation" if the schema was unpatched
         ),
         (
-            # Query 8 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE,
-            # patched 1.4.0 test schema - fixed critical
-            # TRAPI schema parsing error with auxiliary_graphs
-            PATCHED_140_SCHEMA_FILEPATH,
-            None,
-            None,
-            False,
-            ""
-        ),
-        (
-            # Query 9 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
+            # Query 8 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
             # 25 June 2023 1.4.0 trapi_version with
             # defective auxiliary_graphs schema model
-            TRAPI_1_4_2,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
             ""  # nullable: true allows this outcome
-        ),
-        (
-            # Query 10 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
-            # patched 1.4.0 test schema - fixed critical
-            # TRAPI schema parsing error with auxiliary_graphs
-            PATCHED_140_SCHEMA_FILEPATH,
-            None,
-            None,
-            False,
-            ""  # should still work if nullable: true
         )
     ]
 )
@@ -1234,8 +1188,8 @@ def test_check_biolink_model_compliance_of_trapi_response_suppressing_empty_data
     check_messages(validator, code, no_errors=True)
 
 
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_REPORTABLE_ERRORS = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
-sample_message = _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_REPORTABLE_ERRORS["message"]
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_REPORTABLE_ERRORS = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
+sample_message = _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_REPORTABLE_ERRORS["message"]
 sample_qgraph = sample_message["query_graph"]
 sample_kg = sample_message["knowledge_graph"]
 sample_kg_node_missing_category = sample_kg["nodes"][TYPE_2_DIABETES_CURIE].pop("categories")
@@ -1246,8 +1200,8 @@ sample_kg_edge_abstract_predicate = sample_kg["edges"]["df87ff82"]["predicate"] 
 @pytest.mark.parametrize(
     "response",
     [
-        _TEST_TRAPI_1_4_2_FULL_SAMPLE,
-        _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_REPORTABLE_ERRORS
+        _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE,
+        _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_REPORTABLE_ERRORS
     ]
 )
 def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(response: Dict):
