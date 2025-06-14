@@ -40,13 +40,15 @@ SIMPLE_SAMPLE_NODES = {
         "name": "APOBEC1 complementation factor",
         "categories": [
            "biolink:Gene"
-        ]
+        ],
+        "attributes": []
     },
     "PUBCHEM.COMPOUND:597": {
         "name": "cytosine",
         "categories": [
             "biolink:SmallMolecule"
-        ]
+        ],
+        "attributes": []
     }
 }
 SAMPLE_NODES_WITH_ATTRIBUTES = deepcopy(SIMPLE_SAMPLE_NODES)
@@ -102,7 +104,8 @@ SAMPLE_NODES_WITH_UNUSED_NODE["NCBITaxon:9606"] = {
     "name": "Homo sapiens",
     "categories": [
        "biolink:OrganismTaxon"
-    ]
+    ],
+    "attributes": []
 }
 
 SAMPLE_EDGE_WITH_WITHOUT_ATTRIBUTES = {

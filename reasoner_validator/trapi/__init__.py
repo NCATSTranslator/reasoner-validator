@@ -68,7 +68,7 @@ class TRAPIAccessError(RuntimeError):
 @lru_cache()
 def _load_schema(schema_version: str) -> Dict:
     """
-    Load schema from GitHub version or directly from a local schema file.
+    Load schema from the GitHub version or directly from a local schema file.
     :param schema_version: either a GitHub 'v' prefixed SemVer version of a
            TRAPI schema or a file name (path) from which the TRAPI schema may be read in.
     :return: Dict, schema components
