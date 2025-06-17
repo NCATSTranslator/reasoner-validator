@@ -87,6 +87,35 @@ _TEST_QG_1 = {
     }
 }
 
+_TEST_KG_EDGE_SOURCES = [
+    {
+        "resource_id": "infores:chebi",
+        "resource_role": "primary_knowledge_source",
+        "upstream_resource_ids": []
+    },
+    {
+        "resource_id": "infores:biothings-explorer",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:chebi"
+        ]
+    },
+    {
+        "resource_id": "infores:molepro",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:biothings-explorer"
+        ]
+    },
+    {
+        "resource_id": "infores:arax",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:molepro"
+        ]
+    }
+]
+
 # Sample edge 1
 _TEST_EDGES_1 = {
        "edge_1": {
@@ -113,6 +142,7 @@ _TEST_EDGES_1 = {
                    "value_type_id": "biolink:InformationResource"
                }
             ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+            "sources": _TEST_KG_EDGE_SOURCES
         }
     }
 
@@ -121,16 +151,39 @@ _TEST_KG_1 = {
     "edges": _TEST_EDGES_1
 }
 
+_TEST_ANALYSES = [
+    {
+        "resource_id": "infores:ara0",
+        "edge_bindings": {
+            "treats": [
+                {
+                    "id": "df87ff82",
+                    "attributes": []
+                }
+            ]
+        },
+        "support_graphs": [],
+        "score": 0.7
+    }
+]
 
 _TEST_RESULTS_1 = [
     {
         "node_bindings": {
-            "type-2 diabetes": [{"id": TYPE_2_DIABETES_CURIE}],
-            "drug": [{"id": METFORMIN_CURIE}]
+            "type-2 diabetes": [
+                {
+                    "id": TYPE_2_DIABETES_CURIE,
+                    "attributes": []
+                }
+            ],
+            "drug": [
+                {
+                    "id": METFORMIN_CURIE,
+                    "attributes": []
+                }
+            ]
         },
-        "edge_bindings": {
-            "treats": [{"id": "df87ff82"}]
-        }
+        "analyses": _TEST_ANALYSES
     }
 ]
 
@@ -215,12 +268,34 @@ _TEST_KG_3 = {
 _TEST_RESULTS_2 = [
         {
             "node_bindings": {
-                "paper": [{"id": "PMID:11156626"}],
-                "author": [{"id": "ORCID:0000-0002-4447-5978"}]
+                "paper": [
+                    {
+                        "id": "PMID:11156626",
+                        "attributes": []
+                    }
+                ],
+                "author": [
+                    {
+                        "id": "ORCID:0000-0002-4447-5978",
+                        "attributes": []
+                    }
+                ]
             },
-            "edge_bindings": {
-                "citation": [{"id": "edge1"}]
-            }
+            "analyses": [
+                {
+                    "resource_id": "infores:ara0",
+                    "edge_bindings": {
+                        "citation": [
+                            {
+                                "id": "edge1",
+                                "attributes": []
+                            }
+                        ]
+                    },
+                    "support_graphs": [],
+                    "score": 0.7
+                }
+            ]
         }
     ]
 
@@ -254,35 +329,6 @@ _TEST_KG_4 = {
     "edges": _TEST_EDGES_4
 }
 
-_TEST_KG_EDGE_SOURCES = [
-    {
-        "resource_id": "infores:chebi",
-        "resource_role": "primary_knowledge_source",
-        "upstream_resource_ids": []
-    },
-    {
-        "resource_id": "infores:biothings-explorer",
-        "resource_role": "aggregator_knowledge_source",
-        "upstream_resource_ids": [
-            "infores:chebi"
-        ]
-    },
-    {
-        "resource_id": "infores:molepro",
-        "resource_role": "aggregator_knowledge_source",
-        "upstream_resource_ids": [
-            "infores:biothings-explorer"
-        ]
-    },
-    {
-        "resource_id": "infores:arax",
-        "resource_role": "aggregator_knowledge_source",
-        "upstream_resource_ids": [
-            "infores:molepro"
-        ]
-    }
-]
-
 # From Implementation Guidelines circa June 2023
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
     "schema_version": "1.5.0",
@@ -299,8 +345,16 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
         },
         "knowledge_graph": {
             "nodes": {
-                TYPE_2_DIABETES_CURIE: {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
-                METFORMIN_CURIE: {"name": "metformin", "categories": ["biolink:Drug"]}
+                TYPE_2_DIABETES_CURIE: {
+                    "name": "type-2 diabetes",
+                    "categories": ["biolink:Disease"],
+                    "attributes": []
+                },
+                METFORMIN_CURIE: {
+                    "name": "metformin",
+                    "categories": ["biolink:Drug"],
+                    "attributes": []
+                }
             },
             "edges": {
                 "df87ff82": {
@@ -332,17 +386,20 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
         "results": [
             {
                 "node_bindings": {
-                    "type-2 diabetes": [{"id": TYPE_2_DIABETES_CURIE}],
-                    "drug": [{"id": METFORMIN_CURIE}]
+                    "type-2 diabetes": [
+                        {
+                            "id": TYPE_2_DIABETES_CURIE,
+                            "attributes": []
+                        }
+                    ],
+                    "drug": [
+                        {
+                            "id": METFORMIN_CURIE,
+                            "attributes": []
+                        }
+                    ]
                 },
-                "analyses": [
-                    {
-                        "resource_id": "infores:ara0",
-                        "edge_bindings": {"treats": [{"id": "df87ff82"}]},
-                        "support_graphs": [],
-                        "score": 0.7
-                    }
-                ]
+                "analyses": _TEST_ANALYSES
             }
         ]
     }
@@ -405,13 +462,30 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
         "results": [
             {
                 "node_bindings": {
-                    "type-2 diabetes": [{"id": TYPE_2_DIABETES_CURIE}],
-                    "drug": [{"id": METFORMIN_CURIE}]
+                    "type-2 diabetes": [
+                        {
+                            "id": TYPE_2_DIABETES_CURIE,
+                            "attributes": []
+                        }
+                    ],
+                    "drug": [
+                        {
+                            "id": METFORMIN_CURIE,
+                            "attributes": []
+                        }
+                    ]
                 },
                 "analyses": [
                     {
                         "resource_id": "infores:ara0",
-                        "edge_bindings": {"treats": [{"id": "df87ff82"}]},
+                        "edge_bindings": {
+                            "treats": [
+                                {
+                                    "id": "df87ff82",
+                                    "attributes": []
+                                }
+                            ]
+                        },
                         "support_graphs": [],
                         "score": 0.7
                     }
@@ -1150,11 +1224,9 @@ def test_check_biolink_model_compliance_of_trapi_response(
             ""
         ),
         (
-            # Query 7 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
+            # Query 7 - Full fake sample Response originally derived
+            #           from the TRAPI 1.4.0 implementation guidelines
             _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE,
-            # 25 June 2023 1.4.0 trapi_version with
-            # defective auxiliary_graphs schema model
-            # now temporarily patched?
             LATEST_TRAPI_RELEASE,
             None,
             None,
@@ -1164,7 +1236,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
         (
             # Query 8 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
             _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
-            # 25 June 2023 1.4.0 trapi_version with
+            # 25 June 2023 1.4.0 trapi_version with a
             # defective auxiliary_graphs schema model
             LATEST_TRAPI_RELEASE,
             None,
@@ -1495,17 +1567,26 @@ SAMPLE_TEST_RESULTS = [
             "diabetes mellitus": [
                 {
                     "id": TYPE_2_DIABETES_CURIE,  # actually bound knowledge graph node is 'type 2 diabetes mellitus'
-                    "query_id": "MONDO:0005015"   # QNode identifier is the MONDO parent concept of 'diabetes mellitus'
+                    "query_id": "MONDO:0005015",  # QNode identifier is the MONDO parent concept of 'diabetes mellitus'
+                    "attributes": []
                 }
             ],
-            "drug": [{"id": METFORMIN_CURIE}]
+            "drug": [
+                {
+                    "id": METFORMIN_CURIE,
+                    "attributes": []
+                }
+            ]
         },
         "analyses": [
             {
                 "resource_id": "infores:ara0",
                 "edge_bindings": {
                     "treated_by": [
-                        {"id": "df879999"}
+                        {
+                            "id": "df879999",
+                            "attributes": []
+                        }
                     ]
                 },
                 "support_graphs": [],
@@ -1518,14 +1599,31 @@ SAMPLE_TEST_RESULTS = [
 SAMPLE_TEST_INCOMPLETE_RESULTS = [
     {
         "node_bindings": {
-            "diabetes mellitus": [{"id": TYPE_2_DIABETES_CURIE}],
-            "drug": [{"id": METFORMIN_CURIE}]
+            "diabetes mellitus": [
+                {
+                    "id": TYPE_2_DIABETES_CURIE,
+                    "attributes": []
+                }
+            ],
+            "drug": [
+                {
+                    "id": METFORMIN_CURIE,
+                    "attributes": []
+                }
+            ]
         },
         "analyses": [
             {
                 "resource_id": "infores:ara0",
                 # not pointing to an edge in the existing sample KG
-                "edge_bindings": {"treated_by": [{"id": "abcde999"}]},
+                "edge_bindings": {
+                    "treated_by": [
+                        {
+                            "id": "abcde999",
+                            "attributes": []
+                        }
+                    ]
+                },
                 "support_graphs": [],
                 "score": 0.7
             }
