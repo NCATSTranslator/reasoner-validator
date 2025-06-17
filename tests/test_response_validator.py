@@ -752,7 +752,8 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             ""
         ),
         (
-            # Query 12 - Full Message, with strict validation and a non-null kp_source_type that doesn't match
+            # Query 12 - Full Message, with strict validation
+            #            and a non-null kp_source_type that doesn't match
             {
                 "message": {
                     "query_graph": _TEST_QG_1,

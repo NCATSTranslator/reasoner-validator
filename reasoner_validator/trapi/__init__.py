@@ -279,7 +279,7 @@ class TRAPISchemaValidator(ValidationReporter):
     def minimum_required_trapi_version(self, version: str) -> bool:
         """
         :param version: simple 'major.minor.patch' TRAPI schema release SemVer
-        :return: True if current version is equal to, or newer than, a targeted 'minimum_version'
+        :return: True if the current version is equal to, or newer than, a targeted 'minimum_version'
         """
         try:
             current: SemVer = SemVer.from_string(self.trapi_version)
