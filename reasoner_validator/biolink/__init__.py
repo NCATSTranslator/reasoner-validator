@@ -582,7 +582,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             kp_source_type = self.target_provenance['kp_source_type'] \
                 if 'kp_source_type' in self.target_provenance and self.target_provenance['kp_source_type'] \
                 else 'aggregator'
-            kp_source_type = f"biolink:{kp_source_type}_knowledge_source"
+            kp_source_type = f"{kp_source_type}_knowledge_source"
 
         return ara_source, kp_source, kp_source_type
 
@@ -980,7 +980,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                                         and infores == ara_source:
                                                                     found_ara_knowledge_source = True
                                                                 elif kp_source and \
-                                                                        attribute_type_id == kp_source_type and \
+                                                                        attribute_type_id == f"biolink:{kp_source_type}" and \
                                                                         infores == kp_source:
                                                                     found_kp_knowledge_source = True
 
@@ -1331,7 +1331,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # anticipated Edge provenance roles (i.e. mandatory 'primary' and tests against expected provenance tags)
             # and the capture of the 'provenance audit trail' of sources, for reporting purposes
 
-            # Method caller associated Edge sources to be checked
+            # Method caller-associated Edge sources to be checked
 
             ara_source: Optional[str]
             kp_source: Optional[str]
@@ -1926,8 +1926,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             for node_id, details in nodes.items():
                 self.validate_graph_node(node_id, details, graph_type=graph_type)
 
-            # A dictionary of instances of 'node_id', associated 'categories' plus an
-            # internal counter, are needed for the subsequent edge validation processes
+            # A dictionary of the instances of 'node_id', associated 'categories' plus an
+            # internal counter, is needed for subsequent edge validation processes
             self.set_nodes(nodes)
 
             if edges:
