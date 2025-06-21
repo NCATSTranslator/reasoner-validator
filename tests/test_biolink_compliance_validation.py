@@ -1260,10 +1260,10 @@ TEST_ARA_CASE_TEMPLATE = {
     "idx": 0,
     "url": "http://test_ara_endpoint",
     "ara_api_name": "Test_ARA",
-    "ara_source": "aragorn",
+    "target_ara_source": "aragorn",
     "kp_api_name": "Test_KP_1",
-    "kp_source": "panther",
-    "kp_source_type": "primary"
+    "target_kp_source": "panther",
+    "target_kp_source_type": "primary"
 }
 
 

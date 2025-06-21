@@ -55,9 +55,9 @@ validator = TRAPIResponseValidator(
     # 'target_provenance' is set to trigger checking of
     # expected edge knowledge source provenance
     target_provenance={
-        "ara_source": "infores:molepro",
-        "kp_source": "infores:hmdb",
-        "kp_source_type": "primary"
+        "target_ara_source": "infores:molepro",
+        "target_kp_source": "infores:hmdb",
+        "target_kp_source_type": "primary"
     },
 
     # Optional flag: if omitted or set to 'False', we let the system decide the

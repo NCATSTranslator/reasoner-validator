@@ -744,16 +744,16 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": None,
-                "kp_source": "infores:hmdb",
-                "kp_source_type": "primary"
+                "target_ara_source": None,
+                "target_kp_source": "infores:hmdb",
+                "target_kp_source_type": "primary"
             },
             True,
             ""
         ),
         (
             # Query 12 - Full Message, with strict validation
-            #            and a non-null kp_source_type that doesn't match
+            #            and a non-null target_kp_source_type that doesn't match
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -764,15 +764,15 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": None,
-                "kp_source": "infores:molepro",
-                "kp_source_type": "primary"
+                "target_ara_source": None,
+                "target_kp_source": "infores:molepro",
+                "target_kp_source_type": "primary"
             },
             True,
             "warning.knowledge_graph.edge.provenance.kp.missing"
         ),
         (
-            # Query 13 - Full Message, with strict validation and a non-null ara_source that doesn't match
+            # Query 13 - Full Message, with strict validation and a non-null target_ara_source that doesn't match
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -783,9 +783,9 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": "infores:aragorn",
-                "kp_source": "infores:hmdb",
-                "kp_source_type": "primary"
+                "target_ara_source": "infores:aragorn",
+                "target_kp_source": "infores:hmdb",
+                "target_kp_source_type": "primary"
             },
             True,
             "warning.knowledge_graph.edge.provenance.ara.missing"
@@ -802,9 +802,9 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": "infores:molepro",
-                "kp_source": "infores:hmdb",
-                "kp_source_type": "primary"
+                "target_ara_source": "infores:molepro",
+                "target_kp_source": "infores:hmdb",
+                "target_kp_source_type": "primary"
             },
             True,
             ""
@@ -821,16 +821,16 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": None,
-                "kp_source": "infores:molepro",
-                "kp_source_type": "aggregator"
+                "target_ara_source": None,
+                "target_kp_source": "infores:molepro",
+                "target_kp_source_type": "aggregator"
             },
             True,
             ""
         ),
         (
             # Query 16 - Full Message, with strict validation and
-            #            a non-null kp_source_type results in missing primary
+            #            a non-null target_kp_source_type results in missing primary
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -841,16 +841,16 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": None,
-                "kp_source": "infores:molepro",
-                "kp_source_type": "aggregator"
+                "target_ara_source": None,
+                "target_kp_source": "infores:molepro",
+                "target_kp_source_type": "aggregator"
             },
             True,
             "error.knowledge_graph.edge.provenance.missing_primary"
         ),
         (
             # Query 17 - Full Message, with strict validation and
-            #            non-null kp_source_type results, has multiple "primary knowledge sources"
+            #            non-null target_kp_source_type results, has multiple "primary knowledge sources"
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -861,9 +861,9 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": None,
-                "kp_source": "infores:molepro",
-                "kp_source_type": "aggregator"
+                "target_ara_source": None,
+                "target_kp_source": "infores:molepro",
+                "target_kp_source_type": "aggregator"
             },
             True,
             "warning.knowledge_graph.edge.provenance.multiple_primary"

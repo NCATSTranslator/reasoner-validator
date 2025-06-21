@@ -565,22 +565,22 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     def get_target_provenance(self) -> Tuple[Optional[str], Optional[str], Optional[str]]:
         """
         Returns infores-prefix-normalized target provenance metadata.
-        :return: Tuple[Optional[str], Optional[str], Optional[str]] of ara_source, kp_source, kp_source_type
+        :return: Tuple[Optional[str], Optional[str], Optional[str]] of target target_ara_source, target_kp_source, target_kp_source_type
         """
         ara_source: Optional[str] = None
         kp_source: Optional[str] = None
         kp_source_type: Optional[str] = None
         if self.target_provenance:
-            if 'ara_source' in self.target_provenance and self.target_provenance['ara_source']:
-                ara_source: str = self.target_provenance['ara_source']
+            if 'target_ara_source' in self.target_provenance and self.target_provenance['target_ara_source']:
+                ara_source: str = self.target_provenance['target_ara_source']
                 if not ara_source.startswith("infores:"):
                     ara_source = f"infores:{ara_source}"
-            if 'kp_source' in self.target_provenance and self.target_provenance['kp_source']:
-                kp_source: str = self.target_provenance['kp_source']
+            if 'target_kp_source' in self.target_provenance and self.target_provenance['target_kp_source']:
+                kp_source: str = self.target_provenance['target_kp_source']
                 if not kp_source.startswith("infores:"):
                     kp_source = f"infores:{kp_source}"
-            kp_source_type = self.target_provenance['kp_source_type'] \
-                if 'kp_source_type' in self.target_provenance and self.target_provenance['kp_source_type'] \
+            kp_source_type = self.target_provenance['target_kp_source_type'] \
+                if 'target_kp_source_type' in self.target_provenance and self.target_provenance['target_kp_source_type'] \
                 else 'aggregator'
             kp_source_type = f"{kp_source_type}_knowledge_source"
 
@@ -588,10 +588,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
     def validate_provenance(
             self,
-            edge_id,
-            ara_source, found_ara_knowledge_source,
-            kp_source, found_kp_knowledge_source, kp_source_type,
-            found_primary_knowledge_source,
+            edge_id: str,
+            target_ara_source: str, found_target_ara_knowledge_source: str,
+            target_kp_source: str, target_found_kp_knowledge_source: str, target_kp_source_type: str,
+            found_primary_knowledge_source: List[str],
             source_trail: Optional[str]
     ):
         """
@@ -599,31 +599,31 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         (recorded in edge "attributes" pre-1.4.0; in "sources", post-1.4.0).
 
         :param edge_id: str, string identifier for the edge (for reporting purposes)
-        :param ara_source: str, user specified target ARA infores
-        :param found_ara_knowledge_source: bool, True if target ARA infores knowledge source was found
-        :param kp_source: str, user specified target KP infores
-        :param found_kp_knowledge_source:  bool, True if target KP infores knowledge source was found
-        :param kp_source_type:  str, user specified KP knowledge source type (i.e. primary, aggregate, etc.)
-        :param source_trail: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
+        :param target_ara_source: str, user specified target ARA infores
+        :param found_target_ara_knowledge_source: bool, True if target ARA infores knowledge source was found
+        :param target_kp_source: str, user-specified target KP infores
+        :param target_found_kp_knowledge_source:  bool, True if target KP infores knowledge source was found
+        :param target_kp_source_type:  str, user-specified target KP knowledge source type (i.e. primary, aggregate, etc.)
         :param found_primary_knowledge_source: List[str], list of all infores discovered tagged as 'primary'
+        :param source_trail: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
         :return:
         """
-        if ara_source and not found_ara_knowledge_source:
+        if target_ara_source and not found_target_ara_knowledge_source:
             # did not find the target ARA knowledge source (if applicable)
             self.report(
-                code="warning.knowledge_graph.edge.provenance.ara.missing",
+                code="warning.knowledge_graph.edge.provenance.target.ara.missing",
                 source_trail=source_trail,
-                identifier=ara_source,
+                identifier=target_ara_source,
                 edge_id=edge_id
             )
 
-        if kp_source and not found_kp_knowledge_source:
+        if target_kp_source and not target_found_kp_knowledge_source:
             # did not find the target KP knowledge source (if applicable)
             self.report(
-                code="warning.knowledge_graph.edge.provenance.kp.missing",
+                code="warning.knowledge_graph.edge.provenance.target.kp.missing",
                 source_trail=source_trail,
-                identifier=kp_source,
-                kp_source_type=kp_source_type,
+                identifier=target_kp_source,
+                kp_source_type=target_kp_source_type,
                 edge_id=edge_id
             )
 
@@ -1333,14 +1333,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
             # Method caller-associated Edge sources to be checked
 
-            ara_source: Optional[str]
-            kp_source: Optional[str]
-            kp_source_type: Optional[str]
-            ara_source, kp_source, kp_source_type = self.get_target_provenance()
+            target_ara_source: Optional[str]
+            target_kp_source: Optional[str]
+            target_kp_source_type: Optional[str]
+            target_ara_source, target_kp_source, target_kp_source_type = self.get_target_provenance()
 
             # Expecting ARA and KP 'aggregator_knowledge_source' attributes?
-            found_ara_knowledge_source = False
-            found_kp_knowledge_source = False
+            found_target_ara_knowledge_source = False
+            found_target_kp_knowledge_source = False
 
             # also track primary_knowledge_source attribute cardinality now
             found_primary_knowledge_source: List[str] = list()
@@ -1383,11 +1383,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     if resource_id not in sources:
                         sources[resource_id] = list()
 
-                    if resource_id == ara_source:
-                        found_ara_knowledge_source = True
+                    if target_ara_source is not None and resource_id == target_ara_source:
+                        found_target_ara_knowledge_source = True
 
-                    if resource_id == kp_source and resource_role == kp_source_type:
-                        found_kp_knowledge_source = True
+                    if target_kp_source is not None and resource_id == target_kp_source and resource_role == target_kp_source_type:
+                        found_target_kp_knowledge_source = True
 
                     # ... even if the resource_id fails aspects of validation, we'll keep going...
 
@@ -1416,13 +1416,13 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                     continue
 
                                 else:
-                                    if identifier == ara_source:
-                                        found_ara_knowledge_source = True
+                                    if identifier == target_ara_source:
+                                        found_target_ara_knowledge_source = True
 
-                                    # we don't worry about kp_source_type here since it is
+                                    # we don't worry about "target_kp_source_type" here since it is
                                     # not directly annotated with the upstream_resource_ids
-                                    if identifier == kp_source:
-                                        found_kp_knowledge_source = True
+                                    if identifier == target_kp_source:
+                                        found_target_kp_knowledge_source = True
 
                                     # Capture the upstream 'upstream_resource_id' source here
                                     sources[resource_id].append(identifier)
@@ -1439,8 +1439,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
             self.validate_provenance(
                 edge_id,
-                ara_source, found_ara_knowledge_source,
-                kp_source, found_kp_knowledge_source, kp_source_type,
+                target_ara_source, found_target_ara_knowledge_source,
+                target_kp_source, found_target_kp_knowledge_source, target_kp_source_type,
                 found_primary_knowledge_source,
                 source_trail=source_trail
             )
