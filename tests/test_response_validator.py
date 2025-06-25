@@ -769,7 +769,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                 "target_kp_source_type": "primary"
             },
             True,
-            "warning.knowledge_graph.edge.provenance.kp.missing"
+            "warning.knowledge_graph.edge.provenance.target.kp.missing"
         ),
         (
             # Query 13 - Full Message, with strict validation and a non-null target_ara_source that doesn't match
@@ -788,7 +788,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                 "target_kp_source_type": "primary"
             },
             True,
-            "warning.knowledge_graph.edge.provenance.ara.missing"
+            "warning.knowledge_graph.edge.provenance.target.ara.missing"
         ),
         (
             # Query 14 - Full Message, with "strict validation" and a non-null "sources" data that matches
@@ -1116,6 +1116,43 @@ def test_check_biolink_model_compliance_of_trapi_response(
     )
     validator.check_compliance_of_trapi_response(response=response)
     check_messages(validator, code, no_errors=True)
+
+
+
+def test_compliance_in_isolation(
+        # response: Dict,
+        # trapi_version: str,
+        # biolink_version: str,
+        # target_provenance: Dict,
+        # strict_validation: bool,
+        # code
+):
+    # Query 12 - Full Message, with strict validation
+    #            and a non-null target_kp_source_type that doesn't match
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(
+        trapi_version=LATEST_TRAPI_RELEASE,
+        biolink_version=None,
+        strict_validation=True,
+        target_provenance={
+            "target_ara_source": None,
+            "target_kp_source": "infores:molepro",
+            "target_kp_source_type": "primary"
+        }
+    )
+    validator.check_compliance_of_trapi_response(
+        response={
+            "message": {
+                "query_graph": _TEST_QG_1,
+                "knowledge_graph": _TEST_KG_1,
+                "results": _TEST_RESULTS_1
+            }
+        }
+    )
+    check_messages(
+        validator,
+        "warning.knowledge_graph.edge.provenance.target.kp.missing",
+        no_errors=True
+    )
 
 
 @pytest.mark.parametrize(

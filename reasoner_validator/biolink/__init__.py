@@ -589,8 +589,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     def validate_provenance(
             self,
             edge_id: str,
-            target_ara_source: str, found_target_ara_knowledge_source: str,
-            target_kp_source: str, target_found_kp_knowledge_source: str, target_kp_source_type: str,
+            target_ara_source: str, found_target_ara_knowledge_source: bool,
+            target_kp_source: str, target_found_kp_knowledge_source: bool, target_kp_source_type: str,
             found_primary_knowledge_source: List[str],
             source_trail: Optional[str]
     ):
@@ -600,15 +600,15 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param target_ara_source: str, user specified target ARA infores
-        :param found_target_ara_knowledge_source: bool, True if target ARA infores knowledge source was found
+        :param found_target_ara_knowledge_source: bool, True if the target ARA infores knowledge source was found
         :param target_kp_source: str, user-specified target KP infores
-        :param target_found_kp_knowledge_source:  bool, True if target KP infores knowledge source was found
+        :param target_found_kp_knowledge_source:  bool, True if the target KP infores knowledge source was found
         :param target_kp_source_type:  str, user-specified target KP knowledge source type (i.e. primary, aggregate, etc.)
         :param found_primary_knowledge_source: List[str], list of all infores discovered tagged as 'primary'
         :param source_trail: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
         :return:
         """
-        if target_ara_source and not found_target_ara_knowledge_source:
+        if not found_target_ara_knowledge_source:
             # did not find the target ARA knowledge source (if applicable)
             self.report(
                 code="warning.knowledge_graph.edge.provenance.target.ara.missing",
@@ -617,7 +617,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 edge_id=edge_id
             )
 
-        if target_kp_source and not target_found_kp_knowledge_source:
+        if not target_found_kp_knowledge_source:
             # did not find the target KP knowledge source (if applicable)
             self.report(
                 code="warning.knowledge_graph.edge.provenance.target.kp.missing",
@@ -754,32 +754,13 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             source_trail: Optional[str] = None
     ) -> Optional[str]:
         """
-        Validate Knowledge Edge Attributes. For TRAPI 1.3.0, may also return an ordered audit trail of Edge provenance
-        infores-specified knowledge sources, as parsed in from the list of attributes (returns 'None' otherwise).
-
+        Validate Knowledge Edge Attributes.
         :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
         :param edge_id: str, string identifier for the edge (for reporting purposes)
-        :param edge: Dict, the edge object associated with some attributes are expected to be found
+        :param edge: Dict, the edge object is associated with some attributes are expected to be found
         :param source_trail: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
         :return: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
         """
-        # in TRAPI 1.4.0, the source_trail is parsed in from the Edge.sources annotation, hence
-        # the source_trail is already known and given to this method for reporting purposes here
-
-        # Otherwise, in TRAPI 1.3.0, the 'sources' may be compiled here, in this method, from the attributes
-        # themselves, then a newly generated 'source_trail', returned for use by the rest of the application
-        # sources: Dict[str, List[str]] = dict()
-
-        # we only report errors about missing or empty edge attributes if TRAPI 1.3.0 or earlier,
-        # and Biolink Validation is not suppressed, since we can't fully validate provenance and
-        # since earlier TRAPI releases are minimally expected to record provenance attributes
-        # we only report this for TRAPI < 1.4 when Biolink Validation is done given that
-        # without Biolink validation, provenance cannot be reliably assessed
-
-        # We can already use 'source_trail' here in the report in case it was
-        # already pre-computed by the validate_sources parsing of TRAPI 1.4.0;
-        # if TRAPI 1.3.0 is the validation standard, the 'source_trail' would
-        # be undefined here, since we can't figure it out without attributes!
         if 'attributes' not in edge:
             if self.validate_biolink() and not self.minimum_required_trapi_version("1.4.0-beta"):
                 # Note: Only an error for earlier TRAPI versions
@@ -1324,11 +1305,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # at least one (hopefully properly formatted RetrievalSource) entry
             edge_sources = edge["sources"]
 
-            # The RetrievalSource items in the "sources" array is also partially validated insofar as JSONSchema can
+            # The RetrievalSource entries in the "sources" array are also partially validated insofar as JSONSchema can
             # validate based on the TRAPI schema; however, some kinds of validation are either not deterministic from
             # the schema. The remainder of this method validates an initial basic 'semantic' subset of RetrievalSource
             # content for which the validation is both easy and deemed generally useful. This includes detection of
-            # anticipated Edge provenance roles (i.e. mandatory 'primary' and tests against expected provenance tags)
+            # anticipated Edge provenance roles (namely, mandatory 'primary' and tests against expected provenance tags)
             # and the capture of the 'provenance audit trail' of sources, for reporting purposes
 
             # Method caller-associated Edge sources to be checked
@@ -1338,9 +1319,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             target_kp_source_type: Optional[str]
             target_ara_source, target_kp_source, target_kp_source_type = self.get_target_provenance()
 
-            # Expecting ARA and KP 'aggregator_knowledge_source' attributes?
-            found_target_ara_knowledge_source = False
-            found_target_kp_knowledge_source = False
+            # Seeding the search for target knowledge sources (iff expected)
+            found_target_ara_knowledge_source = True if target_ara_source is None else False
+            found_target_kp_knowledge_source = True if target_kp_source is None else False
 
             # also track primary_knowledge_source attribute cardinality now
             found_primary_knowledge_source: List[str] = list()
@@ -1348,7 +1329,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             for retrieval_source in edge_sources:
 
                 # TRAPI schema validation will generally validate the requisite
-                # 'RetrievalSource' entries (i.e. mandatory object keys and valid key value
+                # 'RetrievalSource' entries (namely, mandatory object keys and valid key value
                 # data types), but here, we go the last (semantic) mile, for the model:
 
                 # 1. 'resource_id': should be a well-formed CURIE which is an Infores that may
@@ -1383,10 +1364,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     if resource_id not in sources:
                         sources[resource_id] = list()
 
-                    if target_ara_source is not None and resource_id == target_ara_source:
+                    if resource_id == target_ara_source:
                         found_target_ara_knowledge_source = True
 
-                    if target_kp_source is not None and resource_id == target_kp_source and resource_role == target_kp_source_type:
+                    if resource_id == target_kp_source and resource_role == target_kp_source_type:
                         found_target_kp_knowledge_source = True
 
                     # ... even if the resource_id fails aspects of validation, we'll keep going...
@@ -1404,28 +1385,19 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         upstream_resource_ids: Optional[List[str]] = retrieval_source["upstream_resource_ids"]
                         # Note: the TRAPI schema doesn't currently tag this field as nullable, so we check
                         if upstream_resource_ids:
-                            for identifier in upstream_resource_ids:
+                            for upstream_resource_id in upstream_resource_ids:
 
                                 if not self.validate_infores(
                                     context="upstream_resource_ids",
                                     edge_id=edge_id,
-                                    identifier=identifier
+                                    identifier=upstream_resource_id
                                 ):
                                     # if not validated, we should probably not
-                                    # continue using the 'identifier' from here
+                                    # continue using the 'upstream_resource_id' from here
                                     continue
 
                                 else:
-                                    if identifier == target_ara_source:
-                                        found_target_ara_knowledge_source = True
-
-                                    # we don't worry about "target_kp_source_type" here since it is
-                                    # not directly annotated with the upstream_resource_ids
-                                    if identifier == target_kp_source:
-                                        found_target_kp_knowledge_source = True
-
-                                    # Capture the upstream 'upstream_resource_id' source here
-                                    sources[resource_id].append(identifier)
+                                    sources[resource_id].append(upstream_resource_id)
 
                     # 4. If provided (Optional), we *could* check the optional 'source_record_urls'
                     #    if they are all resolvable URLs (but maybe we do not attempt this for now...)

@@ -279,7 +279,7 @@ class TRAPIResponseValidator(BiolinkValidator):
 
                 if self.validate_biolink():
                     # Conduct validation of Biolink Model compliance
-                    # of the Query Graph, if not suppressed...
+                    # for the Query Graph, if not suppressed...
                     self.check_biolink_model_compliance(query_graph, graph_type=TRAPIGraphType.Query_Graph)
 
         # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
