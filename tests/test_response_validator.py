@@ -116,35 +116,77 @@ _TEST_KG_EDGE_SOURCES = [
     }
 ]
 
-# Sample edge 1
-_TEST_EDGES_1 = {
+_TEST_KG_EDGE_SOURCES_MISSING_PRIMARY = [
+    # {
+    #     "resource_id": "infores:chebi",
+    #     "resource_role": "primary_knowledge_source",
+    #     "upstream_resource_ids": []
+    # },
+    {
+        "resource_id": "infores:biothings-explorer",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": []
+    },
+    {
+        "resource_id": "infores:molepro",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:biothings-explorer"
+        ]
+    },
+    {
+        "resource_id": "infores:arax",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:molepro"
+        ]
+    }
+]
+
+_TEST_KG_EDGE_SOURCES_MULTIPLE_PRIMARY = [
+    {
+        "resource_id": "infores:chebi",
+        "resource_role": "primary_knowledge_source",
+        "upstream_resource_ids": []
+    },
+    {
+        "resource_id": "infores:drugbank",
+        "resource_role": "primary_knowledge_source",
+        "upstream_resource_ids": []
+    },
+    {
+        "resource_id": "infores:biothings-explorer",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": ["infores:chebi", "infores:drugbank"]
+    },
+    {
+        "resource_id": "infores:molepro",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:biothings-explorer"
+        ]
+    },
+    {
+        "resource_id": "infores:arax",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:molepro"
+        ]
+    }
+]
+
+_SHARED_TEST_EDGES = {
        "edge_1": {
            "subject": "NCBIGene:29974",
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
-           "attributes": [
-               {
-                   "attribute_source": "infores:hmdb",
-                   "attribute_type_id": "biolink:primary_knowledge_source",
-                   "attributes": [],
-                   "description": "MolePro's HMDB target transformer",
-                   "original_attribute_name": "biolink:primary_knowledge_source",
-                   "value": "infores:hmdb",
-                   "value_type_id": "biolink:InformationResource"
-               },
-               {
-                   "attribute_source": "infores:molepro",
-                   "attribute_type_id": "biolink:aggregator_knowledge_source",
-                   "attributes": [],
-                   "description": "Molecular Data Provider",
-                   "original_attribute_name": "biolink:aggregator_knowledge_source",
-                   "value": "infores:molepro",
-                   "value_type_id": "biolink:InformationResource"
-               }
-            ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
-            "sources": _TEST_KG_EDGE_SOURCES
+           "attributes": DEFAULT_KL_AND_AT_ATTRIBUTES,
+
         }
     }
+
+_TEST_EDGES_1 = deepcopy(_SHARED_TEST_EDGES)
+_TEST_EDGES_1["edge_1"]["sources"] = _TEST_KG_EDGE_SOURCES
 
 _TEST_KG_1 = {
     "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
@@ -251,12 +293,7 @@ _TEST_EDGES_3 = {
            "subject": "PMID:11156626",
            "predicate": "biolink:contributor",
            "object": "ORCID:0000-0002-4447-5978",
-           "attributes": [
-               {
-                   "attribute_type_id": "biolink:primary_knowledge_source",
-                   "value": "infores:automat-text-mining-provider"
-               }
-           ],
+           "attributes": [],
         }
     }
 
@@ -300,33 +337,19 @@ _TEST_RESULTS_2 = [
     ]
 
 
-# Sample edge 2
-_TEST_EDGES_4 = {
+_TEST_EDGES_MULTIPLE_PRIMARY_KS = {
        "edge_1": {
            "subject": "NCBIGene:29974",
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
-           "attributes": [
-               {
-                   "attribute_type_id": "biolink:aggregator_knowledge_source",
-                   "value": "infores:molepro"
-               },
-               {
-                   "attribute_type_id": "biolink:primary_knowledge_source",
-                   "value": "infores:automat-text-mining-provider"
-               },
-               {
-                   "attribute_type_id": "biolink:primary_knowledge_source",
-                   "value": "infores:hmdb"
-               }
-           ],
+           "attributes": [],
         }
     }
 
 
-_TEST_KG_4 = {
+_TEST_KG_MULTIPLE_PRIMARY_KS = {
     "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
-    "edges": _TEST_EDGES_4
+    "edges": _TEST_EDGES_MULTIPLE_PRIMARY_KS
 }
 
 # From Implementation Guidelines circa June 2023
@@ -403,6 +426,22 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
             }
         ]
     }
+}
+
+_TEST_EDGES_MISSING_PRIMARY_SOURCE = deepcopy(_SHARED_TEST_EDGES)
+_TEST_EDGES_MISSING_PRIMARY_SOURCE["edge_1"]["sources"] = _TEST_KG_EDGE_SOURCES_MISSING_PRIMARY
+
+_TEST_KG_MISSING_PRIMARY_SOURCE = {
+    "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
+    "edges": _TEST_EDGES_MISSING_PRIMARY_SOURCE
+}
+
+_TEST_EDGES_MULTIPLE_PRIMARY_SOURCE = deepcopy(_SHARED_TEST_EDGES)
+_TEST_EDGES_MULTIPLE_PRIMARY_SOURCE["edge_1"]["sources"] = _TEST_KG_EDGE_SOURCES_MULTIPLE_PRIMARY
+
+_TEST_KG_MULTIPLE_PRIMARY_SOURCE = {
+    "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
+    "edges": _TEST_EDGES_MULTIPLE_PRIMARY_SOURCE
 }
 
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
@@ -829,8 +868,8 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             ""
         ),
         (
-            # Query 16 - Full Message, with strict validation and
-            #            a non-null target_kp_source_type results in missing primary
+            # Query 16 - Full Message, with strict validation and a non-null target_kp_source_id/_type,
+            #             which triggers a missing primary provenance validation
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -849,12 +888,12 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             "error.knowledge_graph.edge.provenance.missing_primary"
         ),
         (
-            # Query 17 - Full Message, with strict validation and
-            #            non-null target_kp_source_type results, has multiple "primary knowledge sources"
+            # Query 17 - Full Message, with strict validation and a non-null target_kp_source_id/_type,
+            #             which triggers a multiple "primary knowledge sources" validation error
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
-                    "knowledge_graph": _TEST_KG_4,
+                    "knowledge_graph": _TEST_KG_MULTIPLE_PRIMARY_KS,
                     "results": _TEST_RESULTS_1
                 }
             },
@@ -1127,8 +1166,8 @@ def test_compliance_in_isolation(
         # strict_validation: bool,
         # code
 ):
-    # Query 12 - Full Message, with strict validation
-    #            and a non-null target_kp_source_type that doesn't match
+    # Query 17 - Full Message, with strict validation and a non-null target_kp_source_id/_type,
+    #             which triggers a multiple "primary knowledge sources" validation error
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
         trapi_version=LATEST_TRAPI_RELEASE,
         biolink_version=None,
@@ -1136,21 +1175,21 @@ def test_compliance_in_isolation(
         target_provenance={
             "target_ara_source": None,
             "target_kp_source": "infores:molepro",
-            "target_kp_source_type": "primary"
+            "target_kp_source_type": "aggregator"
         }
     )
     validator.check_compliance_of_trapi_response(
         response={
             "message": {
                 "query_graph": _TEST_QG_1,
-                "knowledge_graph": _TEST_KG_1,
+                "knowledge_graph": _TEST_KG_MULTIPLE_PRIMARY_SOURCE,
                 "results": _TEST_RESULTS_1
             }
         }
     )
     check_messages(
         validator,
-        "warning.knowledge_graph.edge.provenance.target.kp.missing",
+        "error.knowledge_graph.edge.provenance.multiple_primary",
         no_errors=True
     )
 

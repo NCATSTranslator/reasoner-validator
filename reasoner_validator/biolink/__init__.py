@@ -634,14 +634,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 source_trail=source_trail,
                 identifier=edge_id
             )
-        elif len(found_primary_knowledge_source) > 1:
-            # ... but only one!
-            self.report(
-                code="warning.knowledge_graph.edge.provenance.multiple_primary",
-                source_trail=source_trail,
-                identifier=edge_id,
-                sources=",".join(found_primary_knowledge_source)
-            )
 
     def validate_slot_value(
             self,
@@ -1405,19 +1397,20 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     # if "source_record_urls" in retrieval_source:
                     #     source_record_urls: Optional[List[str]] = retrieval_source["source_record_urls"]
 
-            # After all "sources" RetrievalSource entries have been scanned,
-            # then perform a complete validation check for complete expected provenance.
-            source_trail: Optional[str] = self.build_source_trail(sources) if sources else None
+        # After "sources" RetrievalSource entries have been scanned,
+        # we attempt to build a source trail then also
+        # perform a complete validation check for expected provenance.
+        source_trail: Optional[str] = self.build_source_trail(edge_id=edge_id, sources=sources) if sources else None
 
-            self.validate_provenance(
-                edge_id,
-                target_ara_source, found_target_ara_knowledge_source,
-                target_kp_source, found_target_kp_knowledge_source, target_kp_source_type,
-                found_primary_knowledge_source,
-                source_trail=source_trail
-            )
+        self.validate_provenance(
+            edge_id,
+            target_ara_source, found_target_ara_knowledge_source,
+            target_kp_source, found_target_kp_knowledge_source, target_kp_source_type,
+            found_primary_knowledge_source,
+            source_trail=source_trail
+        )
 
-            return source_trail  # maybe empty if required RetrievalSource 'sources' entries are missing
+        return source_trail  # maybe empty if required RetrievalSource 'sources' entries are missing
 
     # TODO: 11-Sept-2023: Certain specific 'mixin' predicates used in
     #       Knowledge or Query Graphs are being validated for now
@@ -1484,16 +1477,22 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         edge_id=edge_id
                     )
 
-    @staticmethod
-    def build_source_trail(sources: Optional[Dict[str, List[str]]]) -> Optional[str]:
+    def build_source_trail(self, edge_id: str, sources: Optional[Dict[str, List[str]]]) -> Optional[str]:
         """
         Returns a 'source_trail' path from 'primary_knowledge_source' upwards. The "sources" should
         have at least one and only one primary knowledge source (with an empty 'upstream_resource_ids' list).
+        There are several "fringe" cases that may arise which will give directed acyclic graphs instead of linear
+        source trails, the most typical being multiple primary knowledge sources (which generates a report warning).
+        Alas, the current implementation probably can't yet handle all fringe cases gracefully.
 
+        :param edge_id: internal identifier for edge, only used for reporting purposes
         :param sources: Optional[Dict[str, List[str]]], catalog of upstream knowledge sources indexed by resource_id's
         :return: Optional[str] source ("audit") trail ('path') from primary to topmost wrapper knowledge source infores
         """
         if sources:
+            # TODO: what about 'supporting_data_sources' to which
+            #       primary_knowledge_source sources may point
+            #       with their upstream_resources_ids?
             # Example "sources"...:
             # {
             #     "infores:chebi": [],
@@ -1502,44 +1501,75 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             #     "infores:arax": ["infores:molepro"]
             # }
             #
-            source_paths: Dict = {
-                upstream_resource_ids[0] if upstream_resource_ids else "primary": downstream_id
-                for downstream_id, upstream_resource_ids in sources.items()
-            }
 
-            # ...reversed and flattened into "source_paths"...:
+            # ...reverse and flatten "source_paths"...
+            source_paths: Dict = {}
+            for downstream_id, upstream_resource_ids in sources.items():
+                if upstream_resource_ids:
+                    current_id = upstream_resource_ids[0]
+                else:
+                    current_id = "primary"
+
+                if current_id not in source_paths:
+                    # Normal situation of a single mapping
+                    # We'll treat all source path dictionary values as lists
+                    # for uniformity in downstream processing, although
+                    # in most cases, these will be lists of single elements
+                    source_paths[current_id] = list()
+                else:
+                    if current_id == "primary":
+                        # Multiple primary sources is actually a data issue to be reported
+                        self.report(
+                            code="warning.knowledge_graph.edge.provenance.multiple_primary",
+                            identifier=edge_id,
+                            sources="|".join(source_paths["primary"])+"|"+downstream_id
+                        )
+
+                source_paths[current_id].append(downstream_id)
+
+            # ...reversed and flatten into "source_paths"... in some instances,
+            #    the dictionary values will end up being lists(?)
             # {
-            #     "infores:biothings-explorer": "infores:molepro",
-            #     "infores:chebi": "infores:biothings-explorer",
-            #     "infores:molepro": "infores:arax",
-            #     "primary": "infores:chebi"
+            #     # we could sometimes see multiple primary knowledge sources
+            #     "primary": ["infores:chebi"],
+            #     "infores:biothings-explorer": ["infores:molepro"],
+            #     "infores:chebi": "[infores:biothings-explorer"],
+            #     "infores:molepro": ["infores:arax"]
             # }
-            current_resource = source_paths["primary"] if "primary" in source_paths else None
-            # current_resource == "infores:chebi"  # could be 'None' if no primary resources available?
-            source_trail: Optional[str] = None
-            if current_resource is not None:
-                source_trail = current_resource
-                while True:
-                    if current_resource in source_paths:
-                        current_resource = source_paths[current_resource]
-                        source_trail += f" -> {current_resource}"
-                    else:
-                        break  # this should 'break' at "infores:arax"
+            if "primary" in source_paths:
+                current_resources = source_paths["primary"]
             else:
-                # Missing the primary resource? With a bit more effort
-                # Infer the path from the other direction?
+                current_resources = None
+
+            def build_path(resources: List[str]) -> str:
+                for resource in resources:
+                    if resource in source_paths:
+                        return f"{resource} -> {build_path(source_paths[resource])}"
+                    else:
+                        return ""
+
+            source_trail: Optional[str] = None
+
+            # Iterate over the List of current resources (usually just one entry)
+            # i.e., current_resources == ["infores:chebi"]
+            # Could be 'None' if no primary resources available?
+            if current_resources is not None:
+                source_trail = build_path(source_paths[current_resources])
+            else:
+                # Missing a primary resource? With a bit more effort
+                # we try to infer the path from the other direction?
                 reverse_source_path: Dict = dict()
                 for upstream_id, downstream_id in source_paths.items():
                     if downstream_id not in source_paths:
                         source_trail = f"{upstream_id} -> {downstream_id}"
-                        current_resource = upstream_id
+                        current_resources = upstream_id
                     else:
                         reverse_source_path[downstream_id] = upstream_id
 
                 while True:
-                    if current_resource in reverse_source_path:
-                        current_resource = reverse_source_path[current_resource]
-                        source_trail = f"{current_resource} -> " + source_trail
+                    if current_resources in reverse_source_path:
+                        current_resources = reverse_source_path[current_resources]
+                        source_trail = f"{current_resources} -> " + source_trail
                     else:
                         break
 
@@ -1585,6 +1615,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         context: str = graph_type.name.lower()
 
+        # TODO: review this older provenance tracking policy (and reasoner-validator code implications)
         # 7 July 2023: since edge provenance annotation is somewhat
         # orthogonal to the contents of the edge itself, we move the
         # attribute validation ahead of Edge semantic validation,

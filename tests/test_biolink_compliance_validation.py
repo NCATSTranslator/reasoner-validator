@@ -3861,17 +3861,17 @@ def test_build_source_trail():
         "infores:molepro": ["infores:biothings-explorer"],
         "infores:arax": ["infores:molepro"]
     }
-    assert BiolinkValidator.build_source_trail(sources) == \
+    assert BiolinkValidator().build_source_trail(edge_id="test_build_source_trail_test_1", sources=sources) == \
            "infores:chebi -> infores:biothings-explorer -> infores:molepro -> infores:arax"
 
-    # even though a primary_knowledge_source appears to be missing
+    # even though a primary_knowledge_source seems missing,
     # we are able to infer a path on a putative primary source
     sources: Optional[Dict[str, List[str]]] = {
         "infores:biothings-explorer": ["infores:chebi"],
         "infores:molepro": ["infores:biothings-explorer"],
         "infores:arax": ["infores:molepro"]
     }
-    assert BiolinkValidator.build_source_trail(sources) == \
+    assert BiolinkValidator().build_source_trail(edge_id="test_build_source_trail_test_2", sources=sources) == \
            "infores:chebi -> infores:biothings-explorer -> infores:molepro -> infores:arax"
 
 
