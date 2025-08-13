@@ -229,29 +229,19 @@ _TEST_RESULTS_1 = [
     }
 ]
 
-# Sample edge 2
-_TEST_EDGES_2 = {
+# Sample edge missing primary
+_TEST_EDGES_SOURCES_MISSING_PRIMARY = {
        "edge_1": {
            "subject": "NCBIGene:29974",
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
-           "attributes": [
-               {
-                   "attribute_source": "infores:hmdb",
-                   "attribute_type_id": "biolink:aggregator_knowledge_source",
-                   "attributes": [],
-                   "description": "Molecular Data Provider",
-                   "original_attribute_name": "biolink:aggregator_knowledge_source",
-                   "value": "infores:molepro",
-                   "value_type_id": "biolink:InformationResource"
-               }
-           ],
+           "sources": _TEST_KG_EDGE_SOURCES_MISSING_PRIMARY
         }
     }
 
-_TEST_KG_2 = {
+_TEST_KG_WITH_EDGE_SOURCES_MISSING_PRIMARY = {
     "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
-    "edges": _TEST_EDGES_2
+    "edges": _TEST_EDGES_SOURCES_MISSING_PRIMARY
 }
 
 _TEST_QG_2 = {
@@ -873,7 +863,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
-                    "knowledge_graph": _TEST_KG_2,
+                    "knowledge_graph": _TEST_KG_WITH_EDGE_SOURCES_MISSING_PRIMARY,
                     "results": _TEST_RESULTS_1
                 }
             },
@@ -893,7 +883,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
-                    "knowledge_graph": _TEST_KG_MULTIPLE_PRIMARY_KS,
+                    "knowledge_graph": _TEST_KG_MULTIPLE_PRIMARY_SOURCE,
                     "results": _TEST_RESULTS_1
                 }
             },
@@ -1189,7 +1179,7 @@ def test_compliance_in_isolation(
     )
     check_messages(
         validator,
-        "error.knowledge_graph.edge.provenance.multiple_primary",
+        "warning.knowledge_graph.edge.provenance.multiple_primary",
         no_errors=True
     )
 

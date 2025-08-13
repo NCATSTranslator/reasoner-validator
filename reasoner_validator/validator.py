@@ -93,7 +93,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         """
         One stop validation of all components of a TRAPI-schema compliant
         Query.Response, including its Message against a designated Biolink Model release.
-        The high level structure of a Query.Response is described in
+        The high-level structure of a Query.Response is described in
         https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response-.
 
         The TRAPI Query.Response.Message is a Python Dictionary with three entries:

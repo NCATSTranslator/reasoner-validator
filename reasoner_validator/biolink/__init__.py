@@ -591,8 +591,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             edge_id: str,
             target_ara_source: str, found_target_ara_knowledge_source: bool,
             target_kp_source: str, target_found_kp_knowledge_source: bool, target_kp_source_type: str,
-            found_primary_knowledge_source: List[str],
-            source_trail: Optional[str]
+            found_primary_knowledge_source: List[str]
     ):
         """
         Validates ARA and KP infores knowledge sources based on surveyed Edge slots
@@ -605,14 +604,12 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param target_found_kp_knowledge_source:  bool, True if the target KP infores knowledge source was found
         :param target_kp_source_type:  str, user-specified target KP knowledge source type (i.e. primary, aggregate, etc.)
         :param found_primary_knowledge_source: List[str], list of all infores discovered tagged as 'primary'
-        :param source_trail: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
         :return:
         """
         if not found_target_ara_knowledge_source:
             # did not find the target ARA knowledge source (if applicable)
             self.report(
                 code="warning.knowledge_graph.edge.provenance.target.ara.missing",
-                source_trail=source_trail,
                 identifier=target_ara_source,
                 edge_id=edge_id
             )
@@ -621,7 +618,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # did not find the target KP knowledge source (if applicable)
             self.report(
                 code="warning.knowledge_graph.edge.provenance.target.kp.missing",
-                source_trail=source_trail,
                 identifier=target_kp_source,
                 kp_source_type=target_kp_source_type,
                 edge_id=edge_id
@@ -631,8 +627,13 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # Found a primary tagged source...
             self.report(
                 code="error.knowledge_graph.edge.provenance.missing_primary",
-                source_trail=source_trail,
                 identifier=edge_id
+            )
+        elif len(found_primary_knowledge_source) > 1:
+            self.report(
+                code="warning.knowledge_graph.edge.provenance.multiple_primary",
+                identifier=edge_id,
+                sources=','.join(found_primary_knowledge_source)
             )
 
     def validate_slot_value(
@@ -742,16 +743,13 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             self,
             graph_type: TRAPIGraphType,
             edge_id: str,
-            edge: Dict,
-            source_trail: Optional[str] = None
-    ) -> Optional[str]:
+            edge: Dict
+    ):
         """
         Validate Knowledge Edge Attributes.
         :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
         :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param edge: Dict, the edge object is associated with some attributes are expected to be found
-        :param source_trail: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
-        :return: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
         """
         if 'attributes' not in edge:
             if self.validate_biolink() and not self.minimum_required_trapi_version("1.4.0-beta"):
@@ -759,8 +757,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 # since attributes are 'nullable: True' for TRAPI 1.4.0
                 self.report(
                     code="error.knowledge_graph.edge.attribute.missing",
-                    identifier=edge_id,
-                    source_trail=source_trail
+                    identifier=edge_id
                 )
         elif not edge['attributes']:
             if self.validate_biolink() and not self.minimum_required_trapi_version("1.4.0-beta"):
@@ -768,21 +765,15 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 # since attributes are 'nullable: True' for TRAPI 1.4.0
                 self.report(
                     code="error.knowledge_graph.edge.attribute.empty",
-                    identifier=edge_id,
-                    source_trail=source_trail
+                    identifier=edge_id
                 )
         elif not isinstance(edge['attributes'], List):
             self.report(
                 code="error.knowledge_graph.edge.attribute.not_array",
-                identifier=edge_id,
-                source_trail=source_trail
+                identifier=edge_id
             )
         else:
             attributes = edge['attributes']
-
-            # EDeutsch feedback: maybe we don't need to capture TRAPI 1.3.0 attribute-defined 'sources'
-            # raise NotImplementedError("Implement capture of 'sources' from TRAPI 1.3.0 attributes!")
-            # source_trail = self.build_source_trail(sources) if sources else None
 
             ara_source: Optional[str]
             kp_source: Optional[str]
@@ -796,7 +787,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # also track primary_knowledge_source attribute cardinality now
             found_primary_knowledge_source: List[str] = list()
 
-            # Track presence of 'knowledge_level' and 'agent_type' attributes
+            # Track the presence of 'knowledge_level' and 'agent_type' attributes
             found_knowledge_level = False
             found_agent_type = False
 
@@ -810,14 +801,12 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 if 'attribute_type_id' not in attribute:
                     self.report(
                         code="error.knowledge_graph.edge.attribute.type_id.missing",
-                        identifier=edge_id,
-                        source_trail=source_trail
+                        identifier=edge_id
                     )
                 elif not attribute['attribute_type_id']:
                     self.report(
                         code="error.knowledge_graph.edge.attribute.type_id.empty",
-                        identifier=edge_id,
-                        source_trail=source_trail
+                        identifier=edge_id
                     )
                 else:
                     attribute_type_id: str = attribute['attribute_type_id']
@@ -825,8 +814,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         self.report(
                             code="error.knowledge_graph.edge.attribute.value.missing",
                             identifier=edge_id,
-                            attribute_id=attribute_type_id,
-                            source_trail=source_trail
+                            attribute_id=attribute_type_id
                         )
                     else:
                         value = attribute['value']
@@ -841,8 +829,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                             self.report(
                                 code="error.knowledge_graph.edge.attribute.value.empty",
                                 identifier=edge_id,
-                                attribute_id=attribute_type_id,
-                                source_trail=source_trail
+                                attribute_id=attribute_type_id
                             )
                         else:
                             # TODO: there seems to be non-uniformity in provenance attribute values for some KP/ARA's
@@ -856,8 +843,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                 self.report(
                                     code="error.knowledge_graph.edge.attribute.type_id.not_curie",
                                     identifier=attribute_type_id,
-                                    edge_id=edge_id,
-                                    source_trail=source_trail
+                                    edge_id=edge_id
                                 )
                             elif self.validate_biolink():
                                 # 'attribute_type_id' is a CURIE, but how well does it map?
@@ -872,8 +858,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                             graph_type=graph_type,
                                             context="knowledge_graph.edge.attribute.type_id",
                                             identifier=attribute_type_id,
-                                            edge_id=edge_id,
-                                            source_trail=source_trail
+                                            edge_id=edge_id
                                         )
                                         if biolink_class:
                                             if self.bmt.is_category(name=biolink_class.name):
@@ -881,16 +866,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                     code="warning.knowledge_graph.edge."
                                                          "attribute.type_id.is_category",
                                                     identifier=attribute_type_id,
-                                                    edge_id=edge_id,
-                                                    source_trail=source_trail
+                                                    edge_id=edge_id
                                                 )
                                             elif self.bmt.is_predicate(name=biolink_class.name):
                                                 self.report(
                                                     code="warning.knowledge_graph.edge."
                                                          "attribute.type_id.is_predicate",
                                                     identifier=attribute_type_id,
-                                                    edge_id=edge_id,
-                                                    source_trail=source_trail
+                                                    edge_id=edge_id
                                                 )
 
                                             elif self.bmt.is_node_property(name=biolink_class.name):
@@ -898,16 +881,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                     code="warning.knowledge_graph.edge." +
                                                          "attribute.type_id.is_node_property",
                                                     identifier=attribute_type_id,
-                                                    edge_id=edge_id,
-                                                    source_trail=source_trail
+                                                    edge_id=edge_id
                                                 )
                                             elif not self.bmt.is_association_slot(name=biolink_class.name):
                                                 self.report(
                                                     code="warning.knowledge_graph.edge." +
                                                          "attribute.type_id.not_association_slot",
                                                     identifier=attribute_type_id,
-                                                    edge_id=edge_id,
-                                                    source_trail=source_trail
+                                                    edge_id=edge_id
                                                 )
                                             else:
                                                 # attribute_type_id is a Biolink 'association_slot': validate further...
@@ -939,8 +920,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                                    code="error.knowledge_graph.edge." +
                                                                         "provenance.infores.missing",
                                                                    identifier=str(infores),
-                                                                   edge_id=edge_id,
-                                                                   source_trail=source_trail
+                                                                   edge_id=edge_id
                                                                 )
                                                             else:
                                                                 if attribute_type_id == \
@@ -992,8 +972,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                         code="warning.knowledge_graph.edge." +
                                              "attribute.type_id.non_biolink_prefix",
                                         identifier=attribute_type_id,
-                                        edge_id=edge_id,
-                                        source_trail=source_trail
+                                        edge_id=edge_id
                                     )
 
             # Mandatory 'knowledge_level' and 'agent_type'
@@ -1025,17 +1004,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                             code="warning.knowledge_graph.edge.agent_type.missing",
                             identifier=edge_id
                         )
-
-                # TODO: Defer tracking of the presence of 'biolink:support_graphs'
-                #       for specified predicates like 'treats' or its descendants
-                # predicate = edge['predicate'] if 'predicate' in edge else None
-                # if self.is_treats(predicate) and not found_support_graphs:
-                #     self.report(
-                #         code="warning.knowledge_graph.edge.treats.support_graph.missing",
-                #         identifier=edge_id
-                #     )
-
-        return source_trail  # may be 'None' if the required attributes are missing
 
     def validate_attribute_constraints(self, edge_id: str, edge: Dict):
         """
@@ -1135,17 +1103,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             self,
             edge_id: str,
             edge: Dict,
-            associations: Optional[List[str]] = None,
-            source_trail: Optional[str] = None
+            associations: Optional[List[str]] = None
     ):
         """
         Validate Knowledge Edge Qualifiers.
 
         :param edge_id: str, string identifier for the edge (for reporting purposes)
-        :param edge: Dict, the edge object associated with some attributes are expected to be found
+        :param edge: Dict, the edge object associated with some attributes expected to be found
         :param associations: Optional[List[str]], Biolink association subclasses possibly related to the current edge.
-        :param source_trail, Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
-                             Defaults to "global" if not specified.
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
         # Edge qualifiers will only be seen in Biolink 3 data,
@@ -1162,8 +1127,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 context="knowledge_graph.edge.qualifiers",
                 edge_id=edge_id,
                 qualifiers=qualifiers,
-                associations=associations,
-                source_trail=source_trail
+                associations=associations
             )
 
     def validate_qualifier_constraints(
@@ -1272,23 +1236,23 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         # Infores validates properly here
         return True
 
-    def validate_sources(self, edge_id: str, edge: Dict) -> Optional[str]:
+    def validate_sources(self, edge_id: str, edge: Dict):
         """
         Validate (TRAPI 1.4.0-beta ++) Edge sources provenance.
 
         :param edge_id: str, string identifier for the edge (for reporting purposes)
-        :param edge: Dict, the edge object associated with some attributes are expected to be found
-        :return: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
+        :param edge: Dict, the edge object is associated with some attributes are expected to be found
+        :return: None
         """
-        sources: Dict[str, List[str]] = dict()
         # we ought not to have to test for the absence of the "sources" tag
         # if general TRAPI schema validation is run, since it will catch such missing data
         # however, this method may be directly run on invalid TRAPI data, so...
         if "sources" not in edge:
             self.report(code="error.knowledge_graph.edge.sources.missing", identifier=edge_id)
         elif not edge["sources"]:
-            # Cardinality of "sources" array is also validated by the TRAPI schema
-            # but for the same reasons noted above, we check again here.
+            # Cardinality of the "sources" array is also
+            # validated by the TRAPI schema
+            # but as noted above, we check again here.
             self.report(code="error.knowledge_graph.edge.sources.empty", identifier=edge_id)
         elif not isinstance(edge["sources"], List):
             self.report(code="error.knowledge_graph.edge.sources.not_array", identifier=edge_id)
@@ -1318,6 +1282,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # also track primary_knowledge_source attribute cardinality now
             found_primary_knowledge_source: List[str] = list()
 
+            sources: Dict[str, List[str]] = dict()
             for retrieval_source in edge_sources:
 
                 # TRAPI schema validation will generally validate the requisite
@@ -1397,20 +1362,12 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     # if "source_record_urls" in retrieval_source:
                     #     source_record_urls: Optional[List[str]] = retrieval_source["source_record_urls"]
 
-        # After "sources" RetrievalSource entries have been scanned,
-        # we attempt to build a source trail then also
-        # perform a complete validation check for expected provenance.
-        source_trail: Optional[str] = self.build_source_trail(edge_id=edge_id, sources=sources) if sources else None
-
-        self.validate_provenance(
-            edge_id,
-            target_ara_source, found_target_ara_knowledge_source,
-            target_kp_source, found_target_kp_knowledge_source, target_kp_source_type,
-            found_primary_knowledge_source,
-            source_trail=source_trail
-        )
-
-        return source_trail  # maybe empty if required RetrievalSource 'sources' entries are missing
+            self.validate_provenance(
+                edge_id,
+                target_ara_source, found_target_ara_knowledge_source,
+                target_kp_source, found_target_kp_knowledge_source, target_kp_source_type,
+                found_primary_knowledge_source
+            )
 
     # TODO: 11-Sept-2023: Certain specific 'mixin' predicates used in
     #       Knowledge or Query Graphs are being validated for now
@@ -1477,107 +1434,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         edge_id=edge_id
                     )
 
-    def build_source_trail(self, edge_id: str, sources: Optional[Dict[str, List[str]]]) -> Optional[str]:
-        """
-        Returns a 'source_trail' path from 'primary_knowledge_source' upwards. The "sources" should
-        have at least one and only one primary knowledge source (with an empty 'upstream_resource_ids' list).
-        There are several "fringe" cases that may arise which will give directed acyclic graphs instead of linear
-        source trails, the most typical being multiple primary knowledge sources (which generates a report warning).
-        Alas, the current implementation probably can't yet handle all fringe cases gracefully.
-
-        :param edge_id: internal identifier for edge, only used for reporting purposes
-        :param sources: Optional[Dict[str, List[str]]], catalog of upstream knowledge sources indexed by resource_id's
-        :return: Optional[str] source ("audit") trail ('path') from primary to topmost wrapper knowledge source infores
-        """
-        if sources:
-            # TODO: what about 'supporting_data_sources' to which
-            #       primary_knowledge_source sources may point
-            #       with their upstream_resources_ids?
-            # Example "sources"...:
-            # {
-            #     "infores:chebi": [],
-            #     "infores:biothings-explorer": ["infores:chebi"],
-            #     "infores:molepro": ["infores:biothings-explorer"],
-            #     "infores:arax": ["infores:molepro"]
-            # }
-            #
-
-            # ...reverse and flatten "source_paths"...
-            source_paths: Dict = {}
-            for downstream_id, upstream_resource_ids in sources.items():
-                if upstream_resource_ids:
-                    current_id = upstream_resource_ids[0]
-                else:
-                    current_id = "primary"
-
-                if current_id not in source_paths:
-                    # Normal situation of a single mapping
-                    # We'll treat all source path dictionary values as lists
-                    # for uniformity in downstream processing, although
-                    # in most cases, these will be lists of single elements
-                    source_paths[current_id] = list()
-                else:
-                    if current_id == "primary":
-                        # Multiple primary sources is actually a data issue to be reported
-                        self.report(
-                            code="warning.knowledge_graph.edge.provenance.multiple_primary",
-                            identifier=edge_id,
-                            sources="|".join(source_paths["primary"])+"|"+downstream_id
-                        )
-
-                source_paths[current_id].append(downstream_id)
-
-            # ...reversed and flatten into "source_paths"... in some instances,
-            #    the dictionary values will end up being lists(?)
-            # {
-            #     # we could sometimes see multiple primary knowledge sources
-            #     "primary": ["infores:chebi"],
-            #     "infores:biothings-explorer": ["infores:molepro"],
-            #     "infores:chebi": "[infores:biothings-explorer"],
-            #     "infores:molepro": ["infores:arax"]
-            # }
-            if "primary" in source_paths:
-                current_resources = source_paths["primary"]
-            else:
-                current_resources = None
-
-            def build_path(resources: List[str]) -> str:
-                for resource in resources:
-                    if resource in source_paths:
-                        return f"{resource} -> {build_path(source_paths[resource])}"
-                    else:
-                        return ""
-
-            source_trail: Optional[str] = None
-
-            # Iterate over the List of current resources (usually just one entry)
-            # i.e., current_resources == ["infores:chebi"]
-            # Could be 'None' if no primary resources available?
-            if current_resources is not None:
-                source_trail = build_path(source_paths[current_resources])
-            else:
-                # Missing a primary resource? With a bit more effort
-                # we try to infer the path from the other direction?
-                reverse_source_path: Dict = dict()
-                for upstream_id, downstream_id in source_paths.items():
-                    if downstream_id not in source_paths:
-                        source_trail = f"{upstream_id} -> {downstream_id}"
-                        current_resources = upstream_id
-                    else:
-                        reverse_source_path[downstream_id] = upstream_id
-
-                while True:
-                    if current_resources in reverse_source_path:
-                        current_resources = reverse_source_path[current_resources]
-                        source_trail = f"{current_resources} -> " + source_trail
-                    else:
-                        break
-
-            # "infores:chebi -> infores:biothings-explorer -> infores:molepro -> infores:arax"
-            return source_trail
-        else:
-            return None
-
     def is_treats(self, predicate: Optional[str]) -> bool:
         if not predicate:
             return False
@@ -1628,15 +1484,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         if graph_type is TRAPIGraphType.Knowledge_Graph:
 
             # Edge provenance "sources" field, 'source_trail' is parsed in by 'validate_sources'...
-            source_trail = self.validate_sources(edge_id=edge_id, edge=edge)
+            self.validate_sources(edge_id=edge_id, edge=edge)
 
             # ...then the 'validate_sources' computed 'source_trail' is communicated
             #    to 'validate_attributes' for use in attribute validation reporting
             self.validate_attributes(
                 graph_type=graph_type,
                 edge_id=edge_id,
-                edge=edge,
-                source_trail=source_trail
+                edge=edge
             )
 
             associations: Optional[List[str]] = None
@@ -1655,8 +1510,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             self.validate_qualifiers(
                 edge_id=edge_id,
                 edge=edge,
-                associations=associations,
-                source_trail=source_trail
+                associations=associations
             )
 
         else:
@@ -1671,7 +1525,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # schema deems the Edge.subject 'nullable: false'
             self.report(
                 code=f"error.{context}.edge.subject.missing",
-                source_trail=source_trail,
                 identifier=edge_id
             )
 
