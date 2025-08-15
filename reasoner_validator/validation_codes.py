@@ -1,6 +1,6 @@
 import copy
 from os.path import join, abspath, dirname
-from typing import Optional, Any, Dict, List, Tuple, Union, NamedTuple
+from typing import Optional, Any, Dict, List, Tuple
 
 try:
     from yaml import load, CLoader as Loader
@@ -9,7 +9,7 @@ except ImportError:
 
 import logging
 
-from reasoner_validator.message import SCOPED_MESSAGES, IDENTIFIED_MESSAGES
+from reasoner_validator.message import IDENTIFIED_MESSAGES, MESSAGE_PARAMETERS
 
 logger = logging.getLogger(__name__)
 
@@ -190,27 +190,22 @@ class CodeDictionary:
     @classmethod
     def display(
             cls,
-            code: str,  # code for specific validation message template
-            messages: Optional[SCOPED_MESSAGES] = None,
+            code: str,  # code for the specific validation message template
+            messages: Optional[IDENTIFIED_MESSAGES] = None,
             add_prefix: bool = False
-    ) -> Dict[str, List[str]]:
+    ) -> Optional[List[str]]:
         """
         Generate one or more full messages from provided Validation Reporter code
         and associated parameters (if applicable).
 
-        :param code: str, valid (dot delimited YAML key path) identified code,
-                          which should be registered in the project codes.yaml file.
-        :param messages: Optional[SCOPED_MESSAGES], collection of scoped validation messages (Default: None)
-                         If this parameter specified as None, then it is actually taken to be {"global": None}
-        :param add_prefix: bool, flag to prepend a prefix for the message type
-                           (i.e. critical, error, warning, info) to displayed messages (default: False)
+        :param code: Valid (dot delimited YAML key path) identified code string,
+                     which should be registered in the project codes.yaml file.
+        :param messages: Optional[IDENTIFIED_MESSAGES], catalog of identifier indexed validation messages
+        :param add_prefix: Boolean flag to signal prepending of a prefix for the message type
+                           (namely, critical, error, warning, info) to displayed messages (default: False)
 
-        :return: Dict[str, List[str]], scope-indexed dictionary of lists of decoded messages for a given code
+        :return: Optional[List[str] of decoded messages for the given code
         """
-        # All validation messages have a context, even if just "global" with no other distinguishing parameters.
-        if messages is None:
-            messages = {"global": None}
-
         value: Optional[Tuple[str, Dict[str, str]]] = cls.get_code_subtree(code, is_leaf=True)
         assert value, f"CodeDictionary.display(): unknown message code {code}"
 
@@ -219,42 +214,30 @@ class CodeDictionary:
         context: str = cls.validation_code_tag(code) + ": " if add_prefix else ""
 
         template: str = cls.get_message_template(code)
-        message_set: Dict = dict()
+        message_set: List = list()
 
-        # 'messages' is an instance of 'SCOPED_MESSAGES' that is a Dict[<scope>, Optional[IDENTIFIED_MESSAGES]]
-        # where <scope> is either "global" or a "sources trail" string designating the audit trail from the
-        # 'primary_knowledge_source' up to topmost 'aggregator_knowledge_source' which reported the validation message,
-        # and the (Optional) 'IDENTIFIED_MESSAGES' are validation contexts possibly discriminated by a specific
-        # target entity (identifier) of the validation, plus any (Optional) additional parameters.
-        scope: str
-        parameters: Optional[IDENTIFIED_MESSAGES]
-        for scope, parameters in messages.items():
-            message_set[scope] = list()
-            if parameters:
-                # A non-null IDENTIFIED_MESSAGES entry is a dictionary of additional validation message parameters
-                # indexed by an identifier discriminating the (Biolink or TRAPI) target of the validation.
-                # A given validation code may or may not have additional parameters (as documented in the codes.yaml).
-                # If such parameters are expected, then they will be documented in a List[MESSAGE_PARAMETERS].
-                for identifier in parameters.keys():
-                    other_parameters: Optional[IDENTIFIED_MESSAGES] = parameters[identifier]
-                    identifier_dict: Dict = {'identifier': identifier}
-                    if other_parameters:
-                        # is a list of one or more dictionaries of additional parameters
-                        for another_parameter_dict in other_parameters:
-                            # make copies, to be safe...
-                            content: Dict = identifier_dict.copy()
-                            content.update(another_parameter_dict)
-                            message_set[scope].append(
-                                f"{message_type_prefix}{context}{template.format(**content)}"
-                            )
-                    else:
-                        message_set[scope].append(
-                            f"{message_type_prefix}{context}{template.format(**identifier_dict)}"
-                        )
-
-            else:
-                # simple scalar message without identification and parameterization?
-                message_set[scope].append(f"{message_type_prefix}{context}{template}")
+        if messages is None:
+            # simple scalar message without identification and parameterization?
+            message_set.append(f"{message_type_prefix}{context}{template}")
+        else:
+            # A non-null IDENTIFIED_MESSAGES entry is a dictionary of additional validation message parameters
+            # indexed by an identifier discriminating the (Biolink or TRAPI) target of the validation.
+            # A given validation code may or may not have additional parameters (as documented in the codes.yaml).
+            # If such parameters are expected, then they will be documented in a List[MESSAGE_PARAMETERS].
+            for identifier in messages.keys():
+                other_parameters: Optional[List[MESSAGE_PARAMETERS]] = messages[identifier]
+                identifier_dict: Dict = {'identifier': identifier}
+                if other_parameters:
+                    # is a list of one or more dictionaries of additional parameters
+                    for another_parameter_dict in other_parameters:
+                        # make copies to be safe...
+                        content: Dict = identifier_dict.copy()
+                        content.update(another_parameter_dict)
+                        message_set.append(f"{message_type_prefix}{context}{template.format(**content)}")
+                else:
+                    message_set.append(
+                        f"{message_type_prefix}{context}{template.format(**identifier_dict)}"
+                    )
 
         return message_set
 

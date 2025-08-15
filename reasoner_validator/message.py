@@ -79,7 +79,7 @@ class MessageType(Enum):
     critical = "critical errors"
 
 
-# A individual MESSAGE_CATALOG contains
+# An individual MESSAGE_CATALOG contains
 # the validation messages from
 # all five major categories of validation:
 # critical errors/errors/warnings/skipped tests/information
