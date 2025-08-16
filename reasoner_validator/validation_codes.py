@@ -228,7 +228,7 @@ class CodeDictionary:
                 other_parameters: Optional[List[MESSAGE_PARAMETERS]] = messages[identifier]
                 identifier_dict: Dict = {'identifier': identifier}
                 if other_parameters:
-                    # is a list of one or more dictionaries of additional parameters
+                    # is a dictionary of additional parameters
                     for another_parameter_dict in other_parameters:
                         # make copies to be safe...
                         content: Dict = identifier_dict.copy()

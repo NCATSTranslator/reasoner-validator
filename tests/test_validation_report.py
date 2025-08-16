@@ -369,14 +369,12 @@ full_test_messages_catalog_1: MESSAGE_CATALOG = {
     },
     "skipped": {
         "skipped.test": {
-            "global": {
-                "Catastrophe": [
-                    {
-                        "context": "Family Robinson",
-                        "reason": "Lost in Space"
-                    }
-                ]
-            }
+            "Catastrophe": [
+                {
+                    "context": "Family Robinson",
+                    "reason": "Lost in Space"
+                }
+            ]
         }
 
     },
@@ -549,8 +547,8 @@ def _validate_full_messages(
     assert len(messages_by_code) > 0
     full_messages_list: List[str] = list()
     for code, messages in messages_by_code.items():
-        messages_by_code: List = CodeDictionary.display(code, messages, add_prefix=True)
-        full_messages_list.append(messages_by_code[0])
+        decoded_messages: List[str] = CodeDictionary.display(code, messages, add_prefix=True)
+        full_messages_list.append(decoded_messages[0])
     assert full_message in full_messages_list
 
 

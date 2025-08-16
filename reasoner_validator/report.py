@@ -420,12 +420,12 @@ class ValidationReporter:
             target: Optional[str] = None
     ) -> MESSAGE_PARTITION:
         """
-        Get Python data dictionary of ValidationReporter messages of
-        'message_type', for a specified (or default?) target and test.
-        :param message_type: MessageType, type of message whose presence is to be detected.
-        :param test: str, specified test (gets current 'default' test if not given)
-        :param target: str, specified target (gets current 'default' test if not given)
-        :return: get copy of messages of type 'message_type'.
+        Get Python data dictionary of the 'message_type' ValidationReporter
+        messages for a specified (or default?) target and test.
+        :param message_type: MessageType type of message whose presence is to be detected.
+        :param test: String name of the specified test (gets current 'default' test if not given)
+        :param target: String name of the specified target (gets current 'default' test if not given)
+        :return: Messages of type 'message_type'.
         """
         message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
         # TODO: the deepcopy may be desirable for message data
