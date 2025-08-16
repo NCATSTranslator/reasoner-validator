@@ -380,13 +380,11 @@ full_test_messages_catalog_1: MESSAGE_CATALOG = {
     },
     "warning": {
         "warning.knowledge_graph.node.id.unmapped_prefix": {
-            "infores:earth -> infores:spaceship": {
-                "Will Robinson": [
-                    {
-                        "categories": "Lost in Space"
-                    }
-                ]
-            }
+            "Will Robinson": [
+                {
+                    "categories": "Lost in Space"
+                }
+            ]
         }
     }
 }
@@ -654,7 +652,7 @@ def test_messages():
     assert messages_by_target, "Empty 'critical.trapi.validation' messages set?"
     assert "9.1.1" in messages_by_target
     assert "Fire, Ambulance or Police?" \
-           in [message['reason'] for message in messages_by_target if 'reason' in message]
+           in [message['reason'] for message in messages_by_target["9.1.1"] if 'reason' in message]
 
     for n in range(0, 10):
         reporter1.report(code="error.input_edge.node.category.missing", identifier=f"biolink:not_a_category_{n}")
@@ -667,8 +665,6 @@ def test_messages():
                 node_id=f"n{n}"
             )
 
-    # Informal test of a text 'dump' of all the messages as a
-    # text blob, using the 'display_all' method to format them
     print(
         "\n\nThis is an indirect 'test' of the ValidationReporter.dump() method\n"
         "which simply executes the function and look at the results here on the console:",
