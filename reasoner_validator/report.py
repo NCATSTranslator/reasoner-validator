@@ -654,7 +654,15 @@ class ValidationReporter:
         if not compact_format:
             header += "\n"
 
-        header += f"Reasoner Validator version '{metadata.version('reasoner-validator')}'"
+        try:
+            # This only works if the reasoner-validator
+            # is locally installed as a package into the environment
+            version = f" version '{metadata.version('reasoner-validator')}'"
+        except metadata.PackageNotFoundError:
+            #
+            version = ""
+
+        header += f"Reasoner Validator {version}"
         return header
 
     def dump(

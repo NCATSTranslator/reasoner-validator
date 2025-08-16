@@ -216,7 +216,7 @@ class CodeDictionary:
         template: str = cls.get_message_template(code)
         message_set: List = list()
 
-        if messages is None:
+        if not messages:
             # simple scalar message without identification and parameterization?
             message_set.append(f"{message_type_prefix}{context}{template}")
         else:

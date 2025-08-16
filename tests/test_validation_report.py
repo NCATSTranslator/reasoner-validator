@@ -510,8 +510,8 @@ def test_validation_message_report1():
 
     displayed: List[str] = list()
     for code, messages in messages_by_code.items():
-        message_partition = CodeDictionary.display(code, messages, add_prefix=True)
-        displayed.extend(message_partition)
+        decoded_messages = CodeDictionary.display(code, messages, add_prefix=True)
+        displayed.extend(decoded_messages)
     assert "INFO - Compliant: Biolink Model-compliant TRAPI Message" in displayed
     assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate" in displayed
 
