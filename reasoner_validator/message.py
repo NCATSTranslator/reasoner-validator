@@ -15,37 +15,33 @@ from typing import Optional, List, Dict
 #        # message 'code'
 #         "info.input_edge.predicate.mixin": {
 #
-#             # message 'scope' may be a source_trail (as shown) or "global"
-#             "infores:molepro -> infores:arax": {
-#
-#                 # characteristic "identifier" to which the validation message specifically applies
-#                 "biolink:interacts_with"[
-#                     {  # parameters of a distinct message
-#                       "edge_id": "a--biolink:interacts_with->b"
-#                     },
-#                     { <parameters of second reported message...> },
-#                     etc...
-#                 ]
-#             }
+#             # characteristic "identifier" to which the validation message specifically applies
+#             "biolink:interacts_with"[
+#                { # parameters of a distinct message
+#                  "edge_id": "a--biolink:interacts_with->b"
+#                },
+#                { <parameters of second reported message...> },
+#                etc...
+# ]
 #         } ,
 #         # codes without parameters can just be set to an empty list?
 #         "info.compliant.message": {"global": []}
 #
 #     },
 #     "warnings":  {
-#       ...<similar to information data structure above>
+#       ...<similar to the information message data structure above>
 #     },
 #     "errors": {
-#       ...<similar to information data structure above>
+#       ...<similar to the information message data structure above>
 #     },
 #     "critical": {
-#       ...<similar to information data structure above>
+#       ...<similar to the information message data structure above>
 #     }
 # }
 #
 
 # One instance of 'MESSAGE_PARAMETERS' is a dictionary of string
-# parameters associated with a  given message code, as documented
+# parameters associated with a given message code, as documented
 # within the global 'codes.yaml' validation message catalog
 MESSAGE_PARAMETERS = Dict[str, str]
 

@@ -24,8 +24,7 @@ TEST_TRAPI_VERSION = get_latest_version(ValidationReporter.DEFAULT_TRAPI_VERSION
 def check_messages(
         validator: ValidationReporter,
         code: str,
-        no_errors: bool = False,
-        source_trail: Optional[str] = None
+        no_errors: bool = False
 ):
     # TODO: only assume 'default' test and target for now (fix later if problematic)
     messages: MESSAGES_BY_TARGET = validator.get_all_messages()
@@ -34,11 +33,6 @@ def check_messages(
         message_type: MessageType = validator.get_message_type(code)
         coded_messages: MESSAGE_PARTITION = validator.get_messages_of_type(message_type)
         assert any([message_code == code for message_code in coded_messages.keys()])
-        if source_trail:
-            source_trail_tags = coded_messages[code].keys()
-            assert source_trail in source_trail_tags
-            if source_trail != "global":
-                assert "global" not in source_trail_tags
     else:
         if no_errors:
             # just don't want any error (including 'critical'); 'info', 'skipped' and 'warning' are ok?
@@ -512,9 +506,10 @@ def test_validation_message_report1():
     assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate" in displayed
 
 
+# this test may be redundant, but it does a test and passes, so...
 def test_validation_message_report2():
     reporter2 = ValidationReporter(
-        default_test="test_source_trail_scoped_validation_message_report",
+        default_test="test_second_validation_message_report",
         default_target="Second Validation Report"
     )
     reporter2.report(
@@ -531,8 +526,6 @@ def test_validation_message_report2():
     assert len(messages_by_code) > 0
     assert "error.knowledge_graph.edge.predicate.abstract" in messages_by_code
     assert "biolink:contributor" in messages_by_code['error.knowledge_graph.edge.predicate.abstract']
-    # assert "Tim->biolink:contributor->Translator" in \
-    #         messages_by_code['error.knowledge_graph.edge.predicate.abstract']["biolink:contributor"]["edge_id"]
 
 
 def _validate_full_messages(

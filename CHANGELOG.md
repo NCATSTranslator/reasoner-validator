@@ -5,6 +5,10 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 ## 5.0.0
 
 - Removed validation of any TRAPI version prior to TRAPI 1.5
+- Removed 'source_path' audit trail of validation messages (complexities between support data sources and primary knowledge sources, and multiple paths, created a tedious coding complexity difficult to fix and maintain)
+- updated Python dependencies including support for Python 3.12
+- repaired all unit tests to pass
+- NOT YET DONE: fine-grained semantic validation of novel TRAPI 1.6.0 specific changes
 
 ## 4.3.1
 

@@ -59,16 +59,16 @@ class Query(BaseModel):
     # and detection of absent Knowledge Graph Edge predicate and attributes (despite 'nullable: true' model permission)
     strict_validation: Optional[bool] = None
 
-    # validation normally reports empty Message query graph, knowledge graph and results as warnings.
+    # validation normally reports an empty Message query graph, knowledge graph and results as warnings.
     # This flag suppresses the reporting of such warnings (default: False)
     suppress_empty_data_warnings: Optional[bool] = None
 
     # Maximum number of knowledge graph edges validated from each TRAPI Response
-    # returned from test edge query (default: 0 means 'validate all edges')
+    # returned from edges for a test query (default: 0 means 'validate all edges')
     max_kg_edges: int = 0
 
     # Maximum number of results validated from each TRAPI Response
-    # returned from each test edge query (default: 0 means 'validate all results')
+    # returned from edges for each test query (default: 0 means 'validate all results')
     max_results: int = 0
 
     #

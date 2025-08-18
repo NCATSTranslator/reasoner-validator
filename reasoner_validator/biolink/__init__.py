@@ -488,7 +488,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             context: str,
             identifier: str,
             edge_id: str,
-            source_trail: Optional[str] = None,
             ignore_graph_type: bool = False
     ) -> Optional[Element]:
         """
@@ -498,7 +497,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param context: str, parsing context (e.g. 'Node')
         :param identifier: str, name of the putative Biolink element ('class')
         :param edge_id: str, identifier of enclosing edge containing the element (e.g. the 'edge_id')
-        :param source_trail: Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
         :param ignore_graph_type: bool, if strict validation is None (not set globally), then
                only apply graph-type-differential strict validation if 'ignore_graph_type' is False
         :return: Optional[Element], Biolink Element resolved to 'name' if element no validation error; None otherwise.
@@ -507,7 +505,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         if not element:
             self.report(
                 code=f"error.{context}.unknown",
-                source_trail=source_trail,
                 identifier=identifier,
                 edge_id=edge_id
             )
@@ -518,7 +515,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # component developers learning about the issue will globally fix it in their graphs
             self.report(
                 code=f"warning.{context}.deprecated",
-                source_trail=source_trail,
                 identifier=identifier
             )
             # return None - a deprecated term is not treated as a failure but just as a warning
@@ -527,7 +523,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             if self.is_strict_validation(graph_type):
                 self.report(
                     code=f"error.{context}.abstract",
-                    source_trail=source_trail,
                     identifier=identifier,
                     edge_id=edge_id
                 )
@@ -535,7 +530,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             else:
                 self.report(
                     code=f"info.{context}.abstract",
-                    source_trail=source_trail,
                     identifier=identifier,
                     edge_id=edge_id
                 )
@@ -547,7 +541,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             if self.is_strict_validation(graph_type, ignore_graph_type=ignore_graph_type):
                 self.report(
                     code=f"error.{context}.mixin",
-                    source_trail=source_trail,
                     identifier=identifier,
                     edge_id=edge_id
                 )
@@ -555,7 +548,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             else:
                 self.report(
                     code=f"info.{context}.mixin",
-                    source_trail=source_trail,
                     identifier=identifier,
                     edge_id=edge_id
                 )
@@ -1029,21 +1021,18 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             context: str,
             edge_id: str,
             qualifiers: List[Dict[str, str]],
-            associations: Optional[List[str]] = None,
-            source_trail: Optional[str] = None
+            associations: Optional[List[str]] = None
     ):
         """
         Validate Qualifier Entry (JSON Object).
 
-        :param context: str, Validation (subcode) context:
+        :param context: sValidation (subcode) context string:
                         - query graph qualifier constraints ("query_graph.edge.qualifier_constraints.qualifier_set") or
-                        - knowledge graph edge qualifiers (knowledge_graph.edge.qualifiers)
+                        - the qualifiers of a knowledge graph edge (knowledge_graph.edge.qualifiers)
         :param edge_id: str, string identifier for the edge (for reporting purposes)
         :param qualifiers: List[Dict[str, str]], of qualifier entries to be validated.
         :param associations: Optional[List[str]] = None,
                              Biolink association subclasses possibly related to the current edge.
-        :param source_trail, Optional[str], audit trail of knowledge source provenance for a given Edge, as a string.
-                             Defaults to "global" if not specified.
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
         for qualifier in qualifiers:
@@ -1053,7 +1042,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 if not self.bmt.is_qualifier(name=str(qualifier_type_id)):
                     self.report(
                         code=f"error.{context}.qualifier.type_id.unknown",
-                        source_trail=source_trail,
                         identifier=str(qualifier_type_id),
                         edge_id=edge_id
                     )
@@ -1062,12 +1050,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         # special case of qualifier must have Biolink predicates as values
                         self.report(
                             code=f"error.{context}.qualifier.value.not_a_predicate",
-                            source_trail=source_trail,
                             identifier=str(qualifier_value),
                             edge_id=edge_id
                         )
 
-                # A Query Graph miss on qualifier_value is less an issue since there may not be enough
+                # A Query Graph miss on qualifier_value is less of an issue since there may not be enough
                 # context to resolve the 'qualifier_value'; whereas a Knowledge Graph miss is more severe
                 elif context.startswith("knowledge_graph") and \
                         not self.bmt.validate_qualifier(
@@ -1080,17 +1067,15 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     #       reasonable, but the qualifier value curation of the Biolink Model is as yet incomplete
                     self.report(
                         code=f"warning.{context}.qualifier.value.unresolved",
-                        source_trail=source_trail,
                         identifier=str(qualifier_value),
                         edge_id=edge_id,
                         qualifier_type_id=str(qualifier_type_id)
                     )
             except Exception as e:
-                # broad spectrum exception to trap anticipated short term issues with BMT validation
+                # broad spectrum exception to trap short-term issues with BMT validation
                 logger.error(f"BMT validate_qualifier Exception: {str(e)}")
                 self.report(
                     code=f"error.{context}.qualifier.invalid",
-                    source_trail=source_trail,
                     identifier=edge_id,
                     qualifier_type_id=str(qualifier_type_id),
                     # we coerce qualifier values to strings here, in case
@@ -1379,22 +1364,20 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             self,
             edge_id: str,
             predicate: str,
-            graph_type: TRAPIGraphType,
-            source_trail: Optional[str] = None
+            graph_type: TRAPIGraphType
     ):
         """
         Validates predicates based on their meta-nature: existence, mixin,
         deprecation, etc. with some notable hard-coded explicit
         PREDICATE_INCLUSIONS exceptions in earlier Biolink Model releases.
 
-        :param edge_id: str, identifier of the edge whose predicate is being validated
-        :param predicate: str, putative Biolink Model predicate to be validated
-        :param source_trail: str, putative Biolink Model predicate to be validated
+        :param edge_id: String identifier of the edge whose predicate is being validated
+        :param predicate: String putative Biolink Model predicate to be validated
         :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
         :return: None (validation communicated via class instance of method)
         """
-        # PREDICATE_INCLUSIONS provides for selective override of
-        # validation of particular predicates prior to Biolink 4.2.1
+        # PREDICATE_INCLUSIONS provides for selective override
+        # particular predicates validation prior to Biolink 4.2.1
         if self.minimum_required_biolink_version("4.2.1") or \
                 predicate not in self.PREDICATE_INCLUSIONS:
 
@@ -1411,9 +1394,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 context=context,
                 identifier=predicate,
                 edge_id=edge_id,
-                source_trail=source_trail,
 
-                # validation of 'predicates' can ignore graph type
+                # validation of 'predicates' can ignore the graph type
                 # unless strict validation is globally overridden
                 ignore_graph_type=True
             )
@@ -1421,7 +1403,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 if not self.bmt.is_predicate(predicate):
                     self.report(
                         code=f"error.{context}.invalid",
-                        source_trail=source_trail,
                         identifier=predicate,
                         edge_id=edge_id
                     )
@@ -1429,7 +1410,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         not self.bmt.is_translator_canonical_predicate(predicate):
                     self.report(
                         code=f"warning.{context}.non_canonical",
-                        source_trail=source_trail,
                         identifier=predicate,
                         edge_id=edge_id
                     )
@@ -1443,8 +1423,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         Validate slot properties of a relationship ('biolink:Association') edge.
 
-        :param edge: Dict[str, str], dictionary of slot properties of the edge.
-        :param graph_type: TRAPIGraphType, type of TRAPI component being validated
+        :param edge: Dict[str, str], dictionary of the edge slot properties.
+        :param graph_type: TRAPIGraphType, component type of TRAPI being validated
         """
         # logger.debug(edge)
         # edge data fields to be validated...
@@ -1480,14 +1460,12 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         #
         # Validate edge attributes (or attribute_constraints)
         # and (Biolink) edge qualifiers (or qualifier_constraints)
-        source_trail: Optional[str] = None
         if graph_type is TRAPIGraphType.Knowledge_Graph:
 
-            # Edge provenance "sources" field, 'source_trail' is parsed in by 'validate_sources'...
+            # Edge provenance "sources" field is validated by 'validate_sources'...
             self.validate_sources(edge_id=edge_id, edge=edge)
 
-            # ...then the 'validate_sources' computed 'source_trail' is communicated
-            #    to 'validate_attributes' for use in attribute validation reporting
+            # ...then attributes are validated and reported
             self.validate_attributes(
                 graph_type=graph_type,
                 edge_id=edge_id,
@@ -1514,7 +1492,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             )
 
         else:
-            # NOT a Knowledge Graph edge validation
+            # NOT Knowledge Graph edge validation
             self.validate_attribute_constraints(edge_id=edge_id, edge=edge)
             self.validate_qualifier_constraints(edge_id=edge_id, edge=edge)
 
@@ -1531,7 +1509,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         elif subject_id not in self.get_node_identifiers():
             self.report(
                 code=f"error.{context}.edge.subject.missing_from_nodes",
-                source_trail=source_trail,
                 identifier=subject_id,
                 edge_id=edge_id
             )
@@ -1543,7 +1520,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             if not predicate:
                 self.report(
                     code="error.knowledge_graph.edge.predicate.missing",
-                    source_trail=source_trail,
                     context=graph_type.value,
                     identifier=edge_id
                 )
@@ -1551,8 +1527,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 self.validate_predicate(
                     edge_id=edge_id,
                     predicate=predicate,
-                    graph_type=graph_type,
-                    source_trail=source_trail
+                    graph_type=graph_type
                 )
 
         else:  # is a Query Graph...
@@ -1562,13 +1537,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             elif not isinstance(predicates, List):
                 self.report(
                     code="error.query_graph.edge.predicate.not_array",
-                    source_trail=source_trail,
                     identifier=edge_id
                 )
             elif len(predicates) == 0:
                 self.report(
                     code="error.query_graph.edge.predicate.empty_array",
-                    source_trail=source_trail,
                     identifier=edge_id
                 )
             elif self.validate_biolink():
@@ -1580,8 +1553,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     self.validate_predicate(
                         edge_id=edge_id,
                         predicate=predicate,
-                        graph_type=graph_type,
-                        source_trail=source_trail
+                        graph_type=graph_type
                     )
 
         # Validate Object Node
@@ -1591,13 +1563,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # schema deems the Edge.object 'nullable: false'
             self.report(
                 code=f"error.{context}.edge.object.missing",
-                source_trail=source_trail,
                 identifier=edge_id
             )
         elif object_id not in self.get_node_identifiers():
             self.report(
                 code=f"error.{context}.edge.object.missing_from_nodes",
-                source_trail=source_trail,
                 identifier=object_id,
                 edge_id=edge_id
             )

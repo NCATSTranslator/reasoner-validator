@@ -39,7 +39,7 @@ poetry shell
 poetry install
 ```
 
-Note that the **`poetry env`** can be set to either Python 3.10 or 3.11 at the present time.
+Note that the **`poetry env`** can be set to either Python 3.9 through 3.12 at the present time (3.12 is recommended).
 
 This installation also installs testing dependencies (in the poetry 'dev' group in the pyproject.toml) and documentation dependencies (in the corresponding poetry 'docs' group). If you don't want the overhead of these dependencies, then the installation of these poetry group dependencies may be excluded:
 
@@ -47,7 +47,7 @@ This installation also installs testing dependencies (in the poetry 'dev' group 
 poetry install --without dev,docs
 ```
 
-If you plan to run the web service API,  then install it with the optional web group:
+If you plan to run the web service API (see below), then install it with the optional web group:
 
 ```bash
 poetry install --with web
@@ -67,11 +67,11 @@ For script usage, type:
 ./trapi_validator.py --help
 ```
 
-(*) Thank you Eric Deutsch for the prototype code for this script
+(*) Thank you to Eric Deutsch for the prototype code for this script, and Vlado Dancik for suggestions for improvement.
 
 ## Running tests
 
-Run the available unit tests with coverage report:
+Run the available unit tests with a coverage report:
 
 ```bash
 poetry run pytest --cov
@@ -92,7 +92,7 @@ The use of the Poetry shell command allows for running of the tests without the 
 (reasoner-validator-py3.9) % pytest --cov
 ```
 
-Run the tests with detailed coverage report in a HTML page:
+Run the tests with a detailed coverage report in a HTML page:
 
 ```bash
 pytest --cov --cov-report html
@@ -113,7 +113,7 @@ cd reasoner_validator
 python ./validation_codes.py
 ```
 
-Then build the documentation locally:
+Then build the documentation locally (note: a local unix-like make utility is required and all python dependencies must be installed in a local poetry shell):
 
 ```bash
 cd ../docs
@@ -166,16 +166,16 @@ The service may be run directly as a Python module. The web services module may 
 python -m api.main
 ```
 
-Go to  http://localhost/docs to see the service documentation and to use the simple UI to input TRAPI messages for validation.
+Go to http://localhost/docs to see the service documentation and to use the simple UI to input TRAPI messages for validation.
 
 ### Typical Output
 
-As an example of the kind of output to expect, if one posts the following TRAPI Response JSON data structure to the **/validate** endpoint:
+As an example of output to expect, if one posts the following TRAPI Response JSON data structure to the **/validate** endpoint:
 
 ```json
 {
-  "trapi_version": "1.4.2",
-  "biolink_version": "4.1.5",
+  "trapi_version": "1.6.0",
+  "biolink_version": "4.2.5",
   "response": {
       "message": {
         "query_graph": {
@@ -222,34 +222,30 @@ one should typically get a response body something like the following JSON valid
       "Standards Test": {
         "info": {
           "info.query_graph.edge.predicate.mixin": {
-            "global": {
               "biolink:treats": [
                 {
                   "edge_id": "drug[biolink:Drug]--['biolink:treats']->type-2 diabetes[None]"
                 }
               ]
-            }
           }
         },
         "skipped": {},
         "warning": {},
         "error": {
           "error.query_graph.edge.predicate.invalid": {
-            "global": {
               "biolink:treats": [
                 {
                   "edge_id": "drug[biolink:Drug]--['biolink:treats']->type-2 diabetes[None]"
                 }
               ]
-            }
           }
         },
         "critical": {}
       }
     }
   },
-  "trapi_version": "v1.4.2",
-  "biolink_version": "4.1.5"
+  "trapi_version": "v1.6.0",
+  "biolink_version": "4.2.5"
 }
 ```
 
@@ -298,12 +294,11 @@ Summary of earlier releases and current Change Log is [here](CHANGELOG.md).
 
 ## Code Limitations (implied Future Work?)
 
-- The release of the reasoner-validator after v2.2.0 will not likely be able to (reliably, if at all) validate TRAPI JSON data models prior to 1.3.0
+- The release of the reasoner-validator after v5.0.0 will not validate TRAPI JSON data models prior to 1.5.0 (in fact, its behavior will be undefined for such data).
 - Biolink Model release <= 2.4.8 versus 3.0.0 validation: the reasoner-validator uses the Biolink Model Toolkit. As it happens, the toolkit is not backwards compatible with at least one Biolink Model structural change from release 2.#.# to 3.#.#: the tagging of 'canonical' predicates. That is, the 0.8.10++ toolkit reports canonical <= 2.4.8 model predicates as 'non-canonical'.
-- This release of the Reasoner Validator Web Service will detect TRAPI 1.0.* releases but doesn't strive to be completely backwards compatible with them (considering that TRAPI 1.0.* is totally irrelevant now). 
 - The web service validation doesn't do deep validation of the Results part of a TRAPI Message
-- The validation is only run on the first 1000 nodes and 100 edges of graphs, to keep the validation time tractable (this risks not having complete coverage of the graph)
-- Biolink Model toolkit is not (yet) cached so changing the model version during use will result in some latency in results
+- The validation is only run on the first 1000 nodes and 100 edges of knowledge graphs, to keep the validation time tractable (this risks not having complete coverage of the graph)
+- Biolink Model toolkit is not (yet) cached, so changing the model version during use will result in some latency in results
 - The validator service doesn't (yet) deeply validate non-core node and edge slot contents of Message Knowledge Graphs
 - The validator service doesn't (yet) attempt validation of Query Graph nodes and edges 'constraints' (e.g. `biolink:Association` etc. `domain` and `range` constraints)
 - Query Graph node 'ids' are not validated except when an associated 'categories' parameter is provided for the given node. In general, [Query Graph Validation](https://github.com/NCATSTranslator/reasoner-validator/issues/14) could be elaborated.
@@ -313,4 +308,4 @@ Summary of earlier releases and current Change Log is [here](CHANGELOG.md).
 
 - Kudos to Patrick Wang, who created the original implementation of the Reasoner-Validator project while with CoVar (an entrepreneurial team contributing to the Biomedical Data Translator).
 - Thanks to Kenneth Morton (CoVar) for his reviews of the latest code.
-- The project is currently being extended and maintained by Richard Bruskiewich (Delphinai Corporation, on the SRI team contributing to Translator)
+- The project is currently being extended and maintained by Richard Bruskiewich (Delphinai Corporation, subcontractor to the LBNL team contributing to Translator)
