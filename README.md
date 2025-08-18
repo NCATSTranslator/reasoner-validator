@@ -15,7 +15,7 @@ See [the full documentation](https://ncatstranslator.github.io/reasoner-validato
 
 ## Python Dependency
 
-The Reasoner Validator now requires Python 3.9 or later (some library dependencies now force this).
+The Reasoner Validator now requires Python release 3.9 to 3.12 (library dependencies now force this). The latest version 3.12 is recommended.
 
 ## Installing the Module
 
@@ -34,12 +34,12 @@ After [installing poetry](https://python-poetry.org/docs/#installation) and clon
 ```bash
 git clone https://github.com/NCATSTranslator/reasoner-validator.git
 cd reasoner-validator
-poetry use 3.10
+poetry use 3.12
 poetry shell
 poetry install
 ```
 
-Note that the **`poetry env`** can be set to either Python 3.9 through 3.12 at the present time (3.12 is recommended).
+Note that the **`poetry env`** can be set to Python 3.9 through 3.12 at the present time (3.12 is recommended).
 
 This installation also installs testing dependencies (in the poetry 'dev' group in the pyproject.toml) and documentation dependencies (in the corresponding poetry 'docs' group). If you don't want the overhead of these dependencies, then the installation of these poetry group dependencies may be excluded:
 
@@ -89,7 +89,7 @@ The use of the Poetry shell command allows for running of the tests without the 
 
 ```bash
 % poetry shell
-(reasoner-validator-py3.9) % pytest --cov
+(reasoner-validator-py3.12) % pytest --cov
 ```
 
 Run the tests with a detailed coverage report in a HTML page:
@@ -132,8 +132,8 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 
 ```json
 {
-  "trapi_version": "1.4.1",
-  "biolink_version": "3.5.0",
+  "trapi_version": "1.6.1",
+  "biolink_version": "4.2.5",
   "target_provenance": {
     "ara_source": "infores:aragorn",
     "kp_source": "infores:panther",
@@ -297,7 +297,7 @@ Summary of earlier releases and current Change Log is [here](CHANGELOG.md).
 - The release of the reasoner-validator after v5.0.0 will not validate TRAPI JSON data models prior to 1.5.0 (in fact, its behavior will be undefined for such data).
 - Biolink Model release <= 2.4.8 versus 3.0.0 validation: the reasoner-validator uses the Biolink Model Toolkit. As it happens, the toolkit is not backwards compatible with at least one Biolink Model structural change from release 2.#.# to 3.#.#: the tagging of 'canonical' predicates. That is, the 0.8.10++ toolkit reports canonical <= 2.4.8 model predicates as 'non-canonical'.
 - The web service validation doesn't do deep validation of the Results part of a TRAPI Message
-- The validation is only run on the first 1000 nodes and 100 edges of knowledge graphs, to keep the validation time tractable (this risks not having complete coverage of the graph)
+- The validation is only run on the first 1000 nodes and 100 edges of a knowledge graph, to keep the validation time tractable (this risks not having complete coverage of the graph)
 - Biolink Model toolkit is not (yet) cached, so changing the model version during use will result in some latency in results
 - The validator service doesn't (yet) deeply validate non-core node and edge slot contents of Message Knowledge Graphs
 - The validator service doesn't (yet) attempt validation of Query Graph nodes and edges 'constraints' (e.g. `biolink:Association` etc. `domain` and `range` constraints)
