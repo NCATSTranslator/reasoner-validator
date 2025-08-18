@@ -1,47 +1,8 @@
 #!/usr/bin/env python
+from api import SAMPLE_TRAPI_RESPONSE
 from reasoner_validator.message import MESSAGES_BY_TARGET
 from reasoner_validator.validator import TRAPIResponseValidator
 
-SAMPLE_RESPONSE = {
-    "schema_version": "1.5.0",
-    "biolink_version": "4.2.0",
-    "message": {
-        "query_graph": {
-            "nodes": {
-                "type-2 diabetes": {"ids": ["MONDO:0005148"]},
-                "drug": {"categories": ["biolink:Drug"]}
-            },
-            "edges": {
-                "treats": {"subject": "drug", "predicates": ["biolink:treats"], "object": "type-2 diabetes"}
-            }
-        },
-        "knowledge_graph": {
-            "nodes": {
-                "MONDO:0005148": {"name": "type-2 diabetes"},
-                "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
-            },
-            "edges": {
-                "df87ff82": {"subject": "CHEBI:6801", "predicate": "biolink:treats", "object": "MONDO:0005148"}
-            }
-        },
-        "results": [
-            {
-                "node_bindings": {
-                    "type-2 diabetes": [{"id": "MONDO:0005148"}],
-                    "drug": [{"id": "CHEBI:6801"}]
-                },
-                "edge_bindings": {
-                    "treats": [{"id": "df87ff82"}]
-                }
-            }
-        ]
-    },
-    "workflow": [
-        {
-            "id": "lookup"
-        }
-    ]
-}
 
 validator = TRAPIResponseValidator(
     # If the TRAPI version value is omitted or set to None,
@@ -66,12 +27,12 @@ validator = TRAPIResponseValidator(
 )
 
 # Unlike earlier release of the package, validation methods do NOT throw an exception,
-# but rather, return validation outcomes as a dictionary of validation messsages
+# but rather, return validation outcomes as a dictionary of validation messages
 # Here, the 'message' parameter here is just the Python equivalent dictionary of the
-# TRAPI.Message JSON schema model component of the TRAPI Response (not the full TRAPI Response...yet)
+# TRAPI Response of the TRAPI.Message JSON schema model (not the full TRAPI Response...yet)
 
 # this method validates a complete TRAPI Response JSON result
-validator.check_compliance_of_trapi_response(response=SAMPLE_RESPONSE)
+validator.check_compliance_of_trapi_response(response=SAMPLE_TRAPI_RESPONSE)
 
 # Messages are retrieved from the validator object as follows:
 messages: MESSAGES_BY_TARGET = validator.get_all_messages()

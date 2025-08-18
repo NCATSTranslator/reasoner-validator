@@ -1,15 +1,18 @@
 """
 FastAPI web service wrapper for TRAPI validator and Biolink Model compliance testing
 """
-from typing import Optional, Dict
+from typing import Optional, Dict, Annotated
 from sys import stderr
 from pydantic import BaseModel
 
+from fastapi import FastAPI, HTTPException, Body
+from fastapi.openapi.models import Example
+
 import uvicorn
-from fastapi import FastAPI, HTTPException
 
 from bmt import Toolkit
 
+from api import SAMPLE_TRAPI_RESPONSE
 from reasoner_validator.trapi import TRAPISchemaValidator
 from reasoner_validator.versioning import get_latest_version
 from reasoner_validator.validator import TRAPIResponseValidator
@@ -78,9 +81,23 @@ class Query(BaseModel):
     #
     response: Dict
 
+normal_example: Example = {
+    "summary": "A normal example",
+    "description": "A **normal** item works correctly.",
+    "value": SAMPLE_TRAPI_RESPONSE
+}
 
 @app.post("/validate")
-async def validate(query: Query):
+async def validate(
+    query: Annotated[
+        Query,
+        Body(
+            openapi_examples = {
+                "Normal": normal_example
+            }
+        )
+    ]
+):
 
     if not query.response:
         raise HTTPException(status_code=400, detail="Empty input message?")
