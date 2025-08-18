@@ -3,10 +3,13 @@ FastAPI web service wrapper for TRAPI validator and Biolink Model compliance tes
 """
 from typing import Optional, Dict, Annotated
 from sys import stderr
+from os.path import abspath, dirname
 from pydantic import BaseModel
 
 from fastapi import FastAPI, HTTPException, Body
 from fastapi.openapi.models import Example
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.staticfiles import StaticFiles
 
 import uvicorn
 
@@ -17,6 +20,9 @@ from reasoner_validator.trapi import TRAPISchemaValidator
 from reasoner_validator.versioning import get_latest_version
 from reasoner_validator.validator import TRAPIResponseValidator
 
+API_DIRECTORY = abspath(dirname(__file__))
+print(f"API App Directory: {API_DIRECTORY}", file=stderr)
+
 # telemetry_endpoint: Optional[str] = getenv("TELEMETRY_ENDPOINT")
 # print(f"Telemetry endpoint: {str(telemetry_endpoint)}", file=stderr)
 
@@ -25,7 +31,20 @@ SERVICE_NAME = "reasoner-validator"
 default_toolkit: Toolkit = Toolkit()
 DEFAULT_BIOLINK_MODEL_VERSION = default_toolkit.get_model_version()
 
-app = FastAPI(title=SERVICE_NAME)
+app = FastAPI(title=SERVICE_NAME, docs_url=None)
+
+app.mount("/img", StaticFiles(directory=f"{API_DIRECTORY}/img"), name="img")
+
+FAVICON_PATH = f"{API_DIRECTORY}/img/favicon.ico"
+
+@app.get("/docs", include_in_schema=False)
+async def swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="FastAPI",
+        swagger_favicon_url="/img/favicon.ico"
+    )
+
 
 # if telemetry_endpoint:
 #     from api.rvtelemetry import instrument
