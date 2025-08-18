@@ -35,13 +35,13 @@ def get_releases(refresh: bool = False):
             dump(data=version_data, stream=version_cache)
 
     with open(VERSION_CACHE_FILE, "r") as version_cache:
-        # is now a two level YAML catalog of "releases" and "branches"
+        # is now a two-level YAML catalog of "releases" and "branches"
         _version_catalog = load(version_cache, Loader=Loader)
 
 
 def get_versions() -> Dict:
     """
-    Get the catalog of currently available TRAPI (Github) releases and branches.
+    Get the catalog of currently available TRAPI (GitHub) releases and branches.
     :return:
     """
     global _version_catalog

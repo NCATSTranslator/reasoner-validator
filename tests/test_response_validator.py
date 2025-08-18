@@ -12,16 +12,11 @@ import pytest
 
 from dictdiffer import diff
 
-from reasoner_validator.trapi import (
-    TRAPI_1_3_0,
-    TRAPI_1_4_2
-)
 from reasoner_validator.validator import TRAPIResponseValidator
 
 from tests import (
     LATEST_TRAPI_RELEASE,
     LATEST_BIOLINK_MODEL_VERSION,
-    PATCHED_140_SCHEMA_FILEPATH,
     SAMPLE_NODES_WITH_ATTRIBUTES,
     DEFAULT_KL_AND_AT_ATTRIBUTES
 )
@@ -92,76 +87,161 @@ _TEST_QG_1 = {
     }
 }
 
-# Sample edge 1
-_TEST_EDGES_1 = {
+_TEST_KG_EDGE_SOURCES = [
+    {
+        "resource_id": "infores:chebi",
+        "resource_role": "primary_knowledge_source",
+        "upstream_resource_ids": []
+    },
+    {
+        "resource_id": "infores:biothings-explorer",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:chebi"
+        ]
+    },
+    {
+        "resource_id": "infores:molepro",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:biothings-explorer"
+        ]
+    },
+    {
+        "resource_id": "infores:arax",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:molepro"
+        ]
+    }
+]
+
+_TEST_KG_EDGE_SOURCES_MISSING_PRIMARY = [
+    # {
+    #     "resource_id": "infores:chebi",
+    #     "resource_role": "primary_knowledge_source",
+    #     "upstream_resource_ids": []
+    # },
+    {
+        "resource_id": "infores:biothings-explorer",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": []
+    },
+    {
+        "resource_id": "infores:molepro",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:biothings-explorer"
+        ]
+    },
+    {
+        "resource_id": "infores:arax",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:molepro"
+        ]
+    }
+]
+
+_TEST_KG_EDGE_SOURCES_MULTIPLE_PRIMARY = [
+    {
+        "resource_id": "infores:chebi",
+        "resource_role": "primary_knowledge_source",
+        "upstream_resource_ids": []
+    },
+    {
+        "resource_id": "infores:drugbank",
+        "resource_role": "primary_knowledge_source",
+        "upstream_resource_ids": []
+    },
+    {
+        "resource_id": "infores:biothings-explorer",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": ["infores:chebi", "infores:drugbank"]
+    },
+    {
+        "resource_id": "infores:molepro",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:biothings-explorer"
+        ]
+    },
+    {
+        "resource_id": "infores:arax",
+        "resource_role": "aggregator_knowledge_source",
+        "upstream_resource_ids": [
+            "infores:molepro"
+        ]
+    }
+]
+
+_SHARED_TEST_EDGES = {
        "edge_1": {
            "subject": "NCBIGene:29974",
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
-           "attributes": [
-               {
-                   "attribute_source": "infores:hmdb",
-                   "attribute_type_id": "biolink:primary_knowledge_source",
-                   "attributes": [],
-                   "description": "MolePro's HMDB target transformer",
-                   "original_attribute_name": "biolink:primary_knowledge_source",
-                   "value": "infores:hmdb",
-                   "value_type_id": "biolink:InformationResource"
-               },
-               {
-                   "attribute_source": "infores:molepro",
-                   "attribute_type_id": "biolink:aggregator_knowledge_source",
-                   "attributes": [],
-                   "description": "Molecular Data Provider",
-                   "original_attribute_name": "biolink:aggregator_knowledge_source",
-                   "value": "infores:molepro",
-                   "value_type_id": "biolink:InformationResource"
-               }
-            ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+           "attributes": DEFAULT_KL_AND_AT_ATTRIBUTES,
+
         }
     }
+
+_TEST_EDGES_1 = deepcopy(_SHARED_TEST_EDGES)
+_TEST_EDGES_1["edge_1"]["sources"] = _TEST_KG_EDGE_SOURCES
 
 _TEST_KG_1 = {
     "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
     "edges": _TEST_EDGES_1
 }
 
+_TEST_ANALYSES = [
+    {
+        "resource_id": "infores:ara0",
+        "edge_bindings": {
+            "treats": [
+                {
+                    "id": "df87ff82",
+                    "attributes": []
+                }
+            ]
+        },
+        "support_graphs": [],
+        "score": 0.7
+    }
+]
 
 _TEST_RESULTS_1 = [
     {
         "node_bindings": {
-            "type-2 diabetes": [{"id": TYPE_2_DIABETES_CURIE}],
-            "drug": [{"id": METFORMIN_CURIE}]
+            "type-2 diabetes": [
+                {
+                    "id": TYPE_2_DIABETES_CURIE,
+                    "attributes": []
+                }
+            ],
+            "drug": [
+                {
+                    "id": METFORMIN_CURIE,
+                    "attributes": []
+                }
+            ]
         },
-        "edge_bindings": {
-            "treats": [{"id": "df87ff82"}]
-        }
+        "analyses": _TEST_ANALYSES
     }
 ]
 
-# Sample edge 2
-_TEST_EDGES_2 = {
+# Sample edge missing primary
+_TEST_EDGES_SOURCES_MISSING_PRIMARY = {
        "edge_1": {
            "subject": "NCBIGene:29974",
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
-           "attributes": [
-               {
-                   "attribute_source": "infores:hmdb",
-                   "attribute_type_id": "biolink:aggregator_knowledge_source",
-                   "attributes": [],
-                   "description": "Molecular Data Provider",
-                   "original_attribute_name": "biolink:aggregator_knowledge_source",
-                   "value": "infores:molepro",
-                   "value_type_id": "biolink:InformationResource"
-               }
-           ],
+           "sources": _TEST_KG_EDGE_SOURCES_MISSING_PRIMARY
         }
     }
 
-_TEST_KG_2 = {
+_TEST_KG_WITH_EDGE_SOURCES_MISSING_PRIMARY = {
     "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
-    "edges": _TEST_EDGES_2
+    "edges": _TEST_EDGES_SOURCES_MISSING_PRIMARY
 }
 
 _TEST_QG_2 = {
@@ -203,12 +283,7 @@ _TEST_EDGES_3 = {
            "subject": "PMID:11156626",
            "predicate": "biolink:contributor",
            "object": "ORCID:0000-0002-4447-5978",
-           "attributes": [
-               {
-                   "attribute_type_id": "biolink:primary_knowledge_source",
-                   "value": "infores:automat-text-mining-provider"
-               }
-           ],
+           "attributes": [],
         }
     }
 
@@ -220,76 +295,55 @@ _TEST_KG_3 = {
 _TEST_RESULTS_2 = [
         {
             "node_bindings": {
-                "paper": [{"id": "PMID:11156626"}],
-                "author": [{"id": "ORCID:0000-0002-4447-5978"}]
+                "paper": [
+                    {
+                        "id": "PMID:11156626",
+                        "attributes": []
+                    }
+                ],
+                "author": [
+                    {
+                        "id": "ORCID:0000-0002-4447-5978",
+                        "attributes": []
+                    }
+                ]
             },
-            "edge_bindings": {
-                "citation": [{"id": "edge1"}]
-            }
+            "analyses": [
+                {
+                    "resource_id": "infores:ara0",
+                    "edge_bindings": {
+                        "citation": [
+                            {
+                                "id": "edge1",
+                                "attributes": []
+                            }
+                        ]
+                    },
+                    "support_graphs": [],
+                    "score": 0.7
+                }
+            ]
         }
     ]
 
 
-# Sample edge 2
-_TEST_EDGES_4 = {
+_TEST_EDGES_MULTIPLE_PRIMARY_KS = {
        "edge_1": {
            "subject": "NCBIGene:29974",
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
-           "attributes": [
-               {
-                   "attribute_type_id": "biolink:aggregator_knowledge_source",
-                   "value": "infores:molepro"
-               },
-               {
-                   "attribute_type_id": "biolink:primary_knowledge_source",
-                   "value": "infores:automat-text-mining-provider"
-               },
-               {
-                   "attribute_type_id": "biolink:primary_knowledge_source",
-                   "value": "infores:hmdb"
-               }
-           ],
+           "attributes": [],
         }
     }
 
 
-_TEST_KG_4 = {
+_TEST_KG_MULTIPLE_PRIMARY_KS = {
     "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
-    "edges": _TEST_EDGES_4
+    "edges": _TEST_EDGES_MULTIPLE_PRIMARY_KS
 }
 
-_TEST_KG_EDGE_SOURCES = [
-    {
-        "resource_id": "infores:chebi",
-        "resource_role": "primary_knowledge_source",
-        "upstream_resource_ids": []
-    },
-    {
-        "resource_id": "infores:biothings-explorer",
-        "resource_role": "aggregator_knowledge_source",
-        "upstream_resource_ids": [
-            "infores:chebi"
-        ]
-    },
-    {
-        "resource_id": "infores:molepro",
-        "resource_role": "aggregator_knowledge_source",
-        "upstream_resource_ids": [
-            "infores:biothings-explorer"
-        ]
-    },
-    {
-        "resource_id": "infores:arax",
-        "resource_role": "aggregator_knowledge_source",
-        "upstream_resource_ids": [
-            "infores:molepro"
-        ]
-    }
-]
-
 # From Implementation Guidelines circa June 2023
-_TEST_TRAPI_1_4_2_FULL_SAMPLE = {
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
     "schema_version": "1.5.0",
     "message": {
         "query_graph": {
@@ -304,8 +358,16 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
         },
         "knowledge_graph": {
             "nodes": {
-                TYPE_2_DIABETES_CURIE: {"name": "type-2 diabetes", "categories": ["biolink:Disease"]},
-                METFORMIN_CURIE: {"name": "metformin", "categories": ["biolink:Drug"]}
+                TYPE_2_DIABETES_CURIE: {
+                    "name": "type-2 diabetes",
+                    "categories": ["biolink:Disease"],
+                    "attributes": []
+                },
+                METFORMIN_CURIE: {
+                    "name": "metformin",
+                    "categories": ["biolink:Drug"],
+                    "attributes": []
+                }
             },
             "edges": {
                 "df87ff82": {
@@ -337,29 +399,48 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE = {
         "results": [
             {
                 "node_bindings": {
-                    "type-2 diabetes": [{"id": TYPE_2_DIABETES_CURIE}],
-                    "drug": [{"id": METFORMIN_CURIE}]
+                    "type-2 diabetes": [
+                        {
+                            "id": TYPE_2_DIABETES_CURIE,
+                            "attributes": []
+                        }
+                    ],
+                    "drug": [
+                        {
+                            "id": METFORMIN_CURIE,
+                            "attributes": []
+                        }
+                    ]
                 },
-                "analyses": [
-                    {
-                        "resource_id": "infores:ara0",
-                        "edge_bindings": {"treats": [{"id": "df87ff82"}]},
-                        "support_graphs": [],
-                        "score": 0.7
-                    }
-                ]
+                "analyses": _TEST_ANALYSES
             }
         ]
     }
 }
 
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
+_TEST_EDGES_MISSING_PRIMARY_SOURCE = deepcopy(_SHARED_TEST_EDGES)
+_TEST_EDGES_MISSING_PRIMARY_SOURCE["edge_1"]["sources"] = _TEST_KG_EDGE_SOURCES_MISSING_PRIMARY
 
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION["schema_version"] = "1.3.0"
+_TEST_KG_MISSING_PRIMARY_SOURCE = {
+    "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
+    "edges": _TEST_EDGES_MISSING_PRIMARY_SOURCE
+}
 
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
+_TEST_EDGES_MULTIPLE_PRIMARY_SOURCE = deepcopy(_SHARED_TEST_EDGES)
+_TEST_EDGES_MULTIPLE_PRIMARY_SOURCE["edge_1"]["sources"] = _TEST_KG_EDGE_SOURCES_MULTIPLE_PRIMARY
+
+_TEST_KG_MULTIPLE_PRIMARY_SOURCE = {
+    "nodes": SAMPLE_NODES_WITH_ATTRIBUTES,
+    "edges": _TEST_EDGES_MULTIPLE_PRIMARY_SOURCE
+}
+
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
+
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION["schema_version"] = "1.3.0"
+
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
     "biolink_version": "2.2.0",
     "message": {
         "query_graph": {
@@ -410,13 +491,30 @@ _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
         "results": [
             {
                 "node_bindings": {
-                    "type-2 diabetes": [{"id": TYPE_2_DIABETES_CURIE}],
-                    "drug": [{"id": METFORMIN_CURIE}]
+                    "type-2 diabetes": [
+                        {
+                            "id": TYPE_2_DIABETES_CURIE,
+                            "attributes": []
+                        }
+                    ],
+                    "drug": [
+                        {
+                            "id": METFORMIN_CURIE,
+                            "attributes": []
+                        }
+                    ]
                 },
                 "analyses": [
                     {
                         "resource_id": "infores:ara0",
-                        "edge_bindings": {"treats": [{"id": "df87ff82"}]},
+                        "edge_bindings": {
+                            "treats": [
+                                {
+                                    "id": "df87ff82",
+                                    "attributes": []
+                                }
+                            ]
+                        },
                         "support_graphs": [],
                         "score": 0.7
                     }
@@ -451,30 +549,11 @@ TEST_GRAPH: Dict = {
 # this unit test checks that the original response object is returned verbatim
 def test_conservation_of_response_object():
     validator: TRAPIResponseValidator = TRAPIResponseValidator()
-    input_response = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
-    reference_response = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
+    input_response = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
+    reference_response = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
     assert input_response == reference_response
     validator.check_compliance_of_trapi_response(response=input_response)
     assert not list(diff(input_response, reference_response))
-
-
-@pytest.mark.parametrize(
-    "trapi_version,outcome",
-    [
-        ("1.3.0", False),
-        ("1.4.0", True),
-        ("1.4.2", True),
-        ("1.5.0-beta", True),
-        ("1.5.0", True),
-
-        # since the latest default (as of test creation)
-        # is 1.5 something, then 'None' should also be true
-        (None, True)
-    ]
-)
-def test_is_trapi_1_4_or_later(trapi_version: Optional[str], outcome: bool):
-    validator: TRAPIResponseValidator = TRAPIResponseValidator(trapi_version=trapi_version)
-    assert validator.is_trapi_1_4_or_later() is outcome
 
 
 @pytest.mark.parametrize(
@@ -514,7 +593,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
 
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -528,7 +607,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -543,7 +622,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -560,7 +639,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -577,7 +656,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -594,7 +673,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     # "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -611,7 +690,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -628,7 +707,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": {"invalid results"}
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -645,7 +724,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": []
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -661,7 +740,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -676,7 +755,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -691,18 +770,19 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": None,
-                "kp_source": "infores:hmdb",
-                "kp_source_type": "primary"
+                "target_ara_source": None,
+                "target_kp_source": "infores:hmdb",
+                "target_kp_source_type": "primary"
             },
             True,
             ""
         ),
         (
-            # Query 12 - Full Message, with strict validation and a non-null kp_source_type that doesn't match
+            # Query 12 - Full Message, with strict validation
+            #            and a non-null target_kp_source_type that doesn't match
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -710,18 +790,18 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": None,
-                "kp_source": "infores:molepro",
-                "kp_source_type": "primary"
+                "target_ara_source": None,
+                "target_kp_source": "infores:molepro",
+                "target_kp_source_type": "primary"
             },
             True,
-            "warning.knowledge_graph.edge.provenance.kp.missing"
+            "warning.knowledge_graph.edge.provenance.target.kp.missing"
         ),
         (
-            # Query 13 - Full Message, with strict validation and a non-null ara_source that doesn't match
+            # Query 13 - Full Message, with strict validation and a non-null target_ara_source that doesn't match
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
@@ -729,15 +809,15 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": "infores:aragorn",
-                "kp_source": "infores:hmdb",
-                "kp_source_type": "primary"
+                "target_ara_source": "infores:aragorn",
+                "target_kp_source": "infores:hmdb",
+                "target_kp_source_type": "primary"
             },
             True,
-            "warning.knowledge_graph.edge.provenance.ara.missing"
+            "warning.knowledge_graph.edge.provenance.target.ara.missing"
         ),
         (
             # Query 14 - Full Message, with "strict validation" and a non-null "sources" data that matches
@@ -748,12 +828,12 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": "infores:molepro",
-                "kp_source": "infores:hmdb",
-                "kp_source_type": "primary"
+                "target_ara_source": "infores:molepro",
+                "target_kp_source": "infores:hmdb",
+                "target_kp_source_type": "primary"
             },
             True,
             ""
@@ -767,52 +847,52 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": None,
-                "kp_source": "infores:molepro",
-                "kp_source_type": "aggregator"
+                "target_ara_source": None,
+                "target_kp_source": "infores:molepro",
+                "target_kp_source_type": "aggregator"
             },
             True,
             ""
         ),
         (
-            # Query 16 - Full Message, with strict validation and
-            #            a non-null kp_source_type results in missing primary
+            # Query 16 - Full Message, with strict validation and a non-null target_kp_source_id/_type,
+            #             which triggers a missing primary provenance validation
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
-                    "knowledge_graph": _TEST_KG_2,
+                    "knowledge_graph": _TEST_KG_WITH_EDGE_SOURCES_MISSING_PRIMARY,
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": None,
-                "kp_source": "infores:molepro",
-                "kp_source_type": "aggregator"
+                "target_ara_source": None,
+                "target_kp_source": "infores:molepro",
+                "target_kp_source_type": "aggregator"
             },
             True,
             "error.knowledge_graph.edge.provenance.missing_primary"
         ),
         (
-            # Query 17 - Full Message, with strict validation and
-            #            non-null kp_source_type results, has multiple "primary knowledge sources"
+            # Query 17 - Full Message, with strict validation and a non-null target_kp_source_id/_type,
+            #             which triggers a multiple "primary knowledge sources" validation error
             {
                 "message": {
                     "query_graph": _TEST_QG_1,
-                    "knowledge_graph": _TEST_KG_4,
+                    "knowledge_graph": _TEST_KG_MULTIPLE_PRIMARY_SOURCE,
                     "results": _TEST_RESULTS_1
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             {
-                "ara_source": None,
-                "kp_source": "infores:molepro",
-                "kp_source_type": "aggregator"
+                "target_ara_source": None,
+                "target_kp_source": "infores:molepro",
+                "target_kp_source_type": "aggregator"
             },
             True,
             "warning.knowledge_graph.edge.provenance.multiple_primary"
@@ -830,7 +910,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_2
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -845,7 +925,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     "results": _TEST_RESULTS_2
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -862,7 +942,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                 },
                 "workflow": "workflows-not-an-array"
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -881,7 +961,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                 },
                 "workflow": ["not-a-valid-workflow-spec"]
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -902,7 +982,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                 },
                 "workflow": [{"id": "annotate"}]
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -944,7 +1024,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     }
                 ]
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -988,7 +1068,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     }
                 ]
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -1012,7 +1092,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
                     }
                 ]
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -1021,8 +1101,8 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
         ),
         (   # Query 26 - We throw a full TRAPI JSON example here (taken directly from the
             #            TRAPI implementation guidelines...) just for fun and profit
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE,
-            TRAPI_1_4_2,
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -1030,7 +1110,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
         ),
         (   # Query 27 - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
             #            guidelines...) but add the 'schema_version' just for fun and profit
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_SCHEMA_VERSION,
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION,
             None,
             "4.1.4",
             None,
@@ -1039,8 +1119,8 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
         ),
         (   # Query 28 - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
             #            guidelines...) but explicitly specify the 'biolink_version == 2.5.8' just for fun and profit
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_BIOLINK_VERSION,
-            TRAPI_1_4_2,
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -1067,6 +1147,43 @@ def test_check_biolink_model_compliance_of_trapi_response(
     check_messages(validator, code, no_errors=True)
 
 
+
+def test_compliance_in_isolation(
+        # response: Dict,
+        # trapi_version: str,
+        # biolink_version: str,
+        # target_provenance: Dict,
+        # strict_validation: bool,
+        # code
+):
+    # Query 17 - Full Message, with strict validation and a non-null target_kp_source_id/_type,
+    #             which triggers a multiple "primary knowledge sources" validation error
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(
+        trapi_version=LATEST_TRAPI_RELEASE,
+        biolink_version=None,
+        strict_validation=True,
+        target_provenance={
+            "target_ara_source": None,
+            "target_kp_source": "infores:molepro",
+            "target_kp_source_type": "aggregator"
+        }
+    )
+    validator.check_compliance_of_trapi_response(
+        response={
+            "message": {
+                "query_graph": _TEST_QG_1,
+                "knowledge_graph": _TEST_KG_MULTIPLE_PRIMARY_SOURCE,
+                "results": _TEST_RESULTS_1
+            }
+        }
+    )
+    check_messages(
+        validator,
+        "warning.knowledge_graph.edge.provenance.multiple_primary",
+        no_errors=True
+    )
+
+
 @pytest.mark.parametrize(
     "response,trapi_version,biolink_version,sources,strict_validation,code",
     [
@@ -1076,7 +1193,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
 
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1089,7 +1206,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1103,7 +1220,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1119,7 +1236,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1135,7 +1252,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1151,7 +1268,7 @@ def test_check_biolink_model_compliance_of_trapi_response(
                     # "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
@@ -1167,56 +1284,32 @@ def test_check_biolink_model_compliance_of_trapi_response(
                     "results": None
                 }
             },
-            TRAPI_1_3_0,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
             ""
         ),
         (
-            # Query 7 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE,
-            # 25 June 2023 1.4.0 trapi_version with
-            # defective auxiliary_graphs schema model
-            # now temporarily patched?
-            TRAPI_1_4_2,
+            # Query 7 - Full fake sample Response originally derived
+            #           from the TRAPI 1.4.0 implementation guidelines
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
             ""  # would be a "critical.trapi.validation" if the schema was unpatched
         ),
         (
-            # Query 8 - Full fake sample Response from TRAPI 1.4.0 implementation guidelines
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE,
-            # patched 1.4.0 test schema - fixed critical
-            # TRAPI schema parsing error with auxiliary_graphs
-            PATCHED_140_SCHEMA_FILEPATH,
-            None,
-            None,
-            False,
-            ""
-        ),
-        (
-            # Query 9 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
-            # 25 June 2023 1.4.0 trapi_version with
+            # Query 8 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
+            # 25 June 2023 1.4.0 trapi_version with a
             # defective auxiliary_graphs schema model
-            TRAPI_1_4_2,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             False,
             ""  # nullable: true allows this outcome
-        ),
-        (
-            # Query 10 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
-            _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
-            # patched 1.4.0 test schema - fixed critical
-            # TRAPI schema parsing error with auxiliary_graphs
-            PATCHED_140_SCHEMA_FILEPATH,
-            None,
-            None,
-            False,
-            ""  # should still work if nullable: true
         )
     ]
 )
@@ -1234,8 +1327,8 @@ def test_check_biolink_model_compliance_of_trapi_response_suppressing_empty_data
     check_messages(validator, code, no_errors=True)
 
 
-_TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_REPORTABLE_ERRORS = deepcopy(_TEST_TRAPI_1_4_2_FULL_SAMPLE)
-sample_message = _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_REPORTABLE_ERRORS["message"]
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_REPORTABLE_ERRORS = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
+sample_message = _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_REPORTABLE_ERRORS["message"]
 sample_qgraph = sample_message["query_graph"]
 sample_kg = sample_message["knowledge_graph"]
 sample_kg_node_missing_category = sample_kg["nodes"][TYPE_2_DIABETES_CURIE].pop("categories")
@@ -1246,8 +1339,8 @@ sample_kg_edge_abstract_predicate = sample_kg["edges"]["df87ff82"]["predicate"] 
 @pytest.mark.parametrize(
     "response",
     [
-        _TEST_TRAPI_1_4_2_FULL_SAMPLE,
-        _TEST_TRAPI_1_4_2_FULL_SAMPLE_WITH_REPORTABLE_ERRORS
+        _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE,
+        _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_REPORTABLE_ERRORS
     ]
 )
 def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(response: Dict):
@@ -1541,17 +1634,26 @@ SAMPLE_TEST_RESULTS = [
             "diabetes mellitus": [
                 {
                     "id": TYPE_2_DIABETES_CURIE,  # actually bound knowledge graph node is 'type 2 diabetes mellitus'
-                    "query_id": "MONDO:0005015"   # QNode identifier is the MONDO parent concept of 'diabetes mellitus'
+                    "query_id": "MONDO:0005015",  # QNode identifier is the MONDO parent concept of 'diabetes mellitus'
+                    "attributes": []
                 }
             ],
-            "drug": [{"id": METFORMIN_CURIE}]
+            "drug": [
+                {
+                    "id": METFORMIN_CURIE,
+                    "attributes": []
+                }
+            ]
         },
         "analyses": [
             {
                 "resource_id": "infores:ara0",
                 "edge_bindings": {
                     "treated_by": [
-                        {"id": "df879999"}
+                        {
+                            "id": "df879999",
+                            "attributes": []
+                        }
                     ]
                 },
                 "support_graphs": [],
@@ -1564,14 +1666,31 @@ SAMPLE_TEST_RESULTS = [
 SAMPLE_TEST_INCOMPLETE_RESULTS = [
     {
         "node_bindings": {
-            "diabetes mellitus": [{"id": TYPE_2_DIABETES_CURIE}],
-            "drug": [{"id": METFORMIN_CURIE}]
+            "diabetes mellitus": [
+                {
+                    "id": TYPE_2_DIABETES_CURIE,
+                    "attributes": []
+                }
+            ],
+            "drug": [
+                {
+                    "id": METFORMIN_CURIE,
+                    "attributes": []
+                }
+            ]
         },
         "analyses": [
             {
                 "resource_id": "infores:ara0",
                 # not pointing to an edge in the existing sample KG
-                "edge_bindings": {"treated_by": [{"id": "abcde999"}]},
+                "edge_bindings": {
+                    "treated_by": [
+                        {
+                            "id": "abcde999",
+                            "attributes": []
+                        }
+                    ]
+                },
                 "support_graphs": [],
                 "score": 0.7
             }

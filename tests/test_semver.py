@@ -2,8 +2,8 @@
 import pytest
 
 from tests import (
-    PATCHED_SCHEMA_VERSION,
-    PATCHED_140_SCHEMA_FILEPATH,
+    LOCAL_SCHEMA_VERSION,
+    LOCAL_TRAPI_150_SCHEMA_FILEPATH,
     BROKEN_SCHEMA_FILEPATH
 )
 from reasoner_validator.versioning import (
@@ -169,8 +169,8 @@ def test_semver_not_equal_to():
     assert one_four_zero != one_three_only
 
 
-sample_schema_version = SemVer.from_string(PATCHED_SCHEMA_VERSION)
-sample_schema_file_semver = SemVer.from_string(PATCHED_140_SCHEMA_FILEPATH)
+sample_schema_version = SemVer.from_string(LOCAL_SCHEMA_VERSION)
+sample_schema_file_semver = SemVer.from_string(LOCAL_TRAPI_150_SCHEMA_FILEPATH)
 
 
 def test_schema_file_versioning():

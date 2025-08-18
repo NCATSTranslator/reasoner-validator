@@ -38,7 +38,7 @@ app = FastAPI(title=SERVICE_NAME)
 # Dictionary of validation context identifying the  ARA and KP
 # target KP and ARA knowledge sources subject to edge provenance attribute validation
 # (key-value examples as given here)
-# Example: TargetProvenance(ara_source="aragorn", kp_source="panther", kp_source_type="primary")
+# Example: TargetProvenance(target_ara_source="aragorn", target_kp_source="panther", target_kp_source_type="primary")
 class TargetProvenance(BaseModel):
     ara_source: Optional[str] = None,
     kp_source: Optional[str] = None,

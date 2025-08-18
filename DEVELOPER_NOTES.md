@@ -10,7 +10,7 @@ As of release 3.1.6, this project uses the [poetry dependency management](https:
 
 The validation codes are dot-delimited constants represent the hierarchical YAML path in the project's **codes.yaml** file.  The leaves of the YAML paths define the constant into three components:
 
-1. **$message:** the short message description of the meaning of the validation message
+1. **$message:** the synopsis of the validation message
 2. **$context:** the (YAML) list of parameters which the message may have. The 'identifier' tag generally denotes the TRAPI parse target being parsed. Other tags can provide the validation context such as the identity of the subject-predicate-edge within which the validation issue was encountered.
 3. **$description:** a more complete definition of the validation message
 
@@ -18,7 +18,7 @@ After modifying the codes.yaml file, one should run the reasoner_validator.valid
 
 ## TRAPI Version Updates
 
-For Github-related performance reasons, as of project release v3.8.3, the code caches the TRAPI releases and branches from the ReasonerAPI in the **[versions.yaml](reasoner_validator/versions.yaml)** file.  Whenever the TRAPI releases changed significantly, one needs to update the project version inventory file by running the [scripts/trapi_releases.py](scripts/trapi_releases.py) script, then commit the new **[versions.yaml](reasoner_validator/versions.yaml)** file to Github.
+For Github-related performance reasons, as of project release v3.8.3, the code caches the TRAPI releases and branches from the ReasonerAPI in the **[versions.yaml](reasoner_validator/versions.yaml)** file.  Whenever the list of TRAPI releases changes, one needs to update the project version inventory file by running the [scripts/trapi_releases.py](scripts/trapi_releases.py) script, then commit the new **[versions.yaml](reasoner_validator/versions.yaml)** file to Github.
 
 ## Project Releases
 

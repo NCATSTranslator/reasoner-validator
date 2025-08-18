@@ -9,20 +9,15 @@ from reasoner_validator import post_query, NODE_NORMALIZER_SERVER
 from reasoner_validator.biolink import is_curie
 from reasoner_validator.biolink.ontology import get_parent_concepts
 from reasoner_validator.report import TRAPIGraphType
-from reasoner_validator.trapi import (
-    LATEST_TRAPI_RELEASE,
-    TRAPI_1_4_0_SEMVER,
-    check_node_edge_mappings
-)
+from reasoner_validator.trapi import  check_node_edge_mappings
 from reasoner_validator.trapi.mapping import MappingValidator
-from reasoner_validator.versioning import SemVer, SemVerError, get_latest_version
+from reasoner_validator.versioning import get_latest_version
 
 import logging
 logger = logging.getLogger(__name__)
 
-
-# Unspoken assumption here is that validation of results returned for
-# Biolink Model release compliance only needs to be superficial
+# The unspoken assumption here is that the validation of results returned
+# for Biolink Model release compliance only needs to be superficial
 RESULT_TEST_DATA_SAMPLE_SIZE = 10
 
 
@@ -63,20 +58,7 @@ class TRAPIResponseValidator(BiolinkValidator):
             target_provenance=target_provenance,
             strict_validation=strict_validation
         )
-        self._is_trapi_1_4_or_later: Optional[bool] = None
         self.suppress_empty_data_warnings: bool = suppress_empty_data_warnings
-
-    def is_trapi_1_4_or_later(self) -> bool:
-        assert self.trapi_version
-        try:  # try block ... Sanity check: in testcase the trapi_version is somehow invalid?
-            target_major_version: SemVer = \
-                SemVer.from_string(self.trapi_version, core_fields=['major', 'minor'],  ext_fields=[])
-            self._is_trapi_1_4_or_later = target_major_version >= TRAPI_1_4_0_SEMVER
-        except SemVerError as sve:
-            logger.error(f"Current TRAPI release '{self.trapi_version}' seems invalid: {str(sve)}. Reset to latest?")
-            self.trapi_version = LATEST_TRAPI_RELEASE
-            self._is_trapi_1_4_or_later = True
-        return self._is_trapi_1_4_or_later
 
     @staticmethod
     def sanitize_workflow(response: Dict) -> Dict:
@@ -111,7 +93,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         """
         One stop validation of all components of a TRAPI-schema compliant
         Query.Response, including its Message against a designated Biolink Model release.
-        The high level structure of a Query.Response is described in
+        The high-level structure of a Query.Response is described in
         https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response-.
 
         The TRAPI Query.Response.Message is a Python Dictionary with three entries:
@@ -297,7 +279,7 @@ class TRAPIResponseValidator(BiolinkValidator):
 
                 if self.validate_biolink():
                     # Conduct validation of Biolink Model compliance
-                    # of the Query Graph, if not suppressed...
+                    # for the Query Graph, if not suppressed...
                     self.check_biolink_model_compliance(query_graph, graph_type=TRAPIGraphType.Query_Graph)
 
         # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
@@ -401,12 +383,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                     # generally validate against the pertinent schema
                     self.is_valid_trapi_query(instance=result, component="Result")
 
-                    # Maybe some additional TRAPI-release specific non-schematic validation here?
-                    if self.is_trapi_1_4_or_later():
-                        # TODO: implement me!
-                        pass
-                    else:
-                        pass
+                    # TODO: implement me! Maybe some additional TRAPI-release specific non-schematic validation here?
 
                     # TODO: here, we could try to compare the Results against the contents of the KnowledgeGraph,
                     #       with respect to node input values from the QueryGraph, but this is tricky to do solely
@@ -805,94 +782,68 @@ class TRAPIResponseValidator(BiolinkValidator):
                     result
                 )
 
-            # However, TRAPI 1.4.0++ Message 'Results' 'edge_bindings' are reported differently
-            # from 1.3.0, rather, embedded in 'Analysis' objects (and 'Auxiliary Graphs')
             edge_binding_found: bool = False
-            if self.is_trapi_1_4_or_later():
-                #
-                # "auxiliary_graphs": {
-                # "a0": {
-                #     "edges": [
-                #         "e02",
-                #         "e12"
-                #     ]
-                # },
-                # "a1": {
-                #     "edges": [
-                #         "extra_edge0"
-                #     ]
-                # },
-                # "a2": {
-                #     "edges" [
-                #         "extra_edge1"
-                #     ]
-                # }
-                #     },
-                #     "results": [
-                # # Single result in list:
-                #
-                # {
-                #     "node_bindings": {
-                #         "n0": [
-                #             "id": "diabetes"
-                #         ],
-                #         "n1": [
-                #             "id": "metformin"
-                #         ]
-                #     },
-                #     "analyses": [
-                #         {
-                #             "reasoner_id": "ara0",
-                #             "edge_bindings": {
-                #                 "e0": [
-                #                     {
-                #                         "id": "e01"
-                #                     },
-                #                     {
-                #                         "id": "creative_edge"
-                #                     }
-                #                 ]
-                #             },
-                #             "support_graphs": [
-                #                 "a1",
-                #                 "a2"
-                #             ]
-                #             "score": ".7"
-                #         },
-                #      ]
-                #    }
-                # ]
+            #
+            # "auxiliary_graphs": {
+            # "a0": {
+            #     "edges": [
+            #         "e02",
+            #         "e12"
+            #     ]
+            # },
+            # "a1": {
+            #     "edges": [
+            #         "extra_edge0"
+            #     ]
+            # },
+            # "a2": {
+            #     "edges" [
+            #         "extra_edge1"
+            #     ]
+            # }
+            #     },
+            #     "results": [
+            # # Single result in list:
+            #
+            # {
+            #     "node_bindings": {
+            #         "n0": [
+            #             "id": "diabetes"
+            #         ],
+            #         "n1": [
+            #             "id": "metformin"
+            #         ]
+            #     },
+            #     "analyses": [
+            #         {
+            #             "reasoner_id": "ara0",
+            #             "edge_bindings": {
+            #                 "e0": [
+            #                     {
+            #                         "id": "e01"
+            #                     },
+            #                     {
+            #                         "id": "creative_edge"
+            #                     }
+            #                 ]
+            #             },
+            #             "support_graphs": [
+            #                 "a1",
+            #                 "a2"
+            #             ]
+            #             "score": ".7"
+            #         },
+            #      ]
+            #    }
+            # ]
 
-                # result["analyses"] may be empty but TRAPI 1.4.0 schema validation ensures that
-                # the "analysis" key is at least present and that the objects themselves are 'well-formed'
-                analyses: List = result["analyses"]
-                for analysis in analyses:
-                    edge_binding_found = self.testcase_edge_bindings(query_graph["edges"], edge_id, analysis)
-                    if edge_binding_found:
-                        break
-            else:
-                # TRAPI 1.3.0 or earlier?
-                #
-                # Then, the TRAPI 1.3.0 Message Results (referencing the
-                # Response Knowledge Graph) could be something like this:
-                #
-                # "results": [
-                # # Single result in list:
-                #     {
-                #         "node_bindings": {
-                #            # node "id"'s in knowledge graph, in edge "id"
-                #             "type-2 diabetes": [{"id": "MONDO:0005148"}],
-                #             "drug": [{"id": "CHEBI:6801"}]
-                #         },
-                #         "edge_bindings": {
-                #             # the edge binding key should be the query edge id
-                #             # bounded edge "id" is from knowledge graph
-                #             "treated_by": [{"id": "df87ff82"}]
-                #         }
-                #     }
-                # ]
-                #
-                edge_binding_found = self.testcase_edge_bindings(query_graph["edges"], edge_id, result)
+            # result["analyses"] may be empty but TRAPI 1.4.0 schema validation ensures that
+            # the "analysis" key is at least present and that the objects themselves are 'well-formed'
+            analyses: List = result["analyses"]
+            for analysis in analyses:
+                edge_binding_found = self.testcase_edge_bindings(query_graph["edges"], edge_id, analysis)
+                if edge_binding_found:
+                    break
 
             # We declare 'success' after the first
             # successful nodes/edges binding matches

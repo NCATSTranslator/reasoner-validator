@@ -959,21 +959,22 @@ warning:
             - identifier
             - sources
           $description: "Edge attributes should record only a single primary knowledge source provenance attribute value"
-        ara:
-          missing:
-            $message: "Edge is missing ARA knowledge source provenance"
-            $context:
-              - edge_id
-              - identifier
-            $description: "Edge attributes ARAs should record the Infores identifier of their knowledge source provenance with respect to ARA"
-        kp:
-          missing:
-            $message: "Edge attribute values are missing expected Knowledge Provider provenance"
-            $context:
-              - edge_id
-              - identifier
-              - kp_source_type
-            $description: "Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP"
+        target:
+          ara:
+            missing:
+              $message: "Edge provenance is missing target ARA knowledge source"
+              $context:
+                - edge_id
+                - identifier
+              $description: "Edge attributes ARAs should record the Infores identifier of their knowledge source provenance with respect to ARA"
+          kp:
+            missing:
+              $message: "Edge provenance is missing target KP knowledge source"
+              $context:
+                - edge_id
+                - identifier
+                - target_kp_source_type
+              $description: "Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP"
       knowledge_level:
         missing:
           $message: "Edge is missing its required 'knowledge_level' property"

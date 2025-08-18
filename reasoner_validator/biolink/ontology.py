@@ -108,7 +108,7 @@ def get_parent_concepts(curie, category, biolink_version) -> Optional[List[str]]
     """
     Given a CURIE of a concept and its category,
     attempt to return the parent concept if available
-    within an ontology modelled by specified Biolink Model release.
+    within an ontology modeled by a specified Biolink Model release.
 
     :param curie: CURIE of a concept instance
     :param category: Biolink Category of the concept instance
@@ -120,7 +120,7 @@ def get_parent_concepts(curie, category, biolink_version) -> Optional[List[str]]
         assert False, f"'{category}' is not a Biolink Model Category!"
 
     # Not every Biolink Category has a prefix namespace with ontological hierarchy.
-    # We replace the previous hard coded namespace list with retrieval of id_prefixes
+    # We replace the previous hard-coded namespace list with retrieval of id_prefixes
     # registered for the given concept category within the Biolink Model.
     # preferred_prefixes = {'CHEBI', 'HP', 'MONDO', 'UBERON', 'CL', 'EFO', 'NCIT'}
     preferred_prefixes = tk.get_element(category).id_prefixes

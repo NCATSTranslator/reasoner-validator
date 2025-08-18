@@ -9,7 +9,6 @@ import pytest
 from reasoner_validator.message import (
     MessageType,
     IDENTIFIED_MESSAGES,
-    SCOPED_MESSAGES,
     MESSAGE_PARTITION,
     MESSAGE_CATALOG,
     MESSAGES_BY_TEST,
@@ -178,43 +177,41 @@ def test_get_description():
 
 
 def test_message_display():
-    scoped_messages = CodeDictionary.display(code="info.compliant", add_prefix=True)
-    assert "INFO - Compliant: Biolink Model-compliant TRAPI Message" in scoped_messages["global"]
+    messages_by_code = CodeDictionary.display(code="info.compliant", add_prefix=True)
+    assert "INFO - Compliant: Biolink Model-compliant TRAPI Message" in messages_by_code
 
-    scoped_messages = CodeDictionary.display("error.knowledge_graph.nodes.empty", add_prefix=True)
-    assert "ERROR - Knowledge Graph Nodes: No nodes found" in scoped_messages["global"]
+    messages_by_code = CodeDictionary.display("error.knowledge_graph.nodes.empty", add_prefix=True)
+    assert "ERROR - Knowledge Graph Nodes: No nodes found" in messages_by_code
 
-    scoped_messages = CodeDictionary.display(
+    messages_by_code = CodeDictionary.display(
         code="info.excluded",
 
         # this code has "global" scope plus
         # an "identifier" context, but no other parameters
         messages={
-            "global": {"a->biolink:related_to->b": None}
+            "a->biolink:related_to->b": None
         },
         add_prefix=True
     )
     assert "INFO - Excluded: All test case S-P-O triples from " + \
-           "resource test location, or specific user excluded S-P-O triples" in scoped_messages["global"]
+           "resource test location, or specific user excluded S-P-O triples" in messages_by_code
 
-    scoped_messages = CodeDictionary.display(
+    messages_by_code = CodeDictionary.display(
         code="info.input_edge.predicate.abstract",
 
         # this code has "global" scope, an "identifier" context
         # plus one other parameter named 'edge_id'
         messages={
-            "infores:chebi->infores:molepro->infores:arax": {
-                "biolink:contributor": [
-                    {
-                        "edge_id": "a->biolink:related_to->b"
-                    }
-                ]
-            }
+            "biolink:contributor": [
+                {
+                    "edge_id": "a->biolink:related_to->b"
+                }
+            ]
         },
         add_prefix=True
     )
     assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate" \
-           in scoped_messages["infores:chebi->infores:molepro->infores:arax"]
+           in messages_by_code
 
 
 def test_unknown_message_code():
@@ -244,13 +241,6 @@ im_test_additions: IDENTIFIED_MESSAGES = {
 }
 
 
-# IDENTIFIED_MESSAGES = Dict[
-#     str,  # key is the message-unique template 'identifier' value of parameterized messages
-#
-#     # Note: some message codes may not have any associated
-#     # parameters beyond their discriminating identifier
-#     Optional[List[MESSAGE_PARAMETERS]]
-# ]
 def test_merge_identified_messages():
     reporter = ValidationReporter()
     aggregated: IDENTIFIED_MESSAGES = copy.deepcopy(im_test_aggregated)
@@ -289,110 +279,70 @@ im_yetanother_test_addition: IDENTIFIED_MESSAGES = {
     ]
 }
 
-scope_test_tag = "infores:tweedle_dee -> infores:tweedle_dum"
-sm_test_aggregated: SCOPED_MESSAGES = {
-    "global": im_test_aggregated,
-    "infores:foo -> infores:bar": None,
-    scope_test_tag: im_another_test_addition
-}
+sm_test_aggregated: MESSAGE_PARTITION =  copy.deepcopy(im_test_aggregated)
+sm_test_aggregated.update(im_another_test_addition)
 
 
-sm_test_additions: SCOPED_MESSAGES = {
-    "global": im_test_additions,
-    scope_test_tag: im_yetanother_test_addition
-}
+sm_test_additions: MESSAGE_PARTITION = copy.deepcopy(im_test_additions)
+sm_test_additions.update(im_yetanother_test_addition)
 
 
 def _check_coded_messages(
-        coded_messages: SCOPED_MESSAGES,
-        target_scope: str,
+        coded_messages: MESSAGE_PARTITION,
         target_identifier: str,
         target_parameter_values: List[str]
 ):
-    assert coded_messages is not None and target_scope in coded_messages.keys()
-    scoped_messages: Optional[IDENTIFIED_MESSAGES] = coded_messages[target_scope]
+    assert coded_messages is not None
     assert all(
         [
             any([p in parameters.values() for p in target_parameter_values])
-            for parameters in scoped_messages[target_identifier]
-            if target_identifier in scoped_messages.keys() and scoped_messages[target_identifier]
+            for parameters in coded_messages[target_identifier]
+            if target_identifier in coded_messages.keys() and coded_messages[target_identifier]
         ]
     )
 
 
-def _check_unfriendly_giant(coded_messages: SCOPED_MESSAGES):
+def _check_unfriendly_giant(coded_messages: MESSAGE_PARTITION):
     _check_coded_messages(
         coded_messages,
-        target_scope="global",
         target_identifier="Fum",
         target_parameter_values=["blood", "man"]
     )
 
 
-def _check_humpty_dumpty(coded_messages: SCOPED_MESSAGES):
+def _check_humpty_dumpty(coded_messages: MESSAGE_PARTITION):
     _check_coded_messages(
         coded_messages,
-        target_scope=scope_test_tag,
         target_identifier="Dumpty",
         target_parameter_values=["wall", "fall"]
     )
 
 
-# SCOPED_MESSAGES = Dict[
-#     str,  # 'source trail' origin of affected edge or 'global' validation error
-#
-#     # (A given message code may have
-#     # no IDENTIFIED_MESSAGES with discriminating identifier
-#     #  and parameters hence, it may have a scoped value of 'None')
-#     Optional[IDENTIFIED_MESSAGES]
-# ]
-def test_merge_scoped_messages():
-    reporter = ValidationReporter()
-    aggregated: SCOPED_MESSAGES = copy.deepcopy(sm_test_aggregated)
-    additions: SCOPED_MESSAGES = copy.deepcopy(sm_test_additions)
-    reporter.merge_scoped_messages(
-        aggregated=aggregated,
-        additions=additions
-    )
-    global_scoped_message: Optional[IDENTIFIED_MESSAGES] = aggregated["global"]
-    assert global_scoped_message is not None and "Fi" in global_scoped_message.keys()
-
-    # Now check for Humpty Dumpty message
-    # in the 'aggregated' SCOPED_MESSAGES
-    _check_humpty_dumpty(aggregated)
-
-
 code_for_testing = "info.input_edge.predicate.abstract"
-pm_test_aggregated: MESSAGE_PARTITION = {
-    "info.excluded": {
-        "global": {
+new_test_partition: MESSAGE_PARTITION = copy.deepcopy(im_test_aggregated)
+new_test_partition.update(im_another_test_addition)
+pm_test_aggregated: MESSAGE_PARTITION = copy.deepcopy(
+    {
+        "info.excluded": {
             "Horace van der Gelder": None
-        }
-    },
-    code_for_testing: {
-        "global": im_test_aggregated,
-        scope_test_tag: im_another_test_addition
+        },
+        code_for_testing: new_test_partition
     }
-}
+)
 
+anuder_new_test_partition: MESSAGE_PARTITION = copy.deepcopy(im_test_additions)
+anuder_new_test_partition.update(im_yetanother_test_addition)
 pm_test_additions: MESSAGE_PARTITION = {
     "info.excluded": {
-        "global": {
             "Dolly Gallagher Levi": None
-        }
     },
-    "info.compliant": {
-        "global": None
-    },
-    code_for_testing: {
-        "global": im_test_additions,
-        scope_test_tag: im_yetanother_test_addition
-    }
+    "info.compliant": None,
+    code_for_testing: anuder_new_test_partition
 }
 
 
 # MESSAGE_PARTITION = Dict[
-#     str,  # message 'code' as indexing key
+#     str, # message 'code' as indexing key
 #     SCOPED_MESSAGES
 # ]
 def test_merge_coded_messages():
@@ -412,76 +362,60 @@ def test_merge_coded_messages():
 full_test_messages_catalog_1: MESSAGE_CATALOG = {
     "info": {
         "info.excluded": {
-            "global": {
-                "Dolly Gallagher Levi": None
-            }
+            "Dolly Gallagher Levi": None
         },
-        "info.compliant": {
-            "global": None
-        },
-        code_for_testing: {
-            "global": copy.deepcopy(im_test_aggregated)
-        }
+        "info.compliant": None,
+        code_for_testing: copy.deepcopy(im_test_aggregated)
     },
     "skipped": {
         "skipped.test": {
-            "global": {
-                "Catastrophe": [
-                    {
-                        "context": "Family Robinson",
-                        "reason": "Lost in Space"
-                    }
-                ]
-            }
+            "Catastrophe": [
+                {
+                    "context": "Family Robinson",
+                    "reason": "Lost in Space"
+                }
+            ]
         }
 
     },
     "warning": {
         "warning.knowledge_graph.node.id.unmapped_prefix": {
-            "infores:earth -> infores:spaceship": {
-                "Will Robinson": [
-                    {
-                        "categories": "Lost in Space"
-                    }
-                ]
-            }
+            "Will Robinson": [
+                {
+                    "categories": "Lost in Space"
+                }
+            ]
         }
     }
 }
 
+
+third_new_test_partition: MESSAGE_PARTITION = copy.deepcopy(im_test_additions)
+third_new_test_partition.update(im_another_test_addition)
 full_test_messages_catalog_2: MESSAGE_CATALOG = {
     "info": {
         "info.excluded": {
-            "global": {
-                "Horace van der Gelder": None
-            }
+            "Horace van der Gelder": None
         },
-        code_for_testing: {
-            "global": copy.deepcopy(im_test_additions),
-            scope_test_tag: copy.deepcopy(im_another_test_addition)
-        }
+        code_for_testing: third_new_test_partition
     },
     "error": {
         "error.biolink.model.noncompliance": {
-            "global": {
-                "6.6.6": [
-                    {
-                        'reason': "Dave, this can only be due to human error..."
-                    }
-                ]
-            }
+            "6.6.6": [
+                {
+                    'reason': "Dave, this can only be due to human error..."
+                }
+            ]
         }
     },
     "critical": {
         "critical.trapi.validation": {
-            "global": {
-                "9.1.1": [
-                    {
-                        'component': 'Query',
-                        'reason': "Fire, Ambulance or Police?"
-                    }
-                ]
-            }
+            "9.1.1": [
+                {
+                    'component': 'Query',
+                    'reason': "Fire, Ambulance or Police?"
+                }
+            ]
         }
     }
 }
@@ -489,9 +423,7 @@ full_test_messages_catalog_2: MESSAGE_CATALOG = {
 
 full_test_messages_catalog_3: MESSAGE_CATALOG = {
     "info": {
-        code_for_testing: {
-            scope_test_tag: copy.deepcopy(im_yetanother_test_addition)
-        }
+        code_for_testing:  copy.deepcopy(im_yetanother_test_addition)
     }
 }
 
@@ -520,16 +452,16 @@ def test_get_all_messages_of_type():
     messages: MESSAGE_PARTITION = reporter.get_all_messages_of_type(MessageType.info)
     print(messages, file=sys.stderr, flush=True)
     assert all([code in ["info.excluded", "info.compliant", code_for_testing] for code in messages])
-    info_excluded_scoped_messages: SCOPED_MESSAGES = messages["info.excluded"]
-    assert "global" in info_excluded_scoped_messages and info_excluded_scoped_messages["global"] is not None
+    info_excluded_message_partition: MESSAGE_PARTITION = messages["info.excluded"]
+    assert info_excluded_message_partition is not None
     assert all(
         [
             identifier in ["Dolly Gallagher Levi", "Horace van der Gelder"]
-            for identifier in info_excluded_scoped_messages["global"].keys()
+            for identifier in info_excluded_message_partition.keys()
         ]
     )
-    info_compliant_messages: SCOPED_MESSAGES = messages["info.compliant"]
-    assert "global" in info_compliant_messages and info_compliant_messages["global"] is None
+    info_compliant_messages: MESSAGE_PARTITION = messages["info.compliant"]
+    assert info_compliant_messages is None
 
     # In the SCOPED_MESSAGES associated with 'code_for_testing',
     # Check for Jack in the Beanstalk Giant messages...
@@ -558,7 +490,7 @@ def test_get_message_type():
         reporter.get_message_type(code="foo.bar")
 
 
-def test_global_sourced_validation_message_report():
+def test_validation_message_report1():
     reporter1 = ValidationReporter(
         default_test="test_global_sourced_validation_message_report",
         default_target="First Validation Report"
@@ -574,13 +506,13 @@ def test_global_sourced_validation_message_report():
 
     displayed: List[str] = list()
     for code, messages in messages_by_code.items():
-        scoped_messages = CodeDictionary.display(code, messages, add_prefix=True)
-        displayed.extend(scoped_messages["global"])
+        decoded_messages = CodeDictionary.display(code, messages, add_prefix=True)
+        displayed.extend(decoded_messages)
     assert "INFO - Compliant: Biolink Model-compliant TRAPI Message" in displayed
     assert "INFO - Input Edge Predicate: Edge has an 'abstract' predicate" in displayed
 
 
-def test_source_trail_scoped_validation_message_report():
+def test_validation_message_report2():
     reporter2 = ValidationReporter(
         default_test="test_source_trail_scoped_validation_message_report",
         default_target="Second Validation Report"
@@ -588,20 +520,19 @@ def test_source_trail_scoped_validation_message_report():
     reporter2.report(
         code="error.knowledge_graph.edge.predicate.abstract",
         identifier="biolink:contributor",
-        edge_id="Richard->biolink:contributor->Translator",
-        source_trail="infores:monarch"
+        edge_id="Richard->biolink:contributor->Translator"
     )
     reporter2.report(
         code="error.knowledge_graph.edge.predicate.abstract",
         identifier="biolink:contributor",
-        edge_id="Tim->biolink:contributor->Translator",
-        source_trail="infores:monarch"
+        edge_id="Tim->biolink:contributor->Translator"
     )
     messages_by_code: MESSAGE_PARTITION = reporter2.get_messages_of_type(MessageType.error)
     assert len(messages_by_code) > 0
     assert "error.knowledge_graph.edge.predicate.abstract" in messages_by_code
-    assert "infores:monarch" in messages_by_code['error.knowledge_graph.edge.predicate.abstract']
-    assert "global" not in messages_by_code['error.knowledge_graph.edge.predicate.abstract']
+    assert "biolink:contributor" in messages_by_code['error.knowledge_graph.edge.predicate.abstract']
+    # assert "Tim->biolink:contributor->Translator" in \
+    #         messages_by_code['error.knowledge_graph.edge.predicate.abstract']["biolink:contributor"]["edge_id"]
 
 
 def _validate_full_messages(
@@ -614,9 +545,8 @@ def _validate_full_messages(
     assert len(messages_by_code) > 0
     full_messages_list: List[str] = list()
     for code, messages in messages_by_code.items():
-        scoped_messages: Dict = CodeDictionary.display(code, messages, add_prefix=True)
-        scope, value = scoped_messages.popitem()
-        full_messages_list.append(value[0])
+        decoded_messages: List[str] = CodeDictionary.display(code, messages, add_prefix=True)
+        full_messages_list.append(decoded_messages[0])
     assert full_message in full_messages_list
 
 
@@ -717,13 +647,12 @@ def test_messages():
     assert "critical" in obj["messages"][critical_target][critical_test]
     assert "critical.trapi.validation" in obj["messages"][critical_target][critical_test]["critical"]
 
-    messages_by_target: SCOPED_MESSAGES = \
+    messages_by_target: Optional[IDENTIFIED_MESSAGES] = \
         obj["messages"][critical_target][critical_test]["critical"]["critical.trapi.validation"]
     assert messages_by_target, "Empty 'critical.trapi.validation' messages set?"
-    assert "9.1.1" in messages_by_target["global"]
-    message_subset: List = messages_by_target["global"]["9.1.1"]
+    assert "9.1.1" in messages_by_target
     assert "Fire, Ambulance or Police?" \
-           in [message['reason'] for message in message_subset if 'reason' in message]
+           in [message['reason'] for message in messages_by_target["9.1.1"] if 'reason' in message]
 
     for n in range(0, 10):
         reporter1.report(code="error.input_edge.node.category.missing", identifier=f"biolink:not_a_category_{n}")
@@ -736,8 +665,6 @@ def test_messages():
                 node_id=f"n{n}"
             )
 
-    # Informal test of a text 'dump' of all the messages as a
-    # text blob, using the 'display_all' method to format them
     print(
         "\n\nThis is an indirect 'test' of the ValidationReporter.dump() method\n"
         "which simply executes the function and look at the results here on the console:",

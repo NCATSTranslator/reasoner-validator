@@ -10,7 +10,6 @@ import pytest
 from bmt import Toolkit
 from linkml_runtime.linkml_model import SlotDefinition
 
-from reasoner_validator.trapi import TRAPI_1_3_0, TRAPI_1_4_0_BETA
 from reasoner_validator.biolink import (
     is_curie,
     get_reference,
@@ -19,6 +18,7 @@ from reasoner_validator.biolink import (
 )
 
 from reasoner_validator.report import TRAPIGraphType
+from reasoner_validator.trapi import LATEST_TRAPI_RELEASE
 from tests import (
     LATEST_BIOLINK_MODEL_VERSION,
     SIMPLE_SAMPLE_NODES,
@@ -1260,10 +1260,10 @@ TEST_ARA_CASE_TEMPLATE = {
     "idx": 0,
     "url": "http://test_ara_endpoint",
     "ara_api_name": "Test_ARA",
-    "ara_source": "aragorn",
+    "target_ara_source": "aragorn",
     "kp_api_name": "Test_KP_1",
-    "kp_source": "panther",
-    "kp_source_type": "primary"
+    "target_kp_source": "panther",
+    "target_kp_source_type": "primary"
 }
 
 
@@ -1290,48 +1290,6 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
 #     )
 #     validator.validate_attribute_constraints(edge_id="test_validate_attributes unit test", edge=query[0])
 #     check_messages(validator, query[1])
-
-
-@pytest.mark.parametrize(
-    "edge,validation_code",
-    [
-        # (
-        #         "mock_edge",  # mock data has dumb edges: don't worry about the S-P-O, just the attributes
-        #         "mock_context",
-        #         "AssertError_message"
-        # ),   # set 3rd argument to AssertError message if test edge should 'fail'; otherwise, empty string (for pass)
-        (
-            # Query 0. 'attributes' key missing in edge record is None
-            {},
-            # "Edge has no 'attributes' key!"
-            "error.knowledge_graph.edge.attribute.missing"
-        ),
-        (
-            # Query 1. Empty attributes
-            {
-                "attributes": None
-            },
-            # "Edge has empty attributes!"
-            "error.knowledge_graph.edge.attribute.empty"
-        ),
-        (
-            # Query 2. Empty attributes
-            {
-                "attributes": []
-            },
-            # "Edge has empty attributes!"
-            "error.knowledge_graph.edge.attribute.empty"
-        )
-    ]
-)
-def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge: Dict, validation_code: str):
-    validator = BiolinkValidator(trapi_version=TRAPI_1_3_0)
-    validator.validate_attributes(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
-        edge_id="test_validate_attributes unit test",
-        edge=edge
-    )
-    check_messages(validator, validation_code)
 
 
 @pytest.mark.parametrize(
@@ -1474,91 +1432,6 @@ def test_pre_trapi_1_4_0_validate_missing_or_empty_attributes(edge: Dict, valida
 )
 def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
     validator = BiolinkValidator()
-    validator.validate_attributes(
-        graph_type=TRAPIGraphType.Knowledge_Graph,
-        edge_id="test_validate_attributes unit test",
-        edge=edge
-    )
-    check_messages(validator, validation_code)
-
-
-@pytest.mark.parametrize(
-    "edge,target_provenance,validation_code",
-    [
-        (
-            # Query 0. Missing ARA knowledge source provenance?
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:monarch-kg"
-                    },
-                ]
-            },
-            get_ara_test_case(),
-            # "missing ARA knowledge source provenance!"
-            "warning.knowledge_graph.edge.provenance.ara.missing"
-        ),
-        (
-            # Query 1. KP provenance value is not a well-formed InfoRes CURIE? Should fail?
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:aragorn"
-                    },
-                    {
-                        "attribute_type_id": "biolink:primary_knowledge_source",
-                        "value": "panther"
-                    }
-                ]
-            },
-            get_ara_test_case(),
-            # "Edge has provenance value '{infores}' which is not a well-formed InfoRes CURIE!"
-            "error.knowledge_graph.edge.provenance.infores.missing"
-        ),
-        (
-            # Query 2. KP provenance value is missing?
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:aragorn"
-                    }
-                ]
-            },
-            get_ara_test_case(),
-            # "is missing as expected knowledge source provenance!"
-            "warning.knowledge_graph.edge.provenance.kp.missing"
-        ),
-        (
-            # Query 3. Missing 'primary' nor 'original' knowledge source
-            {
-                "attributes": [
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:aragorn"
-                    },
-                    {
-                        "attribute_type_id": "biolink:aggregator_knowledge_source",
-                        "value": "infores:panther"
-                    }
-                ]
-
-            },
-            get_ara_test_case({"kp_source_type": "aggregator"}),
-            # f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Edge has neither a 'primary' nor 'original' knowledge source?"
-            "error.knowledge_graph.edge.provenance.missing_primary"
-        )
-    ]
-)
-def test_pre_1_4_0_validate_provenance(edge: Dict, target_provenance: Optional[Dict[str, str]], validation_code: str):
-    """TRAPI pre-1.4.0 releases recorded provenance in attributes. This unit test checks for this"""
-    validator = BiolinkValidator(
-        trapi_version=TRAPI_1_3_0,
-        biolink_version=LATEST_BIOLINK_MODEL_VERSION,
-        target_provenance=target_provenance
-    )
     validator.validate_attributes(
         graph_type=TRAPIGraphType.Knowledge_Graph,
         edge_id="test_validate_attributes unit test",
@@ -1719,9 +1592,6 @@ def test_latest_validate_trapi_attributes_with_target_provenance(
     check_messages(validator, validation_code)
 
 
-SAMPLE_SOURCE_TRAIL = "infores:chebi -> infores:molepro -> infores:arax"
-
-
 def qualifier_validator(
         tested_method,
         edge_model: str,
@@ -1729,8 +1599,6 @@ def qualifier_validator(
         validation_code: str,
         trapi_version: Optional[str] = None,
         biolink_version: Optional[str] = LATEST_BIOLINK_MODEL_VERSION,
-        associations: Optional[List[str]] = None,
-        source_trail: Optional[str] = None,
         **kwargs
 ):
     # TODO: to review: which of the validation tests that
@@ -1742,33 +1610,27 @@ def qualifier_validator(
     # Wrap Qualifiers inside a small mock QEdge
     mock_edge: Dict = deepcopy(edge)
     mock_edge["subject"] = "mock_subject"
-
-    if validator.minimum_required_trapi_version(TRAPI_1_4_0_BETA):
-        # not testing Edge semantics here but rather, the qualifiers,
-        # but from 1.4.0-beta(2) onwards, we also need
-        # a non-null predicate and the new 'sources' field here!
-        mock_edge["predicate"] = "biolink:related_to"
-        mock_edge["sources"] = [
-            {
-                "resource_id": "infores:chebi",
-                "resource_role": "primary_knowledge_source"
-            },
-            {
-                "resource_id": "infores:molepro",
-                "resource_role": "aggregator_knowledge_source",
-                "upstream_resource_ids": [
-                    "infores:chebi"
-                ]
-            },
-            {
-                "resource_id": "infores:arax",
-                "resource_role": "aggregator_knowledge_source",
-                "upstream_resource_ids": [
-                    "infores:molepro"
-                ]
-            }
-        ]
-
+    mock_edge["predicate"] = "biolink:related_to"
+    mock_edge["sources"] = [
+        {
+            "resource_id": "infores:chebi",
+            "resource_role": "primary_knowledge_source"
+        },
+        {
+            "resource_id": "infores:molepro",
+            "resource_role": "aggregator_knowledge_source",
+            "upstream_resource_ids": [
+                "infores:chebi"
+            ]
+        },
+        {
+            "resource_id": "infores:arax",
+            "resource_role": "aggregator_knowledge_source",
+            "upstream_resource_ids": [
+                "infores:molepro"
+            ]
+        }
+    ]
     mock_edge["object"] = "mock_object"
     validator.is_valid_trapi_query(mock_edge, edge_model)
     # TODO: not sure if simple errors should be fully displaced
@@ -1776,29 +1638,16 @@ def qualifier_validator(
     if validator.has_critical():
         validator = validator
     else:
-        # Only validate_qualifiers() has formal parameters
-        # 'source_trail' and 'associations', so to be safe...
-        if source_trail:
-            tested_method(
-                validator,
-                edge_id=f"{tested_method.__name__} unit test",
-                edge=edge,
-                associations=associations,
-                source_trail=source_trail,
-                **kwargs
-            )
-        else:
-            tested_method(
-                validator,
-                edge_id=f"{tested_method.__name__} unit test",
-                edge=edge,
-                **kwargs
-            )
+        tested_method(
+            validator,
+            edge_id=f"{tested_method.__name__} unit test",
+            edge=edge,
+            **kwargs
+        )
 
     check_messages(
         validator,
-        validation_code,
-        source_trail=source_trail
+        validation_code
     )
 
 
@@ -2153,37 +2002,21 @@ QC_QS_NOT_A_CURIE = {
 }
 
 
-@pytest.mark.parametrize(
-    "trapi_version,edge,validation_code",
-    [
-        (  # Query 0 - 'qualifier_type_id' value not a Biolink CURIE - seen as 'unknown' in TRAPI < 1.4.0-beta
-            TRAPI_1_3_0,
-            QC_QS_NOT_A_CURIE,
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
-        ),
-        (  # Query 1 - 'qualifier_type_id' value not a Biolink CURIE - schema validation error in TRAPI < 1.4.0-beta
-            TRAPI_1_4_0_BETA,
-            QC_QS_NOT_A_CURIE,
-            "critical.trapi.validation"
-        )
-    ]
-)
-def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edge: Dict, validation_code: str):
+def test_validate_biolink_curie_in_qualifier_constraints():
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
-        edge=edge,
-        validation_code=validation_code,
-        trapi_version=trapi_version
+        edge=QC_QS_NOT_A_CURIE,
+        validation_code="critical.trapi.validation",
+        trapi_version=LATEST_TRAPI_RELEASE
     )
 
 
 @pytest.mark.parametrize(
-    "edge,validation_code,source_trail,associations",
+    "edge,validation_code,associations",
     [
         (  # Query 0 - no 'qualifiers' key - since nullable: true, this should pass
             {},
-            "",
             "",
             None
         ),
@@ -2192,7 +2025,6 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 'qualifiers': None
             },
             "",
-            "",
             None
         ),
         (  # Query 2 - 'qualifiers' value is not an array - invalidated by TRAPI schema
@@ -2200,7 +2032,6 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 'qualifiers': {}
             },
             "critical.trapi.validation",
-            "global",
             None
         ),
         (  # Query 3 - empty 'qualifiers' array value - since nullable: true, this should pass
@@ -2208,7 +2039,6 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 'qualifiers': []
             },
             "",
-            "global",
             None
         ),
         (  # Query 4 - empty 'qualifier_set' entry - invalidated by TRAPI schema
@@ -2216,7 +2046,6 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 'qualifiers': [{}]
             },
             "critical.trapi.validation",
-            "global",
             None
         ),
         (  # Query 5 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
@@ -2224,7 +2053,6 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 'qualifiers': [[]]
             },
             "critical.trapi.validation",
-            "global",
             None
         ),
         (  # Query 6 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
@@ -2237,7 +2065,6 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "critical.trapi.validation",
-            "global",
             None
         ),
         (  # Query 7 - 'qualifier_type_id' property value is unknown
@@ -2250,7 +2077,6 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown",
-            SAMPLE_SOURCE_TRAIL,
             None
         ),
         (  # Query 8 - 'qualifier_type_id' property value is valid but abstract
@@ -2263,7 +2089,6 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved",
-            SAMPLE_SOURCE_TRAIL,
             None
         ),
         (  # Query 9 - 'qualifier_type_id' property value is not a Biolink qualifier term
@@ -2276,7 +2101,6 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown",
-            SAMPLE_SOURCE_TRAIL,
             None
         ),
         (  # Query 10 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
@@ -2288,7 +2112,6 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "critical.trapi.validation",
-            "global",
             None
         ),
         (   # Query 11 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
@@ -2301,8 +2124,7 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                     }
                 ]
             },
-            "",   # this particular use case should pass,
-            "",
+            "",   # this particular use case should pass
             None
         ),
         (   # Query 12 - "qualifier_value" should be a scalar (string), not an array of scalars
@@ -2322,7 +2144,6 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "critical.trapi.validation",
-            "",
             None
         ),
         (   # Query 13 - "gene to expression site association" based qualifier
@@ -2336,48 +2157,25 @@ def test_validate_biolink_curie_in_qualifier_constraints(trapi_version: str, edg
                 ]
             },
             "",
-            "",
             ["biolink:GeneToExpressionSiteAssociation"]
-        ),
-        #         # (   # This use case was discussed with Sierra on 11 April 2023 and )
-        #         #     # decided to be out-of-scope of enum values for is_permissible_value_of_enum
-        #         #
-        #         #     # Query ## - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
-        #         #     #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'.
-        #         #     #            This unit test won't pass without a modification of the Biolink Model Toolkit
-        #         #     #            method for validating qualifier values to accept mapped values.
-        #         #     {
-        #         #         'qualifiers': [
-        #         #             {
-        #         #                 'qualifier_type_id': "biolink:object_direction_qualifier",
-        #         #                 'qualifier_value': "RO:0002213"   # RO 'exact match' term for 'upregulated'
-        #         #             }
-        #         #         ]
-        #         #     },
-        #         #     "",
-        #         #     "",
-        #         #     None
-        #         # )
+        )
     ]
 )
 def test_validate_qualifiers(
         edge: Dict,
         validation_code: str,
-        source_trail: str,
         associations: Optional[List[str]]
 ):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         edge=edge,
-        validation_code=validation_code,
-        source_trail=source_trail,
-        associations=associations
+        validation_code=validation_code
     )
 
 
 @pytest.mark.parametrize(
-    "edge,associations,message,source_trail",
+    "edge,associations,message",
     [
         (   # Query 0 - qualifier_type_id 'subject_aspect_qualifier' is a valid Biolink qualifier type and
             #            'synthesis' is a valid corresponding 'permissible value' enum 'qualifier_value', but
@@ -2398,8 +2196,7 @@ def test_validate_qualifiers(
                 ]
             },
             ["biolink:GeneToDiseaseOrPhenotypicFeatureAssociation"],  # associations: Optional[List[str]]
-            "",   # this particular use case should pass
-            SAMPLE_SOURCE_TRAIL
+            ""   # this particular use case should pass
         ),
         (   # Query 1 - This example is identical to the above, but we know that it must fail if the
             #      biolink:Association context of the edge is not given to the qualifier validator as a parameter
@@ -2413,8 +2210,7 @@ def test_validate_qualifiers(
             },
 
             None,  # associations: Optional[List[str]]
-            "warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved",
-            SAMPLE_SOURCE_TRAIL
+            "warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved"
         ),
         (   # Query 2 -  another example of a 'qualifier_type_id' resolvable only within
             #            the context of a specific subclass of biolink:Association, i.e.
@@ -2434,8 +2230,7 @@ def test_validate_qualifiers(
                 ]
             },
             ["biolink:ChemicalAffectsGeneAssociation"],  # associations: Optional[List[str]]
-            "",   # this particular use case should pass
-            SAMPLE_SOURCE_TRAIL
+            ""   # this particular use case should pass
         ),
         (   # Query 3 -  another example of a 'qualifier_type_id' resolvable only within
             #            the context of a specific subclass of biolink:Association, i.e.
@@ -2459,8 +2254,7 @@ def test_validate_qualifiers(
                 'biolink:ChemicalAffectsGeneAssociation',
                 'biolink:ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation'
             ],   # associations: Optional[List[str]]
-            "",  # this particular use case should pass
-            SAMPLE_SOURCE_TRAIL
+            ""  # this particular use case should pass
         ),
         (   # Query 4 -  another example of a 'qualifier_type_id' resolvable only within
             #            the context of a specific subclass of biolink:Association, i.e.
@@ -2476,8 +2270,7 @@ def test_validate_qualifiers(
             [
                 "biolink:NamedThingAssociatedWithLikelihoodOfNamedThingAssociation"
             ],   # associations: Optional[List[str]]
-            "",  # this particular use case should pass
-            SAMPLE_SOURCE_TRAIL
+            ""  # this particular use case should pass
         ),
         (   # Query 5 -  another example of a 'qualifier_type_id' resolvable only within
             #            the context of a specific subclass of biolink:Association
@@ -2494,24 +2287,21 @@ def test_validate_qualifiers(
                 'biolink:ChemicalAffectsGeneAssociation',
                 'biolink:ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation'
             ],   # associations: Optional[List[str]]
-            "",  # this particular use case should pass
-            SAMPLE_SOURCE_TRAIL
+            ""  # this particular use case should pass
         )
     ]
 )
 def test_validate_qualifiers_with_association(
         edge: Dict,
         associations: Optional[List[str]],
-        message: str,
-        source_trail: Optional[str]
+        message: str
 ):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
         edge=edge,
         validation_code=message,
-        associations=associations,
-        source_trail=source_trail
+        associations=associations
     )
 
 
@@ -2525,32 +2315,13 @@ Q_NOT_A_CURIE = {
 }
 
 
-@pytest.mark.parametrize(
-    "trapi_version,edge,message",
-    [
-        (  # Query 0 - 'qualifier_type_id' value not a Biolink CURIE - seen as 'unknown' in TRAPI < 1.4.0-beta
-                TRAPI_1_3_0,
-                Q_NOT_A_CURIE,
-                "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown"
-        ),
-        (  # Query 1 - 'qualifier_type_id' value not a Biolink CURIE - schema validation error in TRAPI < 1.4.0-beta
-                TRAPI_1_4_0_BETA,
-                Q_NOT_A_CURIE,
-                "critical.trapi.validation"
-        )
-    ]
-)
-def test_validate_biolink_curie_in_qualifiers(
-        trapi_version: str,
-        edge: Dict,
-        message: str
-):
+def test_validate_biolink_curie_in_qualifiers():
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifiers,
         edge_model="Edge",
-        edge=edge,
-        validation_code=message,
-        trapi_version=trapi_version
+        edge=Q_NOT_A_CURIE,
+        validation_code="critical.trapi.validation",
+        trapi_version=LATEST_TRAPI_RELEASE
     )
 
 
@@ -2558,7 +2329,7 @@ def test_validate_biolink_curie_in_qualifiers(
 # Validate TRAPI Knowledge Graph #
 ##################################
 def test_validate_duplicate_slot_value():
-    validator = BiolinkValidator(biolink_version="4.2.0")
+    validator = BiolinkValidator(biolink_version="4.2.5")
     validator.validate_slot_value(
         slot_name="knowledge_level",
         context="test_validate_duplicate_slot_value",
@@ -3933,35 +3704,9 @@ MESSAGE_EDGE_WITHOUT_ATTRIBUTES = {
 }
 
 
-def test_pre_trapi_1_4_0_validate_attributes():
-    # message edges must have at least some 'provenance' attributes
-    edge_without_attributes = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
-    validator = BiolinkValidator(
-        trapi_version=TRAPI_1_3_0,
-        biolink_version=LATEST_BIOLINK_MODEL_VERSION
-    )
-    validator.check_biolink_model_compliance(graph=edge_without_attributes, graph_type=TRAPIGraphType.Knowledge_Graph)
-    check_messages(validator, "error.knowledge_graph.edge.attribute.missing")
-
-
-def test_suppress_biolink_validation_pre_trapi_1_4_0_validate_attributes():
-    # message edges must have at least some 'provenance' attributes
-    edge_without_attributes = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
-    validator = BiolinkValidator(
-        trapi_version=TRAPI_1_3_0,
-        biolink_version=SUPPRESS_BIOLINK_MODEL_VALIDATION
-    )
-    validator.check_biolink_model_compliance(graph=edge_without_attributes, graph_type=TRAPIGraphType.Knowledge_Graph)
-    check_messages(validator, "")
-
-
 SAMPLE_PRIMARY_RETRIEVAL_SOURCE = {
     # required, infores CURIE to an Information Resource
     "resource_id": "infores:chebi",
-
-    # required, string drawn from the TRAPI ResourceRoleEnum
-    # values that were formerly recorded as TRAPI attributes
-    # are now presented as first class edge annotation
     "resource_role": "primary_knowledge_source",
 
     # nothing upstream... it's primary!
@@ -3971,12 +3716,7 @@ SAMPLE_PRIMARY_RETRIEVAL_SOURCE = {
 SAMPLE_KP_RETRIEVAL_SOURCE = {
     # required, infores CURIE to an Information Resource
     "resource_id": "infores:molepro",
-
-    # required, string drawn from the TRAPI ResourceRoleEnum
-    # values that were formerly recorded as TRAPI attributes
-    # are now presented as first class edge annotation
     "resource_role": "aggregator_knowledge_source",
-
     # primary knowledge source is 'upstream'
     "upstream_resource_ids": ["infores:chebi"]
 }
@@ -3984,10 +3724,6 @@ SAMPLE_KP_RETRIEVAL_SOURCE = {
 SAMPLE_ARA_RETRIEVAL_SOURCE = {
     # required, infores CURIE to an Information Resource
     "resource_id": "infores:arax",
-
-    # required, string drawn from the TRAPI ResourceRoleEnum
-    # values that were formerly recorded as TRAPI attributes
-    # are now presented as first class edge annotation
     "resource_role": "aggregator_knowledge_source",
 
     # KP is 'upstream'
@@ -4001,9 +3737,6 @@ SAMPLE_SOURCES_ARRAY = [
 ]
 
 SAMPLE_RETRIEVAL_SOURCE_EMPTY_RESOURCE_ID = {
-    # required, string drawn from the TRAPI ResourceRoleEnum
-    # values that were formerly recorded as TRAPI attributes
-    # are now presented as first class edge annotation
     "resource_role": "primary_knowledge_source"
 }
 
@@ -4015,53 +3748,20 @@ SAMPLE_RETRIEVAL_SOURCE_EMPTY_RESOURCE_ROLE = {
 SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_NOT_CURIE = {
     # required, infores CURIE to an Information Resource
     "resource_id": "molepro",
-
-    # required, string drawn from the TRAPI ResourceRoleEnum
-    # values that were formerly recorded as TRAPI attributes
-    # are now presented as first class edge annotation
     "resource_role": "primary_knowledge_source"
 }
 
 SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_INVALID = {
     # required, infores CURIE to an Information Resource
     "resource_id": "not-an-infores:molepro",
-
-    # required, string drawn from the TRAPI ResourceRoleEnum
-    # values that were formerly recorded as TRAPI attributes
-    # are now presented as first class edge annotation
     "resource_role": "primary_knowledge_source"
 }
 
 SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN = {
     # required, infores CURIE to an Information Resource
     "resource_id": "infores:my-favorite-kp",
-
-    # required, string drawn from the TRAPI ResourceRoleEnum
-    # values that were formerly recorded as TRAPI attributes
-    # are now presented as first class edge annotation
     "resource_role": "primary_knowledge_source"
 }
-
-
-def test_build_source_trail():
-    sources: Dict[str, List[str]] = {
-        "infores:chebi": [],
-        "infores:biothings-explorer": ["infores:chebi"],
-        "infores:molepro": ["infores:biothings-explorer"],
-        "infores:arax": ["infores:molepro"]
-    }
-    assert BiolinkValidator.build_source_trail(sources) == \
-           "infores:chebi -> infores:biothings-explorer -> infores:molepro -> infores:arax"
-
-    # even though a primary_knowledge_source appears to be missing
-    # we are able to infer a path on a putative primary source
-    sources: Optional[Dict[str, List[str]]] = {
-        "infores:biothings-explorer": ["infores:chebi"],
-        "infores:molepro": ["infores:biothings-explorer"],
-        "infores:arax": ["infores:molepro"]
-    }
-    assert BiolinkValidator.build_source_trail(sources) == \
-           "infores:chebi -> infores:biothings-explorer -> infores:molepro -> infores:arax"
 
 
 @pytest.mark.parametrize(

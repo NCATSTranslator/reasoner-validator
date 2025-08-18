@@ -5,7 +5,7 @@ import pytest
 
 from reasoner_validator.versioning import get_latest_version
 from reasoner_validator.trapi import load_schema, TRAPIAccessError, LATEST_TRAPI_RELEASE
-from tests import PATCHED_140_SCHEMA_FILEPATH
+from tests import LOCAL_TRAPI_150_SCHEMA_FILEPATH
 
 
 def test_release_tag_is_none():
@@ -39,7 +39,7 @@ def test_semver_spec_trapi_version_without_prefix():
 
 
 def test_schema_file_spec_trapi_version():
-    trapi_version = get_latest_version(release_tag=PATCHED_140_SCHEMA_FILEPATH)
+    trapi_version = get_latest_version(release_tag=LOCAL_TRAPI_150_SCHEMA_FILEPATH)
     assert trapi_version is not None
     assert trapi_version.endswith(".yaml")
 
@@ -59,7 +59,7 @@ def test_load_schema_with_branch_name_as_trapi_version():
 
 
 def test_load_schema_with_schema_file_spec_trapi_version():
-    trapi_version: str = get_latest_version(release_tag=PATCHED_140_SCHEMA_FILEPATH)
+    trapi_version: str = get_latest_version(release_tag=LOCAL_TRAPI_150_SCHEMA_FILEPATH)
     assert trapi_version is not None
     schema: Dict = load_schema(trapi_version)
     assert schema

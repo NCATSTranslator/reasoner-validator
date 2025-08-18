@@ -1,6 +1,6 @@
 """TRAPI Validation Functions."""
 from json import dumps
-from typing import Optional, Dict, List
+from typing import Optional, Dict
 from os.path import isfile
 import copy
 from functools import lru_cache
@@ -32,28 +32,17 @@ DEFAULT_TRAPI_POST_TIMEOUT = 600.0
 STANDARDS_HOST = "standards.ncats.io"
 STANDARDS_URL = f"https://{STANDARDS_HOST}"
 
-TRAPI_1_3_0_SEMVER = SemVer.from_string("v1.3.0")
-TRAPI_1_3_0: str = str(TRAPI_1_3_0_SEMVER)
-TRAPI_1_4_0_BETA_SEMVER = SemVer.from_string("v1.4.0-beta")
-TRAPI_1_4_0_BETA = str(TRAPI_1_4_0_BETA_SEMVER)
-TRAPI_1_4_0_BETA2_SEMVER = SemVer.from_string("v1.4.0-beta2")
-TRAPI_1_4_0_BETA3_SEMVER = SemVer.from_string("v1.4.0-beta3")
-TRAPI_1_4_0_BETA4_SEMVER = SemVer.from_string("v1.4.0-beta4")
-TRAPI_1_4_0_SEMVER = SemVer.from_string("v1.4.0")
-TRAPI_1_4_0: str = str(TRAPI_1_4_0_SEMVER)
-TRAPI_1_4_1_SEMVER = SemVer.from_string("v1.4.1")
-TRAPI_1_4_1: str = str(TRAPI_1_4_1_SEMVER)
-TRAPI_1_4_2_SEMVER = SemVer.from_string("v1.4.2")
-TRAPI_1_4_2: str = str(TRAPI_1_4_2_SEMVER)
-TRAPI_1_5_0_BETA_SEMVER = SemVer.from_string("v1.5.0-beta")
-TRAPI_1_5_0_BETA: str = str(TRAPI_1_5_0_BETA_SEMVER)
 TRAPI_1_5_0_SEMVER = SemVer.from_string("v1.5.0")
 TRAPI_1_5_0: str = str(TRAPI_1_5_0_SEMVER)
+TRAPI_1_6_0_BETA_SEMVER = SemVer.from_string("v1.6.0-beta")
+TRAPI_1_6_0_BETA: str = str(TRAPI_1_6_0_BETA_SEMVER)
+# TRAPI_1_6_0_SEMVER = SemVer.from_string("v1.6.0")
+# TRAPI_1_6_0: str = str(TRAPI_1_6_0_SEMVER)
 
-LATEST_TRAPI_RELEASE_SEMVER: SemVer = TRAPI_1_5_0_SEMVER
-LATEST_TRAPI_RELEASE: str = TRAPI_1_5_0
+LATEST_TRAPI_RELEASE_SEMVER: SemVer = TRAPI_1_6_0_BETA_SEMVER
+LATEST_TRAPI_RELEASE: str = TRAPI_1_6_0_BETA
 
-LATEST_TRAPI_MAJOR_MINOR_RELEASE: str = "1.5"
+LATEST_TRAPI_MAJOR_MINOR_RELEASE: str = "1.6"
 LATEST_TRAPI_MAJOR_MINOR_RELEASE_SEMVER: SemVer = \
     SemVer.from_string(
         LATEST_TRAPI_MAJOR_MINOR_RELEASE,
@@ -79,7 +68,7 @@ class TRAPIAccessError(RuntimeError):
 @lru_cache()
 def _load_schema(schema_version: str) -> Dict:
     """
-    Load schema from GitHub version or directly from a local schema file.
+    Load schema from the GitHub version or directly from a local schema file.
     :param schema_version: either a GitHub 'v' prefixed SemVer version of a
            TRAPI schema or a file name (path) from which the TRAPI schema may be read in.
     :return: Dict, schema components
@@ -195,33 +184,6 @@ def fix_nullable(schema) -> None:
     ]
 
 
-def map_semver(version: str):
-    mapped_semver: Optional[SemVer]
-    try:
-        mapped_semver = SemVer.from_string(version)
-    except SemVerError as sve:
-        # if we cannot map the version, then it may simply
-        # be a non-versioned branch of the schemata
-        logger.error(str(sve))
-        mapped_semver = None
-    return mapped_semver
-
-
-def patch_schema(tag: str, schema: Dict, version: str):
-    # temporary patch for small TRAPI schema bugs
-    mapped_semver: Optional[SemVer] = map_semver(version)
-    if (
-            mapped_semver and
-            (TRAPI_1_4_0_SEMVER >= mapped_semver >= TRAPI_1_4_0_BETA3_SEMVER)
-    ):
-        if tag == "auxiliary_graphs" and "oneOf" in schema:
-            # TODO: very short term workaround for problematic
-            #       TRAPI 1.4.0 'auxiliary_graphs' value schema
-            schema["type"] = "object"
-            value_types: List[str] = schema.pop("oneOf")
-            schema["additionalProperties"] = value_types[0]
-
-
 def openapi_to_jsonschema(schema, version: str) -> None:
     """
     Convert OpenAPI schema to JSON schema.
@@ -229,21 +191,8 @@ def openapi_to_jsonschema(schema, version: str) -> None:
     :param version: str, TRAPI version against which the schema is currently being validated.
     :return:
     """
-    mapped_semver: Optional[SemVer] = map_semver(version)
-
-    # we'll only tweak mapped schemata and
-    # such releases that are prior to TRAPI 1.4.0-beta
-    if (
-            mapped_semver and
-            not (TRAPI_1_4_0_BETA4_SEMVER >= mapped_semver >= TRAPI_1_4_0_BETA_SEMVER)
-    ) and "allOf" in schema:
-        # 2022 September 1 hacky patch to rewrite 'allOf'
-        # tagged schemata, in TRAPI 1.3.0 or earlier, to 'oneOf'
-        schema["oneOf"] = schema.pop("allOf")
-
     if schema.get("type", None) == "object":
         for tag, prop in schema.get("properties", dict()).items():
-            patch_schema(tag, prop, version)
             openapi_to_jsonschema(prop, version=version)
 
     elif schema.get("type", None) == "array":
@@ -256,7 +205,7 @@ def openapi_to_jsonschema(schema, version: str) -> None:
 class TRAPISchemaValidator(ValidationReporter):
     """
     TRAPI Validator is a wrapper class for validating
-    conformance of JSON messages to the Translator Reasoner API.
+    the conformance of JSON messages to the Translator Reasoner API.
     """
 
     _validation_metadata_checked: bool = False
@@ -330,7 +279,7 @@ class TRAPISchemaValidator(ValidationReporter):
     def minimum_required_trapi_version(self, version: str) -> bool:
         """
         :param version: simple 'major.minor.patch' TRAPI schema release SemVer
-        :return: True if current version is equal to, or newer than, a targeted 'minimum_version'
+        :return: True if the current version is equal to, or newer than, a targeted 'minimum_version'
         """
         try:
             current: SemVer = SemVer.from_string(self.trapi_version)

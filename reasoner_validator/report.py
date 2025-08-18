@@ -12,7 +12,6 @@ from reasoner_validator.message import (
     MessageType,
     MESSAGE_CATALOG,
     MESSAGE_PARTITION,
-    SCOPED_MESSAGES,
     IDENTIFIED_MESSAGES,
     MESSAGE_PARAMETERS,
     MESSAGES_BY_TARGET,
@@ -298,7 +297,7 @@ class ValidationReporter:
 
     @staticmethod
     def get_message_type(code: str) -> MessageType:
-        """Get type of message code.
+        """Get messages by message code.
         :param code: message code
         :return: MessageType
         """
@@ -316,18 +315,17 @@ class ValidationReporter:
             code: str,
             test: Optional[str] = None,
             target: Optional[str] = None,
-            source_trail: Optional[str] = None,
             **message
     ):
         """
         Capture a single validation message, as per specified
         'code' (with any code-specific contextual parameters).
-        :param code: str, dot delimited validation path code
-        :param test: str, specified test (gets current 'default' test if not given)
-        :param target: str, specified target (gets current 'default' test if not given)
-        :param source_trail, Optional[str], audit trail of knowledge source provenance for
-                             a given Edge, as a string. Defaults to "global" if not specified.
-        :param message: **Dict, named parameters representing extra (str-formatted) context for the given code message
+
+        :param code: Dot delimited validation path code string
+        :param test: Specified test name string (gets current 'default' test if not given)
+        :param target: Specified target name string (gets current 'default' test if not given)
+        :param message: Named parameter dictionary representing extra context for the given code message
+
         :return: None (internally record the validation message)
         """
         # Sanity check: that the given code has been registered in the codes.yaml file
@@ -343,14 +341,7 @@ class ValidationReporter:
         if code not in message_catalog[message_type.name]:
             message_catalog[message_type.name][code] = dict()
 
-        # Set current scope of validation message
-        if source_trail is None:
-            source_trail = "global"
-
-        if source_trail not in message_catalog[message_type.name][code]:
-            message_catalog[message_type.name][code][source_trail] = dict()
-
-        scope = message_catalog[message_type.name][code][source_trail]
+        partition = message_catalog[message_type.name][code]
 
         if message:
             # If a message has any parameters, then one of them is
@@ -359,14 +350,14 @@ class ValidationReporter:
                 message_identifier = message.pop("identifier")
                 if not message:
                     # the message_identifier was the only parameter to keep track of...
-                    scope[message_identifier] = None
+                    partition[message_identifier] = None
                 else:
                     # keep track of additional parameters in a list of dictionaries
                     # (may have additional, currently unavoidable, content duplication?)
-                    if message_identifier not in scope or scope[message_identifier] is None:
-                        scope[message_identifier] = list()
+                    if message_identifier not in partition or partition[message_identifier] is None:
+                        partition[message_identifier] = list()
 
-                    scope[message_identifier].append(message)
+                    partition[message_identifier].append(message)
 
         # else: additional parameters are None
 
@@ -389,35 +380,28 @@ class ValidationReporter:
                         new_message_type_entry: Dict = new_message_catalog[message_type]
                         this_message_type_entry: Dict = this_message_catalog[message_type]
                         code: str
-                        new_message_details: SCOPED_MESSAGES
-                        for code, new_scoped_messages in new_message_type_entry.items():   # codes.yaml message codes
-                            if code not in this_message_type_entry.keys():
-                                this_message_type_entry[code] = dict()  # SCOPED_MESSAGES
-                            # 'source' scope is 'global' or a source trail
-                            # path string, from primary to topmost aggregator
-                            source: str
-                            content: Optional[IDENTIFIED_MESSAGES]
-                            for source, content in new_scoped_messages.items():
-                                if source not in this_message_type_entry[code].keys():
-                                    this_message_type_entry[code][source] = dict() if content else None
-                                scope = this_message_type_entry[code][source]
-                                if content:
-                                    # content is of type IDENTIFIED_MESSAGES
-                                    # where dictionary keys are a set of
-                                    # message discriminating 'identifier'
-                                    identifier: str
-                                    parameters: Optional[IDENTIFIED_MESSAGES]
-                                    for identifier, parameters in content.items():
-                                        if parameters:
-                                            # additional parameters seen, then capture
-                                            if scope is None:
-                                                scope = this_message_type_entry[code][source] = dict()
-                                            if identifier not in scope or scope[identifier] is None:
-                                                scope[identifier] = list()
-                                            scope[identifier].extend(parameters)
-                                        else:
-                                            # the message 'identifier' is the only parameter
-                                            scope[identifier] = None
+                        content: Optional[IDENTIFIED_MESSAGES]
+                        for code, content in new_message_type_entry.items():
+                            if code not in this_message_type_entry:
+                                this_message_type_entry[code] = dict() if content else None
+                            partition = this_message_type_entry[code]
+                            if content:
+                                # content is of type IDENTIFIED_MESSAGES
+                                # where dictionary keys are a set of
+                                # message discriminating 'identifier'
+                                identifier: str
+                                parameters: Optional[IDENTIFIED_MESSAGES]
+                                for identifier, parameters in content.items():
+                                    if parameters:
+                                        # additional parameters seen, then capture
+                                        if partition is None:
+                                            partition = this_message_type_entry[code][code] = dict()
+                                        if identifier not in partition or partition[identifier] is None:
+                                            partition[identifier] = list()
+                                        partition[identifier].extend(parameters)
+                                    else:
+                                        # the message 'identifier' is the only parameter
+                                        partition[identifier] = None
 
     def get_all_messages(self) -> MESSAGES_BY_TARGET:
         """
@@ -436,12 +420,12 @@ class ValidationReporter:
             target: Optional[str] = None
     ) -> MESSAGE_PARTITION:
         """
-        Get Python data dictionary of ValidationReporter messages of
-        'message_type', for a specified (or default?) target and test.
-        :param message_type: MessageType, type of message whose presence is to be detected.
-        :param test: str, specified test (gets current 'default' test if not given)
-        :param target: str, specified target (gets current 'default' test if not given)
-        :return: get copy of messages of type 'message_type'.
+        Get Python data dictionary of the 'message_type' ValidationReporter
+        messages for a specified (or default?) target and test.
+        :param message_type: MessageType type of message whose presence is to be detected.
+        :param test: String name of the specified test (gets current 'default' test if not given)
+        :param target: String name of the specified target (gets current 'default' test if not given)
+        :return: Messages of type 'message_type'.
         """
         message_catalog: MESSAGE_CATALOG = self.get_messages_by_test(test=test, target=target)
         # TODO: the deepcopy may be desirable for message data
@@ -463,10 +447,10 @@ class ValidationReporter:
                     aggregated[identifier] = list()
                 aggregated[identifier].extend(copy.deepcopy(message_parameters_list))
 
-    def merge_scoped_messages(
-        self,
-        aggregated: SCOPED_MESSAGES,
-        additions: SCOPED_MESSAGES
+    def merge_coded_messages(
+            self,
+            aggregated: MESSAGE_PARTITION,
+            additions: MESSAGE_PARTITION
     ):
         source: str
         identified_messages: Optional[IDENTIFIED_MESSAGES]
@@ -478,30 +462,12 @@ class ValidationReporter:
                     aggregated[source] = dict()
                 self.merge_identified_messages(aggregated[source], identified_messages)
 
-    def merge_coded_messages(
-            self,
-            aggregated: MESSAGE_PARTITION,
-            additions: MESSAGE_PARTITION
-    ):
-        """
-        Merge additional MESSAGE_PARTITION content into an already aggregate MESSAGE_PARTITION.
-        :param aggregated: MESSAGE_PARTITION of messages aggregated so far
-        :param additions: MESSAGE_PARTITION of additional messages to be merged into the aggregated set.
-        :return: None - mutable 'aggregrated' MESSAGE_PARTITION is updated as a side effect
-        """
-        code: str
-        scoped_message: SCOPED_MESSAGES
-        for code, scoped_message in additions.items():
-            if code not in aggregated:
-                aggregated[code] = dict()
-            self.merge_scoped_messages(aggregated[code], scoped_message)
-
     def get_all_messages_of_type(self, message_type: MessageType) -> MESSAGE_PARTITION:
         """
-        Get MESSAGE_PARTITION dictionary of all ValidationReporter messages of
-        a given 'message_type', harvested from all target and test contexts.
-        :param message_type: MessageType, type of message whose presence is to be detected.
-        :return: MESSAGE_PARTITION of aggregated messages of the specified MessageType.
+        Get the MESSAGE_PARTITION dictionary a given 'message_type',
+        harvested from all target and test contexts.
+        :param message_type: The MessageType whose presence is to be detected.
+        :return: MESSAGE_PARTITION of the specified MessageType.
         """
         all_messages_of_type: MESSAGE_PARTITION = dict()
         target: str
@@ -518,7 +484,7 @@ class ValidationReporter:
 
     def get_info(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded 'information' messages, for a given test from a given target.
+        Get a copy of all recorded 'information' messages for a given test from a given target.
         :param test: str, specified test (gets current 'default' test if not given)
         :param target: str, specified target (gets current 'default' test if not given)
         :return: Dict of all 'information' messages.
@@ -527,7 +493,7 @@ class ValidationReporter:
 
     def get_skipped(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded 'skipped test' messages, for a given test from a given target.
+        Get copy of all recorded 'skipped test' messages for a given test from a given target.
         :param test: str, specified test (gets current 'default' test if not given)
         :param target: str, specified target (gets current 'default' test if not given)
         :return: Dict of all 'skipped test' messages.
@@ -536,7 +502,7 @@ class ValidationReporter:
 
     def get_warnings(self, test: Optional[str] = None, target: Optional[str] = None) -> MESSAGE_PARTITION:
         """
-        Get copy of all recorded 'warning' messages, for a given test from a given target.
+        Get copy of all recorded 'warning' messages for a given test from a given target.
         :param test: str, specified test (gets current 'default' test if not given)
         :param target: str, specified target (gets current 'default' test if not given)
         :return: Dict of all 'warning' messages.
@@ -566,7 +532,7 @@ class ValidationReporter:
     ############################
     def merge(self, reporter):
         """
-        Merge all messages and metadata from a second ValidationReporter,
+        Merge all messages and metadata from a second reporter
         into the calling ValidationReporter instance.
 
         :param reporter: second ValidationReporter
@@ -602,7 +568,8 @@ class ValidationReporter:
 
     @staticmethod
     def test_case_has_validation_errors(tag: str, case: Dict) -> bool:
-        """Check if test case has validation errors.
+        """
+        Check if the testcase has validation errors.
 
         :param tag: str, top level string key in the 'case' whose value is the validation messages 'dictionary'
         :param case: Dict, containing error messages in a structurally similar
@@ -662,10 +629,10 @@ class ValidationReporter:
     def report_header(self, title: Optional[str] = "", compact_format: bool = True) -> str:
         """
         Return a suitably generated report header.
-        :param title: Optional[str], if title is None, then only the 'reasoner-validator' version is printed out
+        :param title: Optional[str], if the title is None, then only the 'reasoner-validator' version is printed out
                       in the header. If the title is an empty string (the default), then 'Validation Report' used.
         :param compact_format: bool, whether to print the header in compact format (default: True).
-                               Extra line feeds are otherwise provided to provide space around the header
+                               Extra line feeds are otherwise provided to provide space around header
                                and control characters are output to underline the header.
         :return: str, generated header.
         """
@@ -687,7 +654,15 @@ class ValidationReporter:
         if not compact_format:
             header += "\n"
 
-        header += f"Reasoner Validator version '{metadata.version('reasoner-validator')}'"
+        try:
+            # This only works if the reasoner-validator
+            # is locally installed as a package into the environment
+            version = f" version '{metadata.version('reasoner-validator')}'"
+        except metadata.PackageNotFoundError:
+            #
+            version = ""
+
+        header += f"Reasoner Validator {version}"
         return header
 
     def dump(
@@ -769,12 +744,12 @@ class ValidationReporter:
                                 print(f"\n\t\t{message_type.capitalize()}:", file=file)
 
                             # 'coded_messages' is a MESSAGE_PARTITION where
-                            # MESSAGE_PARTITION is Dict[<validation code>, SCOPED_MESSAGES]
+                            # MESSAGE_PARTITION is Dict[<validation code>, Optional[IDENTIFIED_MESSAGES]]
 
                             # 'validation code' is the dot-delimited string
                             # representation of the YAML path of the message codes.yaml
                             code: str
-                            messages_by_code:  SCOPED_MESSAGES
+                            messages_by_code:  Optional[IDENTIFIED_MESSAGES]
 
                             # Grouping message outputs by validation codes
                             for code, messages_by_code in coded_messages.items():
@@ -788,88 +763,76 @@ class ValidationReporter:
                                 if not compact_format:
                                     print(file=file)
 
-                                # 'messages_by_code' are 'code' indexed SCOPED_MESSAGES where
-                                # SCOPED_MESSAGES are Dict[<scope>, Optional[IDENTIFIED_MESSAGES]]
-                                # and <scope> is "global" or source trail path string and
-                                # messages_by_scope are Optional[IDENTIFIED_MESSAGES] (see below)
-                                scope: str
-                                messages_by_scope: Optional[IDENTIFIED_MESSAGES]
-                                for scope, messages_by_scope in messages_by_code.items():
-                                    print(f"\t\t\t$ {scope}", file=file)
+                                # 'coded_messages' are Optional[IDENTIFIED_MESSAGES]
+                                # An entry of 'coded_messages' may be None if the given message code
+                                # has no additional parameters that distinguish instances of context
+                                # (eg., edge id?) where the validation message occurs for the given identifier.
+                                if messages_by_code is None:
+                                    continue
 
-                                    # 'messages_by_scope' are Optional[IDENTIFIED_MESSAGES]
-                                    # An entry of 'messages_by_scope' may be None if the given message code
-                                    # has no additional parameters that distinguish instances of context
-                                    # (e.g. edge id?) where the validation message occurs for the given identifier.
-                                    if messages_by_scope is None:
-                                        continue
+                                # Otherwise, codes with associated parameters in scope
+                                # 'IDENTIFIED_MESSAGES' are Dict[<identifier>, Optional[List[MESSAGE_PARAMETERS]]]
+                                # where a unique 'identifier' serves as the discriminator
+                                # of the (TRAPI or Biolink) context of the validation message
 
-                                    # Otherwise, codes with associated parameters in scope
-                                    # 'IDENTIFIED_MESSAGES' are Dict[<identifier>, Optional[List[MESSAGE_PARAMETERS]]]
-                                    # where a unique 'identifier' serves as the discriminator
-                                    # of the (TRAPI or Biolink) context of the validation message
+                                ids_per_row: int = 0
+                                num_ids: int = len(messages_by_code.keys())
+                                more_ids: int = num_ids - id_rows if num_ids > id_rows else 0
+                                identifier: str
+                                messages: Optional[List[MESSAGE_PARAMETERS]]
+                                for identifier, messages in messages_by_code.items():
+                                    if messages is None:
+                                        # For codes whose context of validation is solely discerned
+                                        # with their identifier, just print out the identifier
+                                        print(f"\t\t\t\t# {identifier}", file=file)
+                                        if not compact_format:
+                                            print(file=file)
+                                    else:
+                                        # Since we have already checked if messages is None above,
+                                        # then we assume here that 'messages' is a List[MESSAGE_PARAMETERS]
+                                        # which records distinct additional context
+                                        # for a list of messages associated with a given code.
 
-                                    ids_per_row: int = 0
-                                    num_ids: int = len(messages_by_scope.keys())
-                                    more_ids: int = num_ids - id_rows if num_ids > id_rows else 0
-                                    identifier: str
-                                    messages: Optional[List[MESSAGE_PARAMETERS]]
-                                    for identifier, messages in messages_by_scope.items():
-                                        if messages is None:
-                                            # For codes whose context of validation is solely discerned
-                                            # with their identifier, just print out the identifier
-                                            print(f"\t\t\t\t# {identifier}", file=file)
-                                            if not compact_format:
-                                                print(file=file)
-                                        else:
-                                            # Since we have already checked if messages is None above,
-                                            # then we assume here that 'messages' is a List[MESSAGE_PARAMETERS]
-                                            # which records distinct additional context
-                                            # for a list of messages associated with a given code.
-
-                                            print(f"\t\t\t\t# {identifier}", file=file)
-                                            first_message: bool = True
-                                            messages_per_row: int = 0
-                                            num_messages: int = len(messages)
-                                            more_msgs: int = num_messages - msg_rows if num_messages > msg_rows else 0
-                                            # 'messages' is an instance List[MESSAGE_PARAMETERS] where every entry of
-                                            # 'MESSAGE_PARAMETERS' is a dictionary of additional parameters documenting
-                                            # a specific instance of validation message related to the given identifier,
-                                            # where the keys are validation code specific (documented in codes.yaml)
-                                            parameters: MESSAGE_PARAMETERS
-                                            for parameters in messages:
-                                                if first_message:
-                                                    tags = tuple(parameters.keys())
-                                                    print(f"\t\t\t\t- {' | '.join(tags)}: ", file=file)
-                                                    first_message = False
-                                                # Sanitize the parameter values for the report
-                                                # (in case non-string values sneak through)
-                                                parameters = {tag: str(value) for tag, value in parameters.items()}
-                                                print(f"\t\t\t\t\t{' | '.join(parameters.values())}", file=file)
-                                                messages_per_row += 1
-                                                if msg_rows and messages_per_row >= msg_rows:
-                                                    if more_msgs:
-                                                        print(
-                                                            f"\t\t\t\t{str(more_msgs)} more messages " +
-                                                            f"for identifier '{identifier}'...",
-                                                            file=file
-                                                        )
-                                                    break
-                                            if not compact_format:
-                                                print(file=file)
-                                        ids_per_row += 1
-                                        if id_rows and ids_per_row >= id_rows:
-                                            if more_ids:
-                                                print(
-                                                    f"\t\t\t{str(more_ids)} more identifiers for code '{code_label}'...",
-                                                    file=file
-                                                )
-                                            break
-                                    if not compact_format:
-                                        print(file=file)
-                                # else:
-                                #     For codes with associated non-parametric templates,
-                                #     just printing the template (done above) suffices
+                                        print(f"\t\t\t\t# {identifier}", file=file)
+                                        first_message: bool = True
+                                        messages_per_row: int = 0
+                                        num_messages: int = len(messages)
+                                        more_msgs: int = num_messages - msg_rows if num_messages > msg_rows else 0
+                                        # 'messages' is an instance List[MESSAGE_PARAMETERS] where every entry of
+                                        # 'MESSAGE_PARAMETERS' is a dictionary of additional parameters documenting
+                                        # a specific instance of the validation message related to the given identifier,
+                                        # where the keys are a validation code specific id (documented in codes.yaml)
+                                        parameters: MESSAGE_PARAMETERS
+                                        for parameters in messages:
+                                            if first_message:
+                                                tags = tuple(parameters.keys())
+                                                print(f"\t\t\t\t- {' | '.join(tags)}: ", file=file)
+                                                first_message = False
+                                            # Sanitize the parameter values for the report
+                                            # (in case non-string values sneak through)
+                                            parameters = {tag: str(value) for tag, value in parameters.items()}
+                                            print(f"\t\t\t\t\t{' | '.join(parameters.values())}", file=file)
+                                            messages_per_row += 1
+                                            if msg_rows and messages_per_row >= msg_rows:
+                                                if more_msgs:
+                                                    print(
+                                                        f"\t\t\t\t{str(more_msgs)} more messages " +
+                                                        f"for identifier '{identifier}'...",
+                                                        file=file
+                                                    )
+                                                break
+                                        if not compact_format:
+                                            print(file=file)
+                                    ids_per_row += 1
+                                    if id_rows and ids_per_row >= id_rows:
+                                        if more_ids:
+                                            print(
+                                                f"\t\t\t{str(more_ids)} more identifiers for code '{code_label}'...",
+                                                file=file
+                                            )
+                                        break
+                                if not compact_format:
+                                    print(file=file)
                         # else: print nothing if a given message_type has no messages
                     # end for each coded message
                 # end for each test
@@ -885,12 +848,12 @@ class ValidationReporter:
     ) -> str:
         """
         Text string version of dump(): returns all available messages captured by the
-        ValidationReporter, as a formatted human-readable text blob.
+        reporter, as a formatted human-readable text blob.
 
         :param id_rows: int >= 0, if set, maximum number of code-related identifiers to
                              print per code (value of 0 means print all; default: 0)
         :param msg_rows: int >= 0, if set, maximum number of parameterized code-related messages to
-                                  print per identifier row (value of 0 means print all; default: 0)
+                                  print, per identifier row (value of 0 means print all; default: 0)
         :param compact_format: bool, if True, omit blank lines inserted by default for human readability (default: True)
         :return: n/a
         """

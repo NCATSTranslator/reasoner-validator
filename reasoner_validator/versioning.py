@@ -6,7 +6,7 @@ from reasoner_validator.github import get_versions
 
 _versions: Dict = get_versions()
 
-# This is modified version of a standard SemVer regex which
+# This is a modified version of a standard SemVer regex which
 # takes into account the possibility of capturing a non-numeric prefix
 semver_pattern = compile(
     r"^(?P<prefix>[a-zA-Z]*)(?P<major>0|[1-9]\d*)(\.(?P<minor>0|[1-9]\d*)(\.(?P<patch>0|[1-9]\d*))?)?" +

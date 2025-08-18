@@ -1216,19 +1216,19 @@
 
 **Description:** Edge attributes should record only a single primary knowledge source provenance attribute value
 
-### warning.knowledge_graph.edge.provenance.ara.missing
+### warning.knowledge_graph.edge.provenance.target.ara.missing
 
-**Message:** Edge is missing ARA knowledge source provenance
+**Message:** Edge provenance is missing target ARA knowledge source
 
 **Context:** edge_id, identifier
 
 **Description:** Edge attributes ARAs should record the Infores identifier of their knowledge source provenance with respect to ARA
 
-### warning.knowledge_graph.edge.provenance.kp.missing
+### warning.knowledge_graph.edge.provenance.target.kp.missing
 
-**Message:** Edge attribute values are missing expected Knowledge Provider provenance
+**Message:** Edge provenance is missing target KP knowledge source
 
-**Context:** edge_id, identifier, kp_source_type
+**Context:** edge_id, identifier, target_kp_source_type
 
 **Description:** Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP
 
