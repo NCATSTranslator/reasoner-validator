@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Reasoner Validator'
-copyright = '2022-23, Richard Bruskiewich;  2020-21, Patrick Wang'
+copyright = '2022-25, Richard Bruskiewich;  2020-21, Patrick Wang'
 author = 'Richard Bruskiewich and Patrick Wang'
 
 
@@ -42,14 +42,14 @@ source_suffix = {
     '.md': 'markdown',
 }
 
-# generate autosummary even if no references
+# generate the autosummary even if no references
 autosummary_generate = True
 autosummary_imported_members = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-# List of patterns, relative to source directory, that match files and
+# List of patterns, relative to the source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['docs', 'Thumbs.db', '.DS_Store', 'venv']
