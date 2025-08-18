@@ -213,8 +213,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-non-biolink-prefix">warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-attribute-type-id-deprecated">warning.knowledge_graph.edge.attribute.type_id.deprecated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-multiple-primary">warning.knowledge_graph.edge.provenance.multiple_primary</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-ara-missing">warning.knowledge_graph.edge.provenance.ara.missing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-kp-missing">warning.knowledge_graph.edge.provenance.kp.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-target-ara-missing">warning.knowledge_graph.edge.provenance.target.ara.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-provenance-target-kp-missing">warning.knowledge_graph.edge.provenance.target.kp.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-knowledge-level-missing">warning.knowledge_graph.edge.knowledge_level.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-agent-type-missing">warning.knowledge_graph.edge.agent_type.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#warning-knowledge-graph-edge-treats-support-graph-missing">warning.knowledge_graph.edge.treats.support_graph.missing</a></li>
@@ -1194,16 +1194,16 @@
 <p><strong>Context:</strong> identifier, sources</p>
 <p><strong>Description:</strong> Edge attributes should record only a single primary knowledge source provenance attribute value</p>
 </section>
-<section id="warning-knowledge-graph-edge-provenance-ara-missing">
-<h3>warning.knowledge_graph.edge.provenance.ara.missing<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-ara-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge is missing ARA knowledge source provenance</p>
+<section id="warning-knowledge-graph-edge-provenance-target-ara-missing">
+<h3>warning.knowledge_graph.edge.provenance.target.ara.missing<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-target-ara-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge provenance is missing target ARA knowledge source</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> Edge attributes ARAs should record the Infores identifier of their knowledge source provenance with respect to ARA</p>
 </section>
-<section id="warning-knowledge-graph-edge-provenance-kp-missing">
-<h3>warning.knowledge_graph.edge.provenance.kp.missing<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-kp-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge attribute values are missing expected Knowledge Provider provenance</p>
-<p><strong>Context:</strong> edge_id, identifier, kp_source_type</p>
+<section id="warning-knowledge-graph-edge-provenance-target-kp-missing">
+<h3>warning.knowledge_graph.edge.provenance.target.kp.missing<a class="headerlink" href="#warning-knowledge-graph-edge-provenance-target-kp-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge provenance is missing target KP knowledge source</p>
+<p><strong>Context:</strong> edge_id, identifier, target_kp_source_type</p>
 <p><strong>Description:</strong> Edge attributes of ARAs and KPs should record the infores identifier of their knowledge source provenance with respect to KP</p>
 </section>
 <section id="warning-knowledge-graph-edge-knowledge-level-missing">

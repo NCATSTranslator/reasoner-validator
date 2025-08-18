@@ -131,13 +131,13 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <td><p>Dump 'warning' messages as JSON.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dumps</span></code>([id_rows, msg_rows, compact_format])</p></td>
-<td><p>Text string version of dump(): returns all available messages captured by the ValidationReporter, as a formatted human-readable text blob.</p></td>
+<td><p>Text string version of dump(): returns all available messages captured by the reporter, as a formatted human-readable text blob.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_messages</span></code>()</p></td>
 <td><p>Get copy of all MESSAGES_BY_TARGET as a Python data structure.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_messages_of_type</span></code>(message_type)</p></td>
-<td><p>Get MESSAGE_PARTITION dictionary of all ValidationReporter messages of a given 'message_type', harvested from all target and test contexts.</p></td>
+<td><p>Get the MESSAGE_PARTITION dictionary a given 'message_type', harvested from all target and test contexts.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_critical</span></code>([test, target])</p></td>
 <td><p>Get copy of all recorded 'critical' error messages, for a given test from a given target.</p></td>
@@ -152,10 +152,10 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <td><p>Get copy of all recorded 'error' messages, for a given test from a given target.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_info</span></code>([test, target])</p></td>
-<td><p>Get copy of all recorded 'information' messages, for a given test from a given target.</p></td>
+<td><p>Get a copy of all recorded 'information' messages for a given test from a given target.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_message_type</span></code>(code)</p></td>
-<td><p>Get type of message code.</p></td>
+<td><p>Get messages by message code.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages_by_target</span></code>([target])</p></td>
 <td><p>Returns a block of MESSAGES_BY_TEST corresponding to a given or default target.</p></td>
@@ -164,13 +164,13 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <td><p>Returns MESSAGE_CATALOG corresponding to a given or default target. Note that the dictionary returned is not a copy of the original  thus caution should be taken not to mutate it! :param test: str, specified test (gets current 'default' test if not given) :param target: str, specified target (gets current 'default' test if not given) :return: MESSAGES_BY_TEST corresponding to a resolved target.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_messages_of_type</span></code>(message_type[, test, ...])</p></td>
-<td><p>Get Python data dictionary of ValidationReporter messages of 'message_type', for a specified (or default?) target and test.</p></td>
+<td><p>Get Python data dictionary of the 'message_type' ValidationReporter messages for a specified (or default?) target and test.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_skipped</span></code>([test, target])</p></td>
-<td><p>Get copy of all recorded 'skipped test' messages, for a given test from a given target.</p></td>
+<td><p>Get copy of all recorded 'skipped test' messages for a given test from a given target.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_warnings</span></code>([test, target])</p></td>
-<td><p>Get copy of all recorded 'warning' messages, for a given test from a given target.</p></td>
+<td><p>Get copy of all recorded 'warning' messages for a given test from a given target.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_critical</span></code>([test, target])</p></td>
 <td><p>Predicate to detect any recorded critical error messages.</p></td>
@@ -197,27 +197,24 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <td><p>Predicate to test if strict validation is to be applied.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code>(reporter)</p></td>
-<td><p>Merge all messages and metadata from a second ValidationReporter, into the calling ValidationReporter instance.</p></td>
+<td><p>Merge all messages and metadata from a second reporter into the calling ValidationReporter instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_coded_messages</span></code>(aggregated, additions)</p></td>
-<td><p>Merge additional MESSAGE_PARTITION content into an already aggregate MESSAGE_PARTITION.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>(code[, test, target])</p></td>
+<td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextual parameters).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>(code[, test, target, source_trail])</p></td>
-<td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextual parameters). :param code: str, dot delimited validation path code :param test: str, specified test (gets current 'default' test if not given) :param target: str, specified target (gets current 'default' test if not given) :param source_trail, Optional[str], audit trail of knowledge source provenance for                      a given Edge, as a string. Defaults to &quot;global&quot; if not specified. :param message: <a href="#id1"><span class="problematic" id="id2">**</span></a>Dict, named parameters representing extra (str-formatted) context for the given code message :return: None (internally record the validation message).</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_header</span></code>([title, compact_format])</p></td>
+<td><p>Return a suitably generated report header. :param title: Optional[str], if the title is None, then only the 'reasoner-validator' version is printed out               in the header. If the title is an empty string (the default), then 'Validation Report' used. :param compact_format: bool, whether to print the header in compact format (default: True). Extra line feeds are otherwise provided to provide space around header                        and control characters are output to underline the header. :return: str, generated header.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_header</span></code>([title, compact_format])</p></td>
-<td><p>Return a suitably generated report header. :param title: Optional[str], if title is None, then only the 'reasoner-validator' version is printed out               in the header. If the title is an empty string (the default), then 'Validation Report' used. :param compact_format: bool, whether to print the header in compact format (default: True). Extra line feeds are otherwise provided to provide space around the header                        and control characters are output to underline the header. :return: str, generated header.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_default_target</span></code>(name)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_default_target</span></code>(name)</p></td>
 <td><p>Resets the default target identifier of the ValidationReporter to a new string.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_default_test</span></code>(name)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_default_test</span></code>(name)</p></td>
 <td><p>Resets the default test identifier of the ValidationReporter to a new string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_case_has_validation_errors</span></code>(tag, case)</p></td>
-<td><p>Check if test case has validation errors.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_case_has_validation_errors</span></code>(tag, case)</p></td>
+<td><p>Check if the testcase has validation errors.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>()</p></td>
 <td><p>Export ValidationReporter message contents as a Python dictionary.</p></td>
 </tr>
 </tbody>
@@ -227,10 +224,10 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <tr class="row-odd"><td><p><strong>check_dangling_references</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>merge_identified_messages</strong></p></td>
+<tr class="row-even"><td><p><strong>merge_coded_messages</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>merge_scoped_messages</strong></p></td>
+<tr class="row-odd"><td><p><strong>merge_identified_messages</strong></p></td>
 <td></td>
 </tr>
 </tbody>
