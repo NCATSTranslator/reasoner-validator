@@ -1,14 +1,14 @@
 Reasoner Validator
 ==================
 
-This documentation describes the use and API for the  4.*.* releases of the Reasoner-Validator Library.
+This documentation describes the use and API for the  5.*.* releases of the Reasoner-Validator Library.
 
 In particular, this package provides various methods for validating any component *in any version* of the
 `Translator Reasoner API (TRAPI) <https://github.com/NCATSTranslator/ReasonerAPI/blob/master/README.md>`_ and `Biolink Model <https://github.com/biolink/biolink-model/blob/master/README.md>`_.
 
 This project has two dimensions of validation: one for TRAPI OpenAPI schema validation and the other for Biolink Model semantic validation.
 
-Note that the functioning of this release is not backwards compatible with 2.2.* or earlier releases of the package.
+Note that the functioning of this release is not backwards compatible with releases earlier than 5.0.0 the package.
 
 Installation
 ============
@@ -36,7 +36,7 @@ Checkout then setup dependencies and the standard virtual environment using poet
 
 These operations install the software and creates a virtual operation for running the software in a simple fashion.
 
-You can optionally, `use a tool like pyenv to set your local shell Python version to a 3.9 release <https://python-poetry.org/docs/managing-environments/>`_  prior to the poetry installation.
+You can optionally, `use a tool like pyenv to set your local shell Python version to a 3.12 release <https://python-poetry.org/docs/managing-environments/>`_  prior to the poetry installation.
 
 Basic Programmatic Usage
 ========================
@@ -87,11 +87,11 @@ Top level programmatic validation of a TRAPI Response uses a TRAPIResponseValida
 
     }
     validator: TRAPIResponseValidator = TRAPIResponseValidator(
-        trapi_version="1.5.0",
+        trapi_version="1.6.0",
 
         # If omit or set the Biolink Model version parameter to None,
         # then the current Biolink Model Toolkit default release applies
-        biolink_version="4.2.0",
+        biolink_version="4.2.5",
 
         # 'sources' are set to trigger checking of expected edge knowledge source provenance
         sources={
@@ -130,12 +130,9 @@ in a dictionary looking something like the following (as an example):
     messages: Dict[str, List[Dict[str,str]]] = {
         "information": {
             "info.excluded": {
-                # source scope of the validation error ("global" or some knowledge source path string)
-                "global": {
-                    # the uniquely discriminating 'identifier' here is the edge_id
-                    "(ZFIN:ZDB-GENE-060825-345$biolink:Gene)--[biolink:active_in]->(GO:0042645$biolink:CellularComponent)": None
-                    # messages with only a contextual identifier may have no additional parameters
-                },
+                # the uniquely discriminating 'identifier' here is the edge_id
+                "(ZFIN:ZDB-GENE-060825-345$biolink:Gene)--[biolink:active_in]->(GO:0042645$biolink:CellularComponent)": None
+                # messages with only a contextual identifier may have no additional parameters
                 {...}  # another message (same code type)
             },
             "info.compliant": None  # parameterless messages don't have distinct instances
@@ -143,14 +140,14 @@ in a dictionary looking something like the following (as an example):
         },
         "warnings": {
             "warning.edge.predicate.non_canonical": {
-                "infores:chebi -> infores:molepro -> infores:arax": {
-                    # the uniquely discriminating 'identifier' here is the is the predicate term
-                    "biolink:participates_in":
+                # the uniquely discriminating 'identifier' here is the is the predicate term
+                "biolink:participates_in": [
+                    # List of distinct message parameter blocks
                     {   # the secondary context is the 'edge_id'
                         "edge_id": "a--['biolink:participates_in']->b",
-                    },
-                    {...}  # another predicate indexed message (same code type)                
-                }
+                    }
+                ],
+                {...}  # other predicate indexed messages (same code type)
             },
             "warning.trapi.response.status.unknown" {
                 "global": {
@@ -161,33 +158,32 @@ in a dictionary looking something like the following (as an example):
         },
         "errors": {
             "error.biolink.model.noncompliance": {
-                "infores:chebi -> infores:molepro -> infores:arax": {
-                    "biolink:vitamin": {
-                        "biolink_release": "3.4.5"
-                    }
-                }
+                    "biolink:vitamin": [
+                        {
+                            "biolink_release": "3.4.5"
+                        }
+                    ]
             },
             # other 'errors' code-indexed messages
         },
         "critical": {
             "critical.trapi.request.invalid": {
-                "global": {
                     # subject node descriptor is the 'identifier'
-                    "CHEBI:37565[biolink:SmallMolecule]":
-                    {
-                        "test": "raise_subject_entity"
-                        "reason": "has no 'is_a' parent since it is either not an ontology term or does not map onto a parent ontology term."
-                    },
+                    "CHEBI:37565[biolink:SmallMolecule]": [
+                        {
+                            "test": "raise_subject_entity"
+                            "reason": "has no 'is_a' parent since it is either not an ontology term or does not map onto a parent ontology term."
+                        }
+                    ],
                     {...} # another message (same code type)                
-                }
-            },
+                }            },
             # other 'critical' code-indexed messages
         }
     }
 
 
 
-Every message has a 'code', message scope and optional context-specific parameters which correspond to
+Every message has a 'code' and optional sets of context-specific parameters which correspond to
 named fields in the Python string templates found in the `reasoner_validator package 'codes.yaml' file <https://github.com/NCATSTranslator/reasoner-validator/blob/master/reasoner_validator/codes.yaml>`_.
 
 A human readable page with the codes is `here <validation_codes_dictionary.html>`_.
@@ -252,19 +248,19 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
         # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed 'schema_version'.
         # This modifies slightly the interpretation of this parameter, as follows:
         # If the following trapi_version parameter is given, then it overrides the TRAPI Response 'schema_version';
-        # Otherwise, a TRAPI 1.4.0 Response embedded 'schema_version' (not 'latest') becomes the default validation version."
+        # Otherwise, a TRAPI Response embedded 'schema_version' (not 'latest') becomes the default validation version."
 
-        "trapi_version": "1.5.0",
+        "trapi_version": "1.6.0",
 
         "_comment": "If the Biolink Model version is omitted or set to None, then the current Biolink Model Toolkit is used.
 
-        # Note: for TRAPI releases from 1.4.0 onwards, the Response message will state the assumed 'biolink_version'.
+        # Note: for TRAPI releases from 1.6.0 onwards, the Response message will state the assumed 'biolink_version'.
         # This modifies slightly the interpretation of this parameter, as follows:
         # If the 'biolink_version' given here is assumed, which overrides the TRAPI Response stated 'biolink_version';
-        # Otherwise, a TRAPI 1.5.0 Response embedded 'biolink_version' (not BMT) becomes the default validation version.
+        # Otherwise, a TRAPI Response embedded 'biolink_version' (not BMT) becomes the default validation version.
         # The biolink_version may also be set to the string 'suppress', in which case, most Biolink Model validation is NOT done during the validation of a TRAPI Response."
 
-        "biolink_version": "4.2.0",
+        "biolink_version": "4.2.5",
 
         "sources": {
             "ara_source": "infores:aragorn",
@@ -310,8 +306,8 @@ As an example of the kind of output to expect, if one posts the following TRAPI 
 .. code-block:: json
 
     {
-        "schema_version": "1.5.0",
-        "biolink_version": "4.2.0",
+        "schema_version": "1.6.0",
+        "biolink_version": "4.2.5",
         "message": {
             "query_graph": {
                 "nodes": {
@@ -374,40 +370,34 @@ then, one should typically get a response body like the following JSON validatio
 .. code-block:: json
 
     {
-      "trapi_version": "1.5.0",
-      "biolink_version": "4.2.0",
+      "trapi_version": "1.6.0",
+      "biolink_version": "4.2.5",
       "messages": {
         "critical": {},
         "errors": {
           "error.knowledge_graph.node.category.missing": {
-             "infores:chebi -> infores:molepro -> infores:arax": {
-                "MONDO:0005148": [
-                  {
-                    "context": "Knowledge Graph"
-                  }
-                ]
-            }
+            "MONDO:0005148": [
+              {
+                "context": "Knowledge Graph"
+              }
+            ]
           }
         },
         "warnings": {
           "warning.knowledge_graph.node.id.unmapped_prefix": {
-            "infores:chebi -> infores:molepro -> infores:arax": {
-                "CHEBI:6801": [
-                  {
-                    "categories": "['biolink:Drug']"
-                  }
-                ]
-            }
+            "CHEBI:6801": [
+              {
+                "categories": "['biolink:Drug']"
+              }
+            ]
           },
           "warning.knowledge_graph.edge.provenance.kp.missing": {
-            "infores:chebi -> infores:molepro -> infores:arax": {
-                "infores:panther": [
-                  {
-                    "kp_source_type": "biolink:primary_knowledge_source",
-                    "identifier": "CHEBI:6801--biolink:treats->MONDO:0005148"
-                  }
-                ]
-            }
+            "infores:panther": [
+              {
+                "kp_source_type": "biolink:primary_knowledge_source",
+                "identifier": "CHEBI:6801--biolink:treats->MONDO:0005148"
+              }
+            ]
           }
         },
         "information": {}
@@ -460,7 +450,8 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
   - wrapped the all validation with a ValidatorReporter class serving to collect and return validation messages in a disciplined, codified manner (as a [master YAML file with hierarchically-indexed Python string templates](reasoner_validator/codes.yaml)). Generally still reliably validates Biolink Model release <= 2.4.8
 * 3.1.# releases: mainly supports Biolink Model releases >= 3.0.* and will likely generate some spurious validation warnings or errors for Biolink Model release <= 2.4.8 (reflects non-backward compatible changes to the Biolink Model Toolkit)
 * 4.0.# restructured output messages indexing by target (endpoint url) and indexing by test identifier;
-# 4.1.# TRAPI 1.5 and Biolink Model 4.2.0 validation support
+  # 4.1.# TRAPI 1.5 and Biolink Model 4.2.0 validation support
+* 5.0.# updated to TRAPI 1.6.0; removed all support for TRAPI earlier than 1.5.0; removed source audit trail annotation (but still validates the basic source provenance itself)
 
 The `full change log is here <https://github.com/NCATSTranslator/reasoner-validator/blob/master/CHANGELOG.md>`_.
 
