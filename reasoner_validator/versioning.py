@@ -258,7 +258,7 @@ def get_latest_version(release_tag: Optional[str]) -> Optional[str]:
     """
     Return the latest TRAPI version corresponding to the release tag given.
     Note that if the release tag looks like a YAML file, then it is assumed
-    to be a direct schema specification. If a Git branch name in the schema
+    to be a direct schema specification. If a Git branch name is in the schema
     repository, the branch name is also passed on.
 
     :param release_tag: (possibly partial) SemVer string, Git branch name,

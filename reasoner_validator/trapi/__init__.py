@@ -235,11 +235,11 @@ class TRAPISchemaValidator(ValidationReporter):
     ):
         """
         TRAPI Validator constructor.
-        :param default_test: Optional[str] =  None, initial default test context of the TRAPISchemaValidator messages
-        :param default_target: Optional[str] =  None, initial default target context of the TRAPISchemaValidator,
-                                                also used as a prefix in validation messages.
-        :param trapi_version: str, version of component to validate against
-        :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
+        :param default_test: Optional[str] = None, initial default test context of the TRAPISchemaValidator messages
+        :param default_target: Optional[str] = None, initial default target context of the TRAPISchemaValidator,
+                                            also used as a prefix in validation messages.
+        :param trapi_version: Str, version of the component to validate against
+        :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error'; False, simply issues
                                   'info' message; A value of 'None' uses the default value for specific graph contexts.
 
         """

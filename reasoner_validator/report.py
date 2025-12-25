@@ -52,12 +52,9 @@ class TRAPIGraphType(Enum):
 class ValidationReporter:
     """
     General wrapper for managing validation status messages: information, warnings, errors and 'critical' (errors).
-    The TRAPI version and Biolink Model versions are also tracked for convenience at this abstract level
+    The TRAPI version and Biolink Model versions are also tracked for convenience at this abstract level,
     although their application is within specific pertinent subclasses.
     """
-
-    # Default major version resolves to latest TRAPI OpenAPI release,
-    # specifically 1.3.0, as of September 1st, 2022
     DEFAULT_TRAPI_VERSION = "1"
 
     def __init__(
@@ -632,8 +629,8 @@ class ValidationReporter:
         :param title: Optional[str], if the title is None, then only the 'reasoner-validator' version is printed out
                       in the header. If the title is an empty string (the default), then 'Validation Report' used.
         :param compact_format: bool, whether to print the header in compact format (default: True).
-                               Extra line feeds are otherwise provided to provide space around header
-                               and control characters are output to underline the header.
+                               Extra line feeds are otherwise provided to provide space around the header.
+                               Control characters are also output to underline the header.
         :return: str, generated header.
         """
         header: str = ""
@@ -657,7 +654,7 @@ class ValidationReporter:
         try:
             # This only works if the reasoner-validator
             # is locally installed as a package into the environment
-            version = f" version '{metadata.version('reasoner-validator')}'"
+            version = f"version '{metadata.version('reasoner-validator')}'"
         except metadata.PackageNotFoundError:
             #
             version = ""
