@@ -4,10 +4,12 @@ Version-specific Biolink Model semantic validation of knowledge graph components
 from typing import Optional, Any, Dict, List, Tuple
 from numbers import Number
 from functools import lru_cache
+from importlib.resources import files
 import re
 from urllib.error import HTTPError
 from pprint import PrettyPrinter
 
+from linkml_runtime.utils.schemaview import SchemaView
 
 from bmt import Toolkit, utils
 from linkml_runtime.linkml_model import ClassDefinition, Element
@@ -63,8 +65,9 @@ def get_reference(curie: str) -> Optional[str]:
     return reference
 
 
-def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional[str]:
-    # Get Biolink Model Schema
+@lru_cache(maxsize=3)
+def get_biolink_schema(biolink_version: Optional[str] = None) -> SchemaView:
+    """Get cached Biolink schema, loading it if not already cached."""
     if biolink_version:
         try:
             svm = SemVer.from_string(biolink_version)
@@ -84,38 +87,34 @@ def _get_biolink_model_schema(biolink_version: Optional[str] = None) -> Optional
             biolink_version = "v" + str(svm)
         else:
             biolink_version = str(svm)
-        schema = f"https://raw.githubusercontent.com/biolink/biolink-model/{biolink_version}/biolink-model.yaml"
-        return schema
+
+        schema_view = SchemaView(f"https://raw.githubusercontent.com/biolink/biolink-model/{biolink_version}/biolink-model.yaml")
+        logger.debug("Successfully loaded user-specified Biolink schema from URL")
+        return schema_view
     else:
-        return None
+        # Try to load from the local Biolink Model package
+        # from the locally installed distribution
+        try:
+            schema_path = files("biolink_model.schema").joinpath("biolink_model.yaml")
+            schema_view = SchemaView(str(schema_path))
+            logger.debug("Successfully loaded locally-specified Biolink schema from local file")
+            return schema_view
+        except Exception as e:
+            logger.warning(f"Failed to load local Biolink schema: {e}")
+            # Fallback to loading from official URL
+            schema_view = SchemaView("https://w3id.org/biolink/biolink-model.yaml")
+            logger.debug("Successfully loaded current release Biolink schema from URL")
+            return schema_view
 
 
-# At any given time, only a modest number of Biolink Model versions
-# are expected to be active targets for SRI Test validations?
+def get_current_biolink_version(biolink_version: Optional[str] = None) -> str:
+    return get_biolink_schema(biolink_version).schema.version
+
+
 @lru_cache(maxsize=3)
 def get_biolink_model_toolkit(biolink_version: Optional[str] = None) -> Toolkit:
-    """
-    Return Biolink Model Toolkit corresponding to specified version of the model (Default: current 'latest' version).
-
-    :param biolink_version: Optional[str], caller specified Biolink Model version (default: None)
-    :type biolink_version: Optional[str] or None
-    :return: Biolink Model Toolkit.
-    :rtype: Toolkit
-
-    """
-    if biolink_version:
-        # If errors occur while instantiating non-default Toolkit;
-        # then log the error but just use default as a workaround?
-        try:
-            biolink_schema = _get_biolink_model_schema(biolink_version=biolink_version)
-            bmt = Toolkit(biolink_schema)
-            return bmt
-        except (TypeError, HTTPError) as ex:
-            logger.error(str(ex))
-
-    # 'latest' default Biolink Model
-    # version of given Toolkit returned
-    return Toolkit()
+    """Get a Biolink Model Toolkit configured with the expected project Biolink Model schema."""
+    return Toolkit(schema=get_biolink_schema(biolink_version).schema)
 
 
 class BMTWrapper:
@@ -123,10 +122,11 @@ class BMTWrapper:
         self.bmt: Optional[Toolkit] = None
         self.default_biolink: bool = False
         if biolink_version != "suppress":
-            # Here, the Biolink Model version is validated, and the relevant Toolkit pulled.
+            # Here, the Biolink Model version is validated,
+            # and the relevant Toolkit pulled.
             if biolink_version is None:
                 self.default_biolink = True
-            self.bmt = get_biolink_model_toolkit(biolink_version=biolink_version)
+            self.bmt = get_biolink_model_toolkit(biolink_version)
             self.biolink_version = self.bmt.get_model_version()
         else:
             self.biolink_version = "suppress"
@@ -205,14 +205,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     ):
         """
         Biolink Validator constructor.
-        :param default_test: Optional[str] =  None, initial default test context of the BiolinkValidator messages
-        :param default_target: Optional[str] =  None, initial default target context of the BiolinkValidator,
+        :param default_test: Optional[str] = None, initial default test context of the BiolinkValidator messages
+        :param default_target: Optional[str] = None, initial default target context of the BiolinkValidator,
                                                 also used as a prefix in validation messages.
         :param trapi_version:  Optional[str], caller specified Biolink Model version (default: None, use TRAPI 'latest')
         :param biolink_version: Optional[str], caller specified Biolink Model version (default: None, use BMT 'latest')
                                 Note that a special biolink_version value string "suppress" disables full Biolink Model
                                 validation by the validator (i.e. limits validation to superficial validation).
-        :param target_provenance: Optional[Dict[str,str]], Dictionary of context ARA and KP for provenance validation
+        :param target_provenance: Optional[Dict[str, str]], Dictionary of context ARA and KP for provenance validation
         :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
                                   'info' message; A value of 'None' uses the default value for specific graph contexts.
 

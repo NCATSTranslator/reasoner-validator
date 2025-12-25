@@ -154,7 +154,7 @@ async def direct_trapi_request(
                     print(f"Submitting TRAPI Response file to endpoint '{endpoint}'")
 
             # Make the TRAPI call to the Case targeted
-            # endpoint with specified TRAPI request
+            # endpoint with a specified TRAPI request
             result = await call_trapi(endpoint, trapi_request)
 
             # Was the web service (HTTP) call successful?
@@ -308,6 +308,7 @@ def main():
 
     # Retrieve the TRAPI JSON Response result to be validated
     if args.endpoint:
+        # Response directly retrieved from a target endpoint
         if args.local_request:
             # The internal TRAPI call is a coroutine
             # from which the results in a global variable
@@ -328,18 +329,21 @@ def main():
 
     elif args.arax_id:
         retrieve_arax_result(args.arax_id)
-    
+
     elif args.ars_response_id:
         if isfile(args.ars_response_id):
             # The response identifier can just be a local file...
             with open(args.ars_response_id) as infile:
                 trapi_response = json.load(infile)
         else:
-            # ... unless, it is an ARS PK
+            # ... unless it is an ARS PK
             retrieve_ars_result(response_id=args.ars_response_id, verbose=args.verbose)
 
     else:
-        print("Need to specify either an --endpoint/--local_request or a --response_id input argument to proceed!")
+        print(
+            "Need to specify either an --endpoint plus --local_request, "
+            "--arax_id or --ars_response_id input argument to proceed!"
+        )
 
     if not trapi_response:
         print("TRAPI Response JSON is unavailable for validation?")
@@ -348,9 +352,8 @@ def main():
     # OK, we have something to validate here...
     validator.check_compliance_of_trapi_response(response=trapi_response)
 
-    # Print out the outcome of the main validation of the TRAPI Response
+    # Print out the outcome of the TRAPI Response main validation
     validation_report(validator, args)
-
 
 if __name__ == "__main__":
     main()

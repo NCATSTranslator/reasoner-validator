@@ -154,7 +154,7 @@ The request body consists of JSON data structure with two top level tag:
 
 ### Running the Web Service Directly
 
-First install the web-specific dependencies, if not already done (e.g. by **`--all-extras`** above):
+First, install the web-specific dependencies, if not already done:
 
 ```bash
 poetry install --with web
@@ -286,7 +286,7 @@ To stop the service:
 docker-compose down
 ```
 
-Of course, the above docker-compose commands may be customized by the user to suit their needs. Note that the docker implementation assumes the use of uvicorn
+Of course, the user may customize the above docker-compose commands to suit their needs. Note that the docker implementation assumes the use of uvicorn
 
 ## Change Log
 
