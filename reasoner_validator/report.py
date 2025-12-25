@@ -64,11 +64,11 @@ class ValidationReporter:
             strict_validation: Optional[bool] = None
     ):
         """
-        :param default_test: Optional[str] =  None, initial default test context of the Validator messages
+        :param default_test: Optional[str] = None, initial default test context of the Validator messages
                              Default "global" if not provided.
-        :param default_target: Optional[str] =  None, initial default target context of the Validator,
+        :param default_target: Optional[str] = None, initial default target context of the Validator,
                                also used as a prefix in validation messages. Default "global" if not provided.
-        :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
+        :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error'; False, simply issues
                                   'info' message; A value of 'None' uses the default value for specific graph contexts.
         """
         self.default_test: str = default_test if default_test else "Test"
@@ -109,7 +109,7 @@ class ValidationReporter:
     def is_strict_validation(self, graph_type: TRAPIGraphType, ignore_graph_type: bool = False) -> bool:
         """
         Predicate to test if strict validation is to be applied. If the internal
-        'strict_validation' flag is not set (i.e. None), then graph_type is
+        'strict_validation' flag is not set (i.e., None), then graph_type is
         to resolve strictness based on TRAPI graph type context.
 
         :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
