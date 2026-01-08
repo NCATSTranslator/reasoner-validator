@@ -1735,7 +1735,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # Query Graphs can have an empty nodes catalog
             if graph_type is not TRAPIGraphType.Query_Graph:
                 self.report(code="error.knowledge_graph.nodes.empty")
-            # else:  Query Graphs can omit the 'nodes' tag
+            # else: Query Graphs can omit the 'nodes' tag
             nodes = None
 
         edges: Optional[Dict]
@@ -1744,7 +1744,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         else:
             if graph_type is not TRAPIGraphType.Query_Graph:
                 self.report(code="error.knowledge_graph.edges.empty")
-            # else:  Query Graphs can omit the 'edges' tag
+            # else: Query Graphs can omit the 'edges' tag
             edges = None
 
         self.reset_node_info(graph_type=graph_type)
@@ -1752,8 +1752,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             for node_id, details in nodes.items():
                 self.validate_graph_node(node_id, details, graph_type=graph_type)
 
-            # A dictionary of the instances of 'node_id', associated 'categories' plus an
-            # internal counter, is needed for subsequent edge validation processes
+            # A dictionary of the 'node_id' instances, associated 'categories' plus an
+            # internal counter, is needed for the subsequent edge validation processes
             self.set_nodes(nodes)
 
             if edges:
