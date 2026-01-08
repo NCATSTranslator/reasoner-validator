@@ -6,7 +6,7 @@ from numbers import Number
 from functools import lru_cache
 from importlib.resources import files
 import re
-from urllib.error import HTTPError
+
 from pprint import PrettyPrinter
 
 from linkml_runtime.utils.schemaview import SchemaView

@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict, Set, Tuple
 from functools import lru_cache
+from reasoner_validator.versioning import SemVer
 from reasoner_validator.biolink import (
     BiolinkValidator,
     get_biolink_model_toolkit
@@ -123,15 +124,19 @@ class TRAPIResponseValidator(BiolinkValidator):
         if 'schema_version' not in response:
             self.report(code="warning.trapi.response.schema_version.missing")
         else:
+            reported_trapi_version = response["schema_version"]
+            logger.debug(
+                f"TRAPI Response reported schema version is: '{reported_trapi_version}'"
+            )
             # TODO: this section feels a bit confusing:  What's the *real*
             #       TRAPI versioning precedence needed here?
             # TRAPI JSON specified versions override default versions
             if self.default_trapi:
-                self.trapi_version = get_latest_version(response["schema_version"])
-            trapi_version: str = response['schema_version'] \
+                self.trapi_version = get_latest_version(reported_trapi_version)
+            trapi_version: str = reported_trapi_version \
                 if not self.trapi_version else self.trapi_version
             logger.debug(
-                f"TRAPI Response reported TRAPI version is: '{trapi_version}'"
+                f"TRAPI Response to be validated against schema version '{trapi_version}'"
             )
 
         if 'biolink_version' not in response:
@@ -141,7 +146,7 @@ class TRAPIResponseValidator(BiolinkValidator):
             #       Biolink Model versioning precedence needed here?
             if self.default_biolink:
                 self.bmt = get_biolink_model_toolkit(biolink_version=response["biolink_version"])
-                self.biolink_version = self.bmt.get_model_version()
+                self.reset_biolink_version(self.bmt.get_model_version())
             biolink_version = response['biolink_version'] \
                 if not self.get_biolink_version() else self.get_biolink_version()
             logger.debug(
@@ -154,8 +159,8 @@ class TRAPIResponseValidator(BiolinkValidator):
         # itself (checking along the way whether the Message is empty)
         message: Optional[Dict] = response.pop('message')
 
-        # we insert a stub to enable TRAPI schema
-        # validation of the remainder of the Response
+        # We insert a stub to enable TRAPI schema
+        # then validate the remainder of the Response
         response['message'] = {}
         if message:
             response = self.sanitize_workflow(response)
@@ -275,7 +280,15 @@ class TRAPIResponseValidator(BiolinkValidator):
                     self.report(code="error.trapi.response.message.query_graph.empty")
             else:
                 # Validate the TRAPI compliance of the Query Graph
-                self.is_valid_trapi_query(instance=query_graph, component="QueryGraph")
+                # For TRAPI 1.6.0 or later, could either be regular or pathfinder type
+                if SemVer.from_string(self.trapi_version,ext_fields=None)>= SemVer.from_string("1.6.0"):
+                    components = ["QueryGraph", "PathfinderQueryGraph"]
+                else:
+                    components = "QueryGraph"
+                self.is_valid_trapi_query(
+                    instance=query_graph,
+                    component=components
+                )
 
                 if self.validate_biolink():
                     # Conduct validation of Biolink Model compliance

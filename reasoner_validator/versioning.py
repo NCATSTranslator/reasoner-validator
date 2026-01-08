@@ -38,7 +38,7 @@ class SemVer(NamedTuple):
         string: str,
         ignore_prefix: bool = False,
         core_fields: List[str] = ('major', 'minor', 'patch'),
-        ext_fields: List[str] = ('prerelease', 'buildmetadata')
+        ext_fields: Optional[List[str]] = ('prerelease', 'buildmetadata')
 
     ):
         """
@@ -63,7 +63,7 @@ class SemVer(NamedTuple):
         assert len(core_fields) > 0 and all([field in ['major', 'minor', 'patch'] for field in core_fields])
         assert len(core_fields) >= 1 and 'major' in core_fields
         assert len(core_fields) >= 2 and 'major' in core_fields and 'minor' in core_fields
-        assert all([field in ['prerelease', 'buildmetadata'] for field in ext_fields])
+        assert all([field in ['prerelease', 'buildmetadata'] for field in ext_fields]) if ext_fields else True
 
         # If the string is a file path, generically detected using the .yaml file extension,
         # then assume that the file path string encodes the SemVer string, as a part of the
@@ -104,11 +104,12 @@ class SemVer(NamedTuple):
                 core_field_values.append(0)
 
         ext_field_values: List[Optional[str]] = list()
-        for field in ['prerelease', 'buildmetadata']:
-            if field in ext_fields and field in captured:
-                ext_field_values.append(captured[field])
-            else:
-                ext_field_values.append(None)
+        if ext_fields is not None:
+            for field in ['prerelease', 'buildmetadata']:
+                if field in ext_fields and field in captured:
+                    ext_field_values.append(captured[field])
+                else:
+                    ext_field_values.append(None)
         try:
             return cls(
                 observed_prefix,
@@ -204,7 +205,7 @@ def _semver_ge_(obj: SemVer, other: SemVer) -> bool:
 
     # obj.minor == other.minor
 
-    # Now check 'patch' level
+    # Now check the 'patch' level
     elif obj.patch > other.patch:
         return True
     elif obj.patch < other.patch:

@@ -1,6 +1,6 @@
 """TRAPI Validation Functions."""
 from json import dumps
-from typing import Optional, Dict
+from typing import Optional, Dict, Union
 from os.path import isfile
 import copy
 from functools import lru_cache
@@ -69,8 +69,8 @@ class TRAPIAccessError(RuntimeError):
 def _load_schema(schema_version: str) -> Dict:
     """
     Load schema from the GitHub version or directly from a local schema file.
-    :param schema_version: either a GitHub 'v' prefixed SemVer version of a
-           TRAPI schema or a file name (path) from which the TRAPI schema may be read in.
+    :param schema_version: Either a GitHub 'v' prefixed SemVer version of a TRAPI schema
+                           or a file name (path) from which the TRAPI schema may be read in.
     :return: Dict, schema components
     """
     spec: Dict
@@ -94,7 +94,7 @@ def _load_schema(schema_version: str) -> Dict:
         openapi_to_jsonschema(schema, version=schema_version)
     schemas = dict()
     for component in components:
-        # build json schema against which we validate
+        # build a json schema against which we validate
         subcomponents = copy.deepcopy(components)
         schema = subcomponents.pop(component)
         schema["components"] = {"schemas": subcomponents}
@@ -104,10 +104,10 @@ def _load_schema(schema_version: str) -> Dict:
 
 def load_schema(target: str):
     """
-    Load schema from GitHub release or branch, or from a locally specified YAML schema file.
-    :param target: release semver, schema file path (with '.yaml' file extension)
+    Load schema from a GitHub release or branch, or from a locally specified YAML schema file.
+    :param target: Release semver, schema file path (with '.yaml' file extension)
                     or a git branch name, all referencing a target TRAPI schema.
-    :return: loaded TRAPI schema
+    :return: Loaded TRAPI schema
     """
     mapped_release = get_latest_version(target)
     if mapped_release:
@@ -314,7 +314,7 @@ class TRAPISchemaValidator(ValidationReporter):
         # print("instance", instance)
         jsonschema.validate(instance, schema)
 
-    def is_valid_trapi_query(self, instance, component: str = "Query"):
+    def is_valid_trapi_query(self, instance, component: Union[str, list[str]] = "Query"):
         """Make sure that the Message is a syntactically valid TRAPI Query JSON object.
 
         Parameters
@@ -322,33 +322,48 @@ class TRAPISchemaValidator(ValidationReporter):
         instance:
             Dict, instance to validate
         component:
-            str, TRAPI subschema to validate (e.g. 'Query', 'QueryGraph', 'KnowledgeGraph', 'Result'; Default: 'Query')
-
+            Union[str, list[str]], Single TRAPI subschema or "oneOf" list of TRAPI subschemata
+                                  to validate (e.g. 'Query', ['QueryGraph','PathfinderQueryGraph'],
+                                  'KnowledgeGraph', 'Result'; Default: 'Query')
         Returns
         -------
         Validation ("information", "warning" and "error") messages are returned within the host TRAPIValidator instance.
 
         Examples
         --------
-        >>> TRAPISchemaValidator(trapi_version="1.3.0").is_valid_trapi_query({"message": {}}, component="Query")
+        >>> TRAPISchemaValidator(trapi_version="1.6.0").is_valid_trapi_query({"message": {}}, component="Query")
         """
-        try:
-            self.validate(
-                instance=instance,
-                component=component
-            )
-        except jsonschema.ValidationError as e:
-            if len(e.message) <= 160:
-                reason = e.message
-            else:
-                reason = e.message[0:49] + " "*5 + "... " + " "*5 + e.message[-100:-1]
-            self.report(
-                code="critical.trapi.validation",
-                identifier=self.trapi_version,
-                component=component,
-                json_path=e.json_path,
-                reason=reason
-            )
+        if isinstance(component, str):
+            component_list = [component]
+        else:
+            component_list = component
+
+        found: bool = False
+        failures: dict[str,tuple[str,str]] = {}
+        for subschema in component_list:
+            try:
+                self.validate(
+                    instance=instance,
+                    component=subschema
+                )
+                found = True
+            except jsonschema.ValidationError as e:
+                if len(e.message) <= 160:
+                    reason = e.message
+                else:
+                    reason = e.message[0:49] + " "*5 + "... " + " "*5 + e.message[-100:-1]
+                failures[subschema] = reason, e.json_path
+
+        if not found:
+            for subschema, (reason, json_path) in failures.items():
+                self.report(
+                    code="critical.trapi.validation",
+                    identifier=self.trapi_version,
+                    component=component,
+                    json_path=json_path,
+                    reason=reason
+                )
+
 
     def merge(self, reporter):
         """
@@ -359,8 +374,8 @@ class TRAPISchemaValidator(ValidationReporter):
         """
         ValidationReporter.merge(self, reporter)
 
-        # First come, first serve... We only overwrite
-        # empty versions in the parent reporter
+        # Processed on a FIFO basis...
+        # We only overwrite empty versions in the parent reporter
         if isinstance(reporter, TRAPISchemaValidator) and not self.get_trapi_version():
             self.reset_trapi_version(reporter.get_trapi_version())
 
