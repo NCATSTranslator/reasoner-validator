@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 6.0.0
+- Patched TRAPI schema validation for TRAPI 1.6.0-beta releases containing PathfindingQueryGraph versions of the data.
+
 ## 5.0.0
 
 - Removed validation of any TRAPI version prior to TRAPI 1.5

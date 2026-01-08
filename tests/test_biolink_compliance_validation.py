@@ -112,10 +112,10 @@ def test_message():
     reporter = BiolinkValidator(
         default_test="Test Message",
         default_target="Test Reporter",
-        trapi_version="v1.3",
+        trapi_version="v1.5",
         biolink_version=f"v{LATEST_BIOLINK_MODEL_VERSION}"
     )
-    assert reporter.get_trapi_version() == "v1.3.0"
+    assert reporter.get_trapi_version() == "v1.5.0"
 
     # Note: BMT is a bit tricky in resolving Biolink Model versions:
     # the version is reported without the 'v' prefix of the GitHub release!
