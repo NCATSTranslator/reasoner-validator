@@ -1659,7 +1659,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
     def check_biolink_model_compliance_of_input_edge(self, edge: Dict[str, str]):
         """
-        Validate a templated test input edge contents against the current BMT Biolink Model release.
+        Validate templated test input edge contents against the current BMT Biolink Model release.
 
         Sample method 'edge' with expected dictionary tags:
 
@@ -1671,8 +1671,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             'object': 'UBERON:0035769'
         }
 
-        :param edge: basic dictionary of a templated input edge - S-P-O including concept Biolink Model categories
-        :type edge: Dict[str,str]
+        :param edge: Basic dictionary of a templated input edge - S-P-O including concept Biolink Model categories
+        :type edge: Dict[str, str]
         """
         # data fields to be validated...
         subject_category_curie = edge['subject_category'] if 'subject_category' in edge else None
