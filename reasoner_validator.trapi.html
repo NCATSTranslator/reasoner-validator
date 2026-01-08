@@ -236,7 +236,7 @@ the conformance of JSON messages to the Translator Reasoner API.</p>
 <td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextual parameters).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.trapi.TRAPISchemaValidator.report_header" title="reasoner_validator.trapi.TRAPISchemaValidator.report_header"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_header</span></code></a>([title, compact_format])</p></td>
-<td><p>Return a suitably generated report header. :param title: Optional[str], if the title is None, then only the 'reasoner-validator' version is printed out               in the header. If the title is an empty string (the default), then 'Validation Report' used. :param compact_format: bool, whether to print the header in compact format (default: True). Extra line feeds are otherwise provided to provide space around header                        and control characters are output to underline the header. :return: str, generated header.</p></td>
+<td><p>Return a suitably generated report header. :param title: Optional[str], if the title is None, then only the 'reasoner-validator' version is printed out               in the header. If the title is an empty string (the default), then 'Validation Report' used. :param compact_format: bool, whether to print the header in compact format (default: True). Extra line feeds are otherwise provided to provide space around the header. Control characters are also output to underline the header. :return: str, generated header.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_default_target</span></code>(name)</p></td>
 <td><p>Resets the default target identifier of the ValidationReporter to a new string.</p></td>
@@ -288,25 +288,27 @@ the conformance of JSON messages to the Translator Reasoner API.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.TRAPISchemaValidator.is_valid_trapi_query">
-<span class="sig-name descname"><span class="pre">is_valid_trapi_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Query'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.is_valid_trapi_query" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">is_valid_trapi_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Query'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.trapi.TRAPISchemaValidator.is_valid_trapi_query" title="Permalink to this definition"></a></dt>
 <dd><p>Make sure that the Message is a syntactically valid TRAPI Query JSON object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>instance:</strong></dt><dd><p>Dict, instance to validate</p>
 </dd>
-<dt><strong>component:</strong></dt><dd><p>str, TRAPI subschema to validate (e.g. ‘Query’, ‘QueryGraph’, ‘KnowledgeGraph’, ‘Result’; Default: ‘Query’)</p>
+<dt><strong>component:</strong></dt><dd><dl class="simple">
+<dt>Union[str, list[str]], Single TRAPI subschema or “oneOf” list of TRAPI subschemata</dt><dd><p>to validate (e.g. ‘Query’, [‘QueryGraph’,’PathfinderQueryGraph’],
+‘KnowledgeGraph’, ‘Result’; Default: ‘Query’)</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>Validation (“information”, “warning” and “error”) messages are returned within the host TRAPIValidator instance.</dt><dd></dd>
+<dt><strong>Returns</strong></dt><dd></dd>
+<dt><strong>——-</strong></dt><dd></dd>
+<dt><strong>Validation (“information”, “warning” and “error”) messages are returned within the host TRAPIValidator instance.</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">TRAPISchemaValidator</span><span class="p">(</span><span class="n">trapi_version</span><span class="o">=</span><span class="s2">&quot;1.3.0&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_valid_trapi_query</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">{}},</span> <span class="n">component</span><span class="o">=</span><span class="s2">&quot;Query&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">TRAPISchemaValidator</span><span class="p">(</span><span class="n">trapi_version</span><span class="o">=</span><span class="s2">&quot;1.6.0&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_valid_trapi_query</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">{}},</span> <span class="n">component</span><span class="o">=</span><span class="s2">&quot;Query&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -347,8 +349,8 @@ into the calling TRAPISchemaValidator instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>compact_format</strong> – bool, whether to print the header in compact format (default: True).
-Extra line feeds are otherwise provided to provide space around header
-and control characters are output to underline the header.</p>
+Extra line feeds are otherwise provided to provide space around the header.
+Control characters are also output to underline the header.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>str, generated header.</p>
@@ -428,14 +430,14 @@ to the url and return the status and json response.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.load_schema">
 <span class="sig-prename descclassname"><span class="pre">reasoner_validator.trapi.</span></span><span class="sig-name descname"><span class="pre">load_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.trapi.load_schema" title="Permalink to this definition"></a></dt>
-<dd><p>Load schema from GitHub release or branch, or from a locally specified YAML schema file.
-:param target: release semver, schema file path (with ‘.yaml’ file extension)</p>
+<dd><p>Load schema from a GitHub release or branch, or from a locally specified YAML schema file.
+:param target: Release semver, schema file path (with ‘.yaml’ file extension)</p>
 <blockquote>
 <div><p>or a git branch name, all referencing a target TRAPI schema.</p>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>loaded TRAPI schema</p>
+<dd class="field-odd"><p>Loaded TRAPI schema</p>
 </dd>
 </dl>
 </dd></dl>

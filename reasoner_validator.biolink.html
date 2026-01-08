@@ -98,6 +98,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.get_biolink_model_toolkit"><code class="docutils literal notranslate"><span class="pre">get_biolink_model_toolkit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.get_biolink_schema"><code class="docutils literal notranslate"><span class="pre">get_biolink_schema()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.get_current_biolink_version"><code class="docutils literal notranslate"><span class="pre">get_current_biolink_version()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.get_reference"><code class="docutils literal notranslate"><span class="pre">get_reference()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.is_curie"><code class="docutils literal notranslate"><span class="pre">is_curie()</span></code></a></li>
 </ul>
@@ -230,7 +232,7 @@
 <td><p>Validate a TRAPI-schema compliant Message graph-like data structure against the currently active Biolink Model Toolkit model version.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge" title="reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_biolink_model_compliance_of_input_edge</span></code></a>(edge)</p></td>
-<td><p>Validate a templated test input edge contents against the current BMT Biolink Model release.</p></td>
+<td><p>Validate templated test input edge contents against the current BMT Biolink Model release.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code>([title, id_rows, msg_rows, ...])</p></td>
 <td><p>Dump all available messages captured by the ValidationReporter, printed as formatted human-readable text, on a specified file device.</p></td>
@@ -387,7 +389,7 @@
 <td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextual parameters).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.report_header" title="reasoner_validator.biolink.BiolinkValidator.report_header"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_header</span></code></a>([title, compact_format])</p></td>
-<td><p>Return a suitably generated report header. :param title: Optional[str], if the title is None, then only the 'reasoner-validator' version is printed out               in the header. If the title is an empty string (the default), then 'Validation Report' used. :param compact_format: bool, whether to print the header in compact format (default: True). Extra line feeds are otherwise provided to provide space around header                        and control characters are output to underline the header. :return: str, generated header.</p></td>
+<td><p>Return a suitably generated report header. :param title: Optional[str], if the title is None, then only the 'reasoner-validator' version is printed out               in the header. If the title is an empty string (the default), then 'Validation Report' used. :param compact_format: bool, whether to print the header in compact format (default: True). Extra line feeds are otherwise provided to provide space around the header. Control characters are also output to underline the header. :return: str, generated header.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.reset_biolink_version" title="reasoner_validator.biolink.BiolinkValidator.reset_biolink_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_biolink_version</span></code></a>(version)</p></td>
 <td><p>Reset Biolink Model version tracked by the ValidationReporter.</p></td>
@@ -531,7 +533,7 @@ against the currently active Biolink Model Toolkit model version.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge">
 <span class="sig-name descname"><span class="pre">check_biolink_model_compliance_of_input_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge" title="Permalink to this definition"></a></dt>
-<dd><p>Validate a templated test input edge contents against the current BMT Biolink Model release.</p>
+<dd><p>Validate templated test input edge contents against the current BMT Biolink Model release.</p>
 <p>Sample method ‘edge’ with expected dictionary tags:</p>
 <dl class="simple">
 <dt>{</dt><dd><p>‘subject_category’: ‘biolink:AnatomicalEntity’,
@@ -544,7 +546,7 @@ against the currently active Biolink Model Toolkit model version.</p>
 <p>}</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>edge</strong> (<em>Dict</em><em>[</em><em>str</em><em>,</em><em>str</em><em>]</em>) – basic dictionary of a templated input edge - S-P-O including concept Biolink Model categories</p>
+<dd class="field-odd"><p><strong>edge</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Basic dictionary of a templated input edge - S-P-O including concept Biolink Model categories</p>
 </dd>
 </dl>
 </dd></dl>
@@ -663,8 +665,8 @@ into the calling TRAPISchemaValidator instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>compact_format</strong> – bool, whether to print the header in compact format (default: True).
-Extra line feeds are otherwise provided to provide space around header
-and control characters are output to underline the header.</p>
+Extra line feeds are otherwise provided to provide space around the header.
+Control characters are also output to underline the header.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>str, generated header.</p>
@@ -999,19 +1001,19 @@ Biolink association subclasses possibly related to the current edge.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.get_biolink_model_toolkit">
 <span class="sig-prename descclassname"><span class="pre">reasoner_validator.biolink.</span></span><span class="sig-name descname"><span class="pre">get_biolink_model_toolkit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Toolkit</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.get_biolink_model_toolkit" title="Permalink to this definition"></a></dt>
-<dd><p>Return Biolink Model Toolkit corresponding to specified version of the model (Default: current ‘latest’ version).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>biolink_version</strong> (<em>Optional</em><em>[</em><em>str</em><em>] or </em><em>None</em>) – Optional[str], caller specified Biolink Model version (default: None)</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Biolink Model Toolkit.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Toolkit</p>
-</dd>
-</dl>
+<dd><p>Get a Biolink Model Toolkit configured with the expected project Biolink Model schema.</p>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.get_biolink_schema">
+<span class="sig-prename descclassname"><span class="pre">reasoner_validator.biolink.</span></span><span class="sig-name descname"><span class="pre">get_biolink_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SchemaView</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.get_biolink_schema" title="Permalink to this definition"></a></dt>
+<dd><p>Get cached Biolink schema, loading it if not already cached.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.get_current_biolink_version">
+<span class="sig-prename descclassname"><span class="pre">reasoner_validator.biolink.</span></span><span class="sig-name descname"><span class="pre">get_current_biolink_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.get_current_biolink_version" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.get_reference">

@@ -123,7 +123,7 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 <td><p>Validate a TRAPI-schema compliant Message graph-like data structure against the currently active Biolink Model Toolkit model version.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_biolink_model_compliance_of_input_edge</span></code>(edge)</p></td>
-<td><p>Validate a templated test input edge contents against the current BMT Biolink Model release.</p></td>
+<td><p>Validate templated test input edge contents against the current BMT Biolink Model release.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.validator.TRAPIResponseValidator.check_compliance_of_trapi_response" title="reasoner_validator.validator.TRAPIResponseValidator.check_compliance_of_trapi_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_compliance_of_trapi_response</span></code></a>(response)</p></td>
 <td><p>One stop validation of all components of a TRAPI-schema compliant Query.Response, including its Message against a designated Biolink Model release.</p></td>
@@ -295,7 +295,7 @@ conformance of full TRAPI Responses to TRAPI and the Biolink Model.</p>
 <td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextual parameters).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_header</span></code>([title, compact_format])</p></td>
-<td><p>Return a suitably generated report header. :param title: Optional[str], if the title is None, then only the 'reasoner-validator' version is printed out               in the header. If the title is an empty string (the default), then 'Validation Report' used. :param compact_format: bool, whether to print the header in compact format (default: True). Extra line feeds are otherwise provided to provide space around header                        and control characters are output to underline the header. :return: str, generated header.</p></td>
+<td><p>Return a suitably generated report header. :param title: Optional[str], if the title is None, then only the 'reasoner-validator' version is printed out               in the header. If the title is an empty string (the default), then 'Validation Report' used. :param compact_format: bool, whether to print the header in compact format (default: True). Extra line feeds are otherwise provided to provide space around the header. Control characters are also output to underline the header. :return: str, generated header.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_biolink_version</span></code>(version)</p></td>
 <td><p>Reset Biolink Model version tracked by the ValidationReporter.</p></td>

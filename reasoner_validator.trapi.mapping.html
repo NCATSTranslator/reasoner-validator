@@ -48,10 +48,6 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">TRAPI Result Mapping</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.trapi.mapping.MappingValidator"><code class="docutils literal notranslate"><span class="pre">MappingValidator</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.mapping.MappingValidator.check_dangling_references"><code class="docutils literal notranslate"><span class="pre">MappingValidator.check_dangling_references()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.mapping.MappingValidator.default_target"><code class="docutils literal notranslate"><span class="pre">MappingValidator.default_target</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.mapping.MappingValidator.default_test"><code class="docutils literal notranslate"><span class="pre">MappingValidator.default_test</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.mapping.MappingValidator.messages"><code class="docutils literal notranslate"><span class="pre">MappingValidator.messages</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.trapi.mapping.MappingValidator.strict_validation"><code class="docutils literal notranslate"><span class="pre">MappingValidator.strict_validation</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.trapi.mapping.check_node_edge_mappings"><code class="docutils literal notranslate"><span class="pre">check_node_edge_mappings()</span></code></a></li>
@@ -203,7 +199,7 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <td><p>Capture a single validation message, as per specified 'code' (with any code-specific contextual parameters).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_header</span></code>([title, compact_format])</p></td>
-<td><p>Return a suitably generated report header. :param title: Optional[str], if the title is None, then only the 'reasoner-validator' version is printed out               in the header. If the title is an empty string (the default), then 'Validation Report' used. :param compact_format: bool, whether to print the header in compact format (default: True). Extra line feeds are otherwise provided to provide space around header                        and control characters are output to underline the header. :return: str, generated header.</p></td>
+<td><p>Return a suitably generated report header. :param title: Optional[str], if the title is None, then only the 'reasoner-validator' version is printed out               in the header. If the title is an empty string (the default), then 'Validation Report' used. :param compact_format: bool, whether to print the header in compact format (default: True). Extra line feeds are otherwise provided to provide space around the header. Control characters are also output to underline the header. :return: str, generated header.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_default_target</span></code>(name)</p></td>
 <td><p>Resets the default target identifier of the ValidationReporter to a new string.</p></td>
@@ -235,26 +231,6 @@ This is more of a TRAPI expectation (that all nodes and edges identifiers refer 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.trapi.mapping.MappingValidator.check_dangling_references">
 <span class="sig-name descname"><span class="pre">check_dangling_references</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.trapi.mapping.MappingValidator.check_dangling_references" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reasoner_validator.trapi.mapping.MappingValidator.default_target">
-<span class="sig-name descname"><span class="pre">default_target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#reasoner_validator.trapi.mapping.MappingValidator.default_target" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reasoner_validator.trapi.mapping.MappingValidator.default_test">
-<span class="sig-name descname"><span class="pre">default_test</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#reasoner_validator.trapi.mapping.MappingValidator.default_test" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reasoner_validator.trapi.mapping.MappingValidator.messages">
-<span class="sig-name descname"><span class="pre">messages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MESSAGES_BY_TARGET</span></em><a class="headerlink" href="#reasoner_validator.trapi.mapping.MappingValidator.messages" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reasoner_validator.trapi.mapping.MappingValidator.strict_validation">
-<span class="sig-name descname"><span class="pre">strict_validation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#reasoner_validator.trapi.mapping.MappingValidator.strict_validation" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
