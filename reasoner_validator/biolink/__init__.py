@@ -1738,9 +1738,12 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # else: Query Graphs can omit the 'nodes' tag
             nodes = None
 
-        edges: Optional[Dict]
+        edges: Optional[Dict] = None
+        paths: Optional[Dict] = None
         if 'edges' in graph and graph['edges']:
             edges = graph['edges']
+        elif 'paths' in graph and graph['paths']:
+            paths = graph['paths']
         else:
             if graph_type is not TRAPIGraphType.Query_Graph:
                 self.report(code="error.knowledge_graph.edges.empty")
@@ -1764,16 +1767,24 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         if not self.has_valid_node_information(graph_type=graph_type):
             self.report(code=f"error.{graph_type.label()}.nodes.uninformative")
 
-        # dangling edges are discovered during validate_graph_edge() but
-        # dangling_nodes can only be detected after all edges are processed
-        # Release This is now deemed not a serious error but will be treated as 'info'
-        dangling_nodes: List[str] = self.has_dangling_nodes()
-        if dangling_nodes:
-            self.report(
-                code=f"warning.{graph_type.label()}.nodes.dangling",
-                # this is an odd kind of identifier but the best we can do here?
-                identifier='|'.join(dangling_nodes)
-            )
+
+        if paths is not None:
+            # TODO: some notion of dangling nodes also applies
+            #       to QPaths, but this is not yet coded here
+            pass
+        else:
+            # Dangling edges are discovered during validate_graph_edge() but
+            # Dangling_nodes can only be detected after all edges are processed.
+            # This is now deemed not a serious error but will be treated as 'info'
+            # For now, we are only interested in dangling nodes
+            # if this graph is not a PathfindingQueryGraph
+            dangling_nodes: List[str] = self.has_dangling_nodes()
+            if dangling_nodes:
+                self.report(
+                    code=f"warning.{graph_type.label()}.nodes.dangling",
+                    # this is an odd kind of identifier but the best we can do here?
+                    identifier='|'.join(dangling_nodes)
+                )
 
     def merge(self, reporter):
         """

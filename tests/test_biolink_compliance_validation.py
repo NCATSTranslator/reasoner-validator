@@ -589,7 +589,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 4: Empty edges
+            # Query 4: Empty edges in regular QueryGraph
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -606,7 +606,27 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 5: Empty edges dictionary
+            # Query 5: Pathfinder Query Graphs don't have edges, only paths.
+            {
+                "nodes": {
+                    "NCBIGene:29974": {
+                       "categories": [
+                           "biolink:Gene"
+                       ]
+                    }
+                },
+                "paths": {
+                    "subject": "",
+                    "object": "",
+                    "predicates": []
+                }
+            },
+            # Pathfinder Query Graphs not yet generating warnings for dangling nodes.
+            ""
+        ),
+        (
+            LATEST_BIOLINK_MODEL_VERSION,
+            # Query 6: Empty edges dictionary
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -624,7 +644,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 6: Node "ids" not a List
+            # Query 7: Node "ids" not a List
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": "MONDO:0005148"}
@@ -636,7 +656,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 7: Only one node with "ids", that are an empty array
+            # Query 8: Only one node with "ids", that are an empty array
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": []}
@@ -655,7 +675,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 8: Two nodes, but only one with "ids" that are an empty array
+            # Query 9: Two nodes, but only one with "ids" that are an empty array
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": []},
@@ -675,7 +695,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 9: Unused node is considered 'dangling'
+            # Query 10: Unused node is considered 'dangling'
             {
                 "nodes": {
                     "type-2 diabetes": {
@@ -702,7 +722,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 10: Node "categories" not a array
+            # Query 11: Node "categories" not a array
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -722,7 +742,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 11: Node "categories" is an empty array?
+            # Query 12: Node "categories" is an empty array?
             {
                 "nodes": {
                     "NCBIGene:29974": {
@@ -741,7 +761,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 12: Sample small valid TRAPI Query Graph with null predicates (allowed)
+            # Query 13: Sample small valid TRAPI Query Graph with null predicates (allowed)
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -761,7 +781,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 13: ... but if present, predicates must be an array!
+            # Query 14: ... but if present, predicates must be an array!
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -783,7 +803,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 14: ... but if present, predicates must have at least one predicate in the array
+            # Query 15: ... but if present, predicates must have at least one predicate in the array
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -804,7 +824,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 15: ... but if present, predicates must be valid for the specified Biolink Model version...
+            # Query 16: ... but if present, predicates must be valid for the specified Biolink Model version...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -825,7 +845,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 16: ... but if present, predicates must be valid for the specified Biolink Model version...
+            # Query 17: ... but if present, predicates must be valid for the specified Biolink Model version...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -846,7 +866,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 17: ... and must also be canonical predicates?
+            # Query 18: ... and must also be canonical predicates?
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -867,7 +887,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 18: ... but can be now be a mixin for Biolink Model release >= 4.2.0
+            # Query 19: ... but can be now be a mixin for Biolink Model release >= 4.2.0
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -887,7 +907,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 19: 'Subject' id used in edge is mandatory
+            # Query 20: 'Subject' id used in edge is mandatory
             {
                 "nodes": {
                     "drug": {
@@ -908,7 +928,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 20: 'Subject' id used in edge is missing from the nodes catalog?
+            # Query 21: 'Subject' id used in edge is missing from the nodes catalog?
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]}
@@ -926,7 +946,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 21: 'Object' id used in edge is mandatory
+            # Query 22: 'Object' id used in edge is mandatory
             {
                 "nodes": {
                     "drug": {
@@ -947,7 +967,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 22: 'Object' id used in edge is missing from the nodes catalog?
+            # Query 23: 'Object' id used in edge is missing from the nodes catalog?
             {
                 "nodes": {
                     "drug": {
@@ -967,7 +987,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 23: Node 'is_set' value is not a boolean
+            # Query 24: Node 'is_set' value is not a boolean
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -989,7 +1009,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 24: Unmapped node ids against any of the specified Biolink Model categories
+            # Query 25: Unmapped node ids against any of the specified Biolink Model categories
             {
                 "nodes": {
                     "type-2 diabetes": {
@@ -1014,7 +1034,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 25: Abstract category in query graph? Simply ignored now during validation...
+            # Query 26: Abstract category in query graph? Simply ignored now during validation...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -1034,7 +1054,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 26: Mixin category in query graph? Simply ignored now during validation...
+            # Query 27: Mixin category in query graph? Simply ignored now during validation...
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": ["MONDO:0005148"]},
@@ -1054,7 +1074,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 27: Query edge predicate is a mixin; default 'strict_validation' == False for query graphs
+            # Query 28: Query edge predicate is a mixin; default 'strict_validation' == False for query graphs
             {
                 "nodes": {
                     "drug": {
@@ -1078,7 +1098,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             "4.1.6",
-            # Query 28: Query edge 'treats' predicate is a special case of mixin;
+            # Query 29: Query edge 'treats' predicate is a special case of mixin;
             #           default 'strict_validation' == False for query graphs
             {
                 "nodes": {
@@ -1103,7 +1123,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 29: ... but if present, predicates must be valid
+            # Query 30: ... but if present, predicates must be valid
             #           for the specified Biolink Model version, but...
             {
                 "nodes": {
@@ -1121,12 +1141,12 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 }
             },
             # ...since Biolink Model validation is tagged as 'suppress',
-            # we  don't expect any validation output here?
+            # we don't expect any validation output here?
             ""
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 30: Query edge predicate is a mixin...but...
+            # Query 31: Query edge predicate is a mixin...but...
             {
                 "nodes": {
                     "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
@@ -1143,7 +1163,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                 }
             },
             # ...since Biolink Model validation is tagged as 'suppress',
-            # we  don't expect any validation output here?
+            # we don't expect any validation output here?
             ""
         )
     ]
