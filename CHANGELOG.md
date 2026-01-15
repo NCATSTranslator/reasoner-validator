@@ -23,16 +23,16 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 
 ## 4.3.0
 
-- Validation warning given if an Edge.Attributes.attribute_type_id is a node property.
-- Checkpoint code embedded in the TRAPIValidator to check if standards.ncats.io is online for use for TRAPI validation (mitigates previously reported runtime error related to same).
+- A validation warning is given if an Edge.Attributes.attribute_type_id is a node property.
+- Checkpoint code embedded in the TRAPIValidator to check if standards.ncats.io is online for use for TRAPI validation (mitigates previously reported runtime error related to the same).
 - Reviewed and updated (some previously skipped) unit tests for 1.5, Ontology, etc.
-- Fixed logic of  testcase_node_found() method for validation of ontology terms: TRAPI Response Node identifiers can match TestCase node identifiers if the latter is a parent concept in an ontology (i.e. the TRAPI returned identifier has the TestCase node as an ontology ancestor). The coded solution works for multi-parent Directed Acyclic Graph ontology hierarchies. A validator "information" message reports the indirect match.
+- Fixed the logic of the testcase_node_found() method for validation of ontology terms: TRAPI Response Node identifiers can match TestCase node identifiers if the latter is a parent concept in an ontology (i.e., the TRAPI returned identifier has the TestCase node as an ontology ancestor). The coded solution works for multi-parent Directed Acyclic Graph ontology hierarchies. A validator "information" message reports the indirect match.
 
 ## 4.2.7
 
 - Fix validation reporting to handle odd validation message parameters which are not scalars
 - Also coerce a few specific validation message report call parameter inputs to strings
-- Skipping Ontology (UberGraph) unit tests due to some unknown change in the resource (requires review since this could break some extended use cases of the library)
+- Skipping Ontology (UberGraph) unit tests due to some unknown changes in the resource (requires review since this could break some extended use cases of the library)
 
 ## 4.2.6
 
@@ -49,8 +49,8 @@ The Reasoner Validator package is evolving along with progress in TRAPI and Biol
 ## 4.2.3
 
 - Update TRAPI to full minor release 1.5
-- Refactored validator of test case node (one hop) a bit further to sharpen scope, including resolve_testcase_node() method for readability and to ensure full reporting of validation error message inside
-- Bug fix to ontology - test for null values returned from the node normalizer; add a lrucache for the parent concept lookup
+- Refactored validator of test case node (one hop) a bit further to sharpen scope, including resolve_testcase_node() method for readability and to ensure full reporting of the validation error message inside
+- Bug fix to the ontology test for null values returned from the node normalizer; add a lrucache for the parent concept lookup
 - refactor to break apart the testcase edge validation; added validation of subclassed instances of a query identifier (should be allowed); identified 'query_id' not yet used for results validation.
 
 ## 4.2.2
