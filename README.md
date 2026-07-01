@@ -34,12 +34,13 @@ After [installing poetry](https://python-poetry.org/docs/#installation) and clon
 ```bash
 git clone https://github.com/NCATSTranslator/reasoner-validator.git
 cd reasoner-validator
-poetry use 3.12
-poetry shell
+pyenv local 3.12  # or whatever version you want to use, remember to use `pyenv install` to install it first
+poetry env use 3.12  # or the version you chose above
+poetry env activate
 poetry install
 ```
 
-Note that the **`poetry env`** can be set to Python 3.9 through 3.12 at the present time (3.12 is recommended).
+Note that the **`poetry env`** can be set to Python 3.10 through 3.12 at the present time (3.12 is recommended).
 
 This installation also installs testing dependencies (in the poetry 'dev' group in the pyproject.toml) and documentation dependencies (in the corresponding poetry 'docs' group). If you don't want the overhead of these dependencies, then the installation of these poetry group dependencies may be excluded:
 

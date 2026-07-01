@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 6.0.2
+- Patch to update BMT to bmt = ">=1.4.8"; general update of other Python dependencies.
+
 ## 6.0.1
 - removed PathfindingQueryGraph report of dangling nodes for query graphs.
 
