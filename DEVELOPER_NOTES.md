@@ -32,8 +32,8 @@ Steps to properly issue a new project release:
 6. Run **`poetry update`** (preferably within an active venv **`poetry env activate`**)
 7. The project pip **requirements.txt** file snapshot of dependencies in the project root directory should also be updated at this point (type **`$ poetry export --output requirements.txt`**, assuming that the [proper poetry export plugin is installed](https://python-poetry.org/docs/cli/#export). This may facilitate module deployment within environments that prefer to use pip rather than poetry to manage their deployments (note: the script should be run from the root directory of the project). 
 8. Commit or pull request merge all files (including the **poetry.lock** file) to **master**
-9. Add the equivalent Git **tag** to **master**. This should be the Semantic Version string from step 4 with an added 'v' prefix, i.e. "v6.0.0". 
+9. Add the equivalent Git **tag** to **master**. This should be the Semantic Version string from step 4 with an added 'v' prefix, i.e. "v6.0.2". 
 10. Push **master** to remote.
 11. Check if Git Actions for testing and documentation complete successfully.
-12. Create the release using the same release tag, i.e. "v6.0.0". 
+12. Create the release using the same release tag, i.e. "v6.0.2". 
 13. Check if Git Action for package deployment is successful and check if the new version (i.e. "6.0.2") is now visible on **[pypy.org](https://pypi.org/search/?q=reasoner-validator)**
