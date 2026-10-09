@@ -14,6 +14,7 @@ from reasoner_validator.trapi import (
     LATEST_TRAPI_RELEASE
 )
 from tests import (
+    PRE_2_0_0_TEST_VERSIONS,
     LATEST_TEST_RELEASES,
     ALL_TEST_VERSIONS
 )
@@ -154,9 +155,10 @@ def test_trapi_1_5_edgebinding(trapi_version: str):
         }, "EdgeBinding")
 
 
-@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
+# Test only valid prior to TRAPI 2.0
+@pytest.mark.parametrize("trapi_version", PRE_2_0_0_TEST_VERSIONS)
 def test_nullable(trapi_version: str):
-    """Test nullable categories property."""
+    """Test nullable 'categories' property."""
     qnode = {
         "categories": None
     }
@@ -165,7 +167,8 @@ def test_nullable(trapi_version: str):
     # since QNode has 'additionalProperties: true' but no 'required:' properties
 
 
-@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
+# Test only valid prior to TRAPI 2.0
+@pytest.mark.parametrize("trapi_version", PRE_2_0_0_TEST_VERSIONS)
 def test_nullable_message_properties(trapi_version: str):
     """Test nullable message properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
@@ -181,7 +184,8 @@ def test_nullable_message_properties(trapi_version: str):
         }, "Message")
 
 
-@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
+# Test only valid prior to TRAPI 2.0
+@pytest.mark.parametrize("trapi_version", PRE_2_0_0_TEST_VERSIONS)
 def test_nullable_query_level_properties(trapi_version: str):
     """Test nullable TRAPI Query level properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
