@@ -127,6 +127,7 @@ class BMTWrapper:
             if biolink_version is None:
                 self.default_biolink = True
             self.bmt = get_biolink_model_toolkit(biolink_version)
+            assert self.bmt is not None
             self.biolink_version = self.bmt.get_model_version()
         else:
             self.biolink_version = "suppress"
@@ -150,7 +151,8 @@ class BMTWrapper:
         if self.biolink_version != "suppress":
             self.bmt = get_biolink_model_toolkit(biolink_version=version)
 
-    def get_bmt(self) -> Optional[Toolkit]:
+    def get_bmt(self) -> Toolkit:
+        assert self.bmt is not None
         return self.bmt
 
     def is_symmetric(self, name: str) -> bool:
@@ -162,7 +164,7 @@ class BMTWrapper:
         # TODO: perhaps this method ought to be in the Biolink Model Toolkit?
         if not name:
             return False
-        element: Optional[Element] = self.bmt.get_element(name)
+        element: Optional[Element] = self.get_bmt().get_element(name)
         if element is not None and element['symmetric']:
             return True
         else:
@@ -175,9 +177,9 @@ class BMTWrapper:
         :return: CURIE string of inverse predicate, if it exists; None otherwise
         """
         # TODO: perhaps this method ought to be in the Biolink Model Toolkit?
-        if predicate and self.bmt.is_predicate(predicate):
+        if predicate and self.get_bmt().is_predicate(predicate):
             predicate_name = utils.parse_name(predicate)
-            inverse_predicate_name = self.bmt.get_inverse(predicate_name)
+            inverse_predicate_name = self.get_bmt().get_inverse(predicate_name)
             if not inverse_predicate_name:
                 if self.is_symmetric(predicate_name):
                     inverse_predicate_name = predicate_name
@@ -185,7 +187,7 @@ class BMTWrapper:
                     inverse_predicate_name = None
 
             if inverse_predicate_name:
-                ip = self.bmt.get_element(inverse_predicate_name)
+                ip = self.get_bmt().get_element(inverse_predicate_name)
                 return utils.format_element(ip)
         return None
 
@@ -295,7 +297,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :return: model version of the validation and dictionary of reported validation messages.
         :rtype Tuple[str, Optional[Dict[str, Set[str]]]]
         """
-        return self.bmt.get_model_version(), super().get_all_messages()
+        return self.get_bmt().get_model_version(), super().get_all_messages()
 
     def validate_graph_node(self, node_id: str, slots: Dict[str, Any], graph_type: TRAPIGraphType):
         """
@@ -333,7 +335,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                             # since only they will have associated namespaces
                             if concrete_category:
                                 concrete_category_found: bool = True
-                                possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
+                                possible_subject_categories = self.get_bmt().get_element_by_prefix(node_id)
                                 if possible_subject_categories and \
                                         concrete_category.name in possible_subject_categories:
                                     node_prefix_mapped = True
@@ -422,7 +424,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                 # actually don't care if Query Graphs don't have at least one concrete category...
                                 if category:
                                     for identifier in node_ids:  # may be empty list if not provided...
-                                        possible_subject_categories = self.bmt.get_element_by_prefix(identifier)
+                                        possible_subject_categories = self.get_bmt().get_element_by_prefix(identifier)
                                         if category.name in possible_subject_categories:
                                             id_prefix_mapped[identifier] = True
 
@@ -501,7 +503,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                only apply graph-type-differential strict validation if 'ignore_graph_type' is False
         :return: Optional[Element], Biolink Element resolved to 'name' if element no validation error; None otherwise.
         """
-        element: Optional[Element] = self.bmt.get_element(identifier)
+        element: Optional[Element] = self.get_bmt().get_element(identifier)
         if not element:
             self.report(
                 code=f"error.{context}.unknown",
@@ -534,7 +536,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     edge_id=edge_id
                 )
 
-        elif self.bmt.is_mixin(identifier):
+        elif self.get_bmt().is_mixin(identifier):
             # A mixin cannot be instantiated ...
             # but can be used in QueryGraphs
             # or when explicitly permitted
@@ -656,7 +658,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # that the first slot value was acceptable.
             return True
 
-        slot_element = self.bmt.get_element(f"biolink:{slot_name}")
+        slot_element = self.get_bmt().get_element(f"biolink:{slot_name}")
         assert slot_element, f"No such slot {slot_name} element in Biolink Model release {self.biolink_version}"
 
         # Note: we don't need to check for empty attribute.values
@@ -665,9 +667,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         # Validate slot value here against the specified slot range Enum
         if "range" in slot_element and slot_element.range:
             value_range = slot_element.range
-            if value_range and self.bmt.is_enum(value_range):
-                enum = self.bmt.view.get_enum(value_range)
-                if not self.bmt.is_permissible_value_of_enum(enum.name, value):
+            if value_range and self.get_bmt().is_enum(value_range):
+                enum = self.get_bmt().view.get_enum(value_range)
+                if not self.get_bmt().is_permissible_value_of_enum(enum.name, value):
                     self.report(
                         code=f"error.knowledge_graph.edge.{slot_name}.invalid",
                         identifier=str(value),
@@ -744,7 +746,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param edge: Dict, the edge object is associated with some attributes are expected to be found
         """
         if 'attributes' not in edge:
-            if self.validate_biolink() and not self.minimum_required_trapi_version("1.4.0-beta"):
+            if self.validate_biolink():
                 # Note: Only an error for earlier TRAPI versions
                 # since attributes are 'nullable: True' for TRAPI 1.4.0
                 self.report(
@@ -752,7 +754,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     identifier=edge_id
                 )
         elif not edge['attributes']:
-            if self.validate_biolink() and not self.minimum_required_trapi_version("1.4.0-beta"):
+            if self.validate_biolink():
                 # Note: Only an error for earlier TRAPI versions
                 # since attributes are 'nullable: True' for TRAPI 1.4.0
                 self.report(
@@ -853,14 +855,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                             edge_id=edge_id
                                         )
                                         if biolink_class:
-                                            if self.bmt.is_category(name=biolink_class.name):
+                                            if self.get_bmt().is_category(name=biolink_class.name):
                                                 self.report(
                                                     code="warning.knowledge_graph.edge."
                                                          "attribute.type_id.is_category",
                                                     identifier=attribute_type_id,
                                                     edge_id=edge_id
                                                 )
-                                            elif self.bmt.is_predicate(name=biolink_class.name):
+                                            elif self.get_bmt().is_predicate(name=biolink_class.name):
                                                 self.report(
                                                     code="warning.knowledge_graph.edge."
                                                          "attribute.type_id.is_predicate",
@@ -868,14 +870,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                     edge_id=edge_id
                                                 )
 
-                                            elif self.bmt.is_node_property(name=biolink_class.name):
+                                            elif self.get_bmt().is_node_property(name=biolink_class.name):
                                                 self.report(
                                                     code="warning.knowledge_graph.edge." +
                                                          "attribute.type_id.is_node_property",
                                                     identifier=attribute_type_id,
                                                     edge_id=edge_id
                                                 )
-                                            elif not self.bmt.is_association_slot(name=biolink_class.name):
+                                            elif not self.get_bmt().is_association_slot(name=biolink_class.name):
                                                 self.report(
                                                     code="warning.knowledge_graph.edge." +
                                                          "attribute.type_id.not_association_slot",
@@ -959,7 +961,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                 # if not a Biolink model defined attribute term, at least, check if
                                 # the 'attribute_type_id' has a namespace (prefix) known to Biolink.
                                 # We won't call it a hard error, but issue a warning
-                                elif not self.bmt.get_element_by_prefix(attribute_type_id):
+                                elif not self.get_bmt().get_element_by_prefix(attribute_type_id):
                                     self.report(
                                         code="warning.knowledge_graph.edge." +
                                              "attribute.type_id.non_biolink_prefix",
@@ -972,30 +974,16 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             # from Biolink Model release 4.2.0 onwards
             if self.minimum_required_biolink_version("4.2.0"):
                 if not found_knowledge_level:
-                    # Currently projected to be mandatory only in TRAPI 1.6.0
-                    if self.minimum_required_trapi_version("1.6.0"):
-                        self.report(
-                            code="error.knowledge_graph.edge.knowledge_level.missing",
-                            identifier=edge_id
-                        )
-                    else:
-                        self.report(
-                            code="warning.knowledge_graph.edge.knowledge_level.missing",
-                            identifier=edge_id
-                        )
+                    self.report(
+                        code="error.knowledge_graph.edge.knowledge_level.missing",
+                        identifier=edge_id
+                    )
 
                 if not found_agent_type:
-                    # Currently projected to be mandatory only in TRAPI 1.6.0
-                    if self.minimum_required_trapi_version("1.6.0"):
-                        self.report(
-                            code="error.knowledge_graph.edge.agent_type.missing",
-                            identifier=edge_id
-                        )
-                    else:
-                        self.report(
-                            code="warning.knowledge_graph.edge.agent_type.missing",
-                            identifier=edge_id
-                        )
+                    self.report(
+                        code="error.knowledge_graph.edge.agent_type.missing",
+                        identifier=edge_id
+                    )
 
     def validate_attribute_constraints(self, edge_id: str, edge: Dict):
         """
@@ -1035,18 +1023,19 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                              Biolink association subclasses possibly related to the current edge.
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
+        assert self.bmt is not None
         for qualifier in qualifiers:
             qualifier_type_id: str = qualifier['qualifier_type_id']
             qualifier_value: str = qualifier['qualifier_value']
             try:
-                if not self.bmt.is_qualifier(name=str(qualifier_type_id)):
+                if not self.get_bmt().is_qualifier(name=str(qualifier_type_id)):
                     self.report(
                         code=f"error.{context}.qualifier.type_id.unknown",
                         identifier=str(qualifier_type_id),
                         edge_id=edge_id
                     )
                 elif qualifier_type_id == "biolink:qualified_predicate":
-                    if not self.bmt.is_predicate(str(qualifier_value)):
+                    if not self.get_bmt().is_predicate(str(qualifier_value)):
                         # special case of qualifier must have Biolink predicates as values
                         self.report(
                             code=f"error.{context}.qualifier.value.not_a_predicate",
@@ -1057,7 +1046,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 # A Query Graph miss on qualifier_value is less of an issue since there may not be enough
                 # context to resolve the 'qualifier_value'; whereas a Knowledge Graph miss is more severe
                 elif context.startswith("knowledge_graph") and \
-                        not self.bmt.validate_qualifier(
+                        not self.get_bmt().validate_qualifier(
                             qualifier_type_id=qualifier_type_id,
                             qualifier_value=str(qualifier_value),
                             associations=associations
@@ -1209,7 +1198,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         # TODO: infores is causing too much instability for now so support has been removed from BMT
         # TODO: reimplement using YAML version of infores catalog
-        # if not self.bmt.get_infores_details(identifier):
+        # if not self.get_bmt().get_infores_details(identifier):
         #     # if this method returns 'None' then this is an unregistered infores?
         #     self.report(
         #         code=f"{code_prefix}.unknown",
@@ -1400,14 +1389,14 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 ignore_graph_type=True
             )
             if biolink_class:
-                if not self.bmt.is_predicate(predicate):
+                if not self.get_bmt().is_predicate(predicate):
                     self.report(
                         code=f"error.{context}.invalid",
                         identifier=predicate,
                         edge_id=edge_id
                     )
                 elif self.minimum_required_biolink_version("2.2.0") and \
-                        not self.bmt.is_translator_canonical_predicate(predicate):
+                        not self.get_bmt().is_translator_canonical_predicate(predicate):
                     self.report(
                         code=f"warning.{context}.non_canonical",
                         identifier=predicate,
@@ -1417,7 +1406,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     def is_treats(self, predicate: Optional[str]) -> bool:
         if not predicate:
             return False
-        return predicate in self.bmt.get_descendants("treats", formatted=True)
+        return predicate in self.get_bmt().get_descendants("treats", formatted=True)
 
     def validate_graph_edge(self, edge: Dict, graph_type: TRAPIGraphType):
         """
@@ -1478,7 +1467,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 # that match the subject and object categories of the edge.
                 # We don't here filter for empty *_categories, so in some
                 # fringe cases, misleading downstream validation may occur.
-                associations = self.bmt.get_associations(
+                associations = self.get_bmt().get_associations(
                     subject_categories=subject_categories,
                     predicates=predicates,
                     object_categories=object_categories,
@@ -1600,7 +1589,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         biolink_class: Optional[ClassDefinition] = None
         if category:
-            biolink_class = self.bmt.get_element(category)
+            biolink_class = self.get_bmt().get_element(category)
             if biolink_class:
                 # 'category' is known to Biolink... good start!
                 if biolink_class.deprecated:
@@ -1609,9 +1598,9 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         identifier=category,
                         node_id=node_id
                     )
-                if biolink_class.abstract or self.bmt.is_mixin(category):
+                if biolink_class.abstract or self.get_bmt().is_mixin(category):
                     biolink_class = None
-                elif not self.bmt.is_category(category):
+                elif not self.get_bmt().is_category(category):
                     self.report(
                         code=f"error.{context}.node.category.not_a_category",
                         identifier=category,
@@ -1640,7 +1629,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 # Since input edges are used in Query Graphs, we ought not to actually
                 # care if they don't have at least one concrete category...However, it
                 # is unlikely for non-concrete classes to resolve to a TRAPI response containing them!
-                possible_subject_categories = self.bmt.get_element_by_prefix(node_id)
+                possible_subject_categories = self.get_bmt().get_element_by_prefix(node_id)
                 if category.name not in possible_subject_categories:
                     self.report(
                         code="warning.input_edge.node.id.unmapped_to_category",
