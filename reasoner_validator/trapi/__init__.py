@@ -306,6 +306,7 @@ class TRAPISchemaValidator(ValidationReporter):
         >>> TRAPISchemaValidator(trapi_version="1.3.0").validate({"message": {}}, "QGraph")
 
         """
+        assert self.trapi_version is not None
         schema = load_schema(self.trapi_version)[component]
         # print("instance", instance)
         jsonschema.validate(instance, schema)
