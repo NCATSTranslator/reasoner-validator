@@ -537,8 +537,7 @@ def test_message_attribute_component_validation(trapi_version: str):
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     sample_attribute = {
         "attribute_type_id": "some_attribute",
-        "value": "value",
-        "value_type_id": None
+        "value": "value"
     }
     validator.validate(sample_attribute, "Attribute")
     with pytest.raises(ValidationError):
@@ -549,7 +548,7 @@ def test_message_attribute_component_validation(trapi_version: str):
         }, "Attribute")
     with pytest.raises(ValidationError):
         validator.validate({
-            # these two attributes don't have 'nullable: true' so they should have values
+            # these three attributes don't have 'nullable: true' so they should have values
             "attribute_type_id": None,
             "value": None
         }, "Attribute")
