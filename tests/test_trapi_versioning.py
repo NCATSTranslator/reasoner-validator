@@ -4,7 +4,7 @@ from typing import Dict, Optional
 import pytest
 
 from reasoner_validator.versioning import get_latest_version
-from reasoner_validator.trapi import load_schema, TRAPIAccessError, LATEST_TRAPI_RELEASE
+from reasoner_validator.trapi import load_schema, TRAPIAccessError, TRAPI_1_6_0_BETA, LATEST_TRAPI_RELEASE
 from tests import LOCAL_TRAPI_150_SCHEMA_FILEPATH
 
 
@@ -20,12 +20,12 @@ def test_release_tag_is_empty_string():
 
 def test_semver_spec_trapi_version():
     trapi_version: str = get_latest_version(release_tag="1")
-    assert trapi_version == LATEST_TRAPI_RELEASE
+    assert trapi_version == TRAPI_1_6_0_BETA
 
 
 def test_unknown_semver_spec_trapi_version():
     trapi_version: str = get_latest_version(release_tag="2")
-    assert trapi_version is None
+    assert trapi_version is LATEST_TRAPI_RELEASE
 
 
 def test_semver_spec_trapi_version_with_prefix():

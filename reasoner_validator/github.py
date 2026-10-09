@@ -30,6 +30,8 @@ def get_releases(refresh: bool = False):
         response = requests.get(f"https://api.github.com/repos/{GIT_ORG}/{GIT_REPO}/branches")
         branch_data = response.json()
         version_data["branches"] = [branch_tag["name"] for branch_tag in branch_data]
+        # Append 'master' for good measure
+        version_data["branches"].append("master")
 
         with open(VERSION_CACHE_FILE, "w") as version_cache:
             dump(data=version_data, stream=version_cache)
