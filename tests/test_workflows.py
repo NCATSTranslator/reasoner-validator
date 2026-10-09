@@ -93,6 +93,6 @@ QUERY_WITH_FLAWED_WORKFLOW = deepcopy(TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE) | deep
 def test_query_sanitize_response_workflow_properties():
     """Test sanitization of flawed TRAPI Query workflow properties."""
 
-    validator = TRAPIResponseValidator(trapi_version="2")
+    validator = TRAPIResponseValidator()
     response = validator.sanitize_workflow(QUERY_WITH_FLAWED_WORKFLOW)
     validator.validate(response, "Query")
