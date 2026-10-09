@@ -15,7 +15,8 @@ from reasoner_validator.trapi import (
 )
 from tests import (
     LATEST_TEST_RELEASES,
-    ALL_TEST_VERSIONS
+    ALL_TEST_VERSIONS,
+    TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE
 )
 
 
@@ -129,24 +130,11 @@ def test_query_and_version_completion(trapi_version: str):
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_trapi_1_5_edgebinding(trapi_version: str):
+def test_post_trapi_2_0_edgebindings(trapi_version: str):
     """Test TRAPIValidator(trapi_version=query).validate_EdgeBinding()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    # EdgeBinding "attributes" are "required" but may be an empty JSON Array...
     validator.validate({
-        "id": "hello",
-        "attributes": []
-    }, "EdgeBinding")
-    # ... but if 'attributes' are provided, they must be well-formed,
-    #     with valid 'attribute_type_id' and 'value' JSON properties
-    validator.validate({
-        "id": "hello",
-        "attributes": [
-            {
-                "attribute_type_id": "biolink:synonym",
-                "value": "some-synonym"
-            }
-        ]
+        "ids": ["hello"]
     }, "EdgeBinding")
     with pytest.raises(ValidationError):
         validator.validate({
@@ -260,7 +248,7 @@ def _query_trapi_workflow_properties_template(trapi_version: str, sample_workflo
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_1_5_query_latest_trapi_workflow_properties(trapi_version: str):
+def test_latest_trapi_workflow_properties(trapi_version: str):
     _query_trapi_workflow_properties_template(trapi_version, SAMPLE_WORKFLOW_1_5)
 
 
@@ -268,16 +256,8 @@ def test_1_5_query_latest_trapi_workflow_properties(trapi_version: str):
 def test_nullable_async_query_level_properties(trapi_version: str):
     """Test nullable TRAPI Query level properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    async_trapi_query = {
-        "callback": "http://mykp.ncats.io/callback",
-        "message": {
-            "knowledge_graph": None,
-            "query_graph": None,
-            "results": None,
-        },
-        "log_level": "INFO",
-        "workflow": None
-    }
+    async_trapi_query: dict = deepcopy(TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE)
+    async_trapi_query["callback"] = "http://mykp.ncats.io/callback"
     validator.validate(async_trapi_query, "AsyncQuery")
     with pytest.raises(ValidationError):
         validator.validate({

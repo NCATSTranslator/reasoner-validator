@@ -121,6 +121,39 @@ SAMPLE_EDGE_WITH_WITHOUT_ATTRIBUTES = {
 }
 
 
+# From TRAPI 2.0, message components cannot be nullable and
+# for nodes, must include some minimum content, which is faked here
+TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE = {
+    "message": {
+        "knowledge_graph": {
+            "nodes": {
+                "OMIM:603903": {
+                    "categories": ["biolink:Disease"],
+                    "name": "Sickle Cell Disease"
+                }
+            }
+        },
+        "query_graph": {
+            "nodes": {
+                "n0": {
+                    "ids": ["OMIM:603903"],
+                    "categories": ["biolink:Disease"]
+                }
+            }
+        },
+        "results": [
+            {
+                "node_bindings": {
+                    "n0": {
+                        "ids": ["OMIM:603903"]
+                    }
+                }
+            }
+        ],
+    },
+    "log_level": None,
+}
+
 def sample_edge_with_attributes(attributes: List[Dict[str, Any]]) -> Dict[str, Any]:
     sample_edge = deepcopy(SAMPLE_EDGE_WITH_WITHOUT_ATTRIBUTES)
     sample_edge["edge_1"]["attributes"] = attributes
