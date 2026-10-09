@@ -25,7 +25,7 @@ def test_semver_spec_trapi_version():
 
 def test_unknown_semver_spec_trapi_version():
     trapi_version: str = get_latest_version(release_tag="2")
-    assert trapi_version is LATEST_TRAPI_RELEASE
+    assert trapi_version == LATEST_TRAPI_RELEASE
 
 
 def test_semver_spec_trapi_version_with_prefix():
