@@ -11,8 +11,7 @@ from json import dumps
 from reasoner_validator.trapi import TRAPISchemaValidator
 from reasoner_validator.validator import TRAPIResponseValidator
 
-from tests import LATEST_TEST_RELEASES
-
+from tests import LATEST_TEST_RELEASES, TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE
 
 SAMPLE_WORKFLOW_1 = {
     "workflow":  [
@@ -55,39 +54,6 @@ SAMPLE_WORKFLOW_2 = {
 
 def _generate_workflow_sample_data(versions: List[str], queries: Tuple[Dict, Dict]) -> List:
     return [qv for qv in product(versions, queries)]
-
-# From TRAPI 2.0, message components cannot be nullable and
-# for nodes, must include some minimum content, which is faked here
-TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE = {
-    "message": {
-        "knowledge_graph": {
-            "nodes": {
-                "OMIM:603903": {
-                    "categories": ["biolink:Disease"],
-                    "name": "Sickle Cell Disease"
-                }
-            }
-        },
-        "query_graph": {
-            "nodes": {
-                "n0": {
-                    "ids": ["OMIM:603903"],
-                    "categories": ["biolink:Disease"]
-                }
-            }
-        },
-        "results": [
-            {
-                "node_bindings": {
-                    "n0": {
-                        "ids": ["OMIM:603903"]
-                    }
-                }
-            }
-        ],
-    },
-    "log_level": None,
-}
 
 SAMPLE_POST_2_0_QUERY_1 = deepcopy(TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE) | deepcopy(SAMPLE_WORKFLOW_1)
 SAMPLE_POST_2_0_QUERY_2 = deepcopy(TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE) | deepcopy(SAMPLE_WORKFLOW_2)
