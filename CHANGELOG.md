@@ -2,6 +2,11 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 7.0.0
+- Upgrade of reasoner-validator to TRAPI 2.0 compliance.
+- Although this release may partly validate TRAPI releases prior to 2.0, it is now not warranted to be able to do so.
+- Rather, the module is now refactored _solely_ ensuring validation of TRAPI 2.0 compliance.
+
 ## 6.0.2
 - Patch to update BMT to bmt = ">=1.4.8"; general update of other Python dependencies.
 

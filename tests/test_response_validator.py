@@ -15,6 +15,7 @@ from dictdiffer import diff
 from reasoner_validator.validator import TRAPIResponseValidator
 
 from tests import (
+    TRAPI_1_6_0_BETA,
     LATEST_TRAPI_RELEASE,
     LATEST_BIOLINK_MODEL_VERSION,
     SAMPLE_NODES_WITH_ATTRIBUTES,
@@ -25,6 +26,28 @@ from tests.test_validation_report import check_messages
 
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
+
+
+# Rather than duplicate TRAPI-specific variants
+# for basic TRAPI 2.0 constraints, we patch them
+def trapi_2_0_patch(response: dict):
+    if not "message" in response:
+        return
+    message = response["message"]
+    if not (
+            "knowledge_graph" in message and
+            message["knowledge_graph"] and
+            "edges" in message["knowledge_graph"]
+    ):
+        return
+    edges: dict = message["knowledge_graph"]["edges"]
+    if not edges:
+        return
+    for edge_data in edges.values():
+        # TRAPI 2.0 expects all Knowledge Graph Edges
+        # to have "knowledge_level" and "agent_type" slots
+        edge_data["knowledge_level"] = "logical_entailment"
+        edge_data["agent_type"] = "automated_agent"
 
 
 @pytest.mark.parametrize(
@@ -90,8 +113,7 @@ _TEST_QG_1 = {
 _TEST_KG_EDGE_SOURCES = [
     {
         "resource_id": "infores:chebi",
-        "resource_role": "primary_knowledge_source",
-        "upstream_resource_ids": []
+        "resource_role": "primary_knowledge_source"
     },
     {
         "resource_id": "infores:biothings-explorer",
@@ -119,13 +141,11 @@ _TEST_KG_EDGE_SOURCES = [
 _TEST_KG_EDGE_SOURCES_MISSING_PRIMARY = [
     # {
     #     "resource_id": "infores:chebi",
-    #     "resource_role": "primary_knowledge_source",
-    #     "upstream_resource_ids": []
+    #     "resource_role": "primary_knowledge_source"
     # },
     {
         "resource_id": "infores:biothings-explorer",
-        "resource_role": "aggregator_knowledge_source",
-        "upstream_resource_ids": []
+        "resource_role": "aggregator_knowledge_source"
     },
     {
         "resource_id": "infores:molepro",
@@ -146,13 +166,11 @@ _TEST_KG_EDGE_SOURCES_MISSING_PRIMARY = [
 _TEST_KG_EDGE_SOURCES_MULTIPLE_PRIMARY = [
     {
         "resource_id": "infores:chebi",
-        "resource_role": "primary_knowledge_source",
-        "upstream_resource_ids": []
+        "resource_role": "primary_knowledge_source"
     },
     {
         "resource_id": "infores:drugbank",
-        "resource_role": "primary_knowledge_source",
-        "upstream_resource_ids": []
+        "resource_role": "primary_knowledge_source"
     },
     {
         "resource_id": "infores:biothings-explorer",
@@ -1102,6 +1120,570 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
         (   # Query 26 - We throw a full TRAPI JSON example here (taken directly from the
             #            TRAPI implementation guidelines...) just for fun and profit
             _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE,
+            TRAPI_1_6_0_BETA,
+            None,
+            None,
+            True,
+            ""   # this filtered workflow spec should pass
+        ),
+        # (   # TODO: This esoteric test fails for now so we remove it for now
+        #     Query ## - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
+        #     #            guidelines...) but add the 'schema_version' just for fun and profit
+        #     _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION,
+        #     None,
+        #     "4.1.4",
+        #     None,
+        #     True,
+        #     "critical.trapi.validation"   # trying to validate a 1.5.0 schema against 1.4.2 will fail!
+        # ),
+        (   # Query 27 - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
+            #            guidelines...) but explicitly specify the 'biolink_version == 2.5.8' just for fun and profit
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION,
+            TRAPI_1_6_0_BETA,
+            None,
+            None,
+            True,
+            # Validation with 2.4.8 generates a warning
+            "warning.knowledge_graph.edge.predicate.non_canonical"
+        )
+    ]
+)
+def test_check_pre_trapi_2_0_biolink_model_compliance_of_trapi_response(
+        response: Dict,
+        trapi_version: str,
+        biolink_version: str,
+        target_provenance: Dict,
+        strict_validation: bool,
+        code
+):
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(
+        trapi_version=trapi_version,
+        biolink_version=biolink_version,
+        strict_validation=strict_validation,
+        target_provenance=target_provenance
+    )
+    validator.check_compliance_of_trapi_response(response=response)
+    check_messages(validator, code, no_errors=True)
+
+
+@pytest.mark.parametrize(
+    "response,trapi_version,biolink_version,target_provenance,strict_validation,code",
+    [
+        (   # Query 0 - Completely empty Response.Message
+            {
+                "message": {
+
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            False,
+            # "Validate TRAPI Response: ERROR - Response returned an empty Message Query Graph!"
+            "error.trapi.response.message.empty"
+        ),
+        (   # Query 1 - Response.Message also devoid of content, missing QGraph trapped first....
+            {
+                "message": {
+                    "knowledge_graph": None,
+                    "results": None
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            False,
+            # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Query Graph!"
+            "error.trapi.response.message.query_graph.missing"
+        ),
+        (   # Query 2 - Response.Message also devoid of content, null QGraph trapped first....
+            {
+                "message": {
+                    "query_graph": None,
+                    "knowledge_graph": None,
+                    "results": None
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            False,
+            # "Validate TRAPI Response: ERROR - Response returned a null or empty Message Query Graph!"
+            "error.trapi.response.message.query_graph.empty"
+        ),
+        (
+            # Query 3 - Partly empty Response.Message with a modest but
+            #           workable query graph? Missing KG trapped next?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    # "knowledge_graph": None,
+                    "results": None
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            False,
+            # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Knowledge Graph component?"
+            "error.trapi.response.message.knowledge_graph.missing"
+        ),
+        (
+            # Query 4 - Partly empty Response.Message with a modest
+            #           but workable query graph? Empty KG trapped next?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": None,
+                    "results": None
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            False,
+            # "Validate TRAPI Response: WARNING - Response returned an empty Message Knowledge Graph?"
+            "warning.trapi.response.message.knowledge_graph.empty"
+        ),
+        (
+            # Query 5 - Partly empty Response.Message with a modest but workable
+            #           query and knowledge graphs? Missing Results detected next?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    # "results": None
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            False,
+            # "Validate TRAPI Response: ERROR - TRAPI Message is missing its Results component!"
+            "error.trapi.response.message.results.missing"
+        ),
+        (
+            # Query 6 - Partly empty Response.Message with a modest but workable query and
+            #           knowledge graphs? Null valued Results detected next - just issue a warning?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": None
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            False,
+            # "Validate TRAPI Response: WARNING -Response returned empty Message.results?"
+            "warning.trapi.response.message.results.empty"
+        ),
+        (
+            # Query 7 - Partly empty Response.Message with a modest but workable
+            #           query and knowledge graphs? Non-array Results detected next?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": {"invalid results"}
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            False,
+            # "Validate TRAPI Response: ERROR - Response returned a non-array Message.Results!
+            "error.trapi.response.message.results.not_array"
+        ),
+        (
+            # Query 8 - Partly empty Response.Message with a modest but workable query and
+            #           knowledge graphs? Empty Results detected next - just issue a warning?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": []
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            False,
+            # "Validate TRAPI Response: ERROR - Response returned empty Message.results?"
+            "warning.trapi.response.message.results.empty"
+        ),
+        (
+            # Query 9 - Full Message, without "sources" and "strict_validation": False - should pass?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            False,
+            ""
+        ),
+        (
+            # Query 10 - Full Message, with strict validation - still passes
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            True,
+            ""
+        ),
+        (
+            # Query 11 - Full Message, with "strict validation" and non-null sources" that match
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            {
+                "target_ara_source": None,
+                "target_kp_source": "infores:hmdb",
+                "target_kp_source_type": "primary"
+            },
+            True,
+            ""
+        ),
+        (
+            # Query 12 - Full Message, with strict validation
+            #            and a non-null target_kp_source_type that doesn't match
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            {
+                "target_ara_source": None,
+                "target_kp_source": "infores:molepro",
+                "target_kp_source_type": "primary"
+            },
+            True,
+            "warning.knowledge_graph.edge.provenance.target.kp.missing"
+        ),
+        (
+            # Query 13 - Full Message, with strict validation and a non-null target_ara_source that doesn't match
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            {
+                "target_ara_source": "infores:aragorn",
+                "target_kp_source": "infores:hmdb",
+                "target_kp_source_type": "primary"
+            },
+            True,
+            "warning.knowledge_graph.edge.provenance.target.ara.missing"
+        ),
+        (
+            # Query 14 - Full Message, with "strict validation" and a non-null "sources" data that matches
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            {
+                "target_ara_source": "infores:molepro",
+                "target_kp_source": "infores:hmdb",
+                "target_kp_source_type": "primary"
+            },
+            True,
+            ""
+        ),
+        (
+            # Query 15 - Full Message, with "strict validation" and a non-null "sources" KP that matches
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            {
+                "target_ara_source": None,
+                "target_kp_source": "infores:molepro",
+                "target_kp_source_type": "aggregator"
+            },
+            True,
+            ""
+        ),
+        (
+            # Query 16 - Full Message, with strict validation and a non-null target_kp_source_id/_type,
+            #             which triggers a missing primary provenance validation
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_WITH_EDGE_SOURCES_MISSING_PRIMARY,
+                    "results": _TEST_RESULTS_1
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            {
+                "target_ara_source": None,
+                "target_kp_source": "infores:molepro",
+                "target_kp_source_type": "aggregator"
+            },
+            True,
+            "error.knowledge_graph.edge.provenance.missing_primary"
+        ),
+        (
+            # Query 17 - Full Message, with strict validation and a non-null target_kp_source_id/_type,
+            #             which triggers a multiple "primary knowledge sources" validation error
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_MULTIPLE_PRIMARY_SOURCE,
+                    "results": _TEST_RESULTS_1
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            {
+                "target_ara_source": None,
+                "target_kp_source": "infores:molepro",
+                "target_kp_source_type": "aggregator"
+            },
+            True,
+            "warning.knowledge_graph.edge.provenance.multiple_primary"
+        ),
+        (
+            # Query 18 - Full Message, with non-strict validation.
+            #            Both knowledge graph nodes have "mixin" categories,
+            #            the list of categories for knowledge graphs
+            #            must have at least one concrete category,
+            #            hence, a validation error is now reported:
+            {
+                "message": {
+                    "query_graph": _TEST_QG_2,
+                    "knowledge_graph": _TEST_KG_3,
+                    "results": _TEST_RESULTS_2
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            False,
+            "error.knowledge_graph.node.categories.not_concrete"
+        ),
+        (
+            # Query 19 - Full Message, WITH strict validation - abstract predicate?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_2,
+                    "knowledge_graph": _TEST_KG_3,
+                    "results": _TEST_RESULTS_2
+                }
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            True,
+            "error.query_graph.edge.predicate.abstract"
+        ),
+        (
+            # Query 20 - Valid full Message, under strict validation.
+            #            Message is valid, but the "workflow" field is not an array?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                },
+                "workflow": "workflows-not-an-array"
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            True,
+            # "Validate TRAPI Response: ERROR - TRAPI schema error: the "workflow" field must be an array"
+            "critical.trapi.validation"
+        ),
+        (
+            # Query 21 - Valid full Message, under strict validation.
+            #            Message is valid, the "workflow" field is an array,
+            #            but the single list entry is an invalid workflow spec?
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                },
+                "workflow": ["not-a-valid-workflow-spec"]
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            True,
+            # Validate TRAPI Response: ERROR - TRAPI schema error: the "workflow" field must be an array of
+            # a "workflow" JSON objects, with contents as defined by the workflow schema.
+            "critical.trapi.validation"
+        ),
+        (
+            # Query 22 - Valid full Message, under strict validation.
+            #            Message is valid, the "workflow" field is an array,
+            #            but the single list entry is in the workflow schema
+            #            and has at least the one required field "id"
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                },
+                "workflow": [{"id": "annotate"}]
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            True,
+            ""   # this simple workflow spec should pass?
+        ),
+        (
+            # Query 23 - Valid full Message, under strict validation. Message is valid, the "workflow" field is array,
+            #            but the single list entry is an elaborated "real world" workflow spec,
+            #            but one entry overlay_compute_ngd is incomplete - doesn't fully validate!
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                },
+                "workflow": [
+                    {  # "real" world workflow spec from E. Deutsch
+                      "id": "fill",
+                      "parameters": {
+                        "allowlist": [
+                          "infores-rtx-kg2"
+                        ]
+                      }
+                    },
+                    {
+                      "id": "bind"
+                    },
+                    {
+                      "id": "overlay_compute_ngd",
+                      "parameters": {
+                        "virtual_relation_label": "ngd1"
+                      }
+                    },
+                    {
+                      "id": "score"
+                    },
+                    {
+                      "id": "complete_results"
+                    }
+                ]
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            True,
+            # "Validate TRAPI Response: ERROR - TRAPI schema validation error: the "workflow"
+            # field entry overlay_compute_ngd is missing a required parameter "qnodes_keys"
+            "critical.trapi.validation"
+        ),
+        (
+            # Query 24 - Valid full Message, under strict validation. Message is valid, the "workflow" field is array,
+            #            but the single list entry is an elaborated "real world" workflow spec
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                },
+                "workflow": [
+                    {  # "real" world workflow spec from E. Deutsch
+                      "id": "fill",
+                      "parameters": {
+                        "allowlist": [
+                          "infores-rtx-kg2"
+                        ]
+                      }
+                    },
+                    {
+                      "id": "bind"
+                    },
+                    {
+                      "id": "overlay_compute_ngd",
+                      "parameters": {
+                        "virtual_relation_label": "ngd1",
+                        "qnode_keys": ["type-2 diabetes", "drug"]
+                      }
+                    },
+                    {
+                      "id": "score"
+                    },
+                    {
+                      "id": "complete_results"
+                    }
+                ]
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            True,
+            ""   # this simple workflow spec should pass?
+        ),
+        (
+            # Query 25 - Valid full Message, under strict validation. Message is valid,
+            #            the "workflow" field is an array, but runner_parameters is None.
+            #            This is technically invalid, but we have a code patch which should filter it out (for now)
+            {
+                "message": {
+                    "query_graph": _TEST_QG_1,
+                    "knowledge_graph": _TEST_KG_1,
+                    "results": _TEST_RESULTS_1
+                },
+                "workflow": [
+                    {
+                        "id": "lookup",
+                        "runner_parameters": None,
+                        "parameters": None
+                    }
+                ]
+            },
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            True,
+            # TRAPI Response workflow sanitization restored - this should pass
+            ""
+        ),
+        (   # Query 26 - We throw a full TRAPI JSON example here (taken directly from the
+            #            TRAPI implementation guidelines...) just for fun and profit
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE,
             LATEST_TRAPI_RELEASE,
             None,
             None,
@@ -1130,7 +1712,45 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
         )
     ]
 )
-def test_check_biolink_model_compliance_of_trapi_response(
+def test_check_post_trapi_2_0_biolink_model_compliance_of_trapi_response(
+        response: Dict,
+        trapi_version: str,
+        biolink_version: str,
+        target_provenance: Dict,
+        strict_validation: bool,
+        code
+):
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(
+        trapi_version=trapi_version,
+        biolink_version=biolink_version,
+        strict_validation=strict_validation,
+        target_provenance=target_provenance
+    )
+
+    if int(trapi_version[1]) >= 2:
+        # Rather than rewrite all the above test data for
+        # basic TRAPI 2.0 constraints, patch the response
+        trapi_2_0_patch(response)
+
+    validator.check_compliance_of_trapi_response(response=response)
+    check_messages(validator, code, no_errors=True)
+
+@pytest.mark.parametrize(
+    "response,trapi_version,biolink_version,target_provenance,strict_validation,code",
+    [
+        (   # Query 27 - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
+            #            guidelines...) but explicitly specify the 'biolink_version == 2.5.8' just for fun and profit
+            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION,
+            LATEST_TRAPI_RELEASE,
+            None,
+            None,
+            True,
+            # Validation with 2.4.8 generates a warning
+            "warning.knowledge_graph.edge.predicate.non_canonical"
+        )
+    ]
+)
+def test_check_post_trapi_2_0_biolink_model_compliance_of_trapi_response(
         response: Dict,
         trapi_version: str,
         biolink_version: str,
@@ -1146,8 +1766,6 @@ def test_check_biolink_model_compliance_of_trapi_response(
     )
     validator.check_compliance_of_trapi_response(response=response)
     check_messages(validator, code, no_errors=True)
-
-
 
 def test_compliance_in_isolation(
         # response: Dict,

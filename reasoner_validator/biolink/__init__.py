@@ -1436,11 +1436,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         if graph_type is TRAPIGraphType.Knowledge_Graph:
             predicate = edge['predicate'] if 'predicate' in edge else None
             edge_label = predicate
-            predicates = [predicate]
+            predicates = [predicate] if predicate else []
         else:
             # Query Graph...
             predicates = edge['predicates'] if 'predicates' in edge else None
-            edge_label = str(predicates)
+            edge_label = str(predicates) if predicates else ""
 
         object_id = edge['object'] if 'object' in edge else None
         object_categories: Optional[List[str]] = self.get_node_categories(node_id=object_id)
