@@ -55,7 +55,7 @@ class ValidationReporter:
     The TRAPI version and Biolink Model versions are also tracked for convenience at this abstract level,
     although their application is within specific pertinent subclasses.
     """
-    DEFAULT_TRAPI_VERSION = "1"
+    DEFAULT_TRAPI_VERSION = "2"
 
     def __init__(
             self,
