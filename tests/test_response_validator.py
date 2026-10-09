@@ -15,7 +15,6 @@ from dictdiffer import diff
 from reasoner_validator.validator import TRAPIResponseValidator
 
 from tests import (
-    TRAPI_1_6_0_BETA,
     LATEST_TRAPI_RELEASE,
     LATEST_BIOLINK_MODEL_VERSION,
     SAMPLE_NODES_WITH_ATTRIBUTES,
@@ -1120,7 +1119,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
         (   # Query 26 - We throw a full TRAPI JSON example here (taken directly from the
             #            TRAPI implementation guidelines...) just for fun and profit
             _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE,
-            TRAPI_1_6_0_BETA,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
@@ -1139,7 +1138,7 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
         (   # Query 27 - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
             #            guidelines...) but explicitly specify the 'biolink_version == 2.5.8' just for fun and profit
             _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION,
-            TRAPI_1_6_0_BETA,
+            LATEST_TRAPI_RELEASE,
             None,
             None,
             True,

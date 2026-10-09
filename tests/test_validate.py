@@ -14,7 +14,6 @@ from reasoner_validator.trapi import (
     LATEST_TRAPI_RELEASE
 )
 from tests import (
-    PRE_2_0_0_TEST_VERSIONS,
     LATEST_TEST_RELEASES,
     ALL_TEST_VERSIONS
 )
@@ -155,56 +154,6 @@ def test_trapi_1_5_edgebinding(trapi_version: str):
         }, "EdgeBinding")
 
 
-# Test only valid prior to TRAPI 2.0
-@pytest.mark.parametrize("trapi_version", PRE_2_0_0_TEST_VERSIONS)
-def test_nullable(trapi_version: str):
-    """Test nullable 'categories' property."""
-    qnode = {
-        "categories": None
-    }
-    TRAPISchemaValidator(trapi_version=trapi_version).validate(qnode, "QNode")
-    # I cannot really trigger anything using 'with pytest.raises(ValidationError)'
-    # since QNode has 'additionalProperties: true' but no 'required:' properties
-
-
-# Test only valid prior to TRAPI 2.0
-@pytest.mark.parametrize("trapi_version", PRE_2_0_0_TEST_VERSIONS)
-def test_nullable_message_properties(trapi_version: str):
-    """Test nullable message properties."""
-    validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    message = {
-        "knowledge_graph": None,
-        "query_graph": None,
-        "results": None,
-    }
-    validator.validate(message, "Message")
-    with pytest.raises(ValidationError):
-        validator.validate({
-            "foo": {},  # additionalProperties: false and 'foo' is not a documented property...
-        }, "Message")
-
-
-# Test only valid prior to TRAPI 2.0
-@pytest.mark.parametrize("trapi_version", PRE_2_0_0_TEST_VERSIONS)
-def test_nullable_query_level_properties(trapi_version: str):
-    """Test nullable TRAPI Query level properties."""
-    validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    trapi_query = {
-        "message": {
-            "knowledge_graph": None,
-            "query_graph": None,
-            "results": None,
-        },
-        "log_level": "INFO",
-        "workflow": None
-    }
-    validator.validate(trapi_query, "Query")
-    with pytest.raises(ValidationError):
-        validator.validate({
-            "foo": {},  # missing required: message
-        }, "Query")
-
-
 SAMPLE_QUERY = {
         "message": {
         },
@@ -335,25 +284,6 @@ def test_nullable_async_query_level_properties(trapi_version: str):
             "foo": {},  # missing required: callback, message
         }, "AsyncQuery")
 
-
-# Response properties only nullable prior to TRAPI 2.0.*
-@pytest.mark.parametrize("trapi_version", PRE_2_0_0_TEST_VERSIONS)
-def test_nullable_response_properties(trapi_version: str):
-    """Test nullable TRAPI Query level properties."""
-    validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    async_trapi_query = {
-        "message": {
-            "knowledge_graph": None,
-            "query_graph": None,
-            "results": None,
-        },
-        "workflow": None
-    }
-    validator.validate(async_trapi_query, "Response")
-    with pytest.raises(ValidationError):
-        validator.validate({
-            "foo": {},  # missing required: message
-        }, "Response")
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
@@ -565,29 +495,16 @@ SAMPLE_RETRIEVAL_SOURCE = {
 }
 
 
-SAMPLE_PRE_TRAPI_2_0_TEST_EDGE = {
+SAMPLE_TEST_EDGE = {
     "subject": "MONDO:0011382",   # subject must be a CURIE
     "predicate": "biolink:related_to",  # subject must be a biolink Predicate CURIE
     "object": "UniProtKB:P00738",   # subject must be a CURIE
     "sources": [  # an array of RetrievalSource
         SAMPLE_RETRIEVAL_SOURCE
-    ]
+    ],
+    "knowledge_level": "logical_entailment",
+    "agent_type": "automated_agent"
 }
-
-SAMPLE_TRAPI_2_0_TEST_EDGE = deepcopy(SAMPLE_PRE_TRAPI_2_0_TEST_EDGE)
-SAMPLE_TRAPI_2_0_TEST_EDGE.update(
-    {
-        "knowledge_level": "logical_entailment",
-        "agent_type": "automated_agent"
-    }
-)
-
-@pytest.mark.parametrize("trapi_version", PRE_2_0_0_TEST_VERSIONS)
-def test_pre_2_0_trapi_good_message_edge_component_validation(trapi_version: str):
-    """Test 'good' Message.KnowledgeGraph.Edge component in
-       TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
-    validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    validator.validate(SAMPLE_PRE_TRAPI_2_0_TEST_EDGE, "Edge")
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
@@ -595,7 +512,7 @@ def test_post_2_0_trapi_good_message_edge_component_validation(trapi_version: st
     """Test 'good' Message.KnowledgeGraph.Edge component in
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    validator.validate(SAMPLE_TRAPI_2_0_TEST_EDGE, "Edge")
+    validator.validate(SAMPLE_TEST_EDGE, "Edge")
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
@@ -617,11 +534,11 @@ def test_latest_trapi_null_message_edge_component_validation(trapi_version: str)
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
-        null_subject: Dict[str, Optional] = SAMPLE_PRE_TRAPI_2_0_TEST_EDGE.copy()
+        null_subject: Dict[str, Optional] = SAMPLE_TEST_EDGE.copy()
         null_subject["subject"] = None
         validator.validate(null_subject, "Edge")
     with pytest.raises(ValidationError):
-        null_predicate: Dict[str, Optional] = SAMPLE_PRE_TRAPI_2_0_TEST_EDGE.copy()
+        null_predicate: Dict[str, Optional] = SAMPLE_TEST_EDGE.copy()
         null_predicate["predicate"] = None
         validator.validate(null_predicate, "Edge")
 
@@ -632,7 +549,7 @@ def test_latest_trapi_flawed_message_edge_component_validation(trapi_version: st
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
-        faulty_predicate = SAMPLE_PRE_TRAPI_2_0_TEST_EDGE.copy()
+        faulty_predicate = SAMPLE_TEST_EDGE.copy()
         # predicate is not a Biolink predicate term CURIE
         faulty_predicate["predicate"] = "not-a-biolink-predicate-CURIE"
         validator.validate(faulty_predicate, "Edge")
@@ -644,22 +561,22 @@ def test_latest_trapi_more_flawed_message_edge_retrieval_sources_component_valid
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
-        faulty_target_provenance = SAMPLE_PRE_TRAPI_2_0_TEST_EDGE.copy()
+        faulty_target_provenance = SAMPLE_TEST_EDGE.copy()
         # "target_provenance" is not an array (of RetrievalSource objects)
         faulty_target_provenance["target_provenance"] = "not-an-array"
         validator.validate(faulty_target_provenance, "Edge")
     with pytest.raises(ValidationError):
-        faulty_target_provenance = SAMPLE_PRE_TRAPI_2_0_TEST_EDGE.copy()
+        faulty_target_provenance = SAMPLE_TEST_EDGE.copy()
         # items in the "target_provenance" array must be a non-empty array of (RetrievalSource) objects
         faulty_target_provenance["target_provenance"] = list()
         validator.validate(faulty_target_provenance, "Edge")
     with pytest.raises(ValidationError):
-        faulty_target_provenance = SAMPLE_PRE_TRAPI_2_0_TEST_EDGE.copy()
+        faulty_target_provenance = SAMPLE_TEST_EDGE.copy()
         # items in the "target_provenance" array must be (RetrievalSource) objects
         faulty_target_provenance["target_provenance"] = ["not-a-json-object"]
         validator.validate(faulty_target_provenance, "Edge")
     with pytest.raises(ValidationError):
-        faulty_target_provenance = SAMPLE_PRE_TRAPI_2_0_TEST_EDGE.copy()
+        faulty_target_provenance = SAMPLE_TEST_EDGE.copy()
         # items in the "target_provenance" array must be RetrievalSource objects
         faulty_target_provenance["target_provenance"] = [{"not-an-RetrievalSource-key": "something"}]
         validator.validate(faulty_target_provenance, "Edge")
