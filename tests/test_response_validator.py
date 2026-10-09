@@ -1962,7 +1962,7 @@ sample_kg_edge_abstract_predicate = sample_kg["edges"]["df87ff82"]["predicate"] 
     ]
 )
 def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(response: Dict):
-    validator: TRAPIResponseValidator = TRAPIResponseValidator()
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(trapi_version=LATEST_TRAPI_RELEASE)
     validator.check_compliance_of_trapi_response(response=response)
     validator.dump(file=stderr)
     print("\n"+"="*80+"\n", file=stderr)
