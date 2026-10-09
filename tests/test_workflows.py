@@ -58,7 +58,7 @@ def _generate_workflow_sample_data(versions: List[str], queries: Tuple[Dict, Dic
 
 # From TRAPI 2.0, message components cannot be nullable and
 # for nodes, must include some minimum content, which is faked here
-POST_2_0_QUERY_TEMPLATE = {
+TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE = {
     "message": {
         "knowledge_graph": {
             "nodes": {
@@ -89,8 +89,8 @@ POST_2_0_QUERY_TEMPLATE = {
     "log_level": None,
 }
 
-SAMPLE_POST_2_0_QUERY_1 = deepcopy(POST_2_0_QUERY_TEMPLATE) | deepcopy(SAMPLE_WORKFLOW_1)
-SAMPLE_POST_2_0_QUERY_2 = deepcopy(POST_2_0_QUERY_TEMPLATE) | deepcopy(SAMPLE_WORKFLOW_2)
+SAMPLE_POST_2_0_QUERY_1 = deepcopy(TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE) | deepcopy(SAMPLE_WORKFLOW_1)
+SAMPLE_POST_2_0_QUERY_2 = deepcopy(TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE) | deepcopy(SAMPLE_WORKFLOW_2)
 
 @pytest.mark.parametrize(
     "trapi_version,query",
@@ -109,12 +109,7 @@ def test_query_post_2_0_trapi_workflow_properties(trapi_version: str, query: Dic
     validator.validate(query, "Query")
 
 
-SAMPLE_QUERY_3 = {
-    "message": {
-        "knowledge_graph": None,
-        "query_graph": None,
-        "results": None,
-    },
+SAMPLE_INCOMPLETE_WORKFLOW = {
     "log_level": None,
     "workflow":  [
         {
@@ -127,11 +122,11 @@ SAMPLE_QUERY_3 = {
         }
     ]
 }
-
+QUERY_WITH_FLAWED_WORKFLOW = deepcopy(TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE) | deepcopy(SAMPLE_INCOMPLETE_WORKFLOW)
 
 def test_query_sanitize_response_workflow_properties():
     """Test sanitization of flawed TRAPI Query workflow properties."""
 
-    validator = TRAPIResponseValidator()
-    response = validator.sanitize_workflow(SAMPLE_QUERY_3)
+    validator = TRAPIResponseValidator(trapi_version="2")
+    response = validator.sanitize_workflow(QUERY_WITH_FLAWED_WORKFLOW)
     validator.validate(response, "Query")
