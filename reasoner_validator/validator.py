@@ -279,17 +279,9 @@ class TRAPIResponseValidator(BiolinkValidator):
                 if not self.suppress_empty_data_warnings:
                     self.report(code="error.trapi.response.message.query_graph.empty")
             else:
-                # Validate the TRAPI compliance of the QueryGraph
-                # For TRAPI 1.6.0, could either be a regular QueryGraph or "PathfinderQueryGraph" type
-                # But this complexity was eliminated in TRAPI 2.0.*
-                assert self.trapi_version is not None, "Null TRAPI version is unexpected for SemVer conversion?"
-                if SemVer.from_string(self.trapi_version,ext_fields=None)== SemVer.from_string("1.6.0"):
-                    components = ["QueryGraph", "PathfinderQueryGraph"]
-                else:
-                    components = "QueryGraph"
                 self.is_valid_trapi_query(
                     instance=query_graph,
-                    component=components
+                    component="QueryGraph"
                 )
 
                 if self.validate_biolink():
@@ -835,10 +827,10 @@ class TRAPIResponseValidator(BiolinkValidator):
             #             "edge_bindings": {
             #                 "e0": [
             #                     {
-            #                         "id": "e01"
+            #                         "ids": ["e01"]
             #                     },
             #                     {
-            #                         "id": "creative_edge"
+            #                         "ids": ["creative_edge"]
             #                     }
             #                 ]
             #             },
