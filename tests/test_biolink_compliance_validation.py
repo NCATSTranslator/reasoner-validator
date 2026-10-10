@@ -24,11 +24,7 @@ from tests import (
     SIMPLE_SAMPLE_NODES,
     SAMPLE_NODES_WITH_ATTRIBUTES,
     SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES,
-    SAMPLE_NODES_WITH_UNUSED_NODE,
-    DEFAULT_KL,
-    DEFAULT_AT,
-    DEFAULT_KL_AND_AT_ATTRIBUTES,
-    sample_edge_with_attributes
+    SAMPLE_NODES_WITH_UNUSED_NODE
 )
 from tests.test_validation_report import check_messages
 
@@ -135,14 +131,14 @@ def test_message():
 def test_inverse_predicate():
     tk: Toolkit = get_biolink_model_toolkit("2.2.0")
     predicate = tk.get_element("biolink:related_to")
-    assert predicate['symmetric']
+    assert predicate is not None and predicate['symmetric']
     predicate = tk.get_element("biolink:active_in")
-    assert not predicate['symmetric']
+    assert predicate is not None and not predicate['symmetric']
     assert isinstance(predicate, SlotDefinition)
     assert not tk.get_inverse(predicate.name)
     tk: Toolkit = get_biolink_model_toolkit("v4.1.4")
     predicate = tk.get_element("biolink:active_in")
-    assert not predicate['symmetric']
+    assert predicate is not None and not predicate['symmetric']
     assert isinstance(predicate, SlotDefinition)
     assert tk.get_inverse(predicate.name) == "has active component"
 
@@ -1537,7 +1533,7 @@ def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
                         "attribute_type_id": "biolink:aggregator_knowledge_source",
                         "value": False
                     },
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             get_ara_test_case(),
             ""
@@ -2405,11 +2401,7 @@ def test_validate_knowledge_level(value: str, code: str):
 )
 def test_validate_agent_type(value: str, code: str):
     validator = BiolinkValidator(biolink_version="4.2.0")
-    validator.validate_agent_type(
-        edge_id="test_validate_agent_type",
-        found=False,
-        value=value
-    )
+    validator.validate_agent_type(edge_id="test_validate_agent_type", value=value)
     check_messages(validator, code)
 
 
@@ -2484,7 +2476,9 @@ def test_validate_agent_type(value: str, code: str):
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2518,7 +2512,9 @@ def test_validate_agent_type(value: str, code: str):
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2549,7 +2545,9 @@ def test_validate_agent_type(value: str, code: str):
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2585,7 +2583,9 @@ def test_validate_agent_type(value: str, code: str):
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2618,7 +2618,9 @@ def test_validate_agent_type(value: str, code: str):
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2652,7 +2654,9 @@ def test_validate_agent_type(value: str, code: str):
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2682,13 +2686,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2719,13 +2725,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2756,49 +2764,20 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
             ""
         ),
-        # (   # no longer testable in Biolink 3.1.1 since Nutrient is
-        #     # gone and no other deprecated categories in this release
-        #     LATEST_BIOLINK_MODEL,
-        #     # Query xx: deprecated category triggers a warning in Knowledge Graphs
-        #     {
-        #         "nodes": {
-        #             "CHEBI:27300": {  # Vitamin D
-        #                "categories": [
-        #                    "biolink:Nutrient"
-        #                ],
-        #                "description": "Vitamin D"
-        #             },
-        #             "Orphanet:120464": {  # Vitamin D Receptor
-        #                "categories": [
-        #                    "biolink:Protein"
-        #                ],
-        #                "description": "Vitamin D Receptor"
-        #             }
-        #         },
-        #         "edges": {
-        #             "edge_1": {
-        #                 "subject": "CHEBI:27300",
-        #                 "predicate": "biolink:physically_interacts_with",
-        #                 "object": "Orphanet:120464",
-        #                 "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
-        #             }
-        #         }
-        #     },
-        #  f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Knowledge Graph Node element 'biolink:OntologyClass' is deprecated!"
-        #     "warning.knowledge_graph.node.category.deprecated"
-        # ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 14: invalid node CURIE prefix namespace, for specified category
@@ -2828,13 +2807,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2855,13 +2836,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2884,13 +2867,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2911,13 +2896,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2938,13 +2925,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2980,13 +2969,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3024,13 +3015,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3069,13 +3062,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3114,13 +3109,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3141,13 +3138,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3168,13 +3167,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3194,13 +3195,15 @@ def test_validate_agent_type(value: str, code: str):
                             {
                                 "value": "some value"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3221,13 +3224,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 # "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3248,13 +3253,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "not_a_curie",
                                 "value": "some value"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3276,13 +3283,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:OrganismTaxon",
                                 "value": "9606"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3304,13 +3313,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:related_to",
                                 "value": "something"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3332,13 +3343,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:provided_by",
                                 "value": "some provider"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3360,13 +3373,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:iri",
                                 "value": "some IRI"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3392,13 +3407,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3419,13 +3436,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "foo:bar",
                                 "value": "some value"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3455,6 +3474,8 @@ def test_validate_agent_type(value: str, code: str):
                        "subject": "NCBIGene:29974",
                        "predicate": "biolink:physically_interacts_with",
                        "object": "PUBCHEM.COMPOUND:597",
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3474,13 +3495,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "foo:bar",
                                 "value": "some value"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3504,13 +3527,15 @@ def test_validate_agent_type(value: str, code: str):
                                 "attribute_type_id": "biolink:synonym",
                                 "value": "some synonym"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3530,100 +3555,8 @@ def test_validate_agent_type(value: str, code: str):
             "warning.knowledge_graph.nodes.dangling"
         ),
         (
-            # Query 38: Knowledge Graph edge duplicated Knowledge Level
-            LATEST_BIOLINK_MODEL_VERSION,
-            {
-                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
-                'edges': sample_edge_with_attributes(
-                    attributes=[
-                        DEFAULT_KL,
-                        DEFAULT_KL,
-                        DEFAULT_AT
-                    ]
-                )
-            },
-            "error.knowledge_graph.edge.knowledge_level.duplicated"
-        ),
-        (
-            # Query 39: Knowledge Graph edge missing Knowledge Level
-            LATEST_BIOLINK_MODEL_VERSION,
-            {
-                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
-                'edges': sample_edge_with_attributes(
-                    attributes=[
-                        DEFAULT_AT
-                    ]
-                )
-            },
-            # This will be a warning for TRAPI 1.5.0 but should become an error in TRAPI 1.6.0
-            "warning.knowledge_graph.edge.knowledge_level.missing"
-        ),
-        (
-            # Query 40: Knowledge Graph edge invalid Knowledge Level
-            LATEST_BIOLINK_MODEL_VERSION,
-            {
-                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
-                'edges': sample_edge_with_attributes(
-                    attributes=[
-                        {
-                           "attribute_type_id": "biolink:knowledge_level",
-                           "value": "not-a-knowledge-level"
-                        },
-                        DEFAULT_AT
-                    ]
-                )
-            },
-            "error.knowledge_graph.edge.knowledge_level.invalid"
-        ),
-        (
-            # Query 41: Knowledge Graph edge duplicated Agent Type
-            LATEST_BIOLINK_MODEL_VERSION,
-            {
-                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
-                'edges': sample_edge_with_attributes(
-                    attributes=[
-                        DEFAULT_KL,
-                        DEFAULT_AT,
-                        DEFAULT_AT
-                    ]
-                )
-            },
-            "error.knowledge_graph.edge.agent_type.duplicated"
-        ),
-        (
-            # Query 42: Knowledge Graph edge missing Agent Type
-            LATEST_BIOLINK_MODEL_VERSION,
-            {
-                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
-                'edges': sample_edge_with_attributes(
-                    attributes=[
-                        DEFAULT_KL
-                    ]
-                )
-            },
-            # This will be a warning for TRAPI 1.5.0 but should become an error in TRAPI 1.6.0
-            "warning.knowledge_graph.edge.agent_type.missing"
-        ),
-        (
-            # Query 43: Knowledge Graph edge invalid Agent Type
-            LATEST_BIOLINK_MODEL_VERSION,
-            {
-                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
-                'edges': sample_edge_with_attributes(
-                    attributes=[
-                        DEFAULT_KL,
-                        {
-                           "attribute_type_id": "biolink:agent_type",
-                           "value": "not-an-agent-type"
-                        }
-                    ]
-                )
-            },
-            "error.knowledge_graph.edge.agent_type.invalid"
-        ),
-        (
-            # Query 44: Sample full valid TRAPI Knowledge Graph
-            "4.1.6",
+            # Query 38: Sample full valid TRAPI Knowledge Graph
+            "4.4.5",
             {
                 # Sample nodes
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,

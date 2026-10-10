@@ -1,4 +1,3 @@
-from typing import List, Dict, Any
 from sys import stderr
 from os.path import abspath, dirname, sep
 from copy import deepcopy
@@ -19,16 +18,16 @@ LOCAL_SCHEMA_VERSION = "v1.5.0"
 LOCAL_TRAPI_150_SCHEMA_FILEPATH = f"{TESTS_DIRECTORY}{sep}test_data{sep}trapi_schema_v1.5.0.yaml"
 BROKEN_SCHEMA_FILEPATH = f"broken-{LOCAL_SCHEMA_VERSION}.yaml"
 
-TRAPI_2_0_TEST_VERSIONS: List = ["2.0", TRAPI_2_0_0_BETA2]
+TRAPI_2_0_TEST_VERSIONS: list = ["2.0", TRAPI_2_0_0_BETA2]
 
-LATEST_TEST_RELEASES: List = [
+LATEST_TEST_RELEASES: list = [
     "2",
     LATEST_TRAPI_MAJOR_MINOR_RELEASE,
     LATEST_TRAPI_MAJOR_MINOR_PATCH_RELEASE,
     LATEST_TRAPI_RELEASE
 ]
 
-ALL_TEST_VERSIONS: List[str] = LATEST_TEST_RELEASES
+ALL_TEST_VERSIONS: list[str] = LATEST_TEST_RELEASES
 
 LATEST_BIOLINK_MODEL_VERSION = Toolkit().get_model_version()
 
@@ -60,18 +59,6 @@ SAMPLE_NODES_WITH_ATTRIBUTES["PUBCHEM.COMPOUND:597"]["attributes"] = [
     }
 ]
 
-DEFAULT_KL = {
-    "attribute_type_id": "biolink:knowledge_level",
-    "value": "not_provided"
-}
-
-
-DEFAULT_AT = {
-    "attribute_type_id": "biolink:agent_type",
-    "value": "not_provided"
-}
-
-DEFAULT_KL_AND_AT_ATTRIBUTES = [DEFAULT_KL, DEFAULT_AT]
 
 # complete edge dereferencing SAMPLE_NODES_WITH_ATTRIBUTES
 SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES = {
@@ -86,13 +73,15 @@ SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES = {
                 "value": 2,
                 "attributes": [],
             }
-        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+        ],
         "sources": [
             {
                 "resource_id": "infores:molepro",
                 "resource_role": "primary_knowledge_source"
             }
-        ]
+        ],
+        "knowledge_level": "not_provided",
+        "agent_type": "not_provided"
     }
 }
 
@@ -116,7 +105,9 @@ SAMPLE_EDGE_WITH_WITHOUT_ATTRIBUTES = {
                 "resource_id": "infores:molepro",
                 "resource_role": "primary_knowledge_source"
             }
-        ]
+        ],
+        "knowledge_level": "not_provided",
+        "agent_type": "not_provided"
     }
 }
 
@@ -153,8 +144,3 @@ TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE = {
     },
     "log_level": None,
 }
-
-def sample_edge_with_attributes(attributes: List[Dict[str, Any]]) -> Dict[str, Any]:
-    sample_edge = deepcopy(SAMPLE_EDGE_WITH_WITHOUT_ATTRIBUTES)
-    sample_edge["edge_1"]["attributes"] = attributes
-    return sample_edge
