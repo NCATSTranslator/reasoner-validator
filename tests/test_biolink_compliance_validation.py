@@ -3654,7 +3654,8 @@ MESSAGE_EDGE_WITHOUT_ATTRIBUTES = {
             "subject": "NCBIGene:29974",
             "predicate": "biolink:physically_interacts_with",
             "object": "PUBCHEM.COMPOUND:597",
-            # "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+            "knowledge_level": "not_provided",
+            "agent_type": "not_provided"
         }
     }
 }

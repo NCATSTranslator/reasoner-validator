@@ -1,6 +1,5 @@
 from typing import Optional, List, Dict, Set, Tuple
 from functools import lru_cache
-from reasoner_validator.versioning import SemVer
 from reasoner_validator.biolink import (
     BiolinkValidator,
     get_biolink_model_toolkit

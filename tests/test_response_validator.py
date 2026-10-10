@@ -214,12 +214,7 @@ _TEST_ANALYSES = [
     {
         "resource_id": "infores:ara0",
         "edge_bindings": {
-            "treats": [
-                {
-                    "id": "df87ff82",
-                    "attributes": []
-                }
-            ]
+            "treats": {"ids": ["df87ff82"]}
         },
         "support_graphs": [],
         "score": 0.7
@@ -231,14 +226,12 @@ _TEST_RESULTS_1 = [
         "node_bindings": {
             "type-2 diabetes": [
                 {
-                    "id": TYPE_2_DIABETES_CURIE,
-                    "attributes": []
+                    "ids": [TYPE_2_DIABETES_CURIE]
                 }
             ],
             "drug": [
                 {
-                    "id": METFORMIN_CURIE,
-                    "attributes": []
+                    "ids": [METFORMIN_CURIE]
                 }
             ]
         },
@@ -314,14 +307,12 @@ _TEST_RESULTS_2 = [
             "node_bindings": {
                 "paper": [
                     {
-                        "id": "PMID:11156626",
-                        "attributes": []
+                        "ids": ["PMID:11156626"]
                     }
                 ],
                 "author": [
                     {
-                        "id": "ORCID:0000-0002-4447-5978",
-                        "attributes": []
+                        "ids": ["ORCID:0000-0002-4447-5978"]
                     }
                 ]
             },
@@ -329,12 +320,7 @@ _TEST_RESULTS_2 = [
                 {
                     "resource_id": "infores:ara0",
                     "edge_bindings": {
-                        "citation": [
-                            {
-                                "id": "edge1",
-                                "attributes": []
-                            }
-                        ]
+                        "citation": {"ids": ["edge1"]}
                     },
                     "support_graphs": [],
                     "score": 0.7
@@ -361,7 +347,7 @@ _TEST_KG_MULTIPLE_PRIMARY_KS = {
 
 # From Implementation Guidelines circa June 2023
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
-    "schema_version": "1.5.0",
+    "schema_version": "2.0.0",
     "message": {
         "query_graph": {
             "nodes": {
@@ -418,14 +404,12 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
                 "node_bindings": {
                     "type-2 diabetes": [
                         {
-                            "id": TYPE_2_DIABETES_CURIE,
-                            "attributes": []
+                            "ids": [TYPE_2_DIABETES_CURIE]
                         }
                     ],
                     "drug": [
                         {
-                            "id": METFORMIN_CURIE,
-                            "attributes": []
+                            "ids": [METFORMIN_CURIE]
                         }
                     ]
                 },
@@ -455,7 +439,7 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_LATEST
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
 
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
-_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION["schema_version"] = "1.6.0"
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION["schema_version"] = "2.0.0"
 
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
     "biolink_version": "2.2.0",
@@ -510,14 +494,12 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
                 "node_bindings": {
                     "type-2 diabetes": [
                         {
-                            "id": TYPE_2_DIABETES_CURIE,
-                            "attributes": []
+                            "ids": [TYPE_2_DIABETES_CURIE]
                         }
                     ],
                     "drug": [
                         {
-                            "id": METFORMIN_CURIE,
-                            "attributes": []
+                            "ids": [METFORMIN_CURIE]
                         }
                     ]
                 },
@@ -525,12 +507,7 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
                     {
                         "resource_id": "infores:ara0",
                         "edge_bindings": {
-                            "treats": [
-                                {
-                                    "id": "df87ff82",
-                                    "attributes": []
-                                }
-                            ]
+                            "treats": {"ids": ["df87ff82"]}
                         },
                         "support_graphs": [],
                         "score": 0.7
@@ -2251,15 +2228,12 @@ SAMPLE_TEST_RESULTS = [
         "node_bindings": {
             "diabetes mellitus": [
                 {
-                    "id": TYPE_2_DIABETES_CURIE,  # actually bound knowledge graph node is 'type 2 diabetes mellitus'
-                    "query_id": "MONDO:0005015",  # QNode identifier is the MONDO parent concept of 'diabetes mellitus'
-                    "attributes": []
+                    "ids": [TYPE_2_DIABETES_CURIE]
                 }
             ],
             "drug": [
                 {
-                    "id": METFORMIN_CURIE,
-                    "attributes": []
+                    "ids": [METFORMIN_CURIE]
                 }
             ]
         },
@@ -2267,12 +2241,7 @@ SAMPLE_TEST_RESULTS = [
             {
                 "resource_id": "infores:ara0",
                 "edge_bindings": {
-                    "treated_by": [
-                        {
-                            "id": "df879999",
-                            "attributes": []
-                        }
-                    ]
+                    "treated_by": {"ids": ["df879999"]}
                 },
                 "support_graphs": [],
                 "score": 0.7
@@ -2286,14 +2255,12 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
         "node_bindings": {
             "diabetes mellitus": [
                 {
-                    "id": TYPE_2_DIABETES_CURIE,
-                    "attributes": []
+                    "ids": [TYPE_2_DIABETES_CURIE]
                 }
             ],
             "drug": [
                 {
-                    "id": METFORMIN_CURIE,
-                    "attributes": []
+                    "ids": [METFORMIN_CURIE]
                 }
             ]
         },
@@ -2302,12 +2269,7 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
                 "resource_id": "infores:ara0",
                 # not pointing to an edge in the existing sample KG
                 "edge_bindings": {
-                    "treated_by": [
-                        {
-                            "id": "abcde999",
-                            "attributes": []
-                        }
-                    ]
+                    "treated_by": {"ids": ["abcde999"]}
                 },
                 "support_graphs": [],
                 "score": 0.7
@@ -2512,10 +2474,7 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
     ]
 )
 def test_case_input_found_in_response(testcase, response, code):
-    validator = TRAPIResponseValidator(
-        trapi_version=LATEST_TRAPI_RELEASE,
-        biolink_version=LATEST_BIOLINK_MODEL_VERSION
-    )
+    validator = TRAPIResponseValidator()
     outcome: bool = validator.testcase_input_found_in_response(testcase=testcase, response=response)
     assert not outcome if code.startswith("error") else True
     check_messages(validator, code)

@@ -694,32 +694,28 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
     def validate_knowledge_level(
             self,
             edge_id: str,
-            found: bool,
             value: Optional[str]
     ) -> bool:
         """
         Validate the value of a 'knowledge_level' of the given edge.
         :param edge_id: str, identifier of the edge being validated
-        :param found: bool, current status of slot detection, True if already seen previously (return 'True' value here)
         :param value: Optional[str], the value to be validated
         :return: bool, if valid slot and value found (validation messages recorded in the BiolinkValidator)
         """
-        return self.validate_slot_value(slot_name="knowledge_level", context=edge_id, found=found, value=value)
+        return self.validate_slot_value(slot_name="knowledge_level", context=edge_id, found=False, value=value)
 
     def validate_agent_type(
             self,
             edge_id: str,
-            found: bool,
             value: Optional[str]
     ) -> bool:
         """
         Validate the value of a 'agent_type' of the given edge.
         :param edge_id: str, identifier of the edge being validated
-        :param found: bool, current status of slot detection, True if already seen previously (return 'True' value here)
         :param value: Optional[str], the value to be validated
         :return: None (validation messages recorded in the BiolinkValidator)
         """
-        return self.validate_slot_value(slot_name="agent_type", context=edge_id, found=found, value=value)
+        return self.validate_slot_value(slot_name="agent_type", context=edge_id, found=False, value=value)
 
     def get_attribute_type_exclusions(self) -> List[str]:
         if self.minimum_required_biolink_version("4.2.0"):
@@ -929,28 +925,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                                 # if attribute_type_id == "biolink:support_graphs":
                                                 #     found_support_graphs = False
 
-                                                # We expect at this point that, if 'attribute_type_id' is a
-                                                # 'knowledge_level' or 'agent_type', then the value is a scalar
-                                                value = value[0]
-
-                                                # We won't likely care if 'knowledge_level' or 'agent_type'
-                                                # show up in graphs compliant with Biolink earlier than 4.2.0,
-                                                # but we validate their values anyhow...
-                                                if attribute_type_id == "biolink:knowledge_level":
-                                                    found_knowledge_level = \
-                                                        self.validate_knowledge_level(
-                                                            edge_id=edge_id,
-                                                            found=found_knowledge_level,
-                                                            value=value
-                                                        )
-                                                elif attribute_type_id == "biolink:agent_type":
-                                                    found_agent_type = \
-                                                        self.validate_agent_type(
-                                                            edge_id=edge_id,
-                                                            found=found_agent_type,
-                                                            value=value
-                                                        )
-
                                 # if not a Biolink model defined attribute term, at least, check if
                                 # the 'attribute_type_id' has a namespace (prefix) known to Biolink.
                                 # We won't call it a hard error, but issue a warning
@@ -961,22 +935,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                         identifier=attribute_type_id,
                                         edge_id=edge_id
                                     )
-
-            # Mandatory 'knowledge_level' and 'agent_type'
-            # attributes required in all Biolink Model edges
-            # from Biolink Model release 4.2.0 onwards
-            if self.minimum_required_biolink_version("4.2.0"):
-                if not found_knowledge_level:
-                    self.report(
-                        code="error.knowledge_graph.edge.knowledge_level.missing",
-                        identifier=edge_id
-                    )
-
-                if not found_agent_type:
-                    self.report(
-                        code="error.knowledge_graph.edge.agent_type.missing",
-                        identifier=edge_id
-                    )
 
     def validate_attribute_constraints(self, edge_id: str, edge: Dict):
         """
@@ -1410,8 +1368,12 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         """
         # logger.debug(edge)
         # edge data fields to be validated...
-        subject_id = edge['subject'] if 'subject' in edge else None
-        subject_categories: Optional[List[str]] = self.get_node_categories(node_id=subject_id)
+        if 'subject' in edge:
+            subject_id = edge['subject']
+            subject_categories: Optional[List[str]] = self.get_node_categories(node_id=subject_id)
+        else:
+            subject_id = None
+            subject_categories = None
 
         predicates: Optional[List[str]]
         predicate: Optional[str] = None
@@ -1424,8 +1386,12 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             predicates = edge['predicates'] if 'predicates' in edge else None
             edge_label = str(predicates) if predicates else ""
 
-        object_id = edge['object'] if 'object' in edge else None
-        object_categories: Optional[List[str]] = self.get_node_categories(node_id=object_id)
+        if 'object' in edge:
+            object_id = edge['object']
+            object_categories: Optional[List[str]] = self.get_node_categories(node_id=object_id)
+        else:
+            object_id = None
+            object_categories = None
 
         edge_id = f"{str(subject_id)}[{'|'.join(subject_categories) if subject_categories else 'None'}]" +\
                   f"--{edge_label}->" +\
@@ -1472,6 +1438,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 edge=edge,
                 associations=associations
             )
+            # We assume that the case of missing 'knowledge_level' or 'agent_type' slots
+            # was already detected by TRAPI schema validation and here, we just validate their values
+            self.validate_knowledge_level(edge_id=edge_id,value=edge['knowledge_level'])
+            self.validate_agent_type(edge_id=edge_id,value=edge['agent_type'])
 
         else:
             # NOT Knowledge Graph edge validation
