@@ -722,14 +722,6 @@
 
 **Description:** Validation of a specified 'qualifier_type_id' and 'qualifier_value' failed for a given exceptional reason
 
-### error.knowledge_graph.edge.knowledge_level.missing
-
-**Message:** Edge is missing its required 'knowledge_level' property
-
-**Context:** edge_id
-
-**Description:** The 'knowledge_level' slot is required for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release
-
 ### error.knowledge_graph.edge.knowledge_level.duplicated
 
 **Message:** The 'knowledge_level' slot is duplicated for the given edge
@@ -745,14 +737,6 @@
 **Context:** identifier, context
 
 **Description:** Acceptable values of the 'knowledge_level' slot are only as enumerated in the specified Biolink Model
-
-### error.knowledge_graph.edge.agent_type.missing
-
-**Message:** Edge is missing its required 'agent_type' property
-
-**Context:** identifier
-
-**Description:** The 'agent_type' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release
 
 ### error.knowledge_graph.edge.agent_type.duplicated
 

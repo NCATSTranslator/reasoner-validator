@@ -1,7 +1,6 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import Optional, Dict, List
 from sys import stderr
 from copy import deepcopy
 from pprint import PrettyPrinter
@@ -404,7 +403,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         )
     ]
 )
-def test_check_biolink_model_default_compliance_of_input_edge(biolink_version: str, edge: Dict, validation_code: str):
+def test_check_biolink_model_default_compliance_of_input_edge(biolink_version: str, edge: dict, validation_code: str):
     validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version)
     validator.check_biolink_model_compliance_of_input_edge(edge=edge)
     check_messages(validator, validation_code)
@@ -440,7 +439,7 @@ def test_check_biolink_model_default_compliance_of_input_edge(biolink_version: s
     ]
 )
 def test_check_biolink_model_non_strict_compliance_of_input_edge(
-        biolink_version: str, edge: Dict, validation_code: str
+        biolink_version: str, edge: dict, validation_code: str
 ):
     validator: BiolinkValidator = BiolinkValidator(
         biolink_version=biolink_version,
@@ -516,11 +515,11 @@ def test_check_biolink_model_non_strict_compliance_of_input_edge(
         )
     ]
 )
-def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
+def test_conservation_of_query_graph(biolink_version: str, graph: dict):
     """
     This test checks for internal glitch where the query graph is somehow deleted
     """
-    original_graph: Dict = deepcopy(graph)
+    original_graph: dict = deepcopy(graph)
     validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version)
     validator.check_biolink_model_compliance(graph=graph, graph_type=TRAPIGraphType.Query_Graph)
     assert graph == original_graph
@@ -644,7 +643,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 7: Node "ids" not a List
+            # Query 7: Node "ids" not a list
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": "MONDO:0005148"}
@@ -1169,7 +1168,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
     ]
 )
 def test_check_biolink_model_default_compliance_of_query_graph(
-    query_graph: Dict,
+    query_graph: dict,
     biolink_version: str,
     validation_code: str
 ):
@@ -1207,7 +1206,7 @@ def test_check_biolink_model_default_compliance_of_query_graph(
     ]
 )
 def test_check_biolink_model_non_strict_compliance_of_query_graph(
-    query_graph: Dict,
+    query_graph: dict,
     biolink_version: str,
     validation_code: str
 ):
@@ -1250,7 +1249,7 @@ def test_check_biolink_model_non_strict_compliance_of_query_graph(
     ]
 )
 def test_check_biolink_model_strict_compliance_of_query_graph(
-    query_graph: Dict,
+    query_graph: dict,
     biolink_version: str,
     validation_code: str
 ):
@@ -1276,7 +1275,7 @@ TEST_ARA_CASE_TEMPLATE = {
 }
 
 
-def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
+def get_ara_test_case(changes: dict[str, str] | None = None):
     test_case = TEST_ARA_CASE_TEMPLATE.copy()
     if changes:
         test_case.update(changes)
@@ -1305,23 +1304,23 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
     "edge,validation_code",
     [
         (
-            # Query 0. 'attributes' key missing in edge record is None
+            # Query 0. 'attributes' key missing in edge, but the attributes key is not required for edges in TRAPI 2.0
             {},
-            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
+            ""
         ),
         (
-            # Query 1. Empty attributes
+            # Query 1. If the 'attributes' key is present, null is invalid since TRAPI 2.0 schema defaults to nullable
             {
                 "attributes": None
             },
-            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
+            "error.knowledge_graph.edge.attribute.missing"
         ),
         (
-            # Query 2. Empty attributes
+            # Query 2. If the 'attributes' key is present, an empty attribute array is acceptable in TRAPI 2.0
             {
                 "attributes": []
             },
-            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
+            ""
         ),
         (
             # Query 3. EDAM-DATA:2526 ought to have an acceptable namespace
@@ -1331,28 +1330,10 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "EDAM-DATA:2526",
                         "value": "some-value"
                     },
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
-            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
+            ""
         ),
-        # (
-        #     # Query #. Validating terms in the ATTRIBUTE_TYPE_ID_INCLUSIONS list
-        #     {
-        #         "attributes": [
-        #             {
-        #                 "attribute_type_id": "biolink:knowledge_level",
-        #                 "value": "knowledge_assertion"
-        #             },
-        #             {
-        #                 "attribute_type_id": "biolink:agent_type",
-        #                 "value": "manual_agent"
-        #             }
-        #         ]
-        #     },
-        #     ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
-        # ),
-        # Slipping in a few unit tests of the
-        # "error.knowledge_graph.edge.attribute.value.empty"
         (
             # Query 4. Attribute value is numeric (int) and zero
             {
@@ -1361,7 +1342,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": 0
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             ""   # should pass since 'False' is a valid non-empty attribute value
         ),
@@ -1373,7 +1354,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": 0.0
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             ""   # should pass since 'False' is a valid non-empty attribute value
         ),
@@ -1385,7 +1366,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": False
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             ""   # should pass since 'False' is a valid non-empty attribute value
         ),
@@ -1397,7 +1378,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": ""
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
@@ -1409,7 +1390,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": None
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
@@ -1421,7 +1402,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": []
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
@@ -1433,13 +1414,13 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": {}
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             "error.knowledge_graph.edge.attribute.value.empty"
         )
     ]
 )
-def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
+def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
     validator = BiolinkValidator()
     validator.validate_attributes(
         graph_type=TRAPIGraphType.Knowledge_Graph,
@@ -1586,8 +1567,8 @@ def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
     ]
 )
 def test_latest_validate_trapi_attributes_with_target_provenance(
-        edge: Dict,
-        target_provenance: Optional[Dict[str, str]],
+        edge: dict,
+        target_provenance: dict[str, str] | None,
         validation_code: str
 ):
     validator = BiolinkValidator(
@@ -1604,10 +1585,10 @@ def test_latest_validate_trapi_attributes_with_target_provenance(
 def qualifier_validator(
         tested_method,
         edge_model: str,
-        edge: Dict,
+        edge: dict,
         validation_code: str,
-        trapi_version: Optional[str] = None,
-        biolink_version: Optional[str] = LATEST_BIOLINK_MODEL_VERSION,
+        trapi_version: str | None = None,
+        biolink_version: str | None = LATEST_BIOLINK_MODEL_VERSION,
         **kwargs
 ):
     # TODO: to review: which of the validation tests that
@@ -1617,7 +1598,7 @@ def qualifier_validator(
         biolink_version=biolink_version
     )
     # Wrap Qualifiers inside a small mock QEdge
-    mock_edge: Dict = deepcopy(edge)
+    mock_edge: dict = deepcopy(edge)
     mock_edge["subject"] = "mock_subject"
     mock_edge["predicate"] = "biolink:related_to"
     mock_edge["sources"] = [
@@ -1892,7 +1873,7 @@ def qualifier_validator(
         )
     ]
 )
-def test_validate_qualifier_constraints(edge: Dict, validation_code: str):
+def test_validate_qualifier_constraints(edge: dict, validation_code: str):
     # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifier_constraints,
@@ -1987,7 +1968,7 @@ def test_validate_infores(identifier: str, validation_code: str):
         )
     ]
 )
-def test_biolink_validation_suppressed_validate_qualifier_constraints(edge: Dict, validation_code: str):
+def test_biolink_validation_suppressed_validate_qualifier_constraints(edge: dict, validation_code: str):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
@@ -2171,9 +2152,9 @@ def test_validate_biolink_curie_in_qualifier_constraints():
     ]
 )
 def test_validate_qualifiers(
-        edge: Dict,
+        edge: dict,
         validation_code: str,
-        associations: Optional[List[str]]
+        associations: list[str] | None
 ):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifiers,
@@ -2204,7 +2185,7 @@ def test_validate_qualifiers(
                     }
                 ]
             },
-            ["biolink:GeneToDiseaseOrPhenotypicFeatureAssociation"],  # associations: Optional[List[str]]
+            ["biolink:GeneToDiseaseOrPhenotypicFeatureAssociation"],  # associations: list[str] | None
             ""   # this particular use case should pass
         ),
         (   # Query 1 - This example is identical to the above, but we know that it must fail if the
@@ -2218,7 +2199,7 @@ def test_validate_qualifiers(
                 ]
             },
 
-            None,  # associations: Optional[List[str]]
+            None,  # associations: list[str] | None
             "warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved"
         ),
         (   # Query 2 -  another example of a 'qualifier_type_id' resolvable only within
@@ -2238,7 +2219,7 @@ def test_validate_qualifiers(
                     }
                 ]
             },
-            ["biolink:ChemicalAffectsGeneAssociation"],  # associations: Optional[List[str]]
+            ["biolink:ChemicalAffectsGeneAssociation"],  # associations: list[str] | None
             ""   # this particular use case should pass
         ),
         (   # Query 3 -  another example of a 'qualifier_type_id' resolvable only within
@@ -2262,7 +2243,7 @@ def test_validate_qualifiers(
                 'biolink:ChemicalGeneInteractionAssociation',
                 'biolink:ChemicalAffectsGeneAssociation',
                 'biolink:ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation'
-            ],   # associations: Optional[List[str]]
+            ],   # associations: list[str] | None
             ""  # this particular use case should pass
         ),
         (   # Query 4 -  another example of a 'qualifier_type_id' resolvable only within
@@ -2278,7 +2259,7 @@ def test_validate_qualifiers(
             },
             [
                 "biolink:NamedThingAssociatedWithLikelihoodOfNamedThingAssociation"
-            ],   # associations: Optional[List[str]]
+            ],   # associations: list[str] | None
             ""  # this particular use case should pass
         ),
         (   # Query 5 -  another example of a 'qualifier_type_id' resolvable only within
@@ -2295,14 +2276,14 @@ def test_validate_qualifiers(
                 'biolink:ChemicalGeneInteractionAssociation',
                 'biolink:ChemicalAffectsGeneAssociation',
                 'biolink:ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation'
-            ],   # associations: Optional[List[str]]
+            ],   # associations: list[str] | None
             ""  # this particular use case should pass
         )
     ]
 )
 def test_validate_qualifiers_with_association(
-        edge: Dict,
-        associations: Optional[List[str]],
+        edge: dict,
+        associations: list[str] | None,
         message: str
 ):
     qualifier_validator(
@@ -2364,7 +2345,7 @@ def test_validate_unspecified_slot_value_range():
 #             slot_name: str,
 #             context: str,
 #             found: bool,
-#             value: Optional[str]
+#             value: str | None
 #     ):
 @pytest.mark.parametrize(
     "value,code",
@@ -2374,7 +2355,7 @@ def test_validate_unspecified_slot_value_range():
         ("fake-kl-value", "error.knowledge_graph.edge.knowledge_level.invalid")
     ]
 )
-def test_validate_slot_value(value: Optional[str], code: str):
+def test_validate_slot_value(value: str, code: str):
     validator = BiolinkValidator(biolink_version="4.2.0")
     validator.validate_slot_value(
         slot_name="knowledge_level",
@@ -2389,7 +2370,7 @@ def test_validate_slot_value(value: Optional[str], code: str):
 #             self,
 #             edge_id: str,
 #             found: bool,
-#             value: Optional[str]
+#             value: str | None
 #     ) -> bool:
 @pytest.mark.parametrize(
     "value,code",
@@ -2399,11 +2380,10 @@ def test_validate_slot_value(value: Optional[str], code: str):
         ("fake-kl-value", "error.knowledge_graph.edge.knowledge_level.invalid")
     ]
 )
-def test_validate_knowledge_level(value: Optional[str], code: str):
-    validator = BiolinkValidator(biolink_version="4.2.0")
+def test_validate_knowledge_level(value: str, code: str):
+    validator = BiolinkValidator(biolink_version="4.4.5")
     validator.validate_knowledge_level(
         edge_id="test_validate_knowledge_level",
-        found=False,
         value=value
     )
     check_messages(validator, code)
@@ -2413,7 +2393,7 @@ def test_validate_knowledge_level(value: Optional[str], code: str):
 #             self,
 #             edge_id: str,
 #             found: bool,
-#             value: Optional[str]
+#             value: str
 #     ) -> bool:
 @pytest.mark.parametrize(
     "value,code",
@@ -2423,7 +2403,7 @@ def test_validate_knowledge_level(value: Optional[str], code: str):
         ("fake-kl-value", "error.knowledge_graph.edge.agent_type.invalid")
     ]
 )
-def test_validate_agent_type(value: Optional[str], code: str):
+def test_validate_agent_type(value: str, code: str):
     validator = BiolinkValidator(biolink_version="4.2.0")
     validator.validate_agent_type(
         edge_id="test_validate_agent_type",
@@ -3656,7 +3636,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
 )
 def test_check_biolink_model_compliance_of_knowledge_graph(
         biolink_version: str,
-        graph_data: Dict,
+        graph_data: dict,
         code: str
 ):
     validator = BiolinkValidator(biolink_version=biolink_version)
@@ -3773,14 +3753,14 @@ SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN = {
         # )
     ]
 )
-def test_latest_trapi_validate_sources(sources: List[Dict], validation_code: str):
+def test_latest_trapi_validate_sources(sources: list[dict], validation_code: str):
     # no attributes are strictly needed in 1.4.0-beta now that (mandatory)
     # Edge provenance is recorded in the Edge.sources list of RetrievalSource
     # message edges must have at least some 'provenance' attributes
-    sample_message: Dict = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
+    sample_message: dict = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
     if sources is not None:
-        edge: Dict = sample_message["edges"]["edge_1"]
-        edge["sources"]: List[Dict] = sources
+        edge: dict = sample_message["edges"]["edge_1"]
+        edge["sources"]: list[dict] = sources
     validator = BiolinkValidator(biolink_version=LATEST_BIOLINK_MODEL_VERSION)
     validator.check_biolink_model_compliance(graph=sample_message, graph_type=TRAPIGraphType.Knowledge_Graph)
     check_messages(validator, validation_code)
@@ -3789,7 +3769,7 @@ def test_latest_trapi_validate_sources(sources: List[Dict], validation_code: str
 @pytest.mark.parametrize(
     "predicate,result",
     [
-        (None, False),
+        ("", False),
         ("biolink:related_to", True),
         ("related_to", True),
         ("related to", True),
