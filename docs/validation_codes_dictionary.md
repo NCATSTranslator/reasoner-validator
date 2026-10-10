@@ -602,22 +602,6 @@
 
 **Description:** Edge must have a 'attributes' key with a non-empty associated value
 
-### error.knowledge_graph.edge.attribute.empty
-
-**Message:** Empty attributes in Edge
-
-**Context:** identifier
-
-**Description:** Value of 'attributes' property in Knowledge Graph edge must contain a list of one or more attributes
-
-### error.knowledge_graph.edge.attribute.not_array
-
-**Message:** The attributes are not an array in Edge
-
-**Context:** identifier
-
-**Description:** Value of the 'attributes' property in Knowledge Graph edge must be an array of attributes
-
 ### error.knowledge_graph.edge.attribute.type_id.unknown
 
 **Message:** Edge has unknown attribute_type_id

@@ -746,26 +746,19 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param edge: Dict, the edge object is associated with some attributes are expected to be found
         """
         if 'attributes' not in edge:
+            pass # 'attributes' key not required to be present in TRAPI 2.0 edges...
+        elif edge['attributes'] is None:
             if self.validate_biolink():
-                # Note: Only an error for earlier TRAPI versions
-                # since attributes are 'nullable: True' for TRAPI 1.4.0
+                # ... but if the key is present but the value is null,
+                #     validation fails since the value of this key
+                #     in TRAPI 2.0 defaults to 'not nullable'
                 self.report(
                     code="error.knowledge_graph.edge.attribute.missing",
                     identifier=edge_id
                 )
         elif not edge['attributes']:
-            if self.validate_biolink():
-                # Note: Only an error for earlier TRAPI versions
-                # since attributes are 'nullable: True' for TRAPI 1.4.0
-                self.report(
-                    code="error.knowledge_graph.edge.attribute.empty",
-                    identifier=edge_id
-                )
-        elif not isinstance(edge['attributes'], List):
-            self.report(
-                code="error.knowledge_graph.edge.attribute.not_array",
-                identifier=edge_id
-            )
+            # But it is allowed to be empty array if key value list is present
+            pass
         else:
             attributes = edge['attributes']
 

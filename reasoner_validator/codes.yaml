@@ -464,16 +464,6 @@ error:
           $context:
             - identifier
           $description: "Edge must have a 'attributes' key with a non-empty associated value"
-        empty:
-          $message: "Empty attributes in Edge"
-          $context:
-            - identifier
-          $description: "Value of 'attributes' property in Knowledge Graph edge must contain a list of one or more attributes"
-        not_array:
-          $message: "The attributes are not an array in Edge"
-          $context:
-            - identifier
-          $description: "Value of the 'attributes' property in Knowledge Graph edge must be an array of attributes"
         type_id:
           unknown:
             $message: "Edge has unknown attribute_type_id"
