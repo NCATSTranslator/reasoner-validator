@@ -32,7 +32,7 @@ class TRAPIResponseValidator(BiolinkValidator):
             default_target: Optional[str] = None,
             trapi_version: Optional[str] = None,
             biolink_version: Optional[str] = None,
-            target_provenance: Optional[Dict[str, str]] = None,
+            target_provenance: Optional[Dict[str, str | None]] = None,
             strict_validation: Optional[bool] = None,
             suppress_empty_data_warnings: bool = False
     ):
