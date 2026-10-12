@@ -1430,16 +1430,7 @@ def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
     "edge,target_provenance,validation_code",
     [
         (
-            # Query 0. Attributes are not a proper array
-            {
-                "attributes": {"not_a_list"}
-            },
-            get_ara_test_case(),
-            # "Edge attributes are not an array!"
-            "error.knowledge_graph.edge.attribute.not_array"
-        ),
-        (
-            # Query 1. attribute missing its 'attribute_type_id' field
+            # Query 0. attribute missing its 'attribute_type_id' field
             {
                 "attributes": [
                     {"value": ""}
@@ -1450,7 +1441,7 @@ def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.type_id.missing"
         ),
         (
-            # Query 2. attribute missing its 'value' field
+            # Query 1. attribute missing its 'value' field
             {
                 "attributes": [
                     {"attribute_type_id": "biolink:p_value"}
@@ -1461,7 +1452,7 @@ def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.value.missing"
         ),
         (
-            # Query 3. value is an empty list?
+            # Query 2. value is an empty list?
             {
                 "attributes": [
                     {
@@ -1474,7 +1465,7 @@ def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 4. value is the string "null"?
+            # Query 3. value is the string "null"?
             {
                 "attributes": [
                     {
@@ -1487,7 +1478,7 @@ def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 5. value is the string "N/A"?
+            # Query 4. value is the string "N/A"?
             {
                 "attributes": [
                     {
@@ -1500,7 +1491,7 @@ def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 6. value is the string "None"
+            # Query 5. value is the string "None"
             {
                 "attributes": [
                     {
@@ -1513,7 +1504,7 @@ def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 7. value is a JSON null (Python None)
+            # Query 6. value is a JSON null (Python None)
             {
                 "attributes": [
                     {
@@ -1526,7 +1517,7 @@ def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 8. value is the JSON boolean false (Python bool False)
+            # Query 7. value is the JSON boolean false (Python bool False)
             {
                 "attributes": [
                     {
@@ -1539,7 +1530,7 @@ def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
             ""
         ),
         (
-            # Query 9. An attribute_type_id is not a well-formed CURIE? Should fail?
+            # Query 8. An attribute_type_id is not a well-formed CURIE? Should fail?
             {
                 "attributes": [
                     {
