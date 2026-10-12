@@ -1609,6 +1609,11 @@ def qualifier_validator(
         }
     ]
     mock_edge["object"] = "mock_object"
+    if edge_model == "Edge":
+        # Mandatory TRAPI 2.0 Edge (not QEdge) slots!
+        mock_edge["knowledge_level"] = "prediction"
+        mock_edge["agent_type"] = "automated_agent"
+
     validator.is_valid_trapi_query(mock_edge, edge_model)
     # TODO: not sure if simple errors should be fully displaced
     #       by 'critical' errors or rather, just complement them
