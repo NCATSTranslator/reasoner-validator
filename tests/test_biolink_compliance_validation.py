@@ -1578,8 +1578,7 @@ def qualifier_validator(
         biolink_version: str | None = LATEST_BIOLINK_MODEL_VERSION,
         **kwargs
 ):
-    # TODO: to review: which of the validation tests that
-    #       may be overridden by earlier TRAPI validation
+    # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     validator = BiolinkValidator(
         trapi_version=trapi_version,
         biolink_version=biolink_version
@@ -1997,16 +1996,16 @@ def test_validate_biolink_curie_in_qualifier_constraints():
 @pytest.mark.parametrize(
     "edge,validation_code,associations",
     [
-        (  # Query 0 - no 'qualifiers' key - since nullable: true, this should pass
+        (  # Query 0 - no 'qualifiers' key - since the field is not 'required', this should pass
             {},
             "",
             None
         ),
-        (  # Query 1 - 'qualifiers' value is nullable: true, this should pass
+        (  # Query 1 - since the 'qualifiers' slot is by default "nullable: false" - invalidated by TRAPI schema
             {
                 'qualifiers': None
             },
-            "",
+            "critical.trapi.validation",
             None
         ),
         (  # Query 2 - 'qualifiers' value is not an array - invalidated by TRAPI schema
@@ -2016,11 +2015,11 @@ def test_validate_biolink_curie_in_qualifier_constraints():
             "critical.trapi.validation",
             None
         ),
-        (  # Query 3 - empty 'qualifiers' array value - since nullable: true, this should pass
+        (  # Query 3 - empty 'qualifiers' array value - since minItems: 1 - invalidated by TRAPI schema
             {
                 'qualifiers': []
             },
-            "",
+            "critical.trapi.validation",
             None
         ),
         (  # Query 4 - empty 'qualifier_set' entry - invalidated by TRAPI schema
@@ -2061,7 +2060,7 @@ def test_validate_biolink_curie_in_qualifier_constraints():
             "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown",
             None
         ),
-        (  # Query 8 - 'qualifier_type_id' property value is valid but abstract
+        (  # Query 8 - 'qualifier_type_id' property value is valid but abstract; valid values still resolve
             {
                 'qualifiers': [
                     {
@@ -2070,7 +2069,7 @@ def test_validate_biolink_curie_in_qualifier_constraints():
                     }
                 ]
             },
-            "warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved",
+            "",
             None
         ),
         (  # Query 9 - 'qualifier_type_id' property value is not a Biolink qualifier term
