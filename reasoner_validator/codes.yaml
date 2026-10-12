@@ -494,7 +494,7 @@ error:
               - identifier
             $description: "The value of the 'attribute_type_id' of an attribute of a Knowledge graph edge must not be empty"
           not_curie:
-            $message: "Edge has a value that is not a CURIE for attribute_type_id"
+            $message: "Edge has a value that is not a CURIE for 'attribute_type_id'"
             $context:
               - edge_id
               - identifier
@@ -538,12 +538,18 @@ error:
           $description: "Value of a 'qualifiers' property in a Knowledge Graph must not be non-empty array"
         qualifier:
           type_id:
-            unknown:
-              $message: "Edge has unknown qualifier_type_id"
+            not_curie:
+              $message: "Edge has a value that is not a CURIE for 'qualifier_type_id'"
               $context:
                 - edge_id
                 - identifier
-              $description: "A qualifier qualifier_type_id must be defined in the specified version of Biolink"
+              $description: "The 'attribute_type_id' of a Knowledge graph edge qualifier must be a controlled vocabulary term specified by a CURIE"
+            unknown:
+              $message: "Edge has unknown 'qualifier_type_id'"
+              $context:
+                - edge_id
+                - identifier
+              $description: "A qualifier 'qualifier_type_id' must be defined in the specified version of Biolink"
           value:
             not_a_predicate:
               $message: "Qualifier_type_id 'biolink:qualified_predicate' for edge has a qualifier_value which is not a Biolink predicate"

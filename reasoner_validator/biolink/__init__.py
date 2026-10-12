@@ -151,6 +151,15 @@ class BMTWrapper:
         if self.biolink_version != "suppress":
             self.bmt = get_biolink_model_toolkit(biolink_version=version)
 
+    def validate_biolink(self) -> bool:
+        """
+        Predicate to check if the Biolink (version) is
+        tagged to 'suppress' compliance validation.
+
+        :return: bool, returns 'True' if Biolink Validation is expected.
+        """
+        return self.biolink_version is not None and self.biolink_version.lower() != "suppress"
+
     def get_bmt(self) -> Toolkit:
         assert self.bmt is not None
         return self.bmt
@@ -258,7 +267,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
         :return: bool, returns 'True' if Biolink Validation is expected.
         """
-        return self.biolink_version is not None and self.biolink_version.lower() != "suppress"
+        return BMTWrapper.validate_biolink(self)
 
     def minimum_required_biolink_version(self, version: str) -> bool:
         """
@@ -646,6 +655,10 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param value: Optional[str], the value to be validated
         :return: bool, True if valid slot and value (validation messages recorded in the BiolinkValidator)
         """
+        if not self.validate_biolink():
+            # Suppressed Biolink Model validation => don't trigger any errors(?)
+            return True
+
         if found:
             # The slot was already encountered in this element,
             # hence report the duplication with its value?
@@ -962,7 +975,13 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             qualifier_type_id: str = qualifier['qualifier_type_id']
             qualifier_value: str = qualifier['qualifier_value']
             try:
-                if not self.get_bmt().is_qualifier(name=str(qualifier_type_id)):
+                if not qualifier_type_id.startswith("biolink:"):
+                    self.report(
+                        code="error.knowledge_graph.edge.qualifiers.qualifier.type_id.not_curie",
+                        identifier=qualifier_type_id,
+                        edge_id=edge_id
+                    )
+                if not self.get_bmt().is_qualifier(name=qualifier_type_id):
                     self.report(
                         code=f"error.{context}.qualifier.type_id.unknown",
                         identifier=str(qualifier_type_id),
@@ -1277,12 +1296,6 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 found_primary_knowledge_source
             )
 
-    # TODO: 11-Sept-2023: Certain specific 'mixin' predicates used in
-    #       Knowledge or Query Graphs are being validated for now
-    #       as 'warnings', for short term validation purposes
-    #       (see reasoner-validator issue #97)
-    PREDICATE_INCLUSIONS = ["biolink:interacts_with", 'biolink:treats']
-
     def validate_predicate(
             self,
             edge_id: str,
@@ -1299,43 +1312,38 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
         :return: None (validation communicated via class instance of method)
         """
-        # PREDICATE_INCLUSIONS provides for selective override
-        # particular predicates validation prior to Biolink 4.2.1
-        if self.minimum_required_biolink_version("4.2.1") or \
-                predicate not in self.PREDICATE_INCLUSIONS:
+        graph_type_context: str = graph_type.name.lower()
+        if graph_type_context != "input_edge":
+            graph_type_context += ".edge"
+        context: str = f"{graph_type_context}.predicate"
 
-            graph_type_context: str = graph_type.name.lower()
-            if graph_type_context != "input_edge":
-                graph_type_context += ".edge"
-            context: str = f"{graph_type_context}.predicate"
+        # Validate the putative predicate as
+        # *not* being abstract, deprecated or
+        # a mixin (for Biolink Model release >= 4.2.1?)
+        biolink_class = self.validate_element_status(
+            graph_type=graph_type,
+            context=context,
+            identifier=predicate,
+            edge_id=edge_id,
 
-            # Validate the putative predicate as
-            # *not* being abstract, deprecated or
-            # a mixin (for Biolink Model release >= 4.2.1?)
-            biolink_class = self.validate_element_status(
-                graph_type=graph_type,
-                context=context,
-                identifier=predicate,
-                edge_id=edge_id,
-
-                # validation of 'predicates' can ignore the graph type
-                # unless strict validation is globally overridden
-                ignore_graph_type=True
-            )
-            if biolink_class:
-                if not self.get_bmt().is_predicate(predicate):
-                    self.report(
-                        code=f"error.{context}.invalid",
-                        identifier=predicate,
-                        edge_id=edge_id
-                    )
-                elif self.minimum_required_biolink_version("2.2.0") and \
-                        not self.get_bmt().is_translator_canonical_predicate(predicate):
-                    self.report(
-                        code=f"warning.{context}.non_canonical",
-                        identifier=predicate,
-                        edge_id=edge_id
-                    )
+            # validation of 'predicates' can ignore the graph type
+            # unless strict validation is globally overridden
+            ignore_graph_type=True
+        )
+        if biolink_class:
+            if not self.get_bmt().is_predicate(predicate):
+                self.report(
+                    code=f"error.{context}.invalid",
+                    identifier=predicate,
+                    edge_id=edge_id
+                )
+            elif self.minimum_required_biolink_version("2.2.0") and \
+                    not self.get_bmt().is_translator_canonical_predicate(predicate):
+                self.report(
+                    code=f"warning.{context}.non_canonical",
+                    identifier=predicate,
+                    edge_id=edge_id
+                )
 
     def is_treats(self, predicate: Optional[str]) -> bool:
         if not predicate:

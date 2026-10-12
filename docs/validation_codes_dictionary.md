@@ -644,7 +644,7 @@
 
 ### error.knowledge_graph.edge.attribute.type_id.not_curie
 
-**Message:** Edge has a value that is not a CURIE for attribute_type_id
+**Message:** Edge has a value that is not a CURIE for 'attribute_type_id'
 
 **Context:** edge_id, identifier
 
@@ -698,13 +698,21 @@
 
 **Description:** Value of a 'qualifiers' property in a Knowledge Graph must not be non-empty array
 
-### error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown
+### error.knowledge_graph.edge.qualifiers.qualifier.type_id.not_curie
 
-**Message:** Edge has unknown qualifier_type_id
+**Message:** Edge has a value that is not a CURIE for 'qualifier_type_id'
 
 **Context:** edge_id, identifier
 
-**Description:** A qualifier qualifier_type_id must be defined in the specified version of Biolink
+**Description:** The 'attribute_type_id' of a Knowledge graph edge qualifier must be a controlled vocabulary term specified by a CURIE
+
+### error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown
+
+**Message:** Edge has unknown 'qualifier_type_id'
+
+**Context:** edge_id, identifier
+
+**Description:** A qualifier 'qualifier_type_id' must be defined in the specified version of Biolink
 
 ### error.knowledge_graph.edge.qualifiers.qualifier.value.not_a_predicate
 
