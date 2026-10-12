@@ -17,8 +17,7 @@ from reasoner_validator.validator import TRAPIResponseValidator
 from tests import (
     LATEST_TRAPI_RELEASE,
     LATEST_BIOLINK_MODEL_VERSION,
-    SAMPLE_NODES_WITH_ATTRIBUTES,
-    DEFAULT_KL_AND_AT_ATTRIBUTES
+    SAMPLE_NODES_WITH_ATTRIBUTES
 )
 from tests.test_validation_report import check_messages
 
@@ -197,8 +196,8 @@ _SHARED_TEST_EDGES = {
            "subject": "NCBIGene:29974",
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
-           "attributes": DEFAULT_KL_AND_AT_ATTRIBUTES,
-
+           "knowledge_level": "logical_entailment",
+           "agent_type": "manual_agent"
         }
     }
 
@@ -245,7 +244,9 @@ _TEST_EDGES_SOURCES_MISSING_PRIMARY = {
            "subject": "NCBIGene:29974",
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
-           "sources": _TEST_KG_EDGE_SOURCES_MISSING_PRIMARY
+           "sources": _TEST_KG_EDGE_SOURCES_MISSING_PRIMARY,
+           "knowledge_level": "logical_entailment",
+           "agent_type": "manual_agent"
         }
     }
 
@@ -294,6 +295,8 @@ _TEST_EDGES_3 = {
            "predicate": "biolink:contributor",
            "object": "ORCID:0000-0002-4447-5978",
            "attributes": [],
+           "knowledge_level": "logical_entailment",
+           "agent_type": "manual_agent"
         }
     }
 
@@ -336,6 +339,8 @@ _TEST_EDGES_MULTIPLE_PRIMARY_KS = {
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
            "attributes": [],
+           "knowledge_level": "logical_entailment",
+           "agent_type": "manual_agent"
         }
     }
 
@@ -377,7 +382,9 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
                     "subject": METFORMIN_CURIE,
                     "predicate": "biolink:ameliorates_condition",
                     "object": TYPE_2_DIABETES_CURIE,
-                    "sources": _TEST_KG_EDGE_SOURCES
+                    "sources": _TEST_KG_EDGE_SOURCES,
+                    "knowledge_level": "logical_entailment",
+                    "agent_type": "manual_agent"
                 }
             }
         },
@@ -467,7 +474,9 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
                     "subject": TYPE_2_DIABETES_CURIE,
                     "predicate": "biolink:treated_by",
                     "object": METFORMIN_CURIE,
-                    "sources": _TEST_KG_EDGE_SOURCES
+                    "sources": _TEST_KG_EDGE_SOURCES,
+                   "knowledge_level": "logical_entailment",
+                   "agent_type": "manual_agent"
                 }
             }
         },
@@ -531,7 +540,9 @@ for subject_id in SAMPLE_NODES:
             SAMPLE_EDGES[f"e{subject_id}{object_id}"] = {
                 "subject": subject_id,
                 "predicate": "biolink:related_to",
-                "object": object_id
+                "object": object_id,
+               "knowledge_level": "logical_entailment",
+               "agent_type": "manual_agent"
             }
 
 TEST_GRAPH: Dict = {
@@ -2215,7 +2226,9 @@ SAMPLE_TEST_EDGES = {
     "df879999": {
         "subject": TYPE_2_DIABETES_CURIE,
         "predicate": "biolink:treated_by",
-        "object": METFORMIN_CURIE
+        "object": METFORMIN_CURIE,
+        "knowledge_level": "logical_entailment",
+        "agent_type": "manual_agent"
     }
 }
 SAMPLE_TEST_GRAPH = {
