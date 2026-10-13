@@ -3372,8 +3372,8 @@ def test_validate_agent_type(value: str, code: str):
             },
             "warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix"
         ),
-        (   # Query 33: An earlier Biolink Model won't recognize a category not found in its specified release
-            "1.8.2",
+        (   # Query 33: A Biolink Model won't recognize a category not found in its specified release
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 # Sample nodes
                 'nodes': {
@@ -3385,7 +3385,7 @@ def test_validate_agent_type(value: str, code: str):
                     "PUBCHEM.COMPOUND:597": {
                         "name": "cytosine",
                         "categories": [
-                            "biolink:SmallMolecule"   # Not valid in the latest model?
+                            "biolink:UnknownCategory"
                         ],
                         "description": "Cytosine nucleotide"
                     }

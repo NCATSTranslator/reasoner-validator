@@ -196,6 +196,7 @@ _SHARED_TEST_EDGES = {
            "subject": "NCBIGene:29974",
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
+           "sources": list(),
            "knowledge_level": "logical_entailment",
            "agent_type": "manual_agent"
         }
@@ -350,7 +351,6 @@ _TEST_KG_MULTIPLE_PRIMARY_KS = {
     "edges": _TEST_EDGES_MULTIPLE_PRIMARY_KS
 }
 
-# From Implementation Guidelines circa June 2023
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
     "schema_version": "2.0.0",
     "message": {
@@ -475,8 +475,8 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
                     "predicate": "biolink:treated_by",
                     "object": METFORMIN_CURIE,
                     "sources": _TEST_KG_EDGE_SOURCES,
-                   "knowledge_level": "logical_entailment",
-                   "agent_type": "manual_agent"
+                    "knowledge_level": "logical_entailment",
+                    "agent_type": "manual_agent"
                 }
             }
         },
@@ -588,6 +588,8 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
     assert len(kg_sample["nodes"]) == number_of_nodes_returned
     assert len(kg_sample["edges"]) == number_of_edges_returned
 
+_TEST_NONCANONICAL_PREDICATE = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION)
+_TEST_NONCANONICAL_PREDICATE["message"]["knowledge_graph"]["edges"]["df87ff82"]["predicate"] = "biolink:narrow_match"
 
 @pytest.mark.parametrize(
     "response,trapi_version,biolink_version,target_provenance,strict_validation,code",
@@ -1123,14 +1125,12 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
         #     True,
         #     "critical.trapi.validation"   # trying to validate a 1.5.0 schema against 1.4.2 will fail!
         # ),
-        (   # Query 27 - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
-            #            guidelines...) but explicitly specify the 'biolink_version == 2.5.8' just for fun and profit
-            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION,
+        (   # Query 27: Non-canonical predicate
+            _TEST_NONCANONICAL_PREDICATE,
             LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
-            # Validation with 2.4.8 generates a warning
             "warning.knowledge_graph.edge.predicate.non_canonical"
         )
     ]
@@ -1158,37 +1158,6 @@ def test_check_post_trapi_2_0_biolink_model_compliance_of_trapi_response(
     validator.check_compliance_of_trapi_response(response=response)
     check_messages(validator, code, no_errors=True)
 
-@pytest.mark.parametrize(
-    "response,trapi_version,biolink_version,target_provenance,strict_validation,code",
-    [
-        (   # Query 27 - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
-            #            guidelines...) but explicitly specify the 'biolink_version == 2.5.8' just for fun and profit
-            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION,
-            LATEST_TRAPI_RELEASE,
-            None,
-            None,
-            True,
-            # Validation with 2.4.8 generates a warning
-            "warning.knowledge_graph.edge.predicate.non_canonical"
-        )
-    ]
-)
-def test_check_biolink_model_compliance_of_trapi_response(
-        response: Dict,
-        trapi_version: str,
-        biolink_version: str,
-        target_provenance: Dict,
-        strict_validation: bool,
-        code
-):
-    validator: TRAPIResponseValidator = TRAPIResponseValidator(
-        trapi_version=trapi_version,
-        biolink_version=biolink_version,
-        strict_validation=strict_validation,
-        target_provenance=target_provenance
-    )
-    validator.check_compliance_of_trapi_response(response=response)
-    check_messages(validator, code, no_errors=True)
 
 def test_compliance_in_isolation(
         # response: Dict,
@@ -1229,11 +1198,9 @@ def test_compliance_in_isolation(
 @pytest.mark.parametrize(
     "response,trapi_version,biolink_version,sources,strict_validation,code",
     [
-        (   # Query 0 - Completely empty Response.Message
+        (   # Query 0 - Completely empty Response.Message; allowed because no message fields are 'required: true'?
             {
-                "message": {
-
-                }
+                "message": {}
             },
             LATEST_TRAPI_RELEASE,
             None,
