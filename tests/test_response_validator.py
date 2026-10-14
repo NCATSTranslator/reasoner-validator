@@ -216,7 +216,7 @@ _TEST_ANALYSES = [
         "edge_bindings": {
             "treats": {"ids": ["df87ff82"]}
         },
-        "support_graphs": [],
+        "support_graphs": ["a0"],
         "score": 0.7
     }
 ]
@@ -390,35 +390,18 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
         },
         "auxiliary_graphs": {
             "a0": {
-                "edges": [
-                    "e02",
-                    "e12"
-                ]
-            },
-            "a1": {
-                "edges": [
-                    "extra_edge0"
-                ]
-            },
-            "a2": {
-                "edges": [
-                    "extra_edge1"
-                ]
+                "edges": ["df87ff82"]
             }
         },
         "results": [
             {
                 "node_bindings": {
-                    "type-2 diabetes": [
-                        {
+                    "type-2 diabetes": {
                             "ids": [TYPE_2_DIABETES_CURIE]
-                        }
-                    ],
-                    "drug": [
-                        {
+                    },
+                    "drug": {
                             "ids": [METFORMIN_CURIE]
-                        }
-                    ]
+                    }
                 },
                 "analyses": _TEST_ANALYSES
             }
@@ -1300,8 +1283,7 @@ def test_compliance_in_isolation(
             ""
         ),
         (
-            # Query 7 - Full fake sample Response originally derived
-            #           from the TRAPI 1.4.0 implementation guidelines
+            # Query 7 - Full fake sample Response
             _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE,
             LATEST_TRAPI_RELEASE,
             None,
@@ -1310,10 +1292,8 @@ def test_compliance_in_isolation(
             ""  # would be a "critical.trapi.validation" if the schema was unpatched
         ),
         (
-            # Query 8 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
+            # Query 8 - Sample Response without auxiliary_graph
             _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
-            # 25 June 2023 1.4.0 trapi_version with a
-            # defective auxiliary_graphs schema model
             LATEST_TRAPI_RELEASE,
             None,
             None,
