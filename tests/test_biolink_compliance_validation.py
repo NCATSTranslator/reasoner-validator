@@ -772,7 +772,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: dict):
                     }
                 }
             },
-            ""  # Predicates slot can be null... This should pass without errors?
+            ""  # Predicates slot is not required in QueryGraphs... This should pass without errors?
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -1155,7 +1155,7 @@ def test_check_biolink_model_default_compliance_of_query_graph(
     "biolink_version,query_graph,validation_code",
     [
         (
-            "4.2.0",  # LATEST_BIOLINK_MODEL_VERSION,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 0: Query edge predicate is a mixin - non-strict validation
             {
                 "nodes": {

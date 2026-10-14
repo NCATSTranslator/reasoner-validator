@@ -579,8 +579,8 @@ class TRAPIResponseValidator(BiolinkValidator):
         # hence, we deem the node effectively missing.
         return None
 
+    @staticmethod
     def validate_binding(
-            self,
             target_id: str,
             node_binding_details: dict
     ) -> bool:
@@ -940,6 +940,8 @@ class TRAPIResponseValidator(BiolinkValidator):
         )
         return None
 
+    # TODO: TRAPI 'testcase' validation seems mildly deprecated,
+    #       but its continued relevance needs further review
     def testcase_input_found_in_response(
             self,
             testcase: dict,

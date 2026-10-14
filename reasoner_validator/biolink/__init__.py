@@ -1364,13 +1364,12 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         predicate: str = ""
         if graph_type is TRAPIGraphType.Knowledge_Graph:
             predicate = edge['predicate'] if 'predicate' in edge else ""
-            edge_label = str(predicate)
             predicates = [predicate] if predicate else []
         else:
             # Query Graph...
             predicates = edge['predicates'] if 'predicates' in edge else []
-            edge_label = str(predicates) if predicates else ""
 
+        edge_label = str(predicates) if predicates else ""
         object_id = edge['object'] if 'object' in edge else ""
 
         min_edge_id = f"{str(subject_id)}--{str(edge_label)}->{str(object_id)}"
@@ -1382,14 +1381,12 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 code=f"error.{context}.edge.subject.missing",
                 identifier=min_edge_id
             )
-            return
 
-        if not edge_label:
+        if graph_type is TRAPIGraphType.Knowledge_Graph and not predicates:
             self.report(
                 code=f"error.{context}.edge.predicate.missing",
                 identifier=min_edge_id
             )
-            return
 
         if object_id:
             object_categories: list[str] | None = self.get_node_categories(node_id=object_id)
@@ -1398,6 +1395,8 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 code=f"error.{context}.edge.object.missing",
                 identifier=min_edge_id
             )
+
+        if self.has_errors():
             return
 
         full_edge_id = f"{str(subject_id)}[{'|'.join(subject_categories) if subject_categories else 'None'}]" +\
@@ -1475,21 +1474,26 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     code="error.query_graph.edge.predicate.not_array",
                     identifier=full_edge_id
                 )
-            elif len(predicates) == 0:
-                self.report(
-                    code="error.query_graph.edge.predicate.empty_array",
-                    identifier=full_edge_id
-                )
-            elif self.validate_biolink():
-                # Should now be a non-empty list of CURIES which should validate as Biolink Predicates
-                for predicate in predicates:
-                    if not predicate:
-                        continue  # sanity check
-                    self.validate_predicate(
-                        edge_id=full_edge_id,
-                        predicate=predicate,
-                        graph_type=graph_type
+            elif 'predicates' in edge:
+                # A QueryGraph edge doesn't require predicates
+                # but if the property is present,
+                # it must be a non-empty array with valid instances
+                if len(predicates) == 0:
+                    self.report(
+                        code="error.query_graph.edge.predicate.empty_array",
+                        identifier=full_edge_id
                     )
+                elif self.validate_biolink():
+                    # Should now be a non-empty list of CURIES
+                    # which should validate as Biolink Predicates
+                    for predicate in predicates:
+                        if not predicate:
+                            continue  # sanity check
+                        self.validate_predicate(
+                            edge_id=full_edge_id,
+                            predicate=predicate,
+                            graph_type=graph_type
+                        )
 
         # Validate Object Node
         if object_id not in self.get_node_identifiers():
