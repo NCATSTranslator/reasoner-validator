@@ -581,74 +581,20 @@ class TRAPIResponseValidator(BiolinkValidator):
 
     def validate_binding(
             self,
-            q_node_entry: dict,
             target_id: str,
-            target_query_id: str | None,
             node_binding_details: dict
     ) -> bool:
         """
-        Validate that a specified target_id has a valid node_binding in specified node binding details.
+        Validate that a specified 'target_id' has a valid match to an identifier in the 'node binding details'.
 
-        :param q_node_entry: dict, query node data currently being searched
         :param target_id: str, target knowledge graph node identifier to be matched to node binding
-        :param target_query_id: str | None, query identifier related to the target identifier,
-                                               if not identical to the target_id
         :param node_binding_details: dict, data relating to a given node_binding of query to knowledge graph identifier
+
         :return: bool, True if a valid node binding was found
         """
-        #
-        # Example of node_bindings *without* and *with* a 'query_id':
-        #
-        # "node_bindings": {
-        #     "n0": [
-        #         {
-        #             "attributes": [],
-        #             "id": "CHEBI:16796"
-        #         }
-        #     ],
-        #     "n1": [
-        #         {
-        #             "attributes": [],
-        #             "id": "MONDO:0005258",
-        #             "query_id": "MONDO:0005260"
-        #         }
-        #     ]
-        # }
-        #
-        # In situations with a 'query_id', then the 'id' of the binding is the one
-        # associated with the knowledge graph node, while the 'query_id' is assumed to be a
-        # related identifier which was given in the query graph, but is not identical to the
-        # identifier of the knowledge graph edge node being matched. This may arise if the
-        # knowledge graph edge node identifier is an ontological subclass of the query identifier
-        # (e.g. a subtype of the MONDO disease requested in the QGraph)
-
-        # See also the TRAPI 'query_id' definition below, for other validation constraints.
-        #
-        # query_id:
-        #   oneOf:
-        #     - $ref: '#/components/schemas/CURIE'
-        #   description: >-
-        #     An optional property to provide the CURIE in the QueryGraph to
-        #     which this binding applies. If the bound QNode does not have
-        #     an 'id' property or if it is empty, then this query_id MUST be
-        #     null or absent. If the bound QNode has one or more CURIEs
-        #     as an 'id' and this NodeBinding's 'id' refers to a QNode 'id'
-        #     in a manner where the CURIEs are different (typically due to
-        #     the NodeBinding.id being a descendant of a QNode.id), then
-        #     this query_id MUST be provided. In other cases, there is no
-        #     ambiguity, and this query_id SHOULD NOT be provided.
-        #     TODO: unsure where a bound QNode is detected as 'empty'
-        if "id" in node_binding_details and node_binding_details["id"]:
-            if target_id == node_binding_details["id"]:
+        if "ids" in node_binding_details and node_binding_details["ids"]:
+            if target_id in node_binding_details["ids"]:
                 return True
-            else:
-                pass
-        else:
-            if self.minimum_required_biolink_version("1.3.0"):
-                # 'query_id'
-                if "query_id" in node_binding_details and node_binding_details["query_id"]:
-                    pass
-
         return False
 
     def testcase_node_bindings(
@@ -663,7 +609,6 @@ class TRAPIResponseValidator(BiolinkValidator):
         """
         Check if the specified subject and object identifier
         are found in the result node bindings.
-        Expected query_id's are also validated.
 
         :param query_nodes: query nodes dictionary
         :param subject_id: expected node identifier of the knowledge graph subject
@@ -673,15 +618,15 @@ class TRAPIResponseValidator(BiolinkValidator):
         :param data: the result object
         :return: bool, True if node_bindings found for specified subject and object
         """
-        # node_bindings:
-        #   type: object
-        #   description: >-
-        #     The dictionary of Input Query Graph to Result Knowledge Graph node
-        #     bindings where the dictionary keys are the key identifiers of the
-        #     Query Graph nodes and the associated values of those keys are
-        #     instances of NodeBinding schema type. This value is an
-        #     array of NodeBindings since a given query node may have multiple
-        #     knowledge graph Node bindings in the result.
+        #     NodeBinding:
+        #       type: object
+        #       description: >-
+        #         A NodeBinding object defines all relevant KnowledgeGraph Node mappings,
+        #         identified by the corresponding object key identifier(s) of the
+        #         Node(s) within the Knowledge Graph. Instances of NodeBinding may
+        #         include extra annotation in the form of additional properties.
+        #         (such annotation is not yet fully standardized). Each Node
+        #         Binding must bind directly to node in the original Query Graph.
         #
         node_bindings: dict = data["node_bindings"]
         subject_id_found: bool = False
@@ -697,14 +642,12 @@ class TRAPIResponseValidator(BiolinkValidator):
                 )
                 continue
 
-            q_node_entry: dict = query_nodes[q_node_id]
-
             entry: dict
             for entry in node_bindings:
                 # The subject and object id's will match separately...
-                if self.validate_binding(q_node_entry, subject_id, subject_query_id, entry):
+                if self.validate_binding(subject_id, entry):
                     subject_id_found = True
-                if self.validate_binding(q_node_entry, object_id, object_query_id, entry):
+                if self.validate_binding(object_id, entry):
                     object_id_found = True
 
                 # ... but we need both to match, to succeed
@@ -721,10 +664,12 @@ class TRAPIResponseValidator(BiolinkValidator):
     def testcase_edge_bindings(query_edges: dict, target_edge_id: str, data: dict) -> bool:
         """
         Check if target query edge id and knowledge graph edge id are in specified edge_bindings.
-        :param query_edges: list[str], expected query edge identifiers in a matching result
-        :param target_edge_id:  str, expected knowledge edge identifier in a matching result
-        :param data: TRAPI version-specific Response context from which the 'edge_bindings' may be retrieved
-        :return: True, if found
+
+        :param query_edges: list[str], expected query edge identifiers in a matching result.
+        :param target_edge_id:  str, expected knowledge edge identifier in a matching result.
+        :param data: TRAPI version-specific Response context from which the 'edge_bindings' may be retrieved.
+
+        :return: True, if all found
         """
         # Sanity check (maybe unnecessary?)
         if "edge_bindings" not in data:
@@ -733,14 +678,13 @@ class TRAPIResponseValidator(BiolinkValidator):
         query_edge_ids = list(query_edges.keys())
 
         edge_bindings: dict = data["edge_bindings"]
-        for bound_query_id, edge in edge_bindings.items():
-            if bound_query_id in query_edge_ids:
-                for binding_details in edge:
-                    # TRAPI schema validation likely actually
-                    # catches missing id's, but sanity check...
-                    if "id" in binding_details:
-                        if target_edge_id == binding_details["id"]:
-                            return True
+        for bound_query_graph_edge_id, edge_binding_details in edge_bindings.items():
+            if bound_query_graph_edge_id in query_edge_ids:
+                if target_edge_id in edge_binding_details["ids"]:
+                    return True
+
+        # failure if a search of all edge_bindings
+        # doesn't match the 'target_edge_id'
         return False
 
     def testcase_result_found(

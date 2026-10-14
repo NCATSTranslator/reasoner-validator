@@ -1585,7 +1585,7 @@ SAMPLE_TEST_CASE = {
 SAMPLE_QUERY_GRAPH = {
     "nodes": {
         "diabetes mellitus": {
-            "ids": ["MONDO:0005015"]  # generic 'diabetes mellitus' MONDO term
+            "ids": [TYPE_2_DIABETES_CURIE]
         },
         "drug": {
             "categories": ["biolink:Drug"]
@@ -1639,7 +1639,9 @@ SAMPLE_TEST_RESULTS = [
                 "edge_bindings": {
                     "treated_by": {"ids": ["df879999"]}
                 },
-                "support_graphs": [],
+                # actually not required, since cannot be empty
+                # but no auxiliary_graphs are in the message
+                # "support_graphs": [],
                 "score": 0.7
             }
         ]
