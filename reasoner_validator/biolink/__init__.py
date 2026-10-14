@@ -107,7 +107,7 @@ def get_biolink_schema(biolink_version: str | None = None) -> SchemaView:
             return schema_view
 
 
-def get_current_biolink_version(biolink_version: str | None = None) -> str:
+def get_current_biolink_version(biolink_version: str | None = None) -> str | None:
     return get_biolink_schema(biolink_version).schema.version
 
 
@@ -593,7 +593,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             self,
             edge_id: str,
             target_ara_source: str | None, found_target_ara_knowledge_source: bool,
-            target_kp_source: str | None, target_found_kp_knowledge_source: bool, target_kp_source_type: str,
+            target_kp_source: str | None, target_found_kp_knowledge_source: bool, target_kp_source_type: str | None,
             found_primary_knowledge_source: list[str]
     ):
         """
@@ -605,7 +605,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param found_target_ara_knowledge_source: bool, True if the target ARA infores knowledge source was found
         :param target_kp_source: str | None, user-specified target KP infores
         :param target_found_kp_knowledge_source:  bool, True if the target KP infores knowledge source was found
-        :param target_kp_source_type:  str, user-specified target KP knowledge source type (i.e. primary, aggregate, etc.)
+        :param target_kp_source_type:  str | None, user-specified target KP knowledge source type (i.e. primary, aggregate, etc.)
         :param found_primary_knowledge_source: list[str], list of all infores discovered tagged as 'primary'
         :return:
         """
@@ -1357,57 +1357,64 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param edge: dict[str, str], dictionary of the edge slot properties.
         :param graph_type: TRAPIGraphType, component type of TRAPI being validated
         """
-        # logger.debug(edge)
-        # edge data fields to be validated...
-        if 'subject' in edge:
-            subject_id = edge['subject']
-            subject_categories: list[str] | None = self.get_node_categories(node_id=subject_id)
-        else:
-            subject_id = None
-            subject_categories = None
+        context: str = graph_type.name.lower()
 
-        predicates: list[str] | None
-        predicate: str | None = None
+        subject_id = edge['subject'] if 'subject' in edge else ""
+
+        predicate: str = ""
         if graph_type is TRAPIGraphType.Knowledge_Graph:
-            predicate = edge['predicate'] if 'predicate' in edge else None
-            edge_label = predicate
+            predicate = edge['predicate'] if 'predicate' in edge else ""
+            edge_label = str(predicate)
             predicates = [predicate] if predicate else []
         else:
             # Query Graph...
-            predicates = edge['predicates'] if 'predicates' in edge else None
+            predicates = edge['predicates'] if 'predicates' in edge else []
             edge_label = str(predicates) if predicates else ""
 
-        if 'object' in edge:
-            object_id = edge['object']
+        object_id = edge['object'] if 'object' in edge else ""
+
+        min_edge_id = f"{str(subject_id)}--{str(edge_label)}->{str(object_id)}"
+
+        if subject_id:
+            subject_categories: list[str] | None = self.get_node_categories(node_id=subject_id)
+        else:
+            self.report(
+                code=f"error.{context}.edge.subject.missing",
+                identifier=min_edge_id
+            )
+            return
+
+        if not edge_label:
+            self.report(
+                code=f"error.{context}.edge.predicate.missing",
+                identifier=min_edge_id
+            )
+            return
+
+        if object_id:
             object_categories: list[str] | None = self.get_node_categories(node_id=object_id)
         else:
-            object_id = None
-            object_categories = None
+            self.report(
+                code=f"error.{context}.edge.object.missing",
+                identifier=min_edge_id
+            )
+            return
 
-        edge_id = f"{str(subject_id)}[{'|'.join(subject_categories) if subject_categories else 'None'}]" +\
+        full_edge_id = f"{str(subject_id)}[{'|'.join(subject_categories) if subject_categories else 'None'}]" +\
                   f"--{edge_label}->" +\
                   f"{str(object_id)}[{'|'.join(object_categories) if object_categories else 'None'}]"
 
-        context: str = graph_type.name.lower()
-
-        # TODO: review this older provenance tracking policy (and reasoner-validator code implications)
-        # 7 July 2023: since edge provenance annotation is somewhat
-        # orthogonal to the contents of the edge itself, we move the
-        # attribute validation ahead of Edge semantic validation,
-        # which allows us to capture the Edge provenance audit trail
-        # for reasoner-validator issue#86 - edge sources reporting.
-        #
         # Validate edge attributes (or attribute_constraints)
         # and (Biolink) edge qualifiers (or qualifier_constraints)
         if graph_type is TRAPIGraphType.Knowledge_Graph:
 
             # Edge provenance "sources" field is validated by 'validate_sources'...
-            self.validate_sources(edge_id=edge_id, edge=edge)
+            self.validate_sources(edge_id=full_edge_id, edge=edge)
 
             # ...then attributes are validated and reported
             self.validate_attributes(
                 graph_type=graph_type,
-                edge_id=edge_id,
+                edge_id=full_edge_id,
                 edge=edge
             )
 
@@ -1425,50 +1432,36 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 )
 
             self.validate_qualifiers(
-                edge_id=edge_id,
+                edge_id=full_edge_id,
                 edge=edge,
                 associations=associations
             )
             # We assume that the case of missing 'knowledge_level' or 'agent_type' slots
             # was already detected by TRAPI schema validation and here, we just validate their values
-            self.validate_knowledge_level(edge_id=edge_id,value=edge['knowledge_level'])
-            self.validate_agent_type(edge_id=edge_id,value=edge['agent_type'])
+            self.validate_knowledge_level(edge_id=full_edge_id,value=edge['knowledge_level'])
+            self.validate_agent_type(edge_id=full_edge_id,value=edge['agent_type'])
 
         else:
             # NOT Knowledge Graph edge validation
-            self.validate_attribute_constraints(edge_id=edge_id, edge=edge)
-            self.validate_qualifier_constraints(edge_id=edge_id, edge=edge)
+            self.validate_attribute_constraints(edge_id=full_edge_id, edge=edge)
+            self.validate_qualifier_constraints(edge_id=full_edge_id, edge=edge)
 
         # Validate Subject node
-        if not subject_id:
-            # This message may no longer be triggered
-            # for TRAPI release >= 1.4-beta since the
-            # schema deems the Edge.subject 'nullable: false'
-            self.report(
-                code=f"error.{context}.edge.subject.missing",
-                identifier=edge_id
-            )
-
-        elif subject_id not in self.get_node_identifiers():
+        if subject_id not in self.get_node_identifiers():
             self.report(
                 code=f"error.{context}.edge.subject.missing_from_nodes",
                 identifier=subject_id,
-                edge_id=edge_id
+                edge_id=full_edge_id
             )
         else:
             self.count_node(node_id=subject_id)
 
         # Validate Predicates
         if graph_type is TRAPIGraphType.Knowledge_Graph:
-            if not predicate:
-                self.report(
-                    code="error.knowledge_graph.edge.predicate.missing",
-                    context=graph_type.value,
-                    identifier=edge_id
-                )
-            elif self.validate_biolink():
+
+            if self.validate_biolink():
                 self.validate_predicate(
-                    edge_id=edge_id,
+                    edge_id=full_edge_id,
                     predicate=predicate,
                     graph_type=graph_type
                 )
@@ -1480,39 +1473,30 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             elif not isinstance(predicates, list):
                 self.report(
                     code="error.query_graph.edge.predicate.not_array",
-                    identifier=edge_id
+                    identifier=full_edge_id
                 )
             elif len(predicates) == 0:
                 self.report(
                     code="error.query_graph.edge.predicate.empty_array",
-                    identifier=edge_id
+                    identifier=full_edge_id
                 )
             elif self.validate_biolink():
-                # Should now be a non-empty list of CURIES
-                # which should validate as Biolink Predicates
+                # Should now be a non-empty list of CURIES which should validate as Biolink Predicates
                 for predicate in predicates:
                     if not predicate:
                         continue  # sanity check
                     self.validate_predicate(
-                        edge_id=edge_id,
+                        edge_id=full_edge_id,
                         predicate=predicate,
                         graph_type=graph_type
                     )
 
         # Validate Object Node
-        if not object_id:
-            # This message may no longer be triggered
-            # for TRAPI release >= 1.4-beta since the
-            # schema deems the Edge.object 'nullable: false'
-            self.report(
-                code=f"error.{context}.edge.object.missing",
-                identifier=edge_id
-            )
-        elif object_id not in self.get_node_identifiers():
+        if object_id not in self.get_node_identifiers():
             self.report(
                 code=f"error.{context}.edge.object.missing_from_nodes",
                 identifier=object_id,
-                edge_id=edge_id
+                edge_id=full_edge_id
             )
         else:
             self.count_node(node_id=object_id)
