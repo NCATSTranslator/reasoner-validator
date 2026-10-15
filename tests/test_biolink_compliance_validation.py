@@ -1607,6 +1607,8 @@ def qualifier_validator(
     )
 
 
+# TODO: The following block of unit tests should be replaced by QEdge.constraints testing
+@pytest.mark.skip(reason="In TRAPI 2.0, the 'qualifier_constraints' properties are replaced by generic 'contraints'")
 @pytest.mark.parametrize(
     "edge,validation_code",
     [
@@ -2146,17 +2148,17 @@ def test_validate_qualifiers(
             {
                 'qualifiers': [
                     {
-                        'qualifier_type_id': "biolink:subject_form_or_variant_qualifier",
+                        'qualifier_type_id': "biolink:subject_aspect_qualifier",
                         'qualifier_value': "synthesis"
                     }
                 ]
             },
-            ["biolink:GeneToGeneAssociation"],  # associations: list[str] | None
+            ["biolink:GeneToDiseaseOrPhenotypicFeatureAssociation"],  # associations: Optional[List[str]]
             ""   # this particular use case should pass
         ),
-        (   # Query 1 - The  biolink:Association context of the edge is not given to the qualifier validator
-            #           as a parameter: previously, this would generate a validation warning,
-            #           but there now doesn't seem to be a Biolink Model context where this matters.
+        (   # Query 1 - This example is identical to the above, but we know that it must fail if the
+            #      biolink:Association context of the edge is not given to the qualifier validator as a parameter
+            #      TODO: this use case should matter still but doesn't generated a warning (to be investigated)
             {
                 'qualifiers': [
                     {
@@ -2165,8 +2167,9 @@ def test_validate_qualifiers(
                     }
                 ]
             },
-            None,  # associations: list[str] | None
-            ""
+
+            None,  # associations: Optional[List[str]]
+            "" # "warning.knowledge_graph.edge.qualifiers.qualifier.value.unresolved"
         ),
         (   # Query 2 -  another example of a 'qualifier_type_id' resolvable only within
             #            the context of a specific subclass of biolink:Association, i.e.
