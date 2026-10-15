@@ -26,28 +26,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
 
 
-# Rather than duplicate TRAPI-specific variants
-# for basic TRAPI 2.0 constraints, we patch them
-def trapi_2_0_patch(response: dict):
-    if not "message" in response:
-        return
-    message = response["message"]
-    if not (
-            "knowledge_graph" in message and
-            message["knowledge_graph"] and
-            "edges" in message["knowledge_graph"]
-    ):
-        return
-    edges: dict = message["knowledge_graph"]["edges"]
-    if not edges:
-        return
-    for edge_data in edges.values():
-        # TRAPI 2.0 expects all Knowledge Graph Edges
-        # to have "knowledge_level" and "agent_type" slots
-        edge_data["knowledge_level"] = "logical_entailment"
-        edge_data["agent_type"] = "automated_agent"
-
-
 @pytest.mark.parametrize(
     "identifier,find_aliases,code",
     [
@@ -224,16 +202,8 @@ _TEST_ANALYSES = [
 _TEST_RESULTS_1 = [
     {
         "node_bindings": {
-            "type-2 diabetes": [
-                {
-                    "ids": [TYPE_2_DIABETES_CURIE]
-                }
-            ],
-            "drug": [
-                {
-                    "ids": [METFORMIN_CURIE]
-                }
-            ]
+            "type-2 diabetes": {"ids": [TYPE_2_DIABETES_CURIE]},
+            "drug": {"ids": [METFORMIN_CURIE]}
         },
         "analyses": _TEST_ANALYSES
     }
@@ -309,16 +279,8 @@ _TEST_KG_3 = {
 _TEST_RESULTS_2 = [
         {
             "node_bindings": {
-                "paper": [
-                    {
-                        "ids": ["PMID:11156626"]
-                    }
-                ],
-                "author": [
-                    {
-                        "ids": ["ORCID:0000-0002-4447-5978"]
-                    }
-                ]
+                "paper": {"ids": ["PMID:11156626"]},
+                "author": {"ids": ["ORCID:0000-0002-4447-5978"]}
             },
             "analyses": [
                 {
@@ -396,12 +358,8 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
         "results": [
             {
                 "node_bindings": {
-                    "type-2 diabetes": {
-                            "ids": [TYPE_2_DIABETES_CURIE]
-                    },
-                    "drug": {
-                            "ids": [METFORMIN_CURIE]
-                    }
+                    "type-2 diabetes": {"ids": [TYPE_2_DIABETES_CURIE]},
+                    "drug": {"ids": [METFORMIN_CURIE]}
                 },
                 "analyses": _TEST_ANALYSES
             }
@@ -484,16 +442,8 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
         "results": [
             {
                 "node_bindings": {
-                    "type-2 diabetes": [
-                        {
-                            "ids": [TYPE_2_DIABETES_CURIE]
-                        }
-                    ],
-                    "drug": [
-                        {
-                            "ids": [METFORMIN_CURIE]
-                        }
-                    ]
+                    "type-2 diabetes": {"ids": [TYPE_2_DIABETES_CURIE]},
+                    "drug": {"ids": [METFORMIN_CURIE]}
                 },
                 "analyses": [
                     {
@@ -1132,12 +1082,6 @@ def test_check_post_trapi_2_0_biolink_model_compliance_of_trapi_response(
         strict_validation=strict_validation,
         target_provenance=target_provenance
     )
-
-    if int(trapi_version[1]) >= 2:
-        # Rather than rewrite all the above test data for
-        # basic TRAPI 2.0 constraints, patch the response
-        trapi_2_0_patch(response)
-
     validator.check_compliance_of_trapi_response(response=response)
     check_messages(validator, code, no_errors=True)
 
@@ -1622,16 +1566,8 @@ SAMPLE_TEST_GRAPH = {
 SAMPLE_TEST_RESULTS = [
     {
         "node_bindings": {
-            "diabetes mellitus": [
-                {
-                    "ids": [TYPE_2_DIABETES_CURIE]
-                }
-            ],
-            "drug": [
-                {
-                    "ids": [METFORMIN_CURIE]
-                }
-            ]
+            "diabetes mellitus": {"ids": [TYPE_2_DIABETES_CURIE]},
+            "drug": {"ids": [METFORMIN_CURIE]}
         },
         "analyses": [
             {
@@ -1651,16 +1587,8 @@ SAMPLE_TEST_RESULTS = [
 SAMPLE_TEST_INCOMPLETE_RESULTS = [
     {
         "node_bindings": {
-            "diabetes mellitus": [
-                {
-                    "ids": [TYPE_2_DIABETES_CURIE]
-                }
-            ],
-            "drug": [
-                {
-                    "ids": [METFORMIN_CURIE]
-                }
-            ]
+            "diabetes mellitus": {"ids": [TYPE_2_DIABETES_CURIE]},
+            "drug": {"ids": [METFORMIN_CURIE]}
         },
         "analyses": [
             {
