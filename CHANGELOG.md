@@ -2,6 +2,15 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+## 7.1.0
+- Added unit tests to reflect enhanced validation of TRAPI 2.0 to more fully reflect new schema semantics
+- Code refactoring to pass unit tests for novel expected enhanced validation
+
+## 7.0.1
+- Documentation updated to 7.0 accuracy
+- Fixed loose ends in scripts and web api
+- Some technical debt cleanup
+
 ## 7.0.0
 - An initial, basic upgrade of reasoner-validator to TRAPI 2.0 compliance.
 - Although this release could conceivably partly validate TRAPI releases prior to 2.0, this is not now guaranteed.
