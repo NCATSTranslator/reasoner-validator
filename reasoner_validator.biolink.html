@@ -53,15 +53,14 @@
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BMTWrapper.get_inverse_predicate"><code class="docutils literal notranslate"><span class="pre">BMTWrapper.get_inverse_predicate()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BMTWrapper.is_symmetric"><code class="docutils literal notranslate"><span class="pre">BMTWrapper.is_symmetric()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BMTWrapper.reset_biolink_version"><code class="docutils literal notranslate"><span class="pre">BMTWrapper.reset_biolink_version()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BMTWrapper.validate_biolink"><code class="docutils literal notranslate"><span class="pre">BMTWrapper.validate_biolink()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.CATEGORY_INCLUSIONS"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.CATEGORY_INCLUSIONS</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.PREDICATE_INCLUSIONS"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.PREDICATE_INCLUSIONS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.check_biolink_model_compliance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.check_biolink_model_compliance_of_input_edge()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.count_node"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.count_node()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_attribute_type_exclusions"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_attribute_type_exclusions()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_biolink_version"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_biolink_version()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_node_categories"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_node_categories()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_node_identifiers"><code class="docutils literal notranslate"><span class="pre">BiolinkValidator.get_node_identifiers()</span></code></a></li>
@@ -161,6 +160,9 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BMTWrapper.reset_biolink_version" title="reasoner_validator.biolink.BMTWrapper.reset_biolink_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_biolink_version</span></code></a>(version)</p></td>
 <td><p>Reset Biolink Model version tracked by the ValidationReporter.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BMTWrapper.validate_biolink" title="reasoner_validator.biolink.BMTWrapper.validate_biolink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_biolink</span></code></a>()</p></td>
+<td><p>Predicate to check if the Biolink (version) is tagged to 'suppress' compliance validation.</p></td>
+</tr>
 </tbody>
 </table>
 <table class="docutils align-default">
@@ -185,7 +187,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BMTWrapper.get_bmt">
-<span class="sig-name descname"><span class="pre">get_bmt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Toolkit</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BMTWrapper.get_bmt" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_bmt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Toolkit</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BMTWrapper.get_bmt" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -212,11 +214,23 @@
 :return: None</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="reasoner_validator.biolink.BMTWrapper.validate_biolink">
+<span class="sig-name descname"><span class="pre">validate_biolink</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BMTWrapper.validate_biolink" title="Permalink to this definition"></a></dt>
+<dd><p>Predicate to check if the Biolink (version) is
+tagged to ‘suppress’ compliance validation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool, returns ‘True’ if Biolink Validation is expected.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.biolink.</span></span><span class="sig-name descname"><span class="pre">BiolinkValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trapi_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_provenance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_validation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reasoner_validator.biolink.</span></span><span class="sig-name descname"><span class="pre">BiolinkValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trapi_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_provenance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_validation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="reasoner_validator.trapi.html#reasoner_validator.trapi.TRAPISchemaValidator" title="reasoner_validator.trapi.TRAPISchemaValidator"><code class="xref py py-class docutils literal notranslate"><span class="pre">TRAPISchemaValidator</span></code></a>, <a class="reference internal" href="#reasoner_validator.biolink.BMTWrapper" title="reasoner_validator.biolink.BMTWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">BMTWrapper</span></code></a></p>
 <p>Wrapper class for Biolink Model validation of a TRAPI message.</p>
 <p class="rubric">Methods</p>
@@ -311,7 +325,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.get_node_identifiers" title="reasoner_validator.biolink.BiolinkValidator.get_node_identifiers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_identifiers</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">return<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of currently registered node_ids</p>
+<dd class="field-odd"><p>list of currently registered node_ids</p>
 </dd>
 </dl>
 </p></td>
@@ -415,7 +429,7 @@
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code>(instance, component)</p></td>
 <td><p>Validate instance against schema.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_agent_type" title="reasoner_validator.biolink.BiolinkValidator.validate_agent_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_agent_type</span></code></a>(edge_id, found, value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_agent_type" title="reasoner_validator.biolink.BiolinkValidator.validate_agent_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_agent_type</span></code></a>(edge_id, value)</p></td>
 <td><p>Validate the value of a 'agent_type' of the given edge.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_attribute_constraints" title="reasoner_validator.biolink.BiolinkValidator.validate_attribute_constraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_attribute_constraints</span></code></a>(edge_id, edge)</p></td>
@@ -442,7 +456,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_infores" title="reasoner_validator.biolink.BiolinkValidator.validate_infores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_infores</span></code></a>(context, edge_id, identifier)</p></td>
 <td><p>Validate that the specified identifier is a well-formed Infores CURIE.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_knowledge_level" title="reasoner_validator.biolink.BiolinkValidator.validate_knowledge_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_knowledge_level</span></code></a>(edge_id, found, value)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_knowledge_level" title="reasoner_validator.biolink.BiolinkValidator.validate_knowledge_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_knowledge_level</span></code></a>(edge_id, value)</p></td>
 <td><p>Validate the value of a 'knowledge_level' of the given edge.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_predicate" title="reasoner_validator.biolink.BiolinkValidator.validate_predicate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_predicate</span></code></a>(edge_id, predicate, ...)</p></td>
@@ -461,7 +475,7 @@
 <td><p>Validate Knowledge Edge Qualifiers.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_slot_value" title="reasoner_validator.biolink.BiolinkValidator.validate_slot_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_slot_value</span></code></a>(slot_name, context, ...)</p></td>
-<td><p>Validate the single-valued value of a specified slot of the given knowledge graph entity slot. :param slot_name, str, name of a valid slot, a value for which is to be validated :param context: str, context of the validation (e.g. node or edge id) :param found: bool, current status of slot detection,               Should be true if the slot was already previously seen :param value: Optional[str], the value to be validated :return: bool, True if valid slot and value (validation messages recorded in the BiolinkValidator).</p></td>
+<td><p>Validate the single-valued value of a specified slot of the given knowledge graph entity slot. :param slot_name, str, name of a valid slot, a value for which is to be validated :param context: str, context of the validation (e.g. node or edge id) :param found: bool, current status of slot detection,               Should be true if the slot was already previously seen :param value: str | None, the value to be validated :return: bool, True if valid slot and value (validation messages recorded in the BiolinkValidator).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_sources" title="reasoner_validator.biolink.BiolinkValidator.validate_sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_sources</span></code></a>(edge_id, edge)</p></td>
 <td><p>Validate (TRAPI 1.4.0-beta ++) Edge sources provenance.</p></td>
@@ -476,31 +490,28 @@
 <tr class="row-even"><td><p><strong>count_node</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>get_attribute_type_exclusions</strong></p></td>
+<tr class="row-odd"><td><p><strong>get_bmt</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>get_bmt</strong></p></td>
+<tr class="row-even"><td><p><strong>has_dangling_nodes</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>has_dangling_nodes</strong></p></td>
+<tr class="row-odd"><td><p><strong>has_valid_node_information</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>has_valid_node_information</strong></p></td>
+<tr class="row-even"><td><p><strong>is_treats</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>is_treats</strong></p></td>
+<tr class="row-odd"><td><p><strong>merge_coded_messages</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>merge_coded_messages</strong></p></td>
+<tr class="row-even"><td><p><strong>merge_identified_messages</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>merge_identified_messages</strong></p></td>
+<tr class="row-odd"><td><p><strong>reset_node_info</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>reset_node_info</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>validate_input_edge_node</strong></p></td>
+<tr class="row-even"><td><p><strong>validate_input_edge_node</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -510,20 +521,15 @@
 <span class="sig-name descname"><span class="pre">CATEGORY_INCLUSIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['biolink:BiologicalEntity',</span> <span class="pre">'biolink:InformationContentEntity']</span></em><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.CATEGORY_INCLUSIONS" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.PREDICATE_INCLUSIONS">
-<span class="sig-name descname"><span class="pre">PREDICATE_INCLUSIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['biolink:interacts_with',</span> <span class="pre">'biolink:treats']</span></em><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.PREDICATE_INCLUSIONS" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance">
-<span class="sig-name descname"><span class="pre">check_biolink_model_compliance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_biolink_model_compliance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance" title="Permalink to this definition"></a></dt>
 <dd><p>Validate a TRAPI-schema compliant Message graph-like data structure
 against the currently active Biolink Model Toolkit model version.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>graph</strong> – Dict, knowledge graph to be validated</p></li>
+<li><p><strong>graph</strong> – dict, knowledge graph to be validated</p></li>
 <li><p><strong>graph_type</strong> – TRAPIGraphType, component type of TRAPI graph to be validated</p></li>
 </ul>
 </dd>
@@ -532,7 +538,7 @@ against the currently active Biolink Model Toolkit model version.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge">
-<span class="sig-name descname"><span class="pre">check_biolink_model_compliance_of_input_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_biolink_model_compliance_of_input_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.check_biolink_model_compliance_of_input_edge" title="Permalink to this definition"></a></dt>
 <dd><p>Validate templated test input edge contents against the current BMT Biolink Model release.</p>
 <p>Sample method ‘edge’ with expected dictionary tags:</p>
 <dl class="simple">
@@ -546,7 +552,7 @@ against the currently active Biolink Model Toolkit model version.</p>
 <p>}</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>edge</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Basic dictionary of a templated input edge - S-P-O including concept Biolink Model categories</p>
+<dd class="field-odd"><p><strong>edge</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Basic dictionary of a templated input edge - S-P-O including concept Biolink Model categories</p>
 </dd>
 </dl>
 </dd></dl>
@@ -554,11 +560,6 @@ against the currently active Biolink Model Toolkit model version.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.count_node">
 <span class="sig-name descname"><span class="pre">count_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.count_node" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.get_attribute_type_exclusions">
-<span class="sig-name descname"><span class="pre">get_attribute_type_exclusions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_attribute_type_exclusions" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -576,7 +577,7 @@ against the currently active Biolink Model Toolkit model version.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.get_node_categories">
-<span class="sig-name descname"><span class="pre">get_node_categories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_node_categories" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_node_categories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_node_categories" title="Permalink to this definition"></a></dt>
 <dd><p>Categories by ‘node_id’.
 :param node_id:
 :return: For a given node_id, returns the associated categories;</p>
@@ -587,36 +588,36 @@ against the currently active Biolink Model Toolkit model version.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.get_node_identifiers">
-<span class="sig-name descname"><span class="pre">get_node_identifiers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_node_identifiers" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_node_identifiers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_node_identifiers" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of currently registered node_ids</p>
+<dd class="field-odd"><p>list of currently registered node_ids</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.get_result">
-<span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_result" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_result" title="Permalink to this definition"></a></dt>
 <dd><p>Get result of validation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>model version of the validation and dictionary of reported validation messages.</p>
 </dd>
 </dl>
-<p>:rtype Tuple[str, Optional[Dict[str, Set[str]]]]</p>
+<p>:rtype tuple[str, MESSAGES_BY_TARGET]</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.get_target_provenance">
-<span class="sig-name descname"><span class="pre">get_target_provenance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_target_provenance" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_target_provenance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.get_target_provenance" title="Permalink to this definition"></a></dt>
 <dd><p>Returns infores-prefix-normalized target provenance metadata.
-:return: Tuple[Optional[str], Optional[str], Optional[str]] of target target_ara_source, target_kp_source, target_kp_source_type</p>
+:return: tuple[str | None, str | None, str | None] of target target_ara_source, target_kp_source, target_kp_source_type</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.has_dangling_nodes">
-<span class="sig-name descname"><span class="pre">has_dangling_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.has_dangling_nodes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">has_dangling_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.has_dangling_nodes" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -689,40 +690,39 @@ Control characters are also output to underline the header.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.set_nodes">
-<span class="sig-name descname"><span class="pre">set_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.set_nodes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.set_nodes" title="Permalink to this definition"></a></dt>
 <dd><p>Records additional nodes, uniquely by node_id, with specified categories.
-:param nodes: Dict, node_id indexed node categories. A given node_id is
+:param nodes: dict, node_id indexed node categories. A given node_id is
 tagged with “None” if the categories are missing?
 :return: None</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.to_dict">
-<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.to_dict" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.to_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Export BiolinkValidator contents as a Python dictionary
 (including Biolink version and parent class dictionary content).
-:return: Dict</p>
+:return: dict</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_agent_type">
-<span class="sig-name descname"><span class="pre">validate_agent_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">found</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_agent_type" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_agent_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_agent_type" title="Permalink to this definition"></a></dt>
 <dd><p>Validate the value of a ‘agent_type’ of the given edge.
 :param edge_id: str, identifier of the edge being validated
-:param found: bool, current status of slot detection, True if already seen previously (return ‘True’ value here)
-:param value: Optional[str], the value to be validated
+:param value: str | None, the value to be validated
 :return: None (validation messages recorded in the BiolinkValidator)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_attribute_constraints">
-<span class="sig-name descname"><span class="pre">validate_attribute_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_attribute_constraints" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_attribute_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_attribute_constraints" title="Permalink to this definition"></a></dt>
 <dd><p>Validate Query Edge Attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>edge_id</strong> – str, string identifier for the edge (for reporting purposes)</p></li>
-<li><p><strong>edge</strong> – Dict, the edge object associated with some attributes are expected to be found</p></li>
+<li><p><strong>edge</strong> – dict, the edge object associated with some attributes are expected to be found</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -733,11 +733,11 @@ tagged with “None” if the categories are missing?
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_attributes">
-<span class="sig-name descname"><span class="pre">validate_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_attributes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_attributes" title="Permalink to this definition"></a></dt>
 <dd><p>Validate Knowledge Edge Attributes.
 :param graph_type: TRAPIGraphType, type of TRAPI graph component being validated
 :param edge_id: str, string identifier for the edge (for reporting purposes)
-:param edge: Dict, the edge object is associated with some attributes are expected to be found</p>
+:param edge: dict, the edge object is associated with some attributes are expected to be found</p>
 </dd></dl>
 
 <dl class="py method">
@@ -790,19 +790,19 @@ only apply graph-type-differential strict validation if ‘ignore_graph_type’ 
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Optional[Element], Biolink Element resolved to ‘name’ if element no validation error; None otherwise.</p>
+<dd class="field-even"><p>Element | None, Biolink Element resolved to ‘name’ if element no validation error; None otherwise.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_graph_edge">
-<span class="sig-name descname"><span class="pre">validate_graph_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_graph_edge" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_graph_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_graph_edge" title="Permalink to this definition"></a></dt>
 <dd><p>Validate slot properties of a relationship (‘biolink:Association’) edge.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>edge</strong> – Dict[str, str], dictionary of the edge slot properties.</p></li>
+<li><p><strong>edge</strong> – dict[str, str], dictionary of the edge slot properties.</p></li>
 <li><p><strong>graph_type</strong> – TRAPIGraphType, component type of TRAPI being validated</p></li>
 </ul>
 </dd>
@@ -811,13 +811,13 @@ only apply graph-type-differential strict validation if ‘ignore_graph_type’ 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_graph_node">
-<span class="sig-name descname"><span class="pre">validate_graph_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_graph_node" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_graph_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_graph_node" title="Permalink to this definition"></a></dt>
 <dd><p>Validate slot properties (mainly ‘categories’) of a node.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – str, identifier of a concept node</p></li>
-<li><p><strong>slots</strong> – Dict, properties of the node</p></li>
+<li><p><strong>slots</strong> – dict, properties of the node</p></li>
 <li><p><strong>graph_type</strong> – TRAPIGraphType, properties of the node</p></li>
 </ul>
 </dd>
@@ -851,11 +851,10 @@ be a semicolon delimited list of such infores.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_knowledge_level">
-<span class="sig-name descname"><span class="pre">validate_knowledge_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">found</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_knowledge_level" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_knowledge_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_knowledge_level" title="Permalink to this definition"></a></dt>
 <dd><p>Validate the value of a ‘knowledge_level’ of the given edge.
 :param edge_id: str, identifier of the edge being validated
-:param found: bool, current status of slot detection, True if already seen previously (return ‘True’ value here)
-:param value: Optional[str], the value to be validated
+:param value: str | None, the value to be validated
 :return: bool, if valid slot and value found (validation messages recorded in the BiolinkValidator)</p>
 </dd></dl>
 
@@ -881,19 +880,19 @@ PREDICATE_INCLUSIONS exceptions in earlier Biolink Model releases.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_provenance">
-<span class="sig-name descname"><span class="pre">validate_provenance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_ara_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">found_target_ara_knowledge_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_kp_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_found_kp_knowledge_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_kp_source_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">found_primary_knowledge_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_provenance" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_provenance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_ara_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">found_target_ara_knowledge_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_kp_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_found_kp_knowledge_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_kp_source_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">found_primary_knowledge_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_provenance" title="Permalink to this definition"></a></dt>
 <dd><p>Validates ARA and KP infores knowledge sources based on surveyed Edge slots
 (recorded in edge “attributes” pre-1.4.0; in “sources”, post-1.4.0).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>edge_id</strong> – str, string identifier for the edge (for reporting purposes)</p></li>
-<li><p><strong>target_ara_source</strong> – str, user specified target ARA infores</p></li>
+<li><p><strong>target_ara_source</strong> – str | None, user specified target ARA infores</p></li>
 <li><p><strong>found_target_ara_knowledge_source</strong> – bool, True if the target ARA infores knowledge source was found</p></li>
-<li><p><strong>target_kp_source</strong> – str, user-specified target KP infores</p></li>
+<li><p><strong>target_kp_source</strong> – str | None, user-specified target KP infores</p></li>
 <li><p><strong>target_found_kp_knowledge_source</strong> – bool, True if the target KP infores knowledge source was found</p></li>
-<li><p><strong>target_kp_source_type</strong> – str, user-specified target KP knowledge source type (i.e. primary, aggregate, etc.)</p></li>
-<li><p><strong>found_primary_knowledge_source</strong> – List[str], list of all infores discovered tagged as ‘primary’</p></li>
+<li><p><strong>target_kp_source_type</strong> – str | None, user-specified target KP knowledge source type (i.e. primary, aggregate, etc.)</p></li>
+<li><p><strong>found_primary_knowledge_source</strong> – list[str], list of all infores discovered tagged as ‘primary’</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -904,13 +903,13 @@ PREDICATE_INCLUSIONS exceptions in earlier Biolink Model releases.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints">
-<span class="sig-name descname"><span class="pre">validate_qualifier_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_qualifier_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_constraints" title="Permalink to this definition"></a></dt>
 <dd><p>Validate Query Edge Qualifier Constraints.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>edge_id</strong> – str, string identifier for the edge (for reporting purposes)</p></li>
-<li><p><strong>edge</strong> – Dict, the edge object associated with some attributes are expected to be found</p></li>
+<li><p><strong>edge</strong> – dict, the edge object associated with some attributes are expected to be found</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -921,7 +920,7 @@ PREDICATE_INCLUSIONS exceptions in earlier Biolink Model releases.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_qualifier_entry">
-<span class="sig-name descname"><span class="pre">validate_qualifier_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualifiers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">associations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_entry" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_qualifier_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualifiers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">associations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifier_entry" title="Permalink to this definition"></a></dt>
 <dd><p>Validate Qualifier Entry (JSON Object).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -930,8 +929,8 @@ PREDICATE_INCLUSIONS exceptions in earlier Biolink Model releases.</p>
 - query graph qualifier constraints (“query_graph.edge.qualifier_constraints.qualifier_set”) or
 - the qualifiers of a knowledge graph edge (knowledge_graph.edge.qualifiers)</p></li>
 <li><p><strong>edge_id</strong> – str, string identifier for the edge (for reporting purposes)</p></li>
-<li><p><strong>qualifiers</strong> – List[Dict[str, str]], of qualifier entries to be validated.</p></li>
-<li><p><strong>associations</strong> – Optional[List[str]] = None,
+<li><p><strong>qualifiers</strong> – list[dict[str, str]], of qualifier entries to be validated.</p></li>
+<li><p><strong>associations</strong> – list[str] | None = None,
 Biolink association subclasses possibly related to the current edge.</p></li>
 </ul>
 </dd>
@@ -943,14 +942,14 @@ Biolink association subclasses possibly related to the current edge.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_qualifiers">
-<span class="sig-name descname"><span class="pre">validate_qualifiers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">associations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifiers" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_qualifiers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">associations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_qualifiers" title="Permalink to this definition"></a></dt>
 <dd><p>Validate Knowledge Edge Qualifiers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>edge_id</strong> – str, string identifier for the edge (for reporting purposes)</p></li>
-<li><p><strong>edge</strong> – Dict, the edge object associated with some attributes expected to be found</p></li>
-<li><p><strong>associations</strong> – Optional[List[str]], Biolink association subclasses possibly related to the current edge.</p></li>
+<li><p><strong>edge</strong> – dict, the edge object associated with some attributes expected to be found</p></li>
+<li><p><strong>associations</strong> – list[str] | None, Biolink association subclasses possibly related to the current edge.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -971,7 +970,7 @@ Biolink association subclasses possibly related to the current edge.</p></li>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> – Optional[str], the value to be validated</p>
+<dd class="field-odd"><p><strong>value</strong> – str | None, the value to be validated</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool, True if valid slot and value (validation messages recorded in the BiolinkValidator)</p>
@@ -981,13 +980,13 @@ Biolink association subclasses possibly related to the current edge.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_sources">
-<span class="sig-name descname"><span class="pre">validate_sources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_sources" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_sources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_sources" title="Permalink to this definition"></a></dt>
 <dd><p>Validate (TRAPI 1.4.0-beta ++) Edge sources provenance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>edge_id</strong> – str, string identifier for the edge (for reporting purposes)</p></li>
-<li><p><strong>edge</strong> – Dict, the edge object is associated with some attributes are expected to be found</p></li>
+<li><p><strong>edge</strong> – dict, the edge object is associated with some attributes are expected to be found</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1012,7 +1011,7 @@ Biolink association subclasses possibly related to the current edge.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.get_current_biolink_version">
-<span class="sig-prename descclassname"><span class="pre">reasoner_validator.biolink.</span></span><span class="sig-name descname"><span class="pre">get_current_biolink_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.get_current_biolink_version" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">reasoner_validator.biolink.</span></span><span class="sig-name descname"><span class="pre">get_current_biolink_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.get_current_biolink_version" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -1028,7 +1027,7 @@ Biolink association subclasses possibly related to the current edge.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>Optional[str]</dt><dd><p>The reference of a CURIE</p>
+<dt>str | None</dt><dd><p>The reference of a CURIE</p>
 </dd>
 </dl>
 </dd>

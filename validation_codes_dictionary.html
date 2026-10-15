@@ -132,8 +132,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-predicate-abstract">error.knowledge_graph.edge.predicate.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-predicate-mixin">error.knowledge_graph.edge.predicate.mixin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-missing">error.knowledge_graph.edge.attribute.missing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-empty">error.knowledge_graph.edge.attribute.empty</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-not-array">error.knowledge_graph.edge.attribute.not_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-unknown">error.knowledge_graph.edge.attribute.type_id.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-abstract">error.knowledge_graph.edge.attribute.type_id.abstract</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-mixin">error.knowledge_graph.edge.attribute.type_id.mixin</a></li>
@@ -146,13 +144,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-provenance-missing-primary">error.knowledge_graph.edge.provenance.missing_primary</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-not-array">error.knowledge_graph.edge.qualifiers.not_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-empty">error.knowledge_graph.edge.qualifiers.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-type-id-not-curie">error.knowledge_graph.edge.qualifiers.qualifier.type_id.not_curie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-type-id-unknown">error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-value-not-a-predicate">error.knowledge_graph.edge.qualifiers.qualifier.value.not_a_predicate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-qualifier-invalid">error.knowledge_graph.edge.qualifiers.qualifier.invalid</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-knowledge-level-missing">error.knowledge_graph.edge.knowledge_level.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-knowledge-level-duplicated">error.knowledge_graph.edge.knowledge_level.duplicated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-knowledge-level-invalid">error.knowledge_graph.edge.knowledge_level.invalid</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-agent-type-missing">error.knowledge_graph.edge.agent_type.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-agent-type-duplicated">error.knowledge_graph.edge.agent_type.duplicated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-agent-type-invalid">error.knowledge_graph.edge.agent_type.invalid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-sources-missing">error.knowledge_graph.edge.sources.missing</a></li>
@@ -729,18 +726,6 @@
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Edge must have a ‘attributes’ key with a non-empty associated value</p>
 </section>
-<section id="error-knowledge-graph-edge-attribute-empty">
-<h3>error.knowledge_graph.edge.attribute.empty<a class="headerlink" href="#error-knowledge-graph-edge-attribute-empty" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Empty attributes in Edge</p>
-<p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of ‘attributes’ property in Knowledge Graph edge must contain a list of one or more attributes</p>
-</section>
-<section id="error-knowledge-graph-edge-attribute-not-array">
-<h3>error.knowledge_graph.edge.attribute.not_array<a class="headerlink" href="#error-knowledge-graph-edge-attribute-not-array" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> The attributes are not an array in Edge</p>
-<p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> Value of the ‘attributes’ property in Knowledge Graph edge must be an array of attributes</p>
-</section>
 <section id="error-knowledge-graph-edge-attribute-type-id-unknown">
 <h3>error.knowledge_graph.edge.attribute.type_id.unknown<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has unknown attribute_type_id</p>
@@ -773,7 +758,7 @@
 </section>
 <section id="error-knowledge-graph-edge-attribute-type-id-not-curie">
 <h3>error.knowledge_graph.edge.attribute.type_id.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-attribute-type-id-not-curie" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge has a value that is not a CURIE for attribute_type_id</p>
+<p><strong>Message:</strong> Edge has a value that is not a CURIE for ‘attribute_type_id’</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
 <p><strong>Description:</strong> The ‘attribute_type_id’ of a Knowledge graph edge attribute must be a controlled vocabulary term specified by a CURIE</p>
 </section>
@@ -813,11 +798,17 @@
 <p><strong>Context:</strong> identifier</p>
 <p><strong>Description:</strong> Value of a ‘qualifiers’ property in a Knowledge Graph must not be non-empty array</p>
 </section>
+<section id="error-knowledge-graph-edge-qualifiers-qualifier-type-id-not-curie">
+<h3>error.knowledge_graph.edge.qualifiers.qualifier.type_id.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-qualifier-type-id-not-curie" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Edge has a value that is not a CURIE for ‘qualifier_type_id’</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> The ‘attribute_type_id’ of a Knowledge graph edge qualifier must be a controlled vocabulary term specified by a CURIE</p>
+</section>
 <section id="error-knowledge-graph-edge-qualifiers-qualifier-type-id-unknown">
 <h3>error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-qualifier-type-id-unknown" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge has unknown qualifier_type_id</p>
+<p><strong>Message:</strong> Edge has unknown ‘qualifier_type_id’</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A qualifier qualifier_type_id must be defined in the specified version of Biolink</p>
+<p><strong>Description:</strong> A qualifier ‘qualifier_type_id’ must be defined in the specified version of Biolink</p>
 </section>
 <section id="error-knowledge-graph-edge-qualifiers-qualifier-value-not-a-predicate">
 <h3>error.knowledge_graph.edge.qualifiers.qualifier.value.not_a_predicate<a class="headerlink" href="#error-knowledge-graph-edge-qualifiers-qualifier-value-not-a-predicate" title="Permalink to this heading"></a></h3>
@@ -831,12 +822,6 @@
 <p><strong>Context:</strong> identifier, qualifier_type_id, qualifier_value, reason</p>
 <p><strong>Description:</strong> Validation of a specified ‘qualifier_type_id’ and ‘qualifier_value’ failed for a given exceptional reason</p>
 </section>
-<section id="error-knowledge-graph-edge-knowledge-level-missing">
-<h3>error.knowledge_graph.edge.knowledge_level.missing<a class="headerlink" href="#error-knowledge-graph-edge-knowledge-level-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge is missing its required ‘knowledge_level’ property</p>
-<p><strong>Context:</strong> edge_id</p>
-<p><strong>Description:</strong> The ‘knowledge_level’ slot is required for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release</p>
-</section>
 <section id="error-knowledge-graph-edge-knowledge-level-duplicated">
 <h3>error.knowledge_graph.edge.knowledge_level.duplicated<a class="headerlink" href="#error-knowledge-graph-edge-knowledge-level-duplicated" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> The ‘knowledge_level’ slot is duplicated for the given edge</p>
@@ -848,12 +833,6 @@
 <p><strong>Message:</strong> The indicated ‘knowledge_level’ slot value is invalid for the given edge</p>
 <p><strong>Context:</strong> identifier, context</p>
 <p><strong>Description:</strong> Acceptable values of the ‘knowledge_level’ slot are only as enumerated in the specified Biolink Model</p>
-</section>
-<section id="error-knowledge-graph-edge-agent-type-missing">
-<h3>error.knowledge_graph.edge.agent_type.missing<a class="headerlink" href="#error-knowledge-graph-edge-agent-type-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> Edge is missing its required ‘agent_type’ property</p>
-<p><strong>Context:</strong> identifier</p>
-<p><strong>Description:</strong> The ‘agent_type’ slot is required for all edges in knowledge graphs complying with the specified Biolink Model release</p>
 </section>
 <section id="error-knowledge-graph-edge-agent-type-duplicated">
 <h3>error.knowledge_graph.edge.agent_type.duplicated<a class="headerlink" href="#error-knowledge-graph-edge-agent-type-duplicated" title="Permalink to this heading"></a></h3>

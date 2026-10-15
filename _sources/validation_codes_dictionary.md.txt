@@ -602,22 +602,6 @@
 
 **Description:** Edge must have a 'attributes' key with a non-empty associated value
 
-### error.knowledge_graph.edge.attribute.empty
-
-**Message:** Empty attributes in Edge
-
-**Context:** identifier
-
-**Description:** Value of 'attributes' property in Knowledge Graph edge must contain a list of one or more attributes
-
-### error.knowledge_graph.edge.attribute.not_array
-
-**Message:** The attributes are not an array in Edge
-
-**Context:** identifier
-
-**Description:** Value of the 'attributes' property in Knowledge Graph edge must be an array of attributes
-
 ### error.knowledge_graph.edge.attribute.type_id.unknown
 
 **Message:** Edge has unknown attribute_type_id
@@ -660,7 +644,7 @@
 
 ### error.knowledge_graph.edge.attribute.type_id.not_curie
 
-**Message:** Edge has a value that is not a CURIE for attribute_type_id
+**Message:** Edge has a value that is not a CURIE for 'attribute_type_id'
 
 **Context:** edge_id, identifier
 
@@ -714,13 +698,21 @@
 
 **Description:** Value of a 'qualifiers' property in a Knowledge Graph must not be non-empty array
 
-### error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown
+### error.knowledge_graph.edge.qualifiers.qualifier.type_id.not_curie
 
-**Message:** Edge has unknown qualifier_type_id
+**Message:** Edge has a value that is not a CURIE for 'qualifier_type_id'
 
 **Context:** edge_id, identifier
 
-**Description:** A qualifier qualifier_type_id must be defined in the specified version of Biolink
+**Description:** The 'attribute_type_id' of a Knowledge graph edge qualifier must be a controlled vocabulary term specified by a CURIE
+
+### error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown
+
+**Message:** Edge has unknown 'qualifier_type_id'
+
+**Context:** edge_id, identifier
+
+**Description:** A qualifier 'qualifier_type_id' must be defined in the specified version of Biolink
 
 ### error.knowledge_graph.edge.qualifiers.qualifier.value.not_a_predicate
 
@@ -738,14 +730,6 @@
 
 **Description:** Validation of a specified 'qualifier_type_id' and 'qualifier_value' failed for a given exceptional reason
 
-### error.knowledge_graph.edge.knowledge_level.missing
-
-**Message:** Edge is missing its required 'knowledge_level' property
-
-**Context:** edge_id
-
-**Description:** The 'knowledge_level' slot is required for all edges in knowledge graphs complying with the specified TRAPI and Biolink Model release
-
 ### error.knowledge_graph.edge.knowledge_level.duplicated
 
 **Message:** The 'knowledge_level' slot is duplicated for the given edge
@@ -761,14 +745,6 @@
 **Context:** identifier, context
 
 **Description:** Acceptable values of the 'knowledge_level' slot are only as enumerated in the specified Biolink Model
-
-### error.knowledge_graph.edge.agent_type.missing
-
-**Message:** Edge is missing its required 'agent_type' property
-
-**Context:** identifier
-
-**Description:** The 'agent_type' slot is required for all edges in knowledge graphs complying with the specified Biolink Model release
 
 ### error.knowledge_graph.edge.agent_type.duplicated
 
