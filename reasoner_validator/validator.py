@@ -631,7 +631,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         node_bindings: dict = data["node_bindings"]
         subject_id_found: bool = False
         object_id_found: bool = False
-        for q_node_id, node_bindings in node_bindings.items():
+        for q_node_id, binding_details in node_bindings.items():
 
             # A basic expectation is for the node_binding keys
             # to match one of the input query node keys
@@ -642,19 +642,17 @@ class TRAPIResponseValidator(BiolinkValidator):
                 )
                 continue
 
-            entry: dict
-            for entry in node_bindings:
-                # The subject and object id's will match separately...
-                if self.validate_binding(subject_id, entry):
-                    subject_id_found = True
-                if self.validate_binding(object_id, entry):
-                    object_id_found = True
+            # The subject and object id's will match separately...
+            if self.validate_binding(subject_id, binding_details):
+                subject_id_found = True
+            if self.validate_binding(object_id, binding_details):
+                object_id_found = True
 
-                # ... but we need both to match, to succeed
-                if subject_id_found and object_id_found:
-                    # Short-cut tagging of search as successful if
-                    # and when both subject and object are matched
-                    return True
+            # ... but we need both to match, to succeed
+            if subject_id_found and object_id_found:
+                # Short-cut tagging of search as successful if
+                # and when both subject and object are matched
+                return True
 
         # Either the subject_id or object_id
         # failed to match any node_bindings: failure!
@@ -717,9 +715,6 @@ class TRAPIResponseValidator(BiolinkValidator):
         # At this point, a TRAPI Response.Message.Results
         # is generally a non-empty list of Result objects
         for result in results:
-
-            # Node binding validation still currently
-            # the same for most recent TRAPI versions >= 1.3.0
             node_bindings_found: bool = \
                 self.testcase_node_bindings(
                     query_graph["nodes"],
@@ -739,47 +734,22 @@ class TRAPIResponseValidator(BiolinkValidator):
             #         "e12"
             #     ]
             # },
-            # "a1": {
-            #     "edges": [
-            #         "extra_edge0"
-            #     ]
-            # },
-            # "a2": {
-            #     "edges" [
-            #         "extra_edge1"
-            #     ]
-            # }
-            #     },
             #     "results": [
             # # Single result in list:
             #
             # {
             #     "node_bindings": {
-            #         "n0": [
-            #             "id": "diabetes"
-            #         ],
-            #         "n1": [
-            #             "id": "metformin"
-            #         ]
+            #       "diabetes": {"ids": ["n0"]},
+            #       "metformin": {"ids": ["n1"]},
             #     },
             #     "analyses": [
             #         {
             #             "reasoner_id": "ara0",
             #             "edge_bindings": {
-            #                 "e0": [
-            #                     {
-            #                         "ids": ["e01"]
-            #                     },
-            #                     {
-            #                         "ids": ["creative_edge"]
-            #                     }
-            #                 ]
+            #                 "e0": {"ids": ["e01"]},
             #             },
-            #             "support_graphs": [
-            #                 "a1",
-            #                 "a2"
-            #             ]
-            #             "score": ".7"
+            #             "support_graphs": ["a1","a2"],
+            #             "score": "0.7"
             #         },
             #      ]
             #    }

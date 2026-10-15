@@ -390,7 +390,7 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION = deepcopy(_TEST_LATE
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION["schema_version"] = "2.0.0"
 
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
-    "biolink_version": "2.2.0",
+    "biolink_version": LATEST_BIOLINK_MODEL_VERSION,
     "message": {
         "query_graph": {
             "nodes": {
@@ -521,17 +521,66 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
     assert len(kg_sample["nodes"]) == number_of_nodes_returned
     assert len(kg_sample["edges"]) == number_of_edges_returned
 
-_TEST_NONCANONICAL_PREDICATE = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION)
-_TEST_NONCANONICAL_PREDICATE["message"]["knowledge_graph"]["edges"]["df87ff82"]["predicate"] = "biolink:narrow_match"
+PROTEIN_CURIE = "NCBIRefSeq:NP_000544.2"
+TRANSCRIPT_CURIE = "NCBIRefSeq:XM_011544639.4"
+
+_TEST_NONCANONICAL_PREDICATE = {
+    "biolink_version": LATEST_BIOLINK_MODEL_VERSION,
+    "message": {
+        "query_graph": {
+            "nodes": {
+                "protein": {"ids": [PROTEIN_CURIE],"categories": ["biolink:Protein"]},
+                "transcript": {"categories": ["biolink:Transcript"]}
+            },
+            "edges": {
+                "translation of": {
+                    "subject": "protein",
+                    "predicates": ["biolink:translation_of"],
+                    "object": "transcript"
+                }
+            }
+        },
+        "knowledge_graph": {
+            "nodes": {
+                PROTEIN_CURIE: {"name": "WRN", "categories": ["biolink:Protein"]},
+                TRANSCRIPT_CURIE: {"categories": ["biolink:Transcript"]}
+            },
+            "edges": {
+                "df87ffed": {
+                    "subject": PROTEIN_CURIE,
+                    "predicate": "biolink:translation_of",
+                    "object": TRANSCRIPT_CURIE,
+                    "sources": _TEST_KG_EDGE_SOURCES,
+                    "knowledge_level": "logical_entailment",
+                    "agent_type": "manual_agent"
+                }
+            }
+        },
+        "results": [
+            {
+                "node_bindings": {
+                    "protein": {"ids": [PROTEIN_CURIE]},
+                    "transcript": {"ids": [TRANSCRIPT_CURIE]}
+                },
+                "analyses": [
+                    {
+                        "resource_id": "infores:ara0",
+                        "edge_bindings": {
+                            "translation of": {"ids": ["df87ffed"]}
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
 
 @pytest.mark.parametrize(
     "response,trapi_version,biolink_version,target_provenance,strict_validation,code",
     [
         (   # Query 0 - Completely empty Response.Message
             {
-                "message": {
-
-                }
+                "message": { }
             },
             LATEST_TRAPI_RELEASE,
             None,
@@ -1048,16 +1097,6 @@ _TEST_NONCANONICAL_PREDICATE["message"]["knowledge_graph"]["edges"]["df87ff82"][
             True,
             ""   # this filtered workflow spec should pass
         ),
-        # (   # TODO: This esoteric test fails for now so we remove it for now
-        #     Query ## - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
-        #     #            guidelines...) but add the 'schema_version' just for fun and profit
-        #     _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION,
-        #     None,
-        #     "4.1.4",
-        #     None,
-        #     True,
-        #     "critical.trapi.validation"   # trying to validate a 1.5.0 schema against 1.4.2 will fail!
-        # ),
         (   # Query 27: Non-canonical predicate
             _TEST_NONCANONICAL_PREDICATE,
             LATEST_TRAPI_RELEASE,
@@ -1068,7 +1107,7 @@ _TEST_NONCANONICAL_PREDICATE["message"]["knowledge_graph"]["edges"]["df87ff82"][
         )
     ]
 )
-def test_check_post_trapi_2_0_biolink_model_compliance_of_trapi_response(
+def test_check_biolink_model_compliance_of_trapi_response(
         response: Dict,
         trapi_version: str,
         biolink_version: str,
@@ -1597,7 +1636,9 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
                 "edge_bindings": {
                     "treated_by": {"ids": ["abcde999"]}
                 },
-                "support_graphs": [],
+                # actually not required, since cannot be empty
+                # but no auxiliary_graphs are in the message
+                # "support_graphs": [],
                 "score": 0.7
             }
         ]
