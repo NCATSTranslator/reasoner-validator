@@ -1,15 +1,16 @@
-[tool.poetry]
+[project]
 name = "reasoner-validator"
-version = "6.0.2"
+version = "7.0.0"
+requires-python = ">=3.10,<3.13"
 description = "Validation tools for Reasoner API"
 authors = [
-    "Richard Bruskiewich <richard.bruskiewich@delphinai.com>",
-    "Patrick Wang <patrickelvin@gmail.com>"
+    { name = "Richard Bruskiewich", email = "richard.bruskiewich@delphinai.com" },
+    { name = "Patrick Wang", email = "patrickelvin@gmail.com" }
 ]
 maintainers = [
-    "Richard Bruskiewich <richard.bruskiewich@delphinai.com>",
-    "Kenneth Morton <kenneth kenny@covar.com>",
-    "Sierra Moxon <smoxon@lbl.gov>"
+    { name = "Richard Bruskiewich", email = "richard.bruskiewich@delphinai.com"},
+    { name = "Kenneth Morton", email = "kenny@covar.com"},
+    { name = "Sierra Moxon", email = "smoxon@lbl.gov"}
 ]
 license = "MIT"
 readme = "README.md"
@@ -43,9 +44,9 @@ include = [
 poetry-plugin-export = ">=1.8"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
-bmt = ">=1.4.8"
-biolink-model = "^4.3.6"
+bmt = "^1.4.8,<1.5"
+biolink-model = "^4.4.5"
+linkml-runtime = ">=1.11.1,<2"
 bioregistry = "^0.12.46"
 jsonschema = "^4.24.0"
 dictdiffer = "^0.9.0"

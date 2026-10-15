@@ -3,7 +3,6 @@ This module provides standalone global reasoner-validator validation Message typ
 to avoid load order conflicts for other modules using these data types.
 """
 from enum import Enum
-from typing import Optional, List, Dict
 
 #
 # The MESSAGE_CATALOG data structure is something like the following:
@@ -43,17 +42,17 @@ from typing import Optional, List, Dict
 # One instance of 'MESSAGE_PARAMETERS' is a dictionary of string
 # parameters associated with a given message code, as documented
 # within the global 'codes.yaml' validation message catalog
-MESSAGE_PARAMETERS = Dict[str, str]
+MESSAGE_PARAMETERS = dict[str, str]
 
-# An 'IDENTIFIED_MESSAGES' data structure is a dictionary of Lists
+# An 'IDENTIFIED_MESSAGES' data structure is a dictionary of lists
 # parameterized messages, indexed by a unique 'identifier' discriminator
 # (namely, the Biolink Model or TRAPI token target of the validation)
-IDENTIFIED_MESSAGES = Dict[
+IDENTIFIED_MESSAGES = dict[
     str,  # the key is the message-unique template 'identifier' value of parameterized messages
 
     # Note: some message codes may not have any associated
     # parameters beyond their discriminating identifier
-    Optional[List[MESSAGE_PARAMETERS]]
+    list[MESSAGE_PARAMETERS] | None
 ]
 
 
@@ -61,9 +60,9 @@ IDENTIFIED_MESSAGES = Dict[
 # indexed by validation code and corresponding to one of the
 # four major categories of validation messages:
 # critical/errors/warnings/information
-MESSAGE_PARTITION = Dict[
+MESSAGE_PARTITION = dict[
     str,  # message 'code' as an indexing key
-    Optional[IDENTIFIED_MESSAGES]
+    IDENTIFIED_MESSAGES | None
 ]
 
 
@@ -79,21 +78,21 @@ class MessageType(Enum):
 # the validation messages from
 # all five major categories of validation:
 # critical errors/errors/warnings/skipped tests/information
-MESSAGE_CATALOG = Dict[
+MESSAGE_CATALOG = dict[
     str,  # message type (critical/error/warning/skipped/info)
     MESSAGE_PARTITION
 ]
 
 # MESSAGES_BY_TEST contains MESSAGE_CATALOG
 # entries indexed by individual tests
-MESSAGES_BY_TEST = Dict[
+MESSAGES_BY_TEST = dict[
     str,  # unique identifiers for each test
     MESSAGE_CATALOG
 ]
 
 # MESSAGES_BY_TARGET contains MESSAGES_BY_TEST entries
 # indexed by target: endpoint URL, URI or CURIE
-MESSAGES_BY_TARGET = Dict[
+MESSAGES_BY_TARGET = dict[
     str,  # target identifier: endpoint URL, URI or CURIE
     MESSAGES_BY_TEST
 ]

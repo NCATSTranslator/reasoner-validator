@@ -1,7 +1,6 @@
 """
 Unit tests for the generic (shared) components of the SRI Testing Framework
 """
-from typing import Optional, Dict, List
 from sys import stderr
 from copy import deepcopy
 from pprint import PrettyPrinter
@@ -25,11 +24,7 @@ from tests import (
     SIMPLE_SAMPLE_NODES,
     SAMPLE_NODES_WITH_ATTRIBUTES,
     SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES,
-    SAMPLE_NODES_WITH_UNUSED_NODE,
-    DEFAULT_KL,
-    DEFAULT_AT,
-    DEFAULT_KL_AND_AT_ATTRIBUTES,
-    sample_edge_with_attributes
+    SAMPLE_NODES_WITH_UNUSED_NODE
 )
 from tests.test_validation_report import check_messages
 
@@ -112,10 +107,10 @@ def test_message():
     reporter = BiolinkValidator(
         default_test="Test Message",
         default_target="Test Reporter",
-        trapi_version="v1.5",
+        trapi_version=LATEST_TRAPI_RELEASE,
         biolink_version=f"v{LATEST_BIOLINK_MODEL_VERSION}"
     )
-    assert reporter.get_trapi_version() == "v1.5.0"
+    assert reporter.get_trapi_version() == LATEST_TRAPI_RELEASE
 
     # Note: BMT is a bit tricky in resolving Biolink Model versions:
     # the version is reported without the 'v' prefix of the GitHub release!
@@ -136,14 +131,14 @@ def test_message():
 def test_inverse_predicate():
     tk: Toolkit = get_biolink_model_toolkit("2.2.0")
     predicate = tk.get_element("biolink:related_to")
-    assert predicate['symmetric']
+    assert predicate is not None and predicate['symmetric']
     predicate = tk.get_element("biolink:active_in")
-    assert not predicate['symmetric']
+    assert predicate is not None and not predicate['symmetric']
     assert isinstance(predicate, SlotDefinition)
     assert not tk.get_inverse(predicate.name)
     tk: Toolkit = get_biolink_model_toolkit("v4.1.4")
     predicate = tk.get_element("biolink:active_in")
-    assert not predicate['symmetric']
+    assert predicate is not None and not predicate['symmetric']
     assert isinstance(predicate, SlotDefinition)
     assert tk.get_inverse(predicate.name) == "has active component"
 
@@ -404,7 +399,7 @@ KNOWLEDGE_GRAPH_PREFIX = f"{BLM_VERSION_PREFIX} Knowledge Graph"
         )
     ]
 )
-def test_check_biolink_model_default_compliance_of_input_edge(biolink_version: str, edge: Dict, validation_code: str):
+def test_check_biolink_model_default_compliance_of_input_edge(biolink_version: str, edge: dict, validation_code: str):
     validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version)
     validator.check_biolink_model_compliance_of_input_edge(edge=edge)
     check_messages(validator, validation_code)
@@ -440,7 +435,7 @@ def test_check_biolink_model_default_compliance_of_input_edge(biolink_version: s
     ]
 )
 def test_check_biolink_model_non_strict_compliance_of_input_edge(
-        biolink_version: str, edge: Dict, validation_code: str
+        biolink_version: str, edge: dict, validation_code: str
 ):
     validator: BiolinkValidator = BiolinkValidator(
         biolink_version=biolink_version,
@@ -516,11 +511,11 @@ def test_check_biolink_model_non_strict_compliance_of_input_edge(
         )
     ]
 )
-def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
+def test_conservation_of_query_graph(biolink_version: str, graph: dict):
     """
     This test checks for internal glitch where the query graph is somehow deleted
     """
-    original_graph: Dict = deepcopy(graph)
+    original_graph: dict = deepcopy(graph)
     validator: BiolinkValidator = BiolinkValidator(biolink_version=biolink_version)
     validator.check_biolink_model_compliance(graph=graph, graph_type=TRAPIGraphType.Query_Graph)
     assert graph == original_graph
@@ -644,7 +639,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 7: Node "ids" not a List
+            # Query 7: Node "ids" not a list
             {
                 "nodes": {
                     "type-2 diabetes": {"ids": "MONDO:0005148"}
@@ -777,7 +772,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
                     }
                 }
             },
-            ""  # Predicates slot can be null... This should pass without errors?
+            ""  # Predicates slot is not required in QueryGraphs... This should pass without errors?
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
@@ -1097,33 +1092,8 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
             "info.query_graph.edge.predicate.mixin"
         ),
         (
-            "4.1.6",
-            # Query 29: Query edge 'treats' predicate is a special case of mixin;
-            #           default 'strict_validation' == False for query graphs
-            {
-                "nodes": {
-                    "drug": {
-                        "ids": ["RXCUI:861026"],
-                        "categories": ["biolink:Drug"]
-                    },
-                    "disease": {
-                        "categories": ["biolink:Disease"]
-                    },
-                },
-                "edges": {
-                    "treats": {
-                        "subject": "drug",
-                        "predicates": ["biolink:treats"],
-                        "object": "disease"
-                    }
-                }
-            },
-            # 'treats' mixin predicate ignored prior to release of Biolink 4.2.1
-            ""
-        ),
-        (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 30: ... but if present, predicates must be valid
+            # Query 29: ... but if present, predicates must be valid
             #           for the specified Biolink Model version, but...
             {
                 "nodes": {
@@ -1146,7 +1116,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
         ),
         (
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
-            # Query 31: Query edge predicate is a mixin...but...
+            # Query 30: Query edge predicate is a mixin...but...
             {
                 "nodes": {
                     "IRS1": {"ids": ["HGNC:6125"], "categories": ["biolink:Gene"]},
@@ -1169,7 +1139,7 @@ def test_conservation_of_query_graph(biolink_version: str, graph: Dict):
     ]
 )
 def test_check_biolink_model_default_compliance_of_query_graph(
-    query_graph: Dict,
+    query_graph: dict,
     biolink_version: str,
     validation_code: str
 ):
@@ -1185,7 +1155,7 @@ def test_check_biolink_model_default_compliance_of_query_graph(
     "biolink_version,query_graph,validation_code",
     [
         (
-            "4.2.0",  # LATEST_BIOLINK_MODEL_VERSION,
+            LATEST_BIOLINK_MODEL_VERSION,
             # Query 0: Query edge predicate is a mixin - non-strict validation
             {
                 "nodes": {
@@ -1207,7 +1177,7 @@ def test_check_biolink_model_default_compliance_of_query_graph(
     ]
 )
 def test_check_biolink_model_non_strict_compliance_of_query_graph(
-    query_graph: Dict,
+    query_graph: dict,
     biolink_version: str,
     validation_code: str
 ):
@@ -1250,7 +1220,7 @@ def test_check_biolink_model_non_strict_compliance_of_query_graph(
     ]
 )
 def test_check_biolink_model_strict_compliance_of_query_graph(
-    query_graph: Dict,
+    query_graph: dict,
     biolink_version: str,
     validation_code: str
 ):
@@ -1276,7 +1246,7 @@ TEST_ARA_CASE_TEMPLATE = {
 }
 
 
-def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
+def get_ara_test_case(changes: dict[str, str] | None = None):
     test_case = TEST_ARA_CASE_TEMPLATE.copy()
     if changes:
         test_case.update(changes)
@@ -1305,23 +1275,23 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
     "edge,validation_code",
     [
         (
-            # Query 0. 'attributes' key missing in edge record is None
+            # Query 0. 'attributes' key missing in edge, but the attributes key is not required for edges in TRAPI 2.0
             {},
-            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
+            ""
         ),
         (
-            # Query 1. Empty attributes
+            # Query 1. If the 'attributes' key is present, null is invalid since TRAPI 2.0 schema defaults to nullable
             {
                 "attributes": None
             },
-            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
+            "error.knowledge_graph.edge.attribute.missing"
         ),
         (
-            # Query 2. Empty attributes
+            # Query 2. If the 'attributes' key is present, an empty attribute array is acceptable in TRAPI 2.0
             {
                 "attributes": []
             },
-            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
+            ""
         ),
         (
             # Query 3. EDAM-DATA:2526 ought to have an acceptable namespace
@@ -1331,28 +1301,10 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "EDAM-DATA:2526",
                         "value": "some-value"
                     },
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
-            ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
+            ""
         ),
-        # (
-        #     # Query #. Validating terms in the ATTRIBUTE_TYPE_ID_INCLUSIONS list
-        #     {
-        #         "attributes": [
-        #             {
-        #                 "attribute_type_id": "biolink:knowledge_level",
-        #                 "value": "knowledge_assertion"
-        #             },
-        #             {
-        #                 "attribute_type_id": "biolink:agent_type",
-        #                 "value": "manual_agent"
-        #             }
-        #         ]
-        #     },
-        #     ""  # Should all pass in TRAPI releases 'default' >= 1.4.0-beta
-        # ),
-        # Slipping in a few unit tests of the
-        # "error.knowledge_graph.edge.attribute.value.empty"
         (
             # Query 4. Attribute value is numeric (int) and zero
             {
@@ -1361,7 +1313,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": 0
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             ""   # should pass since 'False' is a valid non-empty attribute value
         ),
@@ -1373,7 +1325,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": 0.0
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             ""   # should pass since 'False' is a valid non-empty attribute value
         ),
@@ -1385,7 +1337,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": False
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             ""   # should pass since 'False' is a valid non-empty attribute value
         ),
@@ -1397,7 +1349,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": ""
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
@@ -1409,7 +1361,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": None
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
@@ -1421,7 +1373,7 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": []
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
@@ -1433,13 +1385,13 @@ def get_ara_test_case(changes: Optional[Dict[str, str]] = None):
                         "attribute_type_id": "biolink:Attribute",
                         "value": {}
                     }
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             "error.knowledge_graph.edge.attribute.value.empty"
         )
     ]
 )
-def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
+def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
     validator = BiolinkValidator()
     validator.validate_attributes(
         graph_type=TRAPIGraphType.Knowledge_Graph,
@@ -1453,16 +1405,7 @@ def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
     "edge,target_provenance,validation_code",
     [
         (
-            # Query 0. Attributes are not a proper array
-            {
-                "attributes": {"not_a_list"}
-            },
-            get_ara_test_case(),
-            # "Edge attributes are not an array!"
-            "error.knowledge_graph.edge.attribute.not_array"
-        ),
-        (
-            # Query 1. attribute missing its 'attribute_type_id' field
+            # Query 0. attribute missing its 'attribute_type_id' field
             {
                 "attributes": [
                     {"value": ""}
@@ -1473,7 +1416,7 @@ def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.type_id.missing"
         ),
         (
-            # Query 2. attribute missing its 'value' field
+            # Query 1. attribute missing its 'value' field
             {
                 "attributes": [
                     {"attribute_type_id": "biolink:p_value"}
@@ -1484,7 +1427,7 @@ def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.value.missing"
         ),
         (
-            # Query 3. value is an empty list?
+            # Query 2. value is an empty list?
             {
                 "attributes": [
                     {
@@ -1497,7 +1440,7 @@ def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 4. value is the string "null"?
+            # Query 3. value is the string "null"?
             {
                 "attributes": [
                     {
@@ -1510,7 +1453,7 @@ def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 5. value is the string "N/A"?
+            # Query 4. value is the string "N/A"?
             {
                 "attributes": [
                     {
@@ -1523,7 +1466,7 @@ def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 6. value is the string "None"
+            # Query 5. value is the string "None"
             {
                 "attributes": [
                     {
@@ -1536,7 +1479,7 @@ def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 7. value is a JSON null (Python None)
+            # Query 6. value is a JSON null (Python None)
             {
                 "attributes": [
                     {
@@ -1549,20 +1492,20 @@ def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
             "error.knowledge_graph.edge.attribute.value.empty"
         ),
         (
-            # Query 8. value is the JSON boolean false (Python bool False)
+            # Query 7. value is the JSON boolean false (Python bool False)
             {
                 "attributes": [
                     {
                         "attribute_type_id": "biolink:aggregator_knowledge_source",
                         "value": False
                     },
-                ] + DEFAULT_KL_AND_AT_ATTRIBUTES
+                ]
             },
             get_ara_test_case(),
             ""
         ),
         (
-            # Query 9. An attribute_type_id is not a well-formed CURIE? Should fail?
+            # Query 8. An attribute_type_id is not a well-formed CURIE? Should fail?
             {
                 "attributes": [
                     {
@@ -1586,8 +1529,8 @@ def test_latest_trapi_validate_attributes(edge: Dict, validation_code: str):
     ]
 )
 def test_latest_validate_trapi_attributes_with_target_provenance(
-        edge: Dict,
-        target_provenance: Optional[Dict[str, str]],
+        edge: dict,
+        target_provenance: dict[str, str] | None,
         validation_code: str
 ):
     validator = BiolinkValidator(
@@ -1604,20 +1547,19 @@ def test_latest_validate_trapi_attributes_with_target_provenance(
 def qualifier_validator(
         tested_method,
         edge_model: str,
-        edge: Dict,
+        edge: dict,
         validation_code: str,
-        trapi_version: Optional[str] = None,
-        biolink_version: Optional[str] = LATEST_BIOLINK_MODEL_VERSION,
+        trapi_version: str | None = None,
+        biolink_version: str | None = LATEST_BIOLINK_MODEL_VERSION,
         **kwargs
 ):
-    # TODO: to review: which of the validation tests that
-    #       may be overridden by earlier TRAPI validation
+    # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     validator = BiolinkValidator(
         trapi_version=trapi_version,
         biolink_version=biolink_version
     )
     # Wrap Qualifiers inside a small mock QEdge
-    mock_edge: Dict = deepcopy(edge)
+    mock_edge: dict = deepcopy(edge)
     mock_edge["subject"] = "mock_subject"
     mock_edge["predicate"] = "biolink:related_to"
     mock_edge["sources"] = [
@@ -1641,6 +1583,11 @@ def qualifier_validator(
         }
     ]
     mock_edge["object"] = "mock_object"
+    if edge_model == "Edge":
+        # Mandatory TRAPI 2.0 Edge (not QEdge) slots!
+        mock_edge["knowledge_level"] = "prediction"
+        mock_edge["agent_type"] = "automated_agent"
+
     validator.is_valid_trapi_query(mock_edge, edge_model)
     # TODO: not sure if simple errors should be fully displaced
     #       by 'critical' errors or rather, just complement them
@@ -1660,6 +1607,8 @@ def qualifier_validator(
     )
 
 
+# TODO: The following block of unit tests should be replaced by QEdge.constraints testing
+@pytest.mark.skip(reason="In TRAPI 2.0, the 'qualifier_constraints' properties are replaced by generic 'contraints'")
 @pytest.mark.parametrize(
     "edge,validation_code",
     [
@@ -1892,7 +1841,7 @@ def qualifier_validator(
         )
     ]
 )
-def test_validate_qualifier_constraints(edge: Dict, validation_code: str):
+def test_validate_qualifier_constraints(edge: dict, validation_code: str):
     # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifier_constraints,
@@ -1987,7 +1936,7 @@ def test_validate_infores(identifier: str, validation_code: str):
         )
     ]
 )
-def test_biolink_validation_suppressed_validate_qualifier_constraints(edge: Dict, validation_code: str):
+def test_biolink_validation_suppressed_validate_qualifier_constraints(edge: dict, validation_code: str):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
@@ -2002,7 +1951,7 @@ QC_QS_NOT_A_CURIE = {
         {
             "qualifier_set": [
                 {
-                    'qualifier_type_id': "not-a-curie",
+                    'qualifier_type_id': "object_direction_qualifier",
                     'qualifier_value': "fake-qualifier-value"
                 }
             ]
@@ -2016,7 +1965,7 @@ def test_validate_biolink_curie_in_qualifier_constraints():
         tested_method=BiolinkValidator.validate_qualifier_constraints,
         edge_model="QEdge",
         edge=QC_QS_NOT_A_CURIE,
-        validation_code="critical.trapi.validation",
+        validation_code="error.knowledge_graph.edge.qualifiers.qualifier.type_id.not_curie",
         trapi_version=LATEST_TRAPI_RELEASE
     )
 
@@ -2024,16 +1973,16 @@ def test_validate_biolink_curie_in_qualifier_constraints():
 @pytest.mark.parametrize(
     "edge,validation_code,associations",
     [
-        (  # Query 0 - no 'qualifiers' key - since nullable: true, this should pass
+        (  # Query 0 - no 'qualifiers' key - since the field is not 'required', this should pass
             {},
             "",
             None
         ),
-        (  # Query 1 - 'qualifiers' value is nullable: true, this should pass
+        (  # Query 1 - since the 'qualifiers' slot is by default "nullable: false" - invalidated by TRAPI schema
             {
                 'qualifiers': None
             },
-            "",
+            "critical.trapi.validation",
             None
         ),
         (  # Query 2 - 'qualifiers' value is not an array - invalidated by TRAPI schema
@@ -2043,11 +1992,11 @@ def test_validate_biolink_curie_in_qualifier_constraints():
             "critical.trapi.validation",
             None
         ),
-        (  # Query 3 - empty 'qualifiers' array value - since nullable: true, this should pass
+        (  # Query 3 - empty 'qualifiers' array value - since minItems: 1 - invalidated by TRAPI schema
             {
                 'qualifiers': []
             },
-            "",
+            "critical.trapi.validation",
             None
         ),
         (  # Query 4 - empty 'qualifier_set' entry - invalidated by TRAPI schema
@@ -2088,7 +2037,7 @@ def test_validate_biolink_curie_in_qualifier_constraints():
             "error.knowledge_graph.edge.qualifiers.qualifier.type_id.unknown",
             None
         ),
-        (  # Query 8 - 'qualifier_type_id' property value is valid but abstract
+        (  # Query 8 - 'qualifier_type_id' property value is valid but abstract; valid values still resolve
             {
                 'qualifiers': [
                     {
@@ -2171,9 +2120,9 @@ def test_validate_biolink_curie_in_qualifier_constraints():
     ]
 )
 def test_validate_qualifiers(
-        edge: Dict,
+        edge: dict,
         validation_code: str,
-        associations: Optional[List[str]]
+        associations: list[str] | None
 ):
     qualifier_validator(
         tested_method=BiolinkValidator.validate_qualifiers,
@@ -2208,7 +2157,7 @@ def test_validate_qualifiers(
             ""   # this particular use case should pass
         ),
         (   # Query 1 - This example is identical to the above, but we know that it must fail if the
-            #      biolink:Association context of the edge is not given to the qualifier validator as a parameter
+            #           biolink:Association context of the edge is not given to the qualifier validator as a parameter
             {
                 'qualifiers': [
                     {
@@ -2238,7 +2187,7 @@ def test_validate_qualifiers(
                     }
                 ]
             },
-            ["biolink:ChemicalAffectsGeneAssociation"],  # associations: Optional[List[str]]
+            ["biolink:ChemicalAffectsGeneAssociation"],  # associations: list[str] | None
             ""   # this particular use case should pass
         ),
         (   # Query 3 -  another example of a 'qualifier_type_id' resolvable only within
@@ -2262,7 +2211,7 @@ def test_validate_qualifiers(
                 'biolink:ChemicalGeneInteractionAssociation',
                 'biolink:ChemicalAffectsGeneAssociation',
                 'biolink:ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation'
-            ],   # associations: Optional[List[str]]
+            ],   # associations: list[str] | None
             ""  # this particular use case should pass
         ),
         (   # Query 4 -  another example of a 'qualifier_type_id' resolvable only within
@@ -2278,7 +2227,7 @@ def test_validate_qualifiers(
             },
             [
                 "biolink:NamedThingAssociatedWithLikelihoodOfNamedThingAssociation"
-            ],   # associations: Optional[List[str]]
+            ],   # associations: list[str] | None
             ""  # this particular use case should pass
         ),
         (   # Query 5 -  another example of a 'qualifier_type_id' resolvable only within
@@ -2295,14 +2244,14 @@ def test_validate_qualifiers(
                 'biolink:ChemicalGeneInteractionAssociation',
                 'biolink:ChemicalAffectsGeneAssociation',
                 'biolink:ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation'
-            ],   # associations: Optional[List[str]]
+            ],   # associations: list[str] | None
             ""  # this particular use case should pass
         )
     ]
 )
 def test_validate_qualifiers_with_association(
-        edge: Dict,
-        associations: Optional[List[str]],
+        edge: dict,
+        associations: list[str] | None,
         message: str
 ):
     qualifier_validator(
@@ -2364,7 +2313,7 @@ def test_validate_unspecified_slot_value_range():
 #             slot_name: str,
 #             context: str,
 #             found: bool,
-#             value: Optional[str]
+#             value: str | None
 #     ):
 @pytest.mark.parametrize(
     "value,code",
@@ -2374,7 +2323,7 @@ def test_validate_unspecified_slot_value_range():
         ("fake-kl-value", "error.knowledge_graph.edge.knowledge_level.invalid")
     ]
 )
-def test_validate_slot_value(value: Optional[str], code: str):
+def test_validate_slot_value(value: str, code: str):
     validator = BiolinkValidator(biolink_version="4.2.0")
     validator.validate_slot_value(
         slot_name="knowledge_level",
@@ -2389,7 +2338,7 @@ def test_validate_slot_value(value: Optional[str], code: str):
 #             self,
 #             edge_id: str,
 #             found: bool,
-#             value: Optional[str]
+#             value: str | None
 #     ) -> bool:
 @pytest.mark.parametrize(
     "value,code",
@@ -2399,11 +2348,10 @@ def test_validate_slot_value(value: Optional[str], code: str):
         ("fake-kl-value", "error.knowledge_graph.edge.knowledge_level.invalid")
     ]
 )
-def test_validate_knowledge_level(value: Optional[str], code: str):
-    validator = BiolinkValidator(biolink_version="4.2.0")
+def test_validate_knowledge_level(value: str, code: str):
+    validator = BiolinkValidator(biolink_version="4.4.5")
     validator.validate_knowledge_level(
         edge_id="test_validate_knowledge_level",
-        found=False,
         value=value
     )
     check_messages(validator, code)
@@ -2413,7 +2361,7 @@ def test_validate_knowledge_level(value: Optional[str], code: str):
 #             self,
 #             edge_id: str,
 #             found: bool,
-#             value: Optional[str]
+#             value: str
 #     ) -> bool:
 @pytest.mark.parametrize(
     "value,code",
@@ -2423,13 +2371,9 @@ def test_validate_knowledge_level(value: Optional[str], code: str):
         ("fake-kl-value", "error.knowledge_graph.edge.agent_type.invalid")
     ]
 )
-def test_validate_agent_type(value: Optional[str], code: str):
+def test_validate_agent_type(value: str, code: str):
     validator = BiolinkValidator(biolink_version="4.2.0")
-    validator.validate_agent_type(
-        edge_id="test_validate_agent_type",
-        found=False,
-        value=value
-    )
+    validator.validate_agent_type(edge_id="test_validate_agent_type", value=value)
     check_messages(validator, code)
 
 
@@ -2504,7 +2448,9 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2538,7 +2484,9 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2569,7 +2517,9 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2605,7 +2555,9 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2638,7 +2590,9 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2672,7 +2626,9 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2702,13 +2658,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2739,13 +2697,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2776,49 +2736,20 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
             ""
         ),
-        # (   # no longer testable in Biolink 3.1.1 since Nutrient is
-        #     # gone and no other deprecated categories in this release
-        #     LATEST_BIOLINK_MODEL,
-        #     # Query xx: deprecated category triggers a warning in Knowledge Graphs
-        #     {
-        #         "nodes": {
-        #             "CHEBI:27300": {  # Vitamin D
-        #                "categories": [
-        #                    "biolink:Nutrient"
-        #                ],
-        #                "description": "Vitamin D"
-        #             },
-        #             "Orphanet:120464": {  # Vitamin D Receptor
-        #                "categories": [
-        #                    "biolink:Protein"
-        #                ],
-        #                "description": "Vitamin D Receptor"
-        #             }
-        #         },
-        #         "edges": {
-        #             "edge_1": {
-        #                 "subject": "CHEBI:27300",
-        #                 "predicate": "biolink:physically_interacts_with",
-        #                 "object": "Orphanet:120464",
-        #                 "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
-        #             }
-        #         }
-        #     },
-        #  f"{KNOWLEDGE_GRAPH_PREFIX}: WARNING - Knowledge Graph Node element 'biolink:OntologyClass' is deprecated!"
-        #     "warning.knowledge_graph.node.category.deprecated"
-        # ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
             # Query 14: invalid node CURIE prefix namespace, for specified category
@@ -2848,13 +2779,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2875,13 +2808,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2904,13 +2839,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2931,13 +2868,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -2958,13 +2897,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3000,67 +2941,23 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
             "info.knowledge_graph.edge.predicate.mixin"
         ),
         (
-            "4.1.6",
-            # Query 20: predicate is a mixin - not allowed in Knowledge Graphs, but "biolink:interacts_with"
-            #           is tagged as an exception (see https://github.com/NCATSTranslator/reasoner-validator/issues/97)
-            #           for Biolink Model releases < 4.2.0
-            {
-                "nodes": {
-                    "HGNC:3059": {
-                        "name": "Heparin binding EGF like growth factor",
-                        "categories": [
-                           "biolink:Gene"
-                        ],
-                        "description": "heparin binding EGF like growth factor"
-                    },
-                    "HGNC:391": {
-                        "name": "AKT serine/threonine kinase 1",
-                        "categories": [
-                            "biolink:Gene"
-                        ],
-                        "description": "AKT serine/threonine kinase 1"
-                    }
-                },
-                "edges": {
-                    "edge_1": {
-                        "subject": "HGNC:3059",
-                        "predicate": "biolink:interacts_with",
-                        "object": "HGNC:391",
-                        "attributes": [
-                            {
-                                "attribute_type_id": "biolink:stoichiometry",
-                                "value": 2
-                            }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
-                        "sources": [
-                            {
-                                "resource_id": "infores:molepro",
-                                "resource_role": "primary_knowledge_source"
-                            }
-                        ]
-                    }
-                }
-            },
-            # Since 'interacts_with' mixin predicate is in PREDICATE_INCLUSIONS,
-            # it is ignored prior to the 4.2.1 release of the Biolink Model
-            ""
-        ),
-        (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 21: predicate is a mixin allowed in both Knowledge and
+            # Query 20: predicate is a mixin allowed in both Knowledge and
             #           Query Graphs from Biolink Model 4.2.1 onwards
             {
                 "nodes": {
@@ -3089,13 +2986,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3106,7 +3005,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 22: predicate is abstract - not allowed in Knowledge Graphs
+            # Query 21: predicate is abstract - not allowed in Knowledge Graphs
             {
                 "nodes": {
                     "PMID:1234": {
@@ -3134,13 +3033,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3148,7 +3049,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 23: predicate is non-canonical
+            # Query 22: predicate is non-canonical
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3161,13 +3062,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3175,7 +3078,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 24: 'object' id is missing from the nodes catalog
+            # Query 23: 'object' id is missing from the nodes catalog
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3188,13 +3091,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3202,7 +3107,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 25: attribute 'attribute_type_id' is missing
+            # Query 24: attribute 'attribute_type_id' is missing
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3214,13 +3119,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                             {
                                 "value": "some value"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3228,7 +3135,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 26: attribute 'value' is missing?
+            # Query 25: attribute 'value' is missing?
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3241,13 +3148,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 # "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3255,7 +3164,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 27: 'attribute_type_id' is not a CURIE
+            # Query 26: 'attribute_type_id' is not a CURIE
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3268,13 +3177,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "not_a_curie",
                                 "value": "some value"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3282,7 +3193,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 28: 'attribute_type_id' is a Biolink (node) category - not sure yet
+            # Query 27: 'attribute_type_id' is a Biolink (node) category - not sure yet
             #           whether this reflects "best practices" so issue a warning for now
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3296,13 +3207,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:OrganismTaxon",
                                 "value": "9606"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3310,7 +3223,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 29: 'attribute_type_id' is a Biolink (edge) predicate - not sure yet
+            # Query 28: 'attribute_type_id' is a Biolink (edge) predicate - not sure yet
             #           whether this reflects "best practices" so issue a warning for now
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3324,13 +3237,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:related_to",
                                 "value": "something"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3338,7 +3253,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 30: 'attribute_type_id' is not a 'biolink:association_slot'
+            # Query 29: 'attribute_type_id' is not a 'biolink:association_slot'
             #           (biolink:provided_by is a node property)
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3352,13 +3267,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:provided_by",
                                 "value": "some provider"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3366,7 +3283,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 31: 'attribute_type_id' is not a 'biolink:association_slot'
+            # Query 30: 'attribute_type_id' is not a 'biolink:association_slot'
             #           (biolink:iri is neither a node property nor an association_slot, but is in Biolink)
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3380,13 +3297,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:iri",
                                 "value": "some IRI"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3394,7 +3313,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 32: 'attribute_type_id' has a 'biolink' CURIE prefix and
+            # Query 31: 'attribute_type_id' has a 'biolink' CURIE prefix and
             #           is an association_slot, so it should pass
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3412,13 +3331,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:stoichiometry",
                                 "value": 2
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3426,7 +3347,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
         ),
         (
             LATEST_BIOLINK_MODEL_VERSION,
-            # Query 33: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
+            # Query 32: 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink?
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
                 "edges": {
@@ -3439,20 +3360,22 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "foo:bar",
                                 "value": "some value"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
             "warning.knowledge_graph.edge.attribute.type_id.non_biolink_prefix"
         ),
-        (   # Query 34: An earlier Biolink Model won't recognize a category not found in its specified release
-            "1.8.2",
+        (   # Query 33: A Biolink Model won't recognize a category not found in its specified release
+            LATEST_BIOLINK_MODEL_VERSION,
             {
                 # Sample nodes
                 'nodes': {
@@ -3464,7 +3387,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
                     "PUBCHEM.COMPOUND:597": {
                         "name": "cytosine",
                         "categories": [
-                            "biolink:SmallMolecule"   # Not valid in the latest model?
+                            "biolink:UnknownCategory"
                         ],
                         "description": "Cytosine nucleotide"
                     }
@@ -3475,12 +3398,14 @@ def test_validate_agent_type(value: Optional[str], code: str):
                        "subject": "NCBIGene:29974",
                        "predicate": "biolink:physically_interacts_with",
                        "object": "PUBCHEM.COMPOUND:597",
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
             "error.knowledge_graph.node.category.unknown"
         ),
-        (   # Query 35: An 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
+        (   # Query 34: An 'attribute_type_id' has a CURIE prefix namespace unknown to Biolink but...
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
             {
                 "nodes": SIMPLE_SAMPLE_NODES,
@@ -3494,13 +3419,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "foo:bar",
                                 "value": "some value"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3509,7 +3436,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
             ""
         ),
         (
-            # Query 36: 'attribute_type_id' is not a 'biolink:association_slot'
+            # Query 35: 'attribute_type_id' is not a 'biolink:association_slot'
             #           (biolink:synonym is a node property) but...
             SUPPRESS_BIOLINK_MODEL_VALIDATION,
             {
@@ -3524,13 +3451,15 @@ def test_validate_agent_type(value: Optional[str], code: str):
                                 "attribute_type_id": "biolink:synonym",
                                 "value": "some synonym"
                             }
-                        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+                        ],
                         "sources": [
                             {
                                 "resource_id": "infores:molepro",
                                 "resource_role": "primary_knowledge_source"
                             }
-                        ]
+                        ],
+                        "knowledge_level": "not_provided",
+                        "agent_type": "not_provided"
                     }
                 }
             },
@@ -3539,7 +3468,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
             ""
         ),
         (
-            # Query 37: Knowledge Graph dangling nodes error
+            # Query 36: Knowledge Graph dangling nodes error
             LATEST_BIOLINK_MODEL_VERSION,
             {
                 # Sample nodes with extra  unused node
@@ -3550,100 +3479,8 @@ def test_validate_agent_type(value: Optional[str], code: str):
             "warning.knowledge_graph.nodes.dangling"
         ),
         (
-            # Query 38: Knowledge Graph edge duplicated Knowledge Level
-            LATEST_BIOLINK_MODEL_VERSION,
-            {
-                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
-                'edges': sample_edge_with_attributes(
-                    attributes=[
-                        DEFAULT_KL,
-                        DEFAULT_KL,
-                        DEFAULT_AT
-                    ]
-                )
-            },
-            "error.knowledge_graph.edge.knowledge_level.duplicated"
-        ),
-        (
-            # Query 39: Knowledge Graph edge missing Knowledge Level
-            LATEST_BIOLINK_MODEL_VERSION,
-            {
-                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
-                'edges': sample_edge_with_attributes(
-                    attributes=[
-                        DEFAULT_AT
-                    ]
-                )
-            },
-            # This will be a warning for TRAPI 1.5.0 but should become an error in TRAPI 1.6.0
-            "warning.knowledge_graph.edge.knowledge_level.missing"
-        ),
-        (
-            # Query 40: Knowledge Graph edge invalid Knowledge Level
-            LATEST_BIOLINK_MODEL_VERSION,
-            {
-                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
-                'edges': sample_edge_with_attributes(
-                    attributes=[
-                        {
-                           "attribute_type_id": "biolink:knowledge_level",
-                           "value": "not-a-knowledge-level"
-                        },
-                        DEFAULT_AT
-                    ]
-                )
-            },
-            "error.knowledge_graph.edge.knowledge_level.invalid"
-        ),
-        (
-            # Query 41: Knowledge Graph edge duplicated Agent Type
-            LATEST_BIOLINK_MODEL_VERSION,
-            {
-                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
-                'edges': sample_edge_with_attributes(
-                    attributes=[
-                        DEFAULT_KL,
-                        DEFAULT_AT,
-                        DEFAULT_AT
-                    ]
-                )
-            },
-            "error.knowledge_graph.edge.agent_type.duplicated"
-        ),
-        (
-            # Query 42: Knowledge Graph edge missing Agent Type
-            LATEST_BIOLINK_MODEL_VERSION,
-            {
-                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
-                'edges': sample_edge_with_attributes(
-                    attributes=[
-                        DEFAULT_KL
-                    ]
-                )
-            },
-            # This will be a warning for TRAPI 1.5.0 but should become an error in TRAPI 1.6.0
-            "warning.knowledge_graph.edge.agent_type.missing"
-        ),
-        (
-            # Query 43: Knowledge Graph edge invalid Agent Type
-            LATEST_BIOLINK_MODEL_VERSION,
-            {
-                'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
-                'edges': sample_edge_with_attributes(
-                    attributes=[
-                        DEFAULT_KL,
-                        {
-                           "attribute_type_id": "biolink:agent_type",
-                           "value": "not-an-agent-type"
-                        }
-                    ]
-                )
-            },
-            "error.knowledge_graph.edge.agent_type.invalid"
-        ),
-        (
-            # Query 44: Sample full valid TRAPI Knowledge Graph
-            "4.1.6",
+            # Query 38: Sample full valid TRAPI Knowledge Graph
+            "4.4.5",
             {
                 # Sample nodes
                 'nodes': SAMPLE_NODES_WITH_ATTRIBUTES,
@@ -3656,7 +3493,7 @@ def test_validate_agent_type(value: Optional[str], code: str):
 )
 def test_check_biolink_model_compliance_of_knowledge_graph(
         biolink_version: str,
-        graph_data: Dict,
+        graph_data: dict,
         code: str
 ):
     validator = BiolinkValidator(biolink_version=biolink_version)
@@ -3674,7 +3511,8 @@ MESSAGE_EDGE_WITHOUT_ATTRIBUTES = {
             "subject": "NCBIGene:29974",
             "predicate": "biolink:physically_interacts_with",
             "object": "PUBCHEM.COMPOUND:597",
-            # "attributes": [{"attribute_type_id": "biolink:knowledge_source"}]
+            "knowledge_level": "not_provided",
+            "agent_type": "not_provided"
         }
     }
 }
@@ -3773,14 +3611,14 @@ SAMPLE_RETRIEVAL_SOURCE_RESOURCE_ID_INFORES_UNKNOWN = {
         # )
     ]
 )
-def test_latest_trapi_validate_sources(sources: List[Dict], validation_code: str):
+def test_latest_trapi_validate_sources(sources: list[dict], validation_code: str):
     # no attributes are strictly needed in 1.4.0-beta now that (mandatory)
     # Edge provenance is recorded in the Edge.sources list of RetrievalSource
     # message edges must have at least some 'provenance' attributes
-    sample_message: Dict = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
+    sample_message: dict = deepcopy(MESSAGE_EDGE_WITHOUT_ATTRIBUTES)
     if sources is not None:
-        edge: Dict = sample_message["edges"]["edge_1"]
-        edge["sources"]: List[Dict] = sources
+        edge: dict = sample_message["edges"]["edge_1"]
+        edge["sources"]: list[dict] = sources
     validator = BiolinkValidator(biolink_version=LATEST_BIOLINK_MODEL_VERSION)
     validator.check_biolink_model_compliance(graph=sample_message, graph_type=TRAPIGraphType.Knowledge_Graph)
     check_messages(validator, validation_code)
@@ -3789,7 +3627,7 @@ def test_latest_trapi_validate_sources(sources: List[Dict], validation_code: str
 @pytest.mark.parametrize(
     "predicate,result",
     [
-        (None, False),
+        ("", False),
         ("biolink:related_to", True),
         ("related_to", True),
         ("related to", True),
