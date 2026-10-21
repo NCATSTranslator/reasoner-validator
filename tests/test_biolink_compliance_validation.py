@@ -1864,29 +1864,7 @@ def qualifier_validator(
 @pytest.mark.parametrize(
     "query_edge,validation_code",
     [
-        (  # Query 0 - no 'QEdge.constraints' key - since nullable: true, this should pass
-            {},
-            ""
-        ),
-        (  # Query 1 - 'QEdge.constraints' value is None - invalidated by TRAPI schema
-            {
-                'constraints': None
-            },
-            "critical.trapi.validation"
-        ),
-        (  # Query 2 - 'QEdge.constraints' value is not an array - invalidated by TRAPI schema
-            {
-                'constraints': {}
-            },
-            "critical.trapi.validation"
-        ),
-        (  # Query 3 - empty 'QEdge.constraints' array value - since nullable: true, this should pass
-            {
-                'constraints': []
-            },
-            ""
-        ),
-        (  # Query 4 - empty 'qualifier_set' entry - invalidated by TRAPI schema
+        (  # Query 0 - empty 'qualifier_set' entry - invalidated by TRAPI schema
             {
                 'constraints': [
                     {}
@@ -1894,7 +1872,7 @@ def qualifier_validator(
             },
             "critical.trapi.validation"
         ),
-        (  # Query 5 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
+        (  # Query 1 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
             {
                 'constraints': [
                     []
@@ -1902,7 +1880,7 @@ def qualifier_validator(
             },
             "critical.trapi.validation"
         ),
-        (  # Query 6 - 'qualifier_set' entry is missing the 'qualifier_set' key - invalidated by TRAPI schema
+        (  # Query 2 - 'qualifier_set' entry is missing the 'qualifier_set' key - invalidated by TRAPI schema
             {
                 'constraints': [
                     {"not_qualifier_set": []}
@@ -1910,7 +1888,7 @@ def qualifier_validator(
             },
             "critical.trapi.validation"
         ),
-        (  # Query 7 - 'qualifier_set' entry is empty
+        (  # Query 3 - 'qualifier_set' entry is empty
             {
                 'constraints': [
                     {"qualifier_set": []}

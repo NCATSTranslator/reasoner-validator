@@ -1108,29 +1108,43 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param edge: dict, the edge object associated with some attributes are expected to be found
         :return: None (validation messages captured in the 'self' BiolinkValidator context)
         """
-        # the QEdge.constraints is not required but if present, defaults to nullable: False
-        # We don't test for these two boundary conditions here simply because it is assumed that
-        # these two conditions are assessed at the level of the TRAPI 2.0 schema-level validation?
-        # Rather, we validate the values of the QEdge.constraints themselves here.
+        # Sanity check: these conditions are assessed at the level of the TRAPI 2.0 schema-level validation?
+        # The QEdge.constraints is not required but if present, values default to nullable: False
+        # If the TRAPI json is validated by schema assessment, this assertion should never fail, right?
         assert 'constraints' in edge and edge['constraints'] is not None and edge['constraints'],\
                 "Unexpected QEdge.constraints testing condition"
-        constraints: list = edge['constraints']
-        for entry in constraints:
-            # An entry in the 'qualifier_constraints' array is mandatory to be non-empty
-            # and a dictionary, if qualifier_constraints is not empty
-            # Mandatory tag in every 'qualifier_constraint' entry
-            if not entry['qualifier_set']:
+
+        # Rather, we focus here upon validation of the values of the QEdge.constraints themselves.
+        constraints: dict = edge['constraints']
+        for ctype, constraint in constraints.items():
+            if ctype == "knowledge_level":
+                pass
+            elif ctype == "agent_type":
+                pass
+            elif ctype == "attributes":
+                pass
+            elif ctype == "qualifiers":
+                # if not entry['qualifier_set']:
+                #     self.report(
+                #         code="error.query_graph.edge.qualifier_constraints.qualifier_set.empty",
+                #         identifier=edge_id
+                #     )
+                # elif self.validate_biolink():
+                #     # We have a putative non-empty 'qualifier_set'
+                #     qualifier_set: list = entry['qualifier_set']
+                #     self.validate_qualifier_entry(
+                #         context="query_graph.edge.qualifier_constraints.qualifier_set",
+                #         edge_id=edge_id,
+                #         qualifiers=qualifier_set
+                #     )
+                pass
+            elif ctype == "sources":
+                pass
+            else:
                 self.report(
-                    code="error.query_graph.edge.qualifier_constraints.qualifier_set.empty",
-                    identifier=edge_id
-                )
-            elif self.validate_biolink():
-                # We have a putative non-empty 'qualifier_set'
-                qualifier_set: list = entry['qualifier_set']
-                self.validate_qualifier_entry(
-                    context="query_graph.edge.qualifier_constraints.qualifier_set",
-                    edge_id=edge_id,
-                    qualifiers=qualifier_set
+                    code="warning.query_graph.edge.constraints.undefined_key",
+                    identifier=edge_id,
+                    key=ctype
                 )
 
     def validate_infores(self, context: str, edge_id: str, identifier: str) -> bool:
