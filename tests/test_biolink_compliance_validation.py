@@ -1607,36 +1607,288 @@ def qualifier_validator(
     )
 
 
-# TODO: The following block of unit tests should be replaced by QEdge.constraints testing
-@pytest.mark.skip(reason="In TRAPI 2.0, the 'qualifier_constraints' properties are replaced by generic 'contraints'")
+#     QEdge:
+#       type: object
+# ...
+#       properties:
+# ...
+#         knowledge_type:
+#           description: >-
+#             Indicates the type of knowledge that the client wants from the
+#             server between the subject and object. If the value is
+#             'lookup', then the client wants direct lookup information from
+#             knowledge sources. If the value is 'inferred', then the client
+#             wants the server to get creative and connect the subject and
+#             object in more speculative and non-direct-lookup ways. If this
+#             property is absent, it MUST be assumed to mean
+#             'lookup'.
+#           examples:
+#             - lookup
+#           type: string
+#
+# TODO: QEdge.knowledge_type unit tests
+#
+
+#
+# QEdge.constraints unit tests
+#
+#     QEdge:
+#       type: object
+# ...
+#       properties:
+# ...
+#
+## Test as property NOT required
+#
+#         constraints:
+#           $ref: '#/components/schemas/QEdgeConstraints'
+#           description: >-
+#             An object containing all constraints placed on the QEdge.
+#             ALL edges bound to this QEdge MUST conform to ALL given constraints;
+#             underlying edges (such as those appearing in supporting graphs)
+#             are not required to conform to the given constraints.
+#
+#     QEdgeConstraints:
+#       type: object
+#       description: >-
+#         A subschema for constraints that may be placed on a given QEdge.
+#         ALL edges bound to the given QEdge MUST conform to ALL given constraints;
+#         underlying edges (such as those appearing in supporting graphs)
+#         are not required to conform to the given constraints.
+#       minProperties: 1
+#       additionalProperties: true
+#       properties:
+#         knowledge_level:
+#           $ref: '#/components/schemas/AllowDenyConstraint'
+#           description: >-
+#             A constraint defining knowledge_level values which are either allowed
+#             or denied on bound edges.
+#             Provided string(s) MUST be a valid biolink knowledge_level value.
+#             (See https://biolink.github.io/biolink-model/KnowledgeLevelEnum/)
+#         agent_type:
+#           $ref: '#/components/schemas/AllowDenyConstraint'
+#           description: >-
+#             A constraint defining agent_type values which are either allowed
+#             or denied on bound edges.
+#             Provided string(s) MUST be a valid biolink agent_type value.
+#             (See https://biolink.github.io/biolink-model/AgentTypeEnum/)
+#         attributes:
+#           type: array
+#           description: >-
+#             A list of attribute constraints applied to a query edge.
+#             If there are multiple items, they must all be true (equivalent
+#             to AND)
+#           minItems: 1
+#           items:
+#             $ref: '#/components/schemas/AttributeConstraint'
+#         qualifiers:
+#           type: array
+#           description: >-
+#             A list of QualifierSetConstraints applied to a QEdge.
+#             If multiple QualifierSetConstraints are provided, there is an OR
+#             relationship between them. If the QEdge has multiple
+#             predicates or if the QNodes that correspond to the subject or
+#             object of this QEdge have multiple categories or multiple
+#             curies, then constraints.qualifiers MUST NOT be specified
+#             because these complex use cases are not supported at this time.
+#           minItems: 1
+#           items:
+#             $ref: '#/components/schemas/QualifierSetConstraint'
+#         sources:
+#           description: >-
+#             A list of infores CURIEs which are either allowed or denied in the
+#             sources (resource_id) of the bound Edge.
+#             If `behavior` is set to "ALLOW", ANY (at least 1) of the given infores
+#             CURIEs MUST be present.
+#             If `behavior` is set to "DENY", then ALL given infores CURIEs MUST
+#             NOT be present.
+#           allOf:
+#             - $ref: '#/components/schemas/AllowDenyConstraint'
+#             - type: object
+#               properties:
+#                 values:
+#                   type: array
+#                   description: >-
+#                     These SHOULD be infores CURIEs, so this is a subschema that
+#                     is more stringent than the one in AllowDenyConstraint.
+#                   minItems: 1
+#                   items:
+#                     $ref: '#/components/schemas/CURIE'
+#                 primary_only:
+#                   type: boolean
+#                   description: >-
+#                     When set to `false` (the default), the ALLOW/DENY constraint
+#                     of `values` applies to ALL RetrievalSources in
+#                     the sources of the bound Edge.
+#                     When set to `true`, the constraint ONLY applies to the
+#                     RetrievalSource with the resource_role primary_knowledge_source.
+#                   default: false
+#
+#     AllowDenyConstraint:
+#       type: object
+#       description: >-
+#         A list of values which are to either be allowed or denied.
+#         If `behavior` is set to "ALLOW", then ANY (at least 1) of the given values
+#         MUST appear in the constrained property in order for it to meet the
+#         constraint (OR relationship).
+#         If `behavior` is set to "DENY", then ALL of the given values MUST NOT
+#         appear in the constrained property in order for it to meet the constraint
+#         (NOT (x OR y) relationship).
+#       properties:
+#         behavior:
+#           type: string
+#           enum:
+#             - ALLOW
+#             - DENY
+#         values:
+#           type: array
+#           minItems: 1
+#           items:
+#             type: string
+#       required:
+#         - behavior
+#         - values
+#
+#     AttributeConstraint:
+#       type: object
+#       description: >-
+#         Generic query constraint for a query node or query edge
+#       properties:
+#         id:
+#           $ref: '#/components/schemas/CURIE'
+#           description: >-
+#             CURIE of the concept being constrained. For properties
+#             defined by the Biolink Model this SHOULD be a biolink CURIE,
+#             or else, if possible, from the EDAM ontology. If a suitable
+#             CURIE does not exist, enter a descriptive phrase here and
+#             submit the new type for consideration by the appropriate
+#             ontology.
+#           examples:
+#             - EDAM:data_0844
+#         name:
+#           type: string
+#           description: >-
+#             Human-readable name or label for the constraint concept.
+#             It SHOULD be the term name of the CURIE used
+#             as the 'id' and SHOULD NOT supersede the use of AttributeConstraint.id
+#             (which is required). This is redundant but recommended for human
+#             readability.
+#           examples:
+#             - molecular mass
+#         not:
+#           type: boolean
+#           default: false
+#         operator:
+#           type: string
+#           description: >-
+#             Relationship between the database value and the constraint value
+#             for the specified id. The operators ==, >, and < mean
+#             is equal to, is greater than, and is less than,
+#             respectively. The 'matches' operator indicates that the value
+#             is a regular expression to be evaluated. If value is a list type,
+#             then at least one evaluation must be true (equivalent to OR).
+#             This means that the == operator with a list acts like a SQL 'IN'
+#             clause. If the value of the compared attribute is a list, then
+#             comparisons are performed between each of the constraint values
+#             and each of the attribute values, and any one true evaluation
+#             counts as an overall true (e.g., [1,2,3] == [6,7,2] is true).
+#             The == operator is therefore a broad interpretation of inclusion.
+#             The '===' operator requires that the constraint value and
+#             the attribute value be the same data type, length,
+#             content, and order (e.g. only [1,2,3] === [1,2,3]).
+#             The 'not' property negates the operator such that not
+#             and == means 'not equal to' (or 'not in' for a list), and not >
+#             means <=, and not < means >=, not matches means does not
+#             match, and not === means the match between the constraint
+#             and attribute values are not exact.
+#             The '==' operator SHOULD NOT be used in a manner that
+#             describes an "is a" subclass relationship for the parent QNode.
+#           enum:
+#             - ==
+#             - '>'
+#             - <
+#             - matches
+#             - ===
+#         value:
+#           examples:
+#             - 57.0
+#           description: >-
+#             Value of the attribute. May be any data type, including a list.
+#             If the value is a list and there are multiple items, at least one
+#             comparison must be true (equivalent to OR) unless the '==='
+#             operator is used. If 'value' is of data
+#             type 'object', the keys of the object MAY be treated as a list.
+#             A 'list' data type paired with the '>' or '<' operators will
+#             encode extraneous comparisons, but this is permitted as it is in
+#             SQL and other languages.
+#         unit_id:
+#           examples:
+#             - UO:0000222
+#           description: >-
+#             CURIE of the units of the value or list of values in the 'value'
+#             property. The Units of Measurement Ontology (UO) should be used
+#             if possible. The unit_id MUST be provided for (lists of)
+#             numerical values that correspond to a quantity that has units.
+#         unit_name:
+#           examples:
+#             - kilodalton
+#           description: >-
+#             Term name that is associated with the CURIE of the units
+#             of the value or list of values in the 'value'
+#             property. The Units of Measurement Ontology (UO) SHOULD be used
+#             if possible. This property SHOULD be provided if a unit_id is
+#             provided. This is redundant but recommended for human readability.
+#       required:
+#         - id
+#         - operator
+#         - value
+#       additionalProperties: false
+#
+#     QualifierSetConstraint:
+#       type: object
+#       description: >-
+#         A constraint on the qualifiers of a bound Edge (types and values).
+#         A given key-value pair defines the required qualifier_type_id
+#         and qualifier_value of one Qualifier, respectively.
+#         For example, a QualifierSetConstraint can constrain a
+#         "ChemicalX - affects - ?Gene" query to return only edges where
+#         ChemicalX specifically affects the 'expression' of the Gene, by
+#         constraining on the qualifier_type "biolink:object_aspect_qualifier"
+#         with a qualifier_value of "expression".
+#         Multiple type-value pairs have an AND relationship.
+#       minProperties: 1
+#       patternProperties:
+#         '^biolink:':
+#           type: string
+#
 @pytest.mark.parametrize(
-    "edge,validation_code",
+    "query_edge,validation_code",
     [
-        (  # Query 0 - no 'qualifier_constraints' key - since nullable: true, this should pass
+        (  # Query 0 - no 'QEdge.constraints' key - since nullable: true, this should pass
             {},
             ""
         ),
-        (  # Query 1 - 'qualifier_constraints' value is None - invalidated by TRAPI schema
+        (  # Query 1 - 'QEdge.constraints' value is None - invalidated by TRAPI schema
             {
-                'qualifier_constraints': None
+                'constraints': None
             },
             "critical.trapi.validation"
         ),
-        (  # Query 2 - 'qualifier_constraints' value is not an array - invalidated by TRAPI schema
+        (  # Query 2 - 'QEdge.constraints' value is not an array - invalidated by TRAPI schema
             {
-                'qualifier_constraints': {}
+                'constraints': {}
             },
             "critical.trapi.validation"
         ),
-        (  # Query 3 - empty 'qualifier_constraints' array value - since nullable: true, this should pass
+        (  # Query 3 - empty 'QEdge.constraints' array value - since nullable: true, this should pass
             {
-                'qualifier_constraints': []
+                'constraints': []
             },
             ""
         ),
         (  # Query 4 - empty 'qualifier_set' entry - invalidated by TRAPI schema
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {}
                 ]
             },
@@ -1644,7 +1896,7 @@ def qualifier_validator(
         ),
         (  # Query 5 - 'qualifier_set' entry is not a dictionary - invalidated by TRAPI schema
             {
-                'qualifier_constraints': [
+                'constraints': [
                     []
                 ]
             },
@@ -1652,7 +1904,7 @@ def qualifier_validator(
         ),
         (  # Query 6 - 'qualifier_set' entry is missing the 'qualifier_set' key - invalidated by TRAPI schema
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {"not_qualifier_set": []}
                 ]
             },
@@ -1660,15 +1912,15 @@ def qualifier_validator(
         ),
         (  # Query 7 - 'qualifier_set' entry is empty
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {"qualifier_set": []}
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.empty"
+            "error.query_graph.edge.constraints.qualifier_set.empty"
         ),
         (  # Query 8 - 'qualifier_set' object value is not an array - invalidated by TRAPI schema
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {
                         "qualifier_set": {}
                     }
@@ -1678,7 +1930,7 @@ def qualifier_validator(
         ),
         (  # Query 9 - 'qualifier' entry in the qualifier_set is empty - invalidated by TRAPI schema
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {
                         "qualifier_set": [
                             None
@@ -1690,7 +1942,7 @@ def qualifier_validator(
         ),
         (  # Query 10 - 'qualifier' entry is not a JSON object (dictionary) - invalidated by TRAPI schema
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {
                         "qualifier_set": [
                             []
@@ -1702,7 +1954,7 @@ def qualifier_validator(
         ),
         (  # Query 11 - 'qualifier' entry is missing its 'qualifier_type_id' property - invalidated by TRAPI schema
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {
                         "qualifier_set": [
                             {
@@ -1717,7 +1969,7 @@ def qualifier_validator(
         ),
         (  # Query 12 - 'qualifier_type_id' property value is unknown
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {
                         "qualifier_set": [
                             {
@@ -1728,11 +1980,11 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
+            "error.query_graph.edge.constraints.qualifier_set.qualifier.type_id.unknown"
         ),
         (  # Query 13 - 'qualifier_type_id' property is valid but abstract
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {
                         "qualifier_set": [
                             {
@@ -1747,7 +1999,7 @@ def qualifier_validator(
         ),
         (  # Query 14 - 'qualifier_type_id' property value is not a Biolink qualifier term
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {
                         "qualifier_set": [
                             {
@@ -1758,11 +2010,11 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.type_id.unknown"
+            "error.query_graph.edge.constraints.qualifier_set.qualifier.type_id.unknown"
         ),
         (  # Query 15 - 'qualifier' entry is missing its 'qualifier_value' property - invalidated by TRAPI schema
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {
                         "qualifier_set": [
                             {
@@ -1777,7 +2029,7 @@ def qualifier_validator(
         (   # Query 16 - qualifier_type_id 'object_direction_qualifier' is a valid Biolink qualifier type and
             #            'upregulated' a valid corresponding 'permissible value' enum 'qualifier_value'
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {
                         "qualifier_set": [
                             {
@@ -1790,27 +2042,10 @@ def qualifier_validator(
             },
             ""    # this particular use case should pass
         ),
-        # (   #  *** Currently unsupported use case:
-        #     # Query xx - 'qualifier_type_id' is a valid Biolink qualifier type and 'RO:0002213'
-        #     #            is an 'exact match' to a 'upregulated', the above 'qualifier_value'
-        #     {
-        #         'qualifier_constraints': [
-        #             {
-        #                 "qualifier_set": [
-        #                     {
-        #                         'qualifier_type_id': "biolink:object_direction_qualifier",
-        #                         'qualifier_value': "RO:0002213"   # RO 'exact match' term for 'upregulated'
-        #                     }
-        #                 ]
-        #             }
-        #         ]
-        #     },
-        #     ""    # this other use case should also pass
-        # ),
         (   # Query 17 - 'qualifier_type_id' is the special qualifier case 'biolink:qualified_predicate'
             #            with a Biolink predicate as its value
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {
                         "qualifier_set": [
                             {
@@ -1826,7 +2061,7 @@ def qualifier_validator(
         (   # Query 18 - 'qualifier_type_id' is the special qualifier case 'biolink:qualified_predicate'
             #            an incorrect value, which is not a Biolink predicate
             {
-                'qualifier_constraints': [
+                'constraints': [
                     {
                         "qualifier_set": [
                             {
@@ -1837,16 +2072,16 @@ def qualifier_validator(
                     }
                 ]
             },
-            "error.query_graph.edge.qualifier_constraints.qualifier_set.qualifier.value.not_a_predicate"
+            "error.query_graph.edge.constraints.qualifier_set.qualifier.value.not_a_predicate"
         )
     ]
 )
-def test_validate_qualifier_constraints(edge: dict, validation_code: str):
+def test_validate_query_edge_constraints(query_edge: dict, validation_code: str):
     # TODO: to review: which of the validation tests that may be overridden by earlier TRAPI validation
     qualifier_validator(
-        tested_method=BiolinkValidator.validate_qualifier_constraints,
+        tested_method=BiolinkValidator.validate_query_edge_constraints,
         edge_model="QEdge",
-        edge=edge,
+        edge=query_edge,
         validation_code=validation_code
     )
 

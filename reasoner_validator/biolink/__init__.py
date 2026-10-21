@@ -1096,6 +1096,43 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         qualifiers=qualifier_set
                     )
 
+    def validate_query_edge_constraints(
+            self,
+            edge_id: str,
+            edge: dict
+    ):
+        """
+        Validate TRAPI 2.0++ Query Edge Constraints.
+
+        :param edge_id: str, string identifier for the edge (for reporting purposes)
+        :param edge: dict, the edge object associated with some attributes are expected to be found
+        :return: None (validation messages captured in the 'self' BiolinkValidator context)
+        """
+        # the QEdge.constraints is not required but if present, defaults to nullable: False
+        # We don't test for these two boundary conditions here simply because it is assumed that
+        # these two conditions are assessed at the level of the TRAPI 2.0 schema-level validation?
+        # Rather, we validate the values of the QEdge.constraints themselves here.
+        assert 'constraints' in edge and edge['constraints'] is not None and edge['constraints'],\
+                "Unexpected QEdge.constraints testing condition"
+        constraints: list = edge['constraints']
+        for entry in constraints:
+            # An entry in the 'qualifier_constraints' array is mandatory to be non-empty
+            # and a dictionary, if qualifier_constraints is not empty
+            # Mandatory tag in every 'qualifier_constraint' entry
+            if not entry['qualifier_set']:
+                self.report(
+                    code="error.query_graph.edge.qualifier_constraints.qualifier_set.empty",
+                    identifier=edge_id
+                )
+            elif self.validate_biolink():
+                # We have a putative non-empty 'qualifier_set'
+                qualifier_set: list = entry['qualifier_set']
+                self.validate_qualifier_entry(
+                    context="query_graph.edge.qualifier_constraints.qualifier_set",
+                    edge_id=edge_id,
+                    qualifiers=qualifier_set
+                )
+
     def validate_infores(self, context: str, edge_id: str, identifier: str) -> bool:
         """
         Validate that the specified identifier is a well-formed Infores CURIE.
