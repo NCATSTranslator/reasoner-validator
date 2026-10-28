@@ -1073,7 +1073,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                         qualifiers=qualifier_set
                     )
 
-    def validate_infores(self, context: str, edge_id: str, identifier: str) -> bool:
+    def validate_infores(self, context: str, edge_id: str, identifier: str):
         """
         Validate that the specified identifier is a well-formed Infores CURIE.
         Note that here we also now accept that the identifier can
@@ -1082,7 +1082,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param context: reporting context as specified by a validation code prefix
         :param edge_id: specific edge validated, for the purpose of reporting validation context
         :param identifier: candidate (list of) infores curie(s) to be validated.
-        :return:
+        :return: None
         """
         code_prefix: str = f"error.knowledge_graph.edge.{context}.infores"
 
@@ -1093,7 +1093,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 code=f"{code_prefix}.missing",
                 edge_id=edge_id
             )
-            return False
+            return
 
         # For uniform processing here, we treat every identifier
         # as a potential list (even if only a list of one entry),
@@ -1106,7 +1106,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 identifier=identifier,
                 edge_id=edge_id
             )
-            return False
+            return
 
         if not all([is_curie(i) for i in ids]):
             # ... or at least one of the entries is not a CURIE...
@@ -1115,7 +1115,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 identifier=identifier,
                 edge_id=edge_id
             )
-            return False
+            return
 
         if not all([i.startswith("infores:") for i in ids]):
             # ... or at least one of the entries is not a CURIE...
@@ -1124,7 +1124,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 identifier=identifier,
                 edge_id=edge_id
             )
-            return False
+            return
 
         try:
             if not all([is_infores(i) for i in ids]):
@@ -1134,14 +1134,12 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                     identifier=identifier,
                     edge_id=edge_id
                 )
-                return False
+                return
         except RuntimeError as rte:
             # The InfoRes catalog is unavailable, so registration can't be checked;
             # we don't penalize the identifier for that, but log the problem.
             logger.warning(f"Skipping InfoRes registration check of '{identifier}': {rte}")
 
-        # Infores validates properly here
-        return True
 
     def validate_sources(self, edge_id: str, edge: dict):
         """
@@ -1214,60 +1212,52 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
                 resource_id: str = retrieval_source["resource_id"]
                 resource_role: str = retrieval_source["resource_role"]
-                if not self. validate_infores(
+
+                # Check if we know about this infores
+                self. validate_infores(
                         context="sources.retrieval_source.resource_id",
                         edge_id=edge_id,
                         identifier=resource_id
-                ):
-                    # if not validated, we should probably not
-                    # continue using the 'resource_id' from here
-                    continue
+                )
 
-                else:
-                    # start capturing the "sources" audit trail here
-                    if resource_id not in sources:
-                        sources[resource_id] = list()
+                # start capturing the "sources" audit trail here
+                if resource_id not in sources:
+                    sources[resource_id] = list()
 
-                    if resource_id == target_ara_source:
-                        found_target_ara_knowledge_source = True
+                if resource_id == target_ara_source:
+                    found_target_ara_knowledge_source = True
 
-                    if resource_id == target_kp_source and resource_role == target_kp_source_type:
-                        found_target_kp_knowledge_source = True
+                if resource_id == target_kp_source and resource_role == target_kp_source_type:
+                    found_target_kp_knowledge_source = True
 
-                    # ... even if the resource_id fails aspects of validation, we'll keep going...
+                # ... even if the resource_id fails aspects of validation, we'll keep going...
 
-                    # 2. 'resource_role': will have already been TRAPI validated, but is at least one
-                    #    (but only one?) of 'RetrievalSource' entries the mandatory 'primary'?
-                    if resource_id and resource_role == "primary_knowledge_source":
-                        # the cardinality of this will be checked below...
-                        found_primary_knowledge_source.append(resource_id)
+                # 2. 'resource_role': will have already been TRAPI validated, but is at least one
+                #    (but only one?) of 'RetrievalSource' entries the mandatory 'primary'?
+                if resource_id and resource_role == "primary_knowledge_source":
+                    # the cardinality of this will be checked below...
+                    found_primary_knowledge_source.append(resource_id)
 
-                    # 3. If provided (optional), are all 'upstream_resource_ids' well-formed Infores CURIES
-                    #    and may include some expected Infores entries (from target sources noted above)?
+                # 3. If provided (optional), are all 'upstream_resource_ids' well-formed Infores CURIES
+                #    and may include some expected Infores entries (from target sources noted above)?
 
-                    if "upstream_resource_ids" in retrieval_source:
-                        upstream_resource_ids: list[str] | None = retrieval_source["upstream_resource_ids"]
-                        # Note: the TRAPI schema doesn't currently tag this field as nullable, so we check
-                        if upstream_resource_ids:
-                            for upstream_resource_id in upstream_resource_ids:
+                if "upstream_resource_ids" in retrieval_source:
+                    upstream_resource_ids: list[str] | None = retrieval_source["upstream_resource_ids"]
+                    # Note: the TRAPI schema doesn't currently tag this field as nullable, so we check
+                    if upstream_resource_ids:
+                        for upstream_resource_id in upstream_resource_ids:
+                            self.validate_infores(
+                                context="sources.retrieval_source.upstream_resource_ids",
+                                edge_id=edge_id,
+                                identifier=upstream_resource_id
+                            )
+                            sources[resource_id].append(upstream_resource_id)
 
-                                if not self.validate_infores(
-                                    context="sources.retrieval_source.upstream_resource_ids",
-                                    edge_id=edge_id,
-                                    identifier=upstream_resource_id
-                                ):
-                                    # if not validated, we should probably not
-                                    # continue using the 'upstream_resource_id' from here
-                                    continue
-
-                                else:
-                                    sources[resource_id].append(upstream_resource_id)
-
-                    # 4. If provided (optional), we *could* check the optional 'source_record_urls'
-                    #    if they are all resolvable URLs (but maybe we do not attempt this for now...)
-                    #
-                    # if "source_record_urls" in retrieval_source:
-                    #     source_record_urls: list[str] | None = retrieval_source["source_record_urls"]
+                # 4. If provided (optional), we *could* check the optional 'source_record_urls'
+                #    if they are all resolvable URLs (but maybe we do not attempt this for now...)
+                #
+                # if "source_record_urls" in retrieval_source:
+                #     source_record_urls: list[str] | None = retrieval_source["source_record_urls"]
 
             self.validate_provenance(
                 edge_id,
