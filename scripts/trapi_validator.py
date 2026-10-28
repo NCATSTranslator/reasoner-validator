@@ -40,6 +40,7 @@ ARS_HOSTS = [
     'ars.transltr.io'
 ]
 
+ARAX_HOST_URL = "https://arax.ncats.io/beta/api/arax/v2.0/response/"
 
 def get_cli_arguments():
 
@@ -237,7 +238,7 @@ def retrieve_arax_result(response_id: str):
     global trapi_response
 
     status_code, response_content = retrieve_trapi_response(
-        host_url="https://arax.ncats.io/devED/api/arax/v1.4/response/",
+        host_url=ARAX_HOST_URL,
         response_id=response_id
     )
     if status_code == 200:

@@ -258,13 +258,13 @@ class TRAPISchemaValidator(ValidationReporter):
             strict_validation=strict_validation
         )
 
-    def get_trapi_version(self) -> str:
+    def get_trapi_version(self) -> str | None:
         """
         :return: str, TRAPI (SemVer) version currently targeted by the TRAPISchemaValidator.
         """
         return self.trapi_version
 
-    def reset_trapi_version(self, version: str):
+    def reset_trapi_version(self, version: str | None):
         """
         Reset TRAPI version tracked by the TRAPISchemaValidator.
         :param version: new version
@@ -278,6 +278,8 @@ class TRAPISchemaValidator(ValidationReporter):
         :return: True if the current version is equal to, or newer than, a targeted 'minimum_version'
         """
         try:
+            if self.trapi_version is None:
+                return False
             current: SemVer = SemVer.from_string(self.trapi_version)
             target: SemVer = SemVer.from_string(version)
             return current >= target
