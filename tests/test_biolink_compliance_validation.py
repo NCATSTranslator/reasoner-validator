@@ -1887,6 +1887,14 @@ def test_validate_qualifier_constraints(edge: dict, validation_code: str):
         (   # Query 7: all curies given in a curie must be from the 'infores:' namespace
             "infores:molepro; NCBIGene:12345",
             "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid"
+        ),
+        (   # Query 8: an 'infores:' curie must be registered in the InfoRes catalog
+            "infores:not-a-registered-infores",
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown"
+        ),
+        (   # Query 9: all 'infores:' curies in a list must be registered in the InfoRes catalog
+            "infores:molepro; infores:not-a-registered-infores",
+            "error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown"
         )
     ]
 )
