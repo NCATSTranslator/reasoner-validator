@@ -13,12 +13,12 @@ from reasoner_validator.message import IDENTIFIED_MESSAGES, MESSAGE_PARAMETERS
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_CODES_DOCUMENTATION_FILE = abspath(join(dirname(__file__), "..", "docs", "validation_codes_dictionary.md"))
+DEFAULT_CODES_DOCUMENTATION_FILE = abspath(join(str(dirname(__file__)), "..", "docs", "validation_codes_dictionary.md"))
 
 
 class CodeDictionary:
 
-    CODE_DICTIONARY_FILE: str = abspath(join(dirname(__file__), "codes.yaml"))
+    CODE_DICTIONARY_FILE: str = abspath(join(str(dirname(__file__)), "codes.yaml"))
 
     MESSAGE = "$message"
     CONTEXT = "$context"
@@ -27,7 +27,7 @@ class CodeDictionary:
     code_dictionary: Optional[Dict] = None
 
     @classmethod
-    def _get_code_dictionary(cls) -> Dict:
+    def _get_code_dictionary(cls) -> Dict | None:
         if not cls.code_dictionary:
             # Open the file and load the file
             with open(cls.CODE_DICTIONARY_FILE, mode='r') as f:
