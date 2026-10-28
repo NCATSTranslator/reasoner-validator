@@ -2,6 +2,9 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+# 7.1.3
+- fixed the loss of further 'resource_id' and 'upstream_resource_ids' validation in cases where infores identifiers are not registered in the information registry
+
 # 7.1.2
 - removed premature "error" abort of knowledge graph edge validation, because it gets in the way of full error reporting
 - globally unique edge identifiers from the source TRAPI input JSON knowledge graph edge identifiers are now reported in the output messages
