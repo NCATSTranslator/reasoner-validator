@@ -1,6 +1,7 @@
 [project]
 name = "reasoner-validator"
 version = "6.1.0"
+requires-python = ">=3.10,<3.13"
 description = "Validation tools for Reasoner API"
 authors = [
     { name = "Richard Bruskiewich", email = "richard.bruskiewich@delphinai.com" },

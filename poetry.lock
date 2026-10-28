@@ -273,34 +273,20 @@ web = ["a2wsgi", "api-analytics[fastapi]", "bootstrap-flask", "curies[fastapi]",
 
 [[package]]
 name = "bmt"
-version = "1.5.0"
+version = "1.4.8"
 description = "Biolink Model Toolkit: A Python API for working with the Biolink Model"
 optional = false
 python-versions = "<4,>=3.10"
 groups = ["main"]
 files = [
-    {file = "bmt-1.5.0-py3-none-any.whl", hash = "sha256:2a9ca7b3b31102911d3b5e2c5973cb3c8a06334d4ac4ae0afb9df1990622db7c"},
-    {file = "bmt-1.5.0.tar.gz", hash = "sha256:f053e83897c8e4d11a5499ff7de3cd1b66b59cd28562ebddf88cb60ad4cec862"},
+    {file = "bmt-1.4.8-py3-none-any.whl", hash = "sha256:cba57f58a2ae85a5f29ab30cac84b7c5032d095741b07e8f252395bbee4ce276"},
+    {file = "bmt-1.4.8.tar.gz", hash = "sha256:9286dbc83caf61117fbe45eee23308dcdbfaa0413c0514ae9d3505aa9f6a5781"},
 ]
 
 [package.dependencies]
-biolink-model = ">=4.4.4,<5.0.0"
-casefy = ">=1.1.0,<2.0.0"
+biolink-model = ">=4.3.3,<5.0.0"
 deprecation = ">=2.1.0,<3.0.0"
-pyyaml = ">=6.0.1,<7.0.0"
-requests = ">=2.33.0,<3.0.0"
-
-[[package]]
-name = "casefy"
-version = "1.1.0"
-description = "Utilities for string case conversion."
-optional = false
-python-versions = ">=3.6"
-groups = ["main"]
-files = [
-    {file = "casefy-1.1.0-py3-none-any.whl", hash = "sha256:a3dfcb14d85902d90702db1e9835760237f6a73ec0ae3b7e991ad767513a3cbc"},
-    {file = "casefy-1.1.0.tar.gz", hash = "sha256:849d6e0f80506fac70ab8e18999a4ca1eb7d8f70941682383d64aa22a7497f8f"},
-]
+stringcase = ">=1.2.0,<2.0.0"
 
 [[package]]
 name = "certifi"
@@ -2544,6 +2530,17 @@ typing-extensions = {version = ">=4.10.0", markers = "python_version < \"3.13\""
 full = ["httpx (>=0.27.0,<0.29.0)", "httpx2 (>=2.0.0)", "itsdangerous", "jinja2", "opentelemetry-api", "python-multipart (>=0.0.18)", "pyyaml"]
 
 [[package]]
+name = "stringcase"
+version = "1.2.0"
+description = "String case converter."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "stringcase-1.2.0.tar.gz", hash = "sha256:48a06980661908efe8d9d34eab2b6c13aefa2163b3ced26972902e3bdfd87008"},
+]
+
+[[package]]
 name = "tomli"
 version = "2.5.0"
 description = "A lil' TOML parser"
@@ -2822,4 +2819,4 @@ dev = ["pytest", "setuptools"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "9317e9ceb31b1da73d83f7a62822a7789acad544927c2501bd09eb23c1be3ca0"
+content-hash = "7e33392bc539e0e7bc0a8aa731010f1ac9a312c4b46d1354fb195f0bc19d1292"
