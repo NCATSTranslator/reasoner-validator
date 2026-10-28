@@ -1401,6 +1401,122 @@ def test_latest_trapi_validate_attributes(edge: dict, validation_code: str):
     check_messages(validator, validation_code)
 
 
+ATTRIBUTE_SOURCE_INFORES_CODE_PREFIX = "error.knowledge_graph.edge.attribute.attribute_source.infores"
+
+
+# Validation of the infores identifier content of 'Attribute.attribute_source' values.
+# An otherwise valid (Biolink association slot) attribute is used, so that only
+# the 'attribute_source' value can trigger a validation message.
+@pytest.mark.parametrize(
+    "attribute_source,validation_code",
+    [
+        (   # Query 0: 'attribute_source' is optional in TRAPI, so it may be absent
+            ...,
+            ""
+        ),
+        (   # Query 1: valid, registered 'infores' curie
+            "infores:hmdb",
+            ""
+        ),
+        (   # Query 2: semicolon delimited list of registered 'infores' curies is also accepted
+            "infores:hmdb; infores:chembl",
+            ""
+        ),
+        (   # Query 3: if present, a null 'attribute_source' value is flagged as missing
+            None,
+            f"{ATTRIBUTE_SOURCE_INFORES_CODE_PREFIX}.missing"
+        ),
+        (   # Query 4: if present, an empty 'attribute_source' value is flagged as missing
+            "",
+            f"{ATTRIBUTE_SOURCE_INFORES_CODE_PREFIX}.missing"
+        ),
+        (   # Query 5: all entries of a list of 'attribute_source' identifiers must be non-empty
+            "infores:hmdb; ",
+            f"{ATTRIBUTE_SOURCE_INFORES_CODE_PREFIX}.missing"
+        ),
+        (   # Query 6: an 'attribute_source' which is not a CURIE
+            "hmdb",
+            f"{ATTRIBUTE_SOURCE_INFORES_CODE_PREFIX}.not_curie"
+        ),
+        (   # Query 7: an 'attribute_source' CURIE must be from the 'infores:' namespace
+            "NCBIGene:12345",
+            f"{ATTRIBUTE_SOURCE_INFORES_CODE_PREFIX}.invalid"
+        ),
+        (   # Query 8: an 'attribute_source' must be registered in the InfoRes catalog
+            "infores:not-a-registered-infores",
+            f"{ATTRIBUTE_SOURCE_INFORES_CODE_PREFIX}.unknown"
+        ),
+        (   # Query 9: all entries of a list of 'attribute_source' identifiers must be registered
+            "infores:hmdb; infores:not-a-registered-infores",
+            f"{ATTRIBUTE_SOURCE_INFORES_CODE_PREFIX}.unknown"
+        )
+    ]
+)
+def test_validate_attribute_source_infores(attribute_source, validation_code: str):
+    attribute: dict = {
+        "attribute_type_id": "biolink:has_evidence",
+        "value": "ECO:0000305"
+    }
+    if attribute_source is not ...:
+        attribute["attribute_source"] = attribute_source
+    validator = BiolinkValidator()
+    validator.validate_attributes(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        edge_id="test_validate_attribute_source_infores",
+        edge={"attributes": [attribute]}
+    )
+    check_messages(validator, validation_code)
+
+
+# The 'attribute_source' is validated independently of the
+# 'attribute_type_id' and 'value' of its attribute
+@pytest.mark.parametrize(
+    "attribute",
+    [
+        {   # Query 0: numeric attribute value
+            "attribute_type_id": "biolink:stoichiometry",
+            "value": 2
+        },
+        {   # Query 1: boolean attribute value
+            "attribute_type_id": "biolink:has_evidence",
+            "value": False
+        },
+        {   # Query 2: Biolink 'attribute_type_id' which is not an association slot
+            "attribute_type_id": "biolink:highest_FDA_approval_status",
+            "value": "FDA Clinical Research Phase 2"
+        },
+        {   # Query 3: non-Biolink 'attribute_type_id'
+            "attribute_type_id": "EDAM-DATA:2526",
+            "value": "some value"
+        },
+        {   # Query 4: 'attribute_type_id' which is not a CURIE
+            "attribute_type_id": "not_a_curie",
+            "value": "some value"
+        },
+        {   # Query 5: missing 'attribute_type_id'
+            "value": "some value"
+        },
+        {   # Query 6: missing 'value'
+            "attribute_type_id": "biolink:has_evidence"
+        },
+        {   # Query 7: empty 'value'
+            "attribute_type_id": "biolink:has_evidence",
+            "value": ""
+        }
+    ]
+)
+def test_validate_attribute_source_infores_in_any_attribute(attribute: dict):
+    attribute = deepcopy(attribute)
+    attribute["attribute_source"] = "infores:not-a-registered-infores"
+    validator = BiolinkValidator()
+    validator.validate_attributes(
+        graph_type=TRAPIGraphType.Knowledge_Graph,
+        edge_id="test_validate_attribute_source_infores_in_any_attribute",
+        edge={"attributes": [attribute]}
+    )
+    check_messages(validator, f"{ATTRIBUTE_SOURCE_INFORES_CODE_PREFIX}.unknown")
+
+
 @pytest.mark.parametrize(
     "edge,target_provenance,validation_code",
     [

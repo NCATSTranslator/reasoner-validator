@@ -512,6 +512,31 @@ error:
               - identifier
               - attribute_id
             $description: "The value of an attribute of a Knowledge graph edge must not be empty"
+        attribute_source:
+          infores:
+            missing:
+              $message: "'Attribute.attribute_source' identifier is missing"
+              $context:
+                - edge_id
+              $description: "An 'Attribute.attribute_source'  value should not be None or empty"
+            not_curie:
+              $message: "One (or more) Infores value(s) is not a valid well-formed CURIE"
+              $context:
+                - edge_id
+                - identifier
+              $description: "An 'Attribute.attribute_source'  Infores value must be a well-formed CURIE"
+            invalid:
+              $message: "Invalid Infores namespace"
+              $context:
+                - edge_id
+                - identifier
+              $description: "An 'Attribute.attribute_source'  Infores CURIE must come from the Infores namespace"
+            unknown:
+              $message: "Unregistered infores"
+              $context:
+                - edge_id
+                - identifier
+              $description: "An 'Attribute.attribute_source'  value must be a registered Infores identifier"
       provenance:
         infores:
           missing:
@@ -938,31 +963,6 @@ warning:
             $context:
               - identifier
             $description: "Edge 'attribute_type_id' is deprecated in current model, to be removed in the future. Review Biolink Model for replacement"
-        attribute_source:
-            infores:
-              missing:
-                $message: "'Attribute.attribute_source' identifier is missing"
-                $context:
-                  - edge_id
-                $description: "An 'Attribute.attribute_source'  value should not be None or empty"
-              not_curie:
-                $message: "One (or more) Infores value(s) is not a valid well-formed CURIE"
-                $context:
-                  - edge_id
-                  - identifier
-                $description: "An 'Attribute.attribute_source'  Infores value must be a well-formed CURIE"
-              invalid:
-                $message: "Invalid Infores namespace"
-                $context:
-                  - edge_id
-                  - identifier
-                $description: "An 'Attribute.attribute_source'  Infores CURIE must come from the Infores namespace"
-              unknown:
-                $message: "Unregistered infores"
-                $context:
-                  - edge_id
-                  - identifier
-                $description: "An 'Attribute.attribute_source'  value must be a registered Infores identifier"
       provenance:
         multiple_primary:
           $message: "Edge has recorded multiple 'primary' knowledge sources"

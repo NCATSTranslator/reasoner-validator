@@ -782,6 +782,15 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
 
             for attribute in attributes:
 
+                # Validate the (optional) attribute_source infores,
+                # independently of the attribute_type_id and value
+                if 'attribute_source' in attribute:
+                    self.validate_infores(
+                        context="attribute.attribute_source",
+                        edge_id=edge_id,
+                        identifier=attribute['attribute_source']
+                    )
+
                 # Validate attribute_type_id
                 if 'attribute_type_id' not in attribute:
                     self.report(
@@ -877,13 +886,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                             #       for specified predicates like 'treats' or its descendants
                                             # if attribute_type_id == "biolink:support_graphs":
                                             #     found_support_graphs = False
-                                            if 'attribute_source' in attribute:
-                                                attribute_source = attribute.get('attribute_source')
-                                                self.validate_infores(
-                                                    context="attribute.attribute_source",
-                                                    edge_id=edge_id,
-                                                    identifier=attribute_source
-                                                )
+                                            pass
 
                                 # if not a Biolink model defined attribute term, at least, check if
                                 # the 'attribute_type_id' has a namespace (prefix) known to Biolink.
