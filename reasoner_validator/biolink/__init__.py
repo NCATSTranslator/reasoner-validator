@@ -18,6 +18,7 @@ from reasoner_validator.versioning import SemVer, SemVerError
 from reasoner_validator.message import MESSAGES_BY_TARGET
 from reasoner_validator.trapi import TRAPISchemaValidator
 from reasoner_validator.report import TRAPIGraphType
+from reasoner_validator.biolink.infores import is_infores
 
 import logging
 logger = logging.getLogger(__name__)
@@ -1432,16 +1433,19 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
             )
             return False
 
-        # TODO: infores is causing too much instability for now so support has been removed from BMT
-        # TODO: reimplement using YAML version of infores catalog
-        # if not self.get_bmt().get_infores_details(identifier):
-        #     # if this method returns 'None' then this is an unregistered infores?
-        #     self.report(
-        #         code=f"{code_prefix}.unknown",
-        #         identifier=identifier,
-        #         edge_id=edge_id
-        #     )
-        #     return False
+        try:
+            if not all([is_infores(i) for i in ids]):
+                # ... or at least one of the entries is not registered in the InfoRes catalog
+                self.report(
+                    code=f"{code_prefix}.unknown",
+                    identifier=identifier,
+                    edge_id=edge_id
+                )
+                return False
+        except RuntimeError as rte:
+            # The InfoRes catalog is unavailable, so registration can't be checked;
+            # we don't penalize the identifier for that, but log the problem.
+            logger.warning(f"Skipping InfoRes registration check of '{identifier}': {rte}")
 
         # Infores validates properly here
         return True
