@@ -788,11 +788,11 @@
 
 ### error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.missing
 
-**Message:** RetrievalSource 'resource_id' identifier is missing
+**Message:** 'RetrievalSource.resource_id' identifier is missing
 
 **Context:** edge_id
 
-**Description:** A RetrievalSource 'resource_id' value should not be None or empty
+**Description:** A 'RetrievalSource.resource_id' value should not be None or empty
 
 ### error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie
 
@@ -800,7 +800,7 @@
 
 **Context:** edge_id, identifier
 
-**Description:** A RetrievalSource 'resource_id' Infores value must be a well-formed CURIE
+**Description:** A 'RetrievalSource.resource_id' Infores value must be a well-formed CURIE
 
 ### error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid
 
@@ -808,7 +808,7 @@
 
 **Context:** edge_id, identifier
 
-**Description:** A RetrievalSource 'resource_id' Infores CURIE must come from the Infores namespace
+**Description:** A 'RetrievalSource.resource_id' Infores CURIE must come from the Infores namespace
 
 ### error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown
 
@@ -816,7 +816,7 @@
 
 **Context:** edge_id, identifier
 
-**Description:** A 'retrieval_source.resource_id' value must be a registered Infores identifier
+**Description:** A 'RetrievalSource.resource_id' value must be a registered Infores identifier
 
 ### error.knowledge_graph.edge.sources.retrieval_source.resource_id.empty
 
@@ -1183,6 +1183,38 @@
 **Context:** identifier
 
 **Description:** Edge 'attribute_type_id' is deprecated in current model, to be removed in the future. Review Biolink Model for replacement
+
+### warning.knowledge_graph.edge.attribute.attribute_source.infores.missing
+
+**Message:** 'Attribute.attribute_source' identifier is missing
+
+**Context:** edge_id
+
+**Description:** An 'Attribute.attribute_source'  value should not be None or empty
+
+### warning.knowledge_graph.edge.attribute.attribute_source.infores.not_curie
+
+**Message:** One (or more) Infores value(s) is not a valid well-formed CURIE
+
+**Context:** edge_id, identifier
+
+**Description:** An 'Attribute.attribute_source'  Infores value must be a well-formed CURIE
+
+### warning.knowledge_graph.edge.attribute.attribute_source.infores.invalid
+
+**Message:** Invalid Infores namespace
+
+**Context:** edge_id, identifier
+
+**Description:** An 'Attribute.attribute_source'  Infores CURIE must come from the Infores namespace
+
+### warning.knowledge_graph.edge.attribute.attribute_source.infores.unknown
+
+**Message:** Unregistered infores
+
+**Context:** edge_id, identifier
+
+**Description:** An 'Attribute.attribute_source'  value must be a registered Infores identifier
 
 ### warning.knowledge_graph.edge.provenance.multiple_primary
 

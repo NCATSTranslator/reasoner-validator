@@ -1900,7 +1900,11 @@ def test_validate_qualifier_constraints(edge: dict, validation_code: str):
 )
 def test_validate_infores(identifier: str, validation_code: str):
     validator = BiolinkValidator()
-    validator.validate_infores("resource_id", "test_validate_infores", identifier)
+    validator.validate_infores(
+        context="sources.retrieval_source.resource_id",
+        edge_id="test_validate_infores",
+        identifier=identifier
+    )
     check_messages(validator, validation_code)
 
 

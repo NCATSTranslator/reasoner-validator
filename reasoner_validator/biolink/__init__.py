@@ -877,7 +877,13 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                             #       for specified predicates like 'treats' or its descendants
                                             # if attribute_type_id == "biolink:support_graphs":
                                             #     found_support_graphs = False
-                                            pass
+                                            if 'attribute_source' in attribute:
+                                                attribute_source = attribute.get('attribute_source')
+                                                self.validate_infores(
+                                                    context="attribute.attribute_source",
+                                                    edge_id=edge_id,
+                                                    identifier=attribute_source
+                                                )
 
                                 # if not a Biolink model defined attribute term, at least, check if
                                 # the 'attribute_type_id' has a namespace (prefix) known to Biolink.
@@ -1065,7 +1071,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
         :param identifier: candidate (list of) infores curie(s) to be validated.
         :return:
         """
-        code_prefix: str = f"error.knowledge_graph.edge.sources.retrieval_source.{context}.infores"
+        code_prefix: str = f"error.knowledge_graph.edge.{context}.infores"
 
         # sanity check...
         if not identifier:
@@ -1196,7 +1202,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                 resource_id: str = retrieval_source["resource_id"]
                 resource_role: str = retrieval_source["resource_role"]
                 if not self. validate_infores(
-                        context="resource_id",
+                        context="sources.retrieval_source.resource_id",
                         edge_id=edge_id,
                         identifier=resource_id
                 ):
@@ -1233,7 +1239,7 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                             for upstream_resource_id in upstream_resource_ids:
 
                                 if not self.validate_infores(
-                                    context="upstream_resource_ids",
+                                    context="sources.retrieval_source.upstream_resource_ids",
                                     edge_id=edge_id,
                                     identifier=upstream_resource_id
                                 ):
