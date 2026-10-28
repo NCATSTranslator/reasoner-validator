@@ -17,8 +17,7 @@ from reasoner_validator.validator import TRAPIResponseValidator
 from tests import (
     LATEST_TRAPI_RELEASE,
     LATEST_BIOLINK_MODEL_VERSION,
-    SAMPLE_NODES_WITH_ATTRIBUTES,
-    DEFAULT_KL_AND_AT_ATTRIBUTES
+    SAMPLE_NODES_WITH_ATTRIBUTES
 )
 from tests.test_validation_report import check_messages
 
@@ -90,8 +89,7 @@ _TEST_QG_1 = {
 _TEST_KG_EDGE_SOURCES = [
     {
         "resource_id": "infores:chebi",
-        "resource_role": "primary_knowledge_source",
-        "upstream_resource_ids": []
+        "resource_role": "primary_knowledge_source"
     },
     {
         "resource_id": "infores:biothings-explorer",
@@ -119,13 +117,11 @@ _TEST_KG_EDGE_SOURCES = [
 _TEST_KG_EDGE_SOURCES_MISSING_PRIMARY = [
     # {
     #     "resource_id": "infores:chebi",
-    #     "resource_role": "primary_knowledge_source",
-    #     "upstream_resource_ids": []
+    #     "resource_role": "primary_knowledge_source"
     # },
     {
         "resource_id": "infores:biothings-explorer",
-        "resource_role": "aggregator_knowledge_source",
-        "upstream_resource_ids": []
+        "resource_role": "aggregator_knowledge_source"
     },
     {
         "resource_id": "infores:molepro",
@@ -146,13 +142,11 @@ _TEST_KG_EDGE_SOURCES_MISSING_PRIMARY = [
 _TEST_KG_EDGE_SOURCES_MULTIPLE_PRIMARY = [
     {
         "resource_id": "infores:chebi",
-        "resource_role": "primary_knowledge_source",
-        "upstream_resource_ids": []
+        "resource_role": "primary_knowledge_source"
     },
     {
         "resource_id": "infores:drugbank",
-        "resource_role": "primary_knowledge_source",
-        "upstream_resource_ids": []
+        "resource_role": "primary_knowledge_source"
     },
     {
         "resource_id": "infores:biothings-explorer",
@@ -180,8 +174,9 @@ _SHARED_TEST_EDGES = {
            "subject": "NCBIGene:29974",
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
-           "attributes": DEFAULT_KL_AND_AT_ATTRIBUTES,
-
+           "sources": list(),
+           "knowledge_level": "logical_entailment",
+           "agent_type": "manual_agent"
         }
     }
 
@@ -197,14 +192,9 @@ _TEST_ANALYSES = [
     {
         "resource_id": "infores:ara0",
         "edge_bindings": {
-            "treats": [
-                {
-                    "id": "df87ff82",
-                    "attributes": []
-                }
-            ]
+            "treats": {"ids": ["df87ff82"]}
         },
-        "support_graphs": [],
+        "support_graphs": ["a0"],
         "score": 0.7
     }
 ]
@@ -212,18 +202,8 @@ _TEST_ANALYSES = [
 _TEST_RESULTS_1 = [
     {
         "node_bindings": {
-            "type-2 diabetes": [
-                {
-                    "id": TYPE_2_DIABETES_CURIE,
-                    "attributes": []
-                }
-            ],
-            "drug": [
-                {
-                    "id": METFORMIN_CURIE,
-                    "attributes": []
-                }
-            ]
+            "type-2 diabetes": {"ids": [TYPE_2_DIABETES_CURIE]},
+            "drug": {"ids": [METFORMIN_CURIE]}
         },
         "analyses": _TEST_ANALYSES
     }
@@ -235,7 +215,9 @@ _TEST_EDGES_SOURCES_MISSING_PRIMARY = {
            "subject": "NCBIGene:29974",
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
-           "sources": _TEST_KG_EDGE_SOURCES_MISSING_PRIMARY
+           "sources": _TEST_KG_EDGE_SOURCES_MISSING_PRIMARY,
+           "knowledge_level": "logical_entailment",
+           "agent_type": "manual_agent"
         }
     }
 
@@ -284,6 +266,8 @@ _TEST_EDGES_3 = {
            "predicate": "biolink:contributor",
            "object": "ORCID:0000-0002-4447-5978",
            "attributes": [],
+           "knowledge_level": "logical_entailment",
+           "agent_type": "manual_agent"
         }
     }
 
@@ -295,29 +279,14 @@ _TEST_KG_3 = {
 _TEST_RESULTS_2 = [
         {
             "node_bindings": {
-                "paper": [
-                    {
-                        "id": "PMID:11156626",
-                        "attributes": []
-                    }
-                ],
-                "author": [
-                    {
-                        "id": "ORCID:0000-0002-4447-5978",
-                        "attributes": []
-                    }
-                ]
+                "paper": {"ids": ["PMID:11156626"]},
+                "author": {"ids": ["ORCID:0000-0002-4447-5978"]}
             },
             "analyses": [
                 {
                     "resource_id": "infores:ara0",
                     "edge_bindings": {
-                        "citation": [
-                            {
-                                "id": "edge1",
-                                "attributes": []
-                            }
-                        ]
+                        "citation": {"ids": ["edge1"]}
                     },
                     "support_graphs": [],
                     "score": 0.7
@@ -333,6 +302,8 @@ _TEST_EDGES_MULTIPLE_PRIMARY_KS = {
            "predicate": "biolink:physically_interacts_with",
            "object": "PUBCHEM.COMPOUND:597",
            "attributes": [],
+           "knowledge_level": "logical_entailment",
+           "agent_type": "manual_agent"
         }
     }
 
@@ -342,9 +313,8 @@ _TEST_KG_MULTIPLE_PRIMARY_KS = {
     "edges": _TEST_EDGES_MULTIPLE_PRIMARY_KS
 }
 
-# From Implementation Guidelines circa June 2023
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
-    "schema_version": "1.5.0",
+    "schema_version": "2.0.0",
     "message": {
         "query_graph": {
             "nodes": {
@@ -374,43 +344,22 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE = {
                     "subject": METFORMIN_CURIE,
                     "predicate": "biolink:ameliorates_condition",
                     "object": TYPE_2_DIABETES_CURIE,
-                    "sources": _TEST_KG_EDGE_SOURCES
+                    "sources": _TEST_KG_EDGE_SOURCES,
+                    "knowledge_level": "logical_entailment",
+                    "agent_type": "manual_agent"
                 }
             }
         },
         "auxiliary_graphs": {
             "a0": {
-                "edges": [
-                    "e02",
-                    "e12"
-                ]
-            },
-            "a1": {
-                "edges": [
-                    "extra_edge0"
-                ]
-            },
-            "a2": {
-                "edges": [
-                    "extra_edge1"
-                ]
+                "edges": ["df87ff82"]
             }
         },
         "results": [
             {
                 "node_bindings": {
-                    "type-2 diabetes": [
-                        {
-                            "id": TYPE_2_DIABETES_CURIE,
-                            "attributes": []
-                        }
-                    ],
-                    "drug": [
-                        {
-                            "id": METFORMIN_CURIE,
-                            "attributes": []
-                        }
-                    ]
+                    "type-2 diabetes": {"ids": [TYPE_2_DIABETES_CURIE]},
+                    "drug": {"ids": [METFORMIN_CURIE]}
                 },
                 "analyses": _TEST_ANALYSES
             }
@@ -438,10 +387,10 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH = deepcopy(_TEST_LATEST
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH["message"].pop("auxiliary_graphs")
 
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION = deepcopy(_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE)
-_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION["schema_version"] = "1.6.0"
+_TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION["schema_version"] = "2.0.0"
 
 _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
-    "biolink_version": "2.2.0",
+    "biolink_version": LATEST_BIOLINK_MODEL_VERSION,
     "message": {
         "query_graph": {
             "nodes": {
@@ -466,7 +415,9 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
                     "subject": TYPE_2_DIABETES_CURIE,
                     "predicate": "biolink:treated_by",
                     "object": METFORMIN_CURIE,
-                    "sources": _TEST_KG_EDGE_SOURCES
+                    "sources": _TEST_KG_EDGE_SOURCES,
+                    "knowledge_level": "logical_entailment",
+                    "agent_type": "manual_agent"
                 }
             }
         },
@@ -491,29 +442,14 @@ _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION = {
         "results": [
             {
                 "node_bindings": {
-                    "type-2 diabetes": [
-                        {
-                            "id": TYPE_2_DIABETES_CURIE,
-                            "attributes": []
-                        }
-                    ],
-                    "drug": [
-                        {
-                            "id": METFORMIN_CURIE,
-                            "attributes": []
-                        }
-                    ]
+                    "type-2 diabetes": {"ids": [TYPE_2_DIABETES_CURIE]},
+                    "drug": {"ids": [METFORMIN_CURIE]}
                 },
                 "analyses": [
                     {
                         "resource_id": "infores:ara0",
                         "edge_bindings": {
-                            "treats": [
-                                {
-                                    "id": "df87ff82",
-                                    "attributes": []
-                                }
-                            ]
+                            "treats": {"ids": ["df87ff82"]}
                         },
                         "support_graphs": [],
                         "score": 0.7
@@ -537,7 +473,9 @@ for subject_id in SAMPLE_NODES:
             SAMPLE_EDGES[f"e{subject_id}{object_id}"] = {
                 "subject": subject_id,
                 "predicate": "biolink:related_to",
-                "object": object_id
+                "object": object_id,
+               "knowledge_level": "logical_entailment",
+               "agent_type": "manual_agent"
             }
 
 TEST_GRAPH: Dict = {
@@ -583,15 +521,66 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
     assert len(kg_sample["nodes"]) == number_of_nodes_returned
     assert len(kg_sample["edges"]) == number_of_edges_returned
 
+PROTEIN_CURIE = "NCBIRefSeq:NP_000544.2"
+TRANSCRIPT_CURIE = "NCBIRefSeq:XM_011544639.4"
+
+_TEST_NONCANONICAL_PREDICATE = {
+    "biolink_version": LATEST_BIOLINK_MODEL_VERSION,
+    "message": {
+        "query_graph": {
+            "nodes": {
+                "protein": {"ids": [PROTEIN_CURIE],"categories": ["biolink:Protein"]},
+                "transcript": {"categories": ["biolink:Transcript"]}
+            },
+            "edges": {
+                "translation of": {
+                    "subject": "protein",
+                    "predicates": ["biolink:translation_of"],
+                    "object": "transcript"
+                }
+            }
+        },
+        "knowledge_graph": {
+            "nodes": {
+                PROTEIN_CURIE: {"name": "WRN", "categories": ["biolink:Protein"]},
+                TRANSCRIPT_CURIE: {"categories": ["biolink:Transcript"]}
+            },
+            "edges": {
+                "df87ffed": {
+                    "subject": PROTEIN_CURIE,
+                    "predicate": "biolink:translation_of",
+                    "object": TRANSCRIPT_CURIE,
+                    "sources": _TEST_KG_EDGE_SOURCES,
+                    "knowledge_level": "logical_entailment",
+                    "agent_type": "manual_agent"
+                }
+            }
+        },
+        "results": [
+            {
+                "node_bindings": {
+                    "protein": {"ids": [PROTEIN_CURIE]},
+                    "transcript": {"ids": [TRANSCRIPT_CURIE]}
+                },
+                "analyses": [
+                    {
+                        "resource_id": "infores:ara0",
+                        "edge_bindings": {
+                            "translation of": {"ids": ["df87ffed"]}
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
 
 @pytest.mark.parametrize(
     "response,trapi_version,biolink_version,target_provenance,strict_validation,code",
     [
         (   # Query 0 - Completely empty Response.Message
             {
-                "message": {
-
-                }
+                "message": { }
             },
             LATEST_TRAPI_RELEASE,
             None,
@@ -1108,24 +1097,12 @@ def test_sample_graph(edges_limit: int, number_of_nodes_returned: int, number_of
             True,
             ""   # this filtered workflow spec should pass
         ),
-        # (   # TODO: This esoteric test fails for now so we remove it for now
-        #     Query ## - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
-        #     #            guidelines...) but add the 'schema_version' just for fun and profit
-        #     _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_SCHEMA_VERSION,
-        #     None,
-        #     "4.1.4",
-        #     None,
-        #     True,
-        #     "critical.trapi.validation"   # trying to validate a 1.5.0 schema against 1.4.2 will fail!
-        # ),
-        (   # Query 27 - We throw a full TRAPI JSON example here (taken directly from the TRAPI implementation
-            #            guidelines...) but explicitly specify the 'biolink_version == 2.5.8' just for fun and profit
-            _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITH_BIOLINK_VERSION,
+        (   # Query 27: Non-canonical predicate
+            _TEST_NONCANONICAL_PREDICATE,
             LATEST_TRAPI_RELEASE,
             None,
             None,
             True,
-            # Validation with 2.4.8 generates a warning
             "warning.knowledge_graph.edge.predicate.non_canonical"
         )
     ]
@@ -1146,7 +1123,6 @@ def test_check_biolink_model_compliance_of_trapi_response(
     )
     validator.check_compliance_of_trapi_response(response=response)
     check_messages(validator, code, no_errors=True)
-
 
 
 def test_compliance_in_isolation(
@@ -1188,11 +1164,9 @@ def test_compliance_in_isolation(
 @pytest.mark.parametrize(
     "response,trapi_version,biolink_version,sources,strict_validation,code",
     [
-        (   # Query 0 - Completely empty Response.Message
+        (   # Query 0 - Completely empty Response.Message; allowed because no message fields are 'required: true'?
             {
-                "message": {
-
-                }
+                "message": {}
             },
             LATEST_TRAPI_RELEASE,
             None,
@@ -1292,8 +1266,7 @@ def test_compliance_in_isolation(
             ""
         ),
         (
-            # Query 7 - Full fake sample Response originally derived
-            #           from the TRAPI 1.4.0 implementation guidelines
+            # Query 7 - Full fake sample Response
             _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE,
             LATEST_TRAPI_RELEASE,
             None,
@@ -1302,10 +1275,8 @@ def test_compliance_in_isolation(
             ""  # would be a "critical.trapi.validation" if the schema was unpatched
         ),
         (
-            # Query 8 - Sample Response from TRAPI 1.4.0 implementation guidelines without auxiliary_graph
+            # Query 8 - Sample Response without auxiliary_graph
             _TEST_LATEST_TRAPI_RELEASE_FULL_SAMPLE_WITHOUT_AUX_GRAPH,
-            # 25 June 2023 1.4.0 trapi_version with a
-            # defective auxiliary_graphs schema model
             LATEST_TRAPI_RELEASE,
             None,
             None,
@@ -1345,7 +1316,7 @@ sample_kg_edge_abstract_predicate = sample_kg["edges"]["df87ff82"]["predicate"] 
     ]
 )
 def test_dump_report_of_biolink_model_compliance_of_trapi_response_with_errors(response: Dict):
-    validator: TRAPIResponseValidator = TRAPIResponseValidator()
+    validator: TRAPIResponseValidator = TRAPIResponseValidator(trapi_version=LATEST_TRAPI_RELEASE)
     validator.check_compliance_of_trapi_response(response=response)
     validator.dump(file=stderr)
     print("\n"+"="*80+"\n", file=stderr)
@@ -1597,7 +1568,7 @@ SAMPLE_TEST_CASE = {
 SAMPLE_QUERY_GRAPH = {
     "nodes": {
         "diabetes mellitus": {
-            "ids": ["MONDO:0005015"]  # generic 'diabetes mellitus' MONDO term
+            "ids": [TYPE_2_DIABETES_CURIE]
         },
         "drug": {
             "categories": ["biolink:Drug"]
@@ -1621,7 +1592,9 @@ SAMPLE_TEST_EDGES = {
     "df879999": {
         "subject": TYPE_2_DIABETES_CURIE,
         "predicate": "biolink:treated_by",
-        "object": METFORMIN_CURIE
+        "object": METFORMIN_CURIE,
+        "knowledge_level": "logical_entailment",
+        "agent_type": "manual_agent"
     }
 }
 SAMPLE_TEST_GRAPH = {
@@ -1632,32 +1605,18 @@ SAMPLE_TEST_GRAPH = {
 SAMPLE_TEST_RESULTS = [
     {
         "node_bindings": {
-            "diabetes mellitus": [
-                {
-                    "id": TYPE_2_DIABETES_CURIE,  # actually bound knowledge graph node is 'type 2 diabetes mellitus'
-                    "query_id": "MONDO:0005015",  # QNode identifier is the MONDO parent concept of 'diabetes mellitus'
-                    "attributes": []
-                }
-            ],
-            "drug": [
-                {
-                    "id": METFORMIN_CURIE,
-                    "attributes": []
-                }
-            ]
+            "diabetes mellitus": {"ids": [TYPE_2_DIABETES_CURIE]},
+            "drug": {"ids": [METFORMIN_CURIE]}
         },
         "analyses": [
             {
                 "resource_id": "infores:ara0",
                 "edge_bindings": {
-                    "treated_by": [
-                        {
-                            "id": "df879999",
-                            "attributes": []
-                        }
-                    ]
+                    "treated_by": {"ids": ["df879999"]}
                 },
-                "support_graphs": [],
+                # actually not required, since cannot be empty
+                # but no auxiliary_graphs are in the message
+                # "support_graphs": [],
                 "score": 0.7
             }
         ]
@@ -1667,32 +1626,19 @@ SAMPLE_TEST_RESULTS = [
 SAMPLE_TEST_INCOMPLETE_RESULTS = [
     {
         "node_bindings": {
-            "diabetes mellitus": [
-                {
-                    "id": TYPE_2_DIABETES_CURIE,
-                    "attributes": []
-                }
-            ],
-            "drug": [
-                {
-                    "id": METFORMIN_CURIE,
-                    "attributes": []
-                }
-            ]
+            "diabetes mellitus": {"ids": [TYPE_2_DIABETES_CURIE]},
+            "drug": {"ids": [METFORMIN_CURIE]}
         },
         "analyses": [
             {
                 "resource_id": "infores:ara0",
                 # not pointing to an edge in the existing sample KG
                 "edge_bindings": {
-                    "treated_by": [
-                        {
-                            "id": "abcde999",
-                            "attributes": []
-                        }
-                    ]
+                    "treated_by": {"ids": ["abcde999"]}
                 },
-                "support_graphs": [],
+                # actually not required, since cannot be empty
+                # but no auxiliary_graphs are in the message
+                # "support_graphs": [],
                 "score": 0.7
             }
         ]
@@ -1895,10 +1841,7 @@ SAMPLE_TEST_INCOMPLETE_RESULTS = [
     ]
 )
 def test_case_input_found_in_response(testcase, response, code):
-    validator = TRAPIResponseValidator(
-        trapi_version=LATEST_TRAPI_RELEASE,
-        biolink_version=LATEST_BIOLINK_MODEL_VERSION
-    )
+    validator = TRAPIResponseValidator()
     outcome: bool = validator.testcase_input_found_in_response(testcase=testcase, response=response)
     assert not outcome if code.startswith("error") else True
     check_messages(validator, code)

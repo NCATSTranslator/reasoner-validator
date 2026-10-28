@@ -6,7 +6,7 @@
 [![Run tests](https://github.com/NCATSTranslator/reasoner-validator/actions/workflows/test.yml/badge.svg)](https://github.com/NCATSTranslator/reasoner-validator/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-This package provides software methods to Translator components (e.g. Knowledge Providers and Autonomous Relay Agents) using *any version* of the
+This package provides software methods to validate Translator components (e.g. Knowledge Providers and Autonomous Relay Agents) using release 2.0 of the
 [Translator Reasoner API (TRAPI)](https://github.com/NCATSTranslator/ReasonerAPI/blob/master/README.md) and the [Biolink Model](https://github.com/biolink/biolink-model/blob/master/README.md).
 
 See [the full documentation](https://ncatstranslator.github.io/reasoner-validator/) and [the contributor guidelines](https://github.com/NCATSTranslator/reasoner-validator/blob/master/.github/CONTRIBUTING.md).
@@ -15,7 +15,7 @@ See [the full documentation](https://ncatstranslator.github.io/reasoner-validato
 
 ## Python Dependency
 
-The Reasoner Validator now requires Python release 3.9 to 3.12 (library dependencies now force this). The latest version 3.12 is recommended.
+The Reasoner Validator now requires Python release 3.10 to 3.12 (library dependencies now force this); however, 3.12 is recommended.
 
 ## Installing the Module
 
@@ -133,8 +133,8 @@ The web service has a single POST endpoint `/validate` taking a simple JSON requ
 
 ```json
 {
-  "trapi_version": "1.6.1",
-  "biolink_version": "4.2.5",
+  "trapi_version": "2.0.0",
+  "biolink_version": "4.4.5",
   "target_provenance": {
     "ara_source": "infores:aragorn",
     "kp_source": "infores:panther",
@@ -171,46 +171,271 @@ Go to http://localhost/docs to see the service documentation and to use the simp
 
 ### Typical Output
 
-As an example of output to expect, if one posts the following TRAPI Response JSON data structure to the **/validate** endpoint:
+As an example of output to expect, if one posts the following TRAPI 2.0 Response JSON data structure to the **/validate** endpoint:
 
 ```json
 {
-  "trapi_version": "1.6.0",
-  "biolink_version": "4.2.5",
+  "trapi_version": "2.0.0",
+  "biolink_version": "4.4.5",
   "response": {
       "message": {
         "query_graph": {
-            "nodes": {
-                "type-2 diabetes": {"ids": ["MONDO:0005148"]},
-                "drug": {"categories": ["biolink:Drug"]}
+          "nodes": {
+            "nA": {
+              "categories": [
+                "biolink:Drug"
+              ]
             },
-            "edges": {
-                "treats": {"subject": "drug", "predicates": ["biolink:treats"], "object": "type-2 diabetes"}
+            "nI": {
+              "categories": [
+                "biolink:Gene"
+              ],
+              "set_interpretation": "COLLATE"
+            },
+            "nB": {
+              "ids": [
+                "MONDO:111"
+              ],
+              "categories": [
+                "biolink:Disease"
+              ]
             }
+          },
+          "edges": {
+            "e1": {
+              "subject": "nA",
+              "object": "nI",
+              "constraints": {
+                "sources": {
+                  "behavior": "DENY",
+                  "values": [
+                    "infores:semmeddb"
+                  ]
+                },
+                "qualifiers": [
+                  {
+                    "biolink:object_direction_qualifier": "increased",
+                    "biolink:object_aspect_qualifier": "activity_or_abundance"
+                  }
+                ]
+              }
+            },
+            "e2": {
+              "subject": "nI",
+              "object": "nB",
+              "constraints": {
+                "knowledge_level": {
+                  "behavior": "ALLOW",
+                  "values": [
+                    "knowledge_assertion",
+                    "text_co_occurrence"
+                  ]
+                },
+                "agent_type": {
+                  "behavior": "ALLOW",
+                  "values": [
+                    "automated_agent"
+                  ]
+                },
+                "attributes": [
+                  {
+                    "id": "biolink:z_score",
+                    "operator": ">",
+                    "value": 5
+                  }
+                ]
+              }
+            }
+          }
         },
         "knowledge_graph": {
-            "nodes": {
-                "MONDO:0005148": {"name": "type-2 diabetes"},
-                "CHEBI:6801": {"name": "metformin", "categories": ["biolink:Drug"]}
+          "nodes": {
+            "MONDO:111": {
+              "categories": [
+                "biolink:Disease"
+              ],
+              "name": "type 1 diabetes mellitus"
             },
-            "edges": {
-                "df87ff82": {"subject": "CHEBI:6801", "predicate": "biolink:treats", "object": "MONDO:0005148"}
+            "CHEBI:1234": {
+              "categories": [
+                "biolink:Drug"
+              ],
+              "name": "Metformin"
+            },
+            "NCBIGene:7777": {
+              "categories": [
+                "biolink:Gene"
+              ],
+              "name": "EIF2_AK3"
+            },
+            "NCBIGene:5555": {
+              "categories": [
+                "biolink:Gene"
+              ],
+              "name": "HMOX1"
             }
+          },
+          "edges": {
+            "e2_B": {
+              "predicate": "biolink:affects",
+              "subject": "NCBIGene:7777",
+              "object": "MONDO:111",
+              "knowledge_level": "knowledge_assertion",
+              "agent_type": "automated_agent",
+              "sources": [
+                {
+                  "resource_id": "infores:ctd",
+                  "resource_role": "primary_knowledge_source"
+                }
+              ],
+              "attributes": [
+                {
+                  "attribute_type_id": "biolink:z_score",
+                  "value": 7.963
+                }
+              ]
+            },
+            "e1_B": {
+              "predicate": "biolink:affects",
+              "subject": "CHEBI:1234",
+              "object": "NCBIGene:7777",
+              "knowledge_level": "not_provided",
+              "agent_type": "text_mining_agent",
+              "sources": [
+                {
+                  "resource_id": "infores:text-mining-provider-targeted",
+                  "resource_role": "primary_knowledge_source"
+                }
+              ],
+              "qualifiers": [
+                {
+                  "qualifier_type_id": "biolink:qualified_predicate",
+                  "qualifier_value": "biolink:causes"
+                },
+                {
+                  "qualifier_type_id": "biolink:object_direction_qualifier",
+                  "qualifier_value": "increased"
+                },
+                {
+                  "qualifier_type_id": "biolink:object_aspect_qualifier",
+                  "qualifier_value": "activity_or_abundance"
+                }
+              ]
+            },
+            "e2_A": {
+              "predicate": "biolink:occurs_together_in_literature_with",
+              "subject": "NCBIGene:5555",
+              "object": "MONDO:111",
+              "knowledge_level": "text_co_occurrence",
+              "agent_type": "data_analysis_pipeline",
+              "sources": [
+                {
+                  "resource_id": "infores:diseases",
+                  "resource_role": "primary_knowledge_source"
+                }
+              ],
+              "attributes": [
+                {
+                  "attribute_type_id": "biolink:z_score",
+                  "value": 6.435
+                }
+              ]
+            },
+            "e1_A": {
+              "predicate": "biolink:affects",
+              "subject": "CHEBI:1234",
+              "object": "NCBIGene:5555",
+              "knowledge_level": "knowledge_assertion",
+              "agent_type": "manual_agent",
+              "sources": [
+                {
+                  "resource_id": "infores:chembl",
+                  "resource_role": "primary_knowledge_source"
+                }
+              ],
+              "qualifiers": [
+                {
+                  "qualifier_type_id": "biolink:qualified_predicate",
+                  "qualifier_value": "biolink:causes"
+                },
+                {
+                  "qualifier_type_id": "biolink:object_direction_qualifier",
+                  "qualifier_value": "increased"
+                },
+                {
+                  "qualifier_type_id": "biolink:object_aspect_qualifier",
+                  "qualifier_value": "activity_or_abundance"
+                }
+              ]
+            }
+          }
         },
         "results": [
-            {
-                "node_bindings": {
-                    "type-2 diabetes": [{"id": "MONDO:0005148"}],
-                    "drug": [{"id": "CHEBI:6801"}]
-                },
+          {
+            "node_bindings": {
+              "nA": {
+                "ids": [
+                  "CHEBI:1234"
+                ]
+              },
+              "nI": {
+                "ids": [
+                  "NCBIGene:5555",
+                  "NCBIGene:7777"
+                ]
+              },
+              "nB": {
+                "ids": [
+                  "MONDO:111"
+                ]
+              }
+            },
+            "analyses": [
+              {
+                "resource_id": "infores:retriever",
                 "edge_bindings": {
-                    "treats": [{"id": "df87ff82"}]
+                  "e1": {
+                    "ids": [
+                      "e1_A",
+                      "e1_B"
+                    ]
+                  },
+                  "e2": {
+                    "ids": [
+                      "e2_A",
+                      "e2_B"
+                    ]
+                  }
                 }
-            }
+              }
+            ]
+          }
         ]
       },
-      "workflow": [{"id": "annotate"}]
-  }
+      "parameters": {
+        "log_level": "DEBUG",
+        "bypass_cache": true,
+        "timeout": 300,
+        "tiers": [
+          1
+        ]
+      },
+      "biolink_version": "4.3.2",
+      "schema_version": "1.6.0",
+      "status": "Complete",
+      "logs": [
+        {
+          "level": "INFO",
+          "message": "Begin processing...",
+          "timestamp": "1"
+        },
+        {
+          "level": "DEBUG",
+          "message": "Found 2 starting branches...",
+          "timestamp": "2"
+        }
+      ]
+    }
 }
 ```
 
@@ -245,8 +470,8 @@ one should typically get a response body something like the following JSON valid
       }
     }
   },
-  "trapi_version": "v1.6.0",
-  "biolink_version": "4.2.5"
+  "trapi_version": "v2.0.0-beta2",
+  "biolink_version": "4.4.5"
 }
 ```
 
@@ -295,6 +520,7 @@ Summary of earlier releases and current Change Log is [here](CHANGELOG.md).
 
 ## Code Limitations (implied Future Work?)
 
+- The v7.0.0 release of the reasoner-validator is only warranted to validate TRAPI 2.0.* responses.
 - The release of the reasoner-validator after v5.0.0 will not validate TRAPI JSON data models prior to 1.5.0 (in fact, its behavior will be undefined for such data).
 - Biolink Model release <= 2.4.8 versus 3.0.0 validation: the reasoner-validator uses the Biolink Model Toolkit. As it happens, the toolkit is not backwards compatible with at least one Biolink Model structural change from release 2.#.# to 3.#.#: the tagging of 'canonical' predicates. That is, the 0.8.10++ toolkit reports canonical <= 2.4.8 model predicates as 'non-canonical'.
 - The web service validation doesn't do deep validation of the Results part of a TRAPI Message

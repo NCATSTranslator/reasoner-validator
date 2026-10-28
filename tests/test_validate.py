@@ -15,7 +15,8 @@ from reasoner_validator.trapi import (
 )
 from tests import (
     LATEST_TEST_RELEASES,
-    ALL_TEST_VERSIONS
+    ALL_TEST_VERSIONS,
+    TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE
 )
 
 
@@ -101,8 +102,7 @@ def test_load_master_schema():
 def test_message():
     reporter = TRAPISchemaValidator(
         default_test="test_message",
-        default_target="Test Message",
-        trapi_version=LATEST_TRAPI_RELEASE
+        default_target="Test Message"
     )
     assert reporter.get_trapi_version() == LATEST_TRAPI_RELEASE
     assert not reporter.has_messages()
@@ -129,76 +129,16 @@ def test_query_and_version_completion(trapi_version: str):
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_trapi_1_5_edgebinding(trapi_version: str):
+def test_post_trapi_2_0_edgebindings(trapi_version: str):
     """Test TRAPIValidator(trapi_version=query).validate_EdgeBinding()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    # EdgeBinding "attributes" are "required" but may be an empty JSON Array...
     validator.validate({
-        "id": "hello",
-        "attributes": []
-    }, "EdgeBinding")
-    # ... but if 'attributes' are provided, they must be well-formed,
-    #     with valid 'attribute_type_id' and 'value' JSON properties
-    validator.validate({
-        "id": "hello",
-        "attributes": [
-            {
-                "attribute_type_id": "biolink:synonym",
-                "value": "some-synonym"
-            }
-        ]
+        "ids": ["hello"]
     }, "EdgeBinding")
     with pytest.raises(ValidationError):
         validator.validate({
             "foo": {},
         }, "EdgeBinding")
-
-
-@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_nullable(trapi_version: str):
-    """Test nullable categories property."""
-    qnode = {
-        "categories": None
-    }
-    TRAPISchemaValidator(trapi_version=trapi_version).validate(qnode, "QNode")
-    # I cannot really trigger anything using 'with pytest.raises(ValidationError)'
-    # since QNode has 'additionalProperties: true' but no 'required:' properties
-
-
-@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_nullable_message_properties(trapi_version: str):
-    """Test nullable message properties."""
-    validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    message = {
-        "knowledge_graph": None,
-        "query_graph": None,
-        "results": None,
-    }
-    validator.validate(message, "Message")
-    with pytest.raises(ValidationError):
-        validator.validate({
-            "foo": {},  # additionalProperties: false and 'foo' is not a documented property...
-        }, "Message")
-
-
-@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_nullable_query_level_properties(trapi_version: str):
-    """Test nullable TRAPI Query level properties."""
-    validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    trapi_query = {
-        "message": {
-            "knowledge_graph": None,
-            "query_graph": None,
-            "results": None,
-        },
-        "log_level": "INFO",
-        "workflow": None
-    }
-    validator.validate(trapi_query, "Query")
-    with pytest.raises(ValidationError):
-        validator.validate({
-            "foo": {},  # missing required: message
-        }, "Query")
 
 
 SAMPLE_QUERY = {
@@ -307,7 +247,7 @@ def _query_trapi_workflow_properties_template(trapi_version: str, sample_workflo
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_1_5_query_latest_trapi_workflow_properties(trapi_version: str):
+def test_latest_trapi_workflow_properties(trapi_version: str):
     _query_trapi_workflow_properties_template(trapi_version, SAMPLE_WORKFLOW_1_5)
 
 
@@ -315,16 +255,8 @@ def test_1_5_query_latest_trapi_workflow_properties(trapi_version: str):
 def test_nullable_async_query_level_properties(trapi_version: str):
     """Test nullable TRAPI Query level properties."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    async_trapi_query = {
-        "callback": "http://mykp.ncats.io/callback",
-        "message": {
-            "knowledge_graph": None,
-            "query_graph": None,
-            "results": None,
-        },
-        "log_level": "INFO",
-        "workflow": None
-    }
+    async_trapi_query: dict = deepcopy(TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE)
+    async_trapi_query["callback"] = "http://mykp.ncats.io/callback"
     validator.validate(async_trapi_query, "AsyncQuery")
     with pytest.raises(ValidationError):
         validator.validate({
@@ -332,162 +264,24 @@ def test_nullable_async_query_level_properties(trapi_version: str):
         }, "AsyncQuery")
 
 
-@pytest.mark.parametrize("trapi_version", ALL_TEST_VERSIONS)
-def test_nullable_response_properties(trapi_version: str):
-    """Test nullable TRAPI Query level properties."""
-    validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    async_trapi_query = {
-        "message": {
-            "knowledge_graph": None,
-            "query_graph": None,
-            "results": None,
-        },
-        "workflow": None
-    }
-    validator.validate(async_trapi_query, "Response")
-    with pytest.raises(ValidationError):
-        validator.validate({
-            "foo": {},  # missing required: message
-        }, "Response")
-
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
 def test_latest_trapi_message_results_component_validation(trapi_version: str):
     """Test Message.Results component in TRAPIValidator(trapi_version=query).validate()."""
-    #     Result:
-    #       type: object
-    #       description: >-
-    #         A Result object specifies the nodes and edges in the knowledge graph
-    #         that satisfy the structure or conditions of a user-submitted query
-    #         graph. It must contain a NodeBindings object (list of query graph node
-    #         to knowledge graph node mappings) and an EdgeBindings object (list of
-    #         query graph edge to knowledge graph edge mappings).
-    #       properties:
-    #         node_bindings:
-    #           type: object
-    #           description: >-
-    #             The dictionary of Input Query Graph to Result Knowledge Graph node
-    #             bindings where the dictionary keys are the key identifiers of the
-    #             Query Graph nodes and the associated values of those keys are
-    #             instances of NodeBinding schema type (see below). This value is an
-    #             array of NodeBindings since a given query node may have multiple
-    #             knowledge graph Node bindings in the result.
-    #           additionalProperties:
-    #             type: array
-    #             items:
-    #               $ref: '#/components/schemas/NodeBinding'
-    #         analyses:
-    #           type: array
-    #           description: >-
-    #             The list of all Analysis components that contribute to the result.
-    #             See below for Analysis components.
-    #           items:
-    #             $ref: '#/components/schemas/Analysis'
-    #       additionalProperties: true
-    #       required:
-    #         - node_bindings
-    #         - analyses
-    # where an Analysis object is:
-    #     Analysis:
-    #       type: object
-    #       description: >-
-    #         An analysis is a dictionary that contains information about
-    #         the result tied to a particular service. Each Analysis is
-    #         generated by a single reasoning service, and describes the
-    #         outputs of analyses performed by the reasoner on a particular
-    #         Result (e.g. a result score), along with provenance information
-    #         supporting the analysis (e.g. method or data that supported
-    #         generation of the score).
-    #       properties:
-    #         resource_id:
-    #           $ref: '#/components/schemas/CURIE'
-    #           description: The id of the service generating and using this Anlysis
-    #         score:
-    #           type: number
-    #           format: float
-    #           example: 163.233
-    #           description: >-
-    #             A numerical score associated with this result indicating the
-    #             relevance or confidence of this result relative to others in the
-    #             returned set. Higher MUST be better.
-    #           nullable: true
-    #         edge_bindings:
-    #           type: object
-    #           description: >-
-    #             The dictionary of input Query Graph to Knowledge Graph edge
-    #             bindings where the dictionary keys are the key identifiers of the
-    #             Query Graph edges and the associated values of those keys are
-    #             instances of EdgeBinding schema type (see below). This value is an
-    #             array of EdgeBindings since a given query edge may resolve to
-    #             multiple Knowledge Graph Edges.
-    #           additionalProperties:
-    #             type: array
-    #             items:
-    #               $ref: '#/components/schemas/EdgeBinding'
-    #         support_graphs:
-    #           type: array
-    #           description: >-
-    #             This is a list of references to Auxiliary Graph instances
-    #             that supported the analysis of a Result as performed by the
-    #             reasoning service. Each item in the list is the key of a
-    #             single Auxiliary Graph.
-    #           nullable: true
-    #           items:
-    #             type: string
-    #         scoring_method:
-    #           type: string
-    #           description: >-
-    #             An identifier and link to an explanation for the method used
-    #             to generate the score
-    #           nullable: true
-    #         attributes:
-    #           type: array
-    #           description: >-
-    #             The attributes of this particular Analysis.
-    #           items:
-    #             $ref: '#/components/schemas/Attribute'
-    #           nullable: true
-    #       additionalProperties: true
-    #       required:
-    #         - resource_id
-    #         - edge_bindings
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     sample_message_result = {
         "node_bindings": {
-            "a": [
-                {
-                    # Attributes are a "required, nullable: false"
-                    # value of type array (but which may be empty)
-                    "attributes": [],
-                    "id": "SGD:S000000065",
-                    "qnode_id": "SGD:S000000065",
-                    # "query_id": "not required"
-                }
-            ],
-            "b": [
-                {
-                    # Attributes are a "required, nullable: false"
-                    # value of type array (but which may be empty)
-                    "attributes": [],
-                    "id": "GO:1905776",
-                    # "query_id": "not required"
-                }
-            ]
+            "a": {"ids": ["SGD:S000000065"]},
+            "b": {"ids": ["GO:1905776"]}
         },
         "analyses": [
             {
                 "resource_id": "infores:arax",
                 "edge_bindings": {
-                    "ab": [
-                        {
-                            # Attributes are a "required, nullable: false"
-                            # value of type array (but which may be empty)
-                            "attributes": [],
-                            "id": "uuid:7884e454-d09c-11ec-b00f-0242ac110002"
-                        }
-                    ]
-                },
-                "score": None
+                    "ab": {
+                        "ids": ["uuid:7884e454-d09c-11ec-b00f-0242ac110002"]
+                    }
+                }
             }
         ]
     }
@@ -506,16 +300,7 @@ def test_latest_trapi_message_results_component_validation(trapi_version: str):
 def test_latest_trapi_message_node_binding_component_validation(trapi_version: str):
     """Test NodeBinding component in TRAPIValidator(trapi_version=query).validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    sample_node_binding = {
-        "id": "SGD:S000000065",
-        # Attributes are a "required, nullable: false"
-        # value of type array (but which may be empty)
-        "attributes": [],
-        # 'qnode_id' is not formally specified in spec, but it is an
-        # example of an additionalProperties: true permitted field
-        "qnode_id": "SGD:S000000065",
-        # "query_id": "not required"
-    }
+    sample_node_binding = {"ids": ["SGD:S000000065"]}
 
     validator.validate(sample_node_binding, "NodeBinding")
     with pytest.raises(ValidationError):
@@ -532,8 +317,7 @@ def test_message_attribute_component_validation(trapi_version: str):
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     sample_attribute = {
         "attribute_type_id": "some_attribute",
-        "value": "value",
-        "value_type_id": None
+        "value": "value"
     }
     validator.validate(sample_attribute, "Attribute")
     with pytest.raises(ValidationError):
@@ -544,7 +328,7 @@ def test_message_attribute_component_validation(trapi_version: str):
         }, "Attribute")
     with pytest.raises(ValidationError):
         validator.validate({
-            # these two attributes don't have 'nullable: true' so they should have values
+            # these three attributes don't have 'nullable: true' so they should have values
             "attribute_type_id": None,
             "value": None
         }, "Attribute")
@@ -561,22 +345,24 @@ SAMPLE_RETRIEVAL_SOURCE = {
 }
 
 
-SAMPLE_LATEST_TEST_EDGE = {
+SAMPLE_TEST_EDGE = {
     "subject": "MONDO:0011382",   # subject must be a CURIE
     "predicate": "biolink:related_to",  # subject must be a biolink Predicate CURIE
     "object": "UniProtKB:P00738",   # subject must be a CURIE
     "sources": [  # an array of RetrievalSource
         SAMPLE_RETRIEVAL_SOURCE
-    ]
+    ],
+    "knowledge_level": "logical_entailment",
+    "agent_type": "automated_agent"
 }
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
-def test_latest_trapi_good_message_edge_component_validation(trapi_version: str):
+def test_post_2_0_trapi_good_message_edge_component_validation(trapi_version: str):
     """Test 'good' Message.KnowledgeGraph.Edge component in
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
-    validator.validate(SAMPLE_LATEST_TEST_EDGE, "Edge")
+    validator.validate(SAMPLE_TEST_EDGE, "Edge")
 
 
 @pytest.mark.parametrize("trapi_version", LATEST_TEST_RELEASES)
@@ -598,11 +384,11 @@ def test_latest_trapi_null_message_edge_component_validation(trapi_version: str)
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
-        null_subject: Dict[str, Optional] = SAMPLE_LATEST_TEST_EDGE.copy()
+        null_subject: Dict[str, Optional] = SAMPLE_TEST_EDGE.copy()
         null_subject["subject"] = None
         validator.validate(null_subject, "Edge")
     with pytest.raises(ValidationError):
-        null_predicate: Dict[str, Optional] = SAMPLE_LATEST_TEST_EDGE.copy()
+        null_predicate: Dict[str, Optional] = SAMPLE_TEST_EDGE.copy()
         null_predicate["predicate"] = None
         validator.validate(null_predicate, "Edge")
 
@@ -613,7 +399,7 @@ def test_latest_trapi_flawed_message_edge_component_validation(trapi_version: st
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
-        faulty_predicate = SAMPLE_LATEST_TEST_EDGE.copy()
+        faulty_predicate = SAMPLE_TEST_EDGE.copy()
         # predicate is not a Biolink predicate term CURIE
         faulty_predicate["predicate"] = "not-a-biolink-predicate-CURIE"
         validator.validate(faulty_predicate, "Edge")
@@ -625,22 +411,22 @@ def test_latest_trapi_more_flawed_message_edge_retrieval_sources_component_valid
        TRAPIValidator(trapi_version="LATEST_TEST_VERSIONS").validate()."""
     validator = TRAPISchemaValidator(trapi_version=trapi_version)
     with pytest.raises(ValidationError):
-        faulty_target_provenance = SAMPLE_LATEST_TEST_EDGE.copy()
+        faulty_target_provenance = SAMPLE_TEST_EDGE.copy()
         # "target_provenance" is not an array (of RetrievalSource objects)
         faulty_target_provenance["target_provenance"] = "not-an-array"
         validator.validate(faulty_target_provenance, "Edge")
     with pytest.raises(ValidationError):
-        faulty_target_provenance = SAMPLE_LATEST_TEST_EDGE.copy()
+        faulty_target_provenance = SAMPLE_TEST_EDGE.copy()
         # items in the "target_provenance" array must be a non-empty array of (RetrievalSource) objects
         faulty_target_provenance["target_provenance"] = list()
         validator.validate(faulty_target_provenance, "Edge")
     with pytest.raises(ValidationError):
-        faulty_target_provenance = SAMPLE_LATEST_TEST_EDGE.copy()
+        faulty_target_provenance = SAMPLE_TEST_EDGE.copy()
         # items in the "target_provenance" array must be (RetrievalSource) objects
         faulty_target_provenance["target_provenance"] = ["not-a-json-object"]
         validator.validate(faulty_target_provenance, "Edge")
     with pytest.raises(ValidationError):
-        faulty_target_provenance = SAMPLE_LATEST_TEST_EDGE.copy()
+        faulty_target_provenance = SAMPLE_TEST_EDGE.copy()
         # items in the "target_provenance" array must be RetrievalSource objects
         faulty_target_provenance["target_provenance"] = [{"not-an-RetrievalSource-key": "something"}]
         validator.validate(faulty_target_provenance, "Edge")
