@@ -873,54 +873,11 @@ class BiolinkValidator(TRAPISchemaValidator, BMTWrapper):
                                         else:
                                             # attribute_type_id is a Biolink 'association_slot': validate further...
 
-                                            # TODO: only check knowledge_source provenance here for now. Are there
-                                            #       other association_slots to be validated here too? For example,
-                                            #       once new terms with defined value ranges are published in the
-                                            #       Biolink Model, then perhaps 'value' validation will be feasible.
-
-                                            # Edge provenance tags only recorded in
-                                            # Edge attributes prior to TRAPI 1.4.0-beta
-                                            if not self.minimum_required_trapi_version("1.4.0-beta"):
-
-                                                if attribute_type_id in \
-                                                        [
-                                                            "biolink:aggregator_knowledge_source",
-                                                            "biolink:primary_knowledge_source",
-
-                                                            # Note: deprecated since Biolink release 3.0.2
-                                                            #       but this is probably caught above in the
-                                                            #       'validate_element_status' method predicate
-                                                            "biolink:original_knowledge_source"
-                                                        ]:
-
-                                                    # ... now, check the infores values against various expectations
-                                                    for infores in value:
-                                                        if not infores.startswith("infores:"):
-                                                            self.report(
-                                                               code="error.knowledge_graph.edge." +
-                                                                    "provenance.infores.missing",
-                                                               identifier=str(infores),
-                                                               edge_id=edge_id
-                                                            )
-                                                        else:
-                                                            if attribute_type_id == \
-                                                                    "biolink:primary_knowledge_source":
-                                                                found_primary_knowledge_source.append(infores)
-
-                                                            if ara_source and \
-                                                               attribute_type_id == \
-                                                                    "biolink:aggregator_knowledge_source" \
-                                                                    and infores == ara_source:
-                                                                found_ara_knowledge_source = True
-                                                            elif kp_source and \
-                                                                    attribute_type_id == f"biolink:{kp_source_type}" and \
-                                                                    infores == kp_source:
-                                                                found_kp_knowledge_source = True
-
                                             # TODO: Defer tracking of the presence of 'biolink:support_graphs'
                                             #       for specified predicates like 'treats' or its descendants
                                             # if attribute_type_id == "biolink:support_graphs":
                                             #     found_support_graphs = False
+                                            pass
 
                                 # if not a Biolink model defined attribute term, at least, check if
                                 # the 'attribute_type_id' has a namespace (prefix) known to Biolink.
