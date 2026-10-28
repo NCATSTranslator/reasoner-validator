@@ -32,17 +32,13 @@ DEFAULT_TRAPI_POST_TIMEOUT = 600.0
 STANDARDS_HOST = "standards.ncats.io"
 STANDARDS_URL = f"https://{STANDARDS_HOST}"
 
-TRAPI_1_5_0_SEMVER = SemVer.from_string("v1.5.0")
-TRAPI_1_5_0: str = str(TRAPI_1_5_0_SEMVER)
-TRAPI_1_6_0_BETA_SEMVER = SemVer.from_string("v1.6.0-beta")
-TRAPI_1_6_0_BETA: str = str(TRAPI_1_6_0_BETA_SEMVER)
-# TRAPI_1_6_0_SEMVER = SemVer.from_string("v1.6.0")
-# TRAPI_1_6_0: str = str(TRAPI_1_6_0_SEMVER)
+TRAPI_2_0_0_BETA2_SEMVER = SemVer.from_string("v2.0.0-beta2")
+TRAPI_2_0_0_BETA2: str = str(TRAPI_2_0_0_BETA2_SEMVER)
 
-LATEST_TRAPI_RELEASE_SEMVER: SemVer = TRAPI_1_6_0_BETA_SEMVER
-LATEST_TRAPI_RELEASE: str = TRAPI_1_6_0_BETA
+LATEST_TRAPI_RELEASE_SEMVER: SemVer = TRAPI_2_0_0_BETA2_SEMVER
+LATEST_TRAPI_RELEASE: str = TRAPI_2_0_0_BETA2
 
-LATEST_TRAPI_MAJOR_MINOR_RELEASE: str = "1.6"
+LATEST_TRAPI_MAJOR_MINOR_RELEASE: str = "2.0"
 LATEST_TRAPI_MAJOR_MINOR_RELEASE_SEMVER: SemVer = \
     SemVer.from_string(
         LATEST_TRAPI_MAJOR_MINOR_RELEASE,
@@ -310,6 +306,7 @@ class TRAPISchemaValidator(ValidationReporter):
         >>> TRAPISchemaValidator(trapi_version="1.3.0").validate({"message": {}}, "QGraph")
 
         """
+        assert self.trapi_version is not None
         schema = load_schema(self.trapi_version)[component]
         # print("instance", instance)
         jsonschema.validate(instance, schema)

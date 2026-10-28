@@ -1,6 +1,4 @@
-from typing import Optional, List, Dict, Set, Tuple
 from functools import lru_cache
-from reasoner_validator.versioning import SemVer
 from reasoner_validator.biolink import (
     BiolinkValidator,
     get_biolink_model_toolkit
@@ -29,22 +27,22 @@ class TRAPIResponseValidator(BiolinkValidator):
     """
     def __init__(
             self,
-            default_test: Optional[str] = None,
-            default_target: Optional[str] = None,
-            trapi_version: Optional[str] = None,
-            biolink_version: Optional[str] = None,
-            target_provenance: Optional[Dict[str, str]] = None,
-            strict_validation: Optional[bool] = None,
+            default_test: str | None = None,
+            default_target: str | None = None,
+            trapi_version: str | None = None,
+            biolink_version: str | None = None,
+            target_provenance: dict | None = None,
+            strict_validation: bool | None = None,
             suppress_empty_data_warnings: bool = False
     ):
         """
-        :param default_test: Optional[str] =  None, initial default test context of the TRAPIResponseValidator messages
-        :param default_target: Optional[str] =  None, initial default target context of the TRAPIResponseValidator,
+        :param default_test: str | None =  None, initial default test context of the TRAPIResponseValidator messages
+        :param default_target: str | None =  None, initial default target context of the TRAPIResponseValidator,
                                                 also used as a prefix in validation messages.
         :param trapi_version: str, version of component against which to validate the message (mandatory, no default)
-        :param biolink_version: Optional[str] = None, Biolink Model (SemVer) release against which the knowledge graph
+        :param biolink_version: str | None = None, Biolink Model (SemVer) release against which the knowledge graph
                                 is to be validated (Default: if None, use the Biolink Model Toolkit default version).
-        :param strict_validation: Optional[bool] = None, if True, some tests validate as 'error';  False, simply issues
+        :param strict_validation: bool | None = None, if True, some tests validate as 'error';  False, simply issues
                                   'info' message; A value of 'None' uses the default value for specific graph contexts.
         :param suppress_empty_data_warnings: bool = False, validation normally reports empty Message query graph,
                                 knowledge graph and results as warnings. This flag suppresses the reporting
@@ -62,18 +60,18 @@ class TRAPIResponseValidator(BiolinkValidator):
         self.suppress_empty_data_warnings: bool = suppress_empty_data_warnings
 
     @staticmethod
-    def sanitize_workflow(response: Dict) -> Dict:
+    def sanitize_workflow(response: dict) -> dict:
         """
         Workflows in TRAPI Responses cannot be validated further due to missing tags and None values.
         This method is a temporary workaround to sanitize the query for additional validation.
 
-        :param response: Dict full TRAPI Response JSON object
-        :return: Dict, response with discretionary removal of content which
+        :param response: dict full TRAPI Response JSON object
+        :return: dict, response with discretionary removal of content which
                        triggers (temporarily) unwarranted TRAPI validation failures
         """
         if 'workflow' in response and response['workflow']:
             # a 'workflow' is a list of steps, which are JSON object specifications
-            workflow_steps: List[Dict] = response['workflow']
+            workflow_steps: list[dict] = response['workflow']
             for step in workflow_steps:
                 if 'runner_parameters' in step and not step['runner_parameters']:
                     # self.report("warning.trapi.response.workflow.runner_parameters.missing")
@@ -87,7 +85,7 @@ class TRAPIResponseValidator(BiolinkValidator):
 
     def check_compliance_of_trapi_response(
             self,
-            response: Optional[Dict],
+            response: dict | None,
             max_kg_edges: int = 0,
             max_results: int = 0
     ):
@@ -97,7 +95,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         The high-level structure of a Query.Response is described in
         https://github.com/NCATSTranslator/ReasonerAPI/blob/master/docs/reference.md#response-.
 
-        The TRAPI Query.Response.Message is a Python Dictionary with three entries:
+        The TRAPI Query.Response.Message is a Python dictionary with three entries:
 
         * Query Graph ("QGraph"): knowledge graph query input parameters
         * Knowledge Graph: output knowledge (sub-)graph containing knowledge (Biolink Model compliant nodes, edges)
@@ -105,7 +103,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         * Results: a list of (annotated) node and edge bindings pointing into the Knowledge Graph, to represent the
                    specific answers (subgraphs) satisfying the query graph constraints.
 
-        :param response: Optional[Dict], Query.Response to be validated.
+        :param response: dict | None, Query.Response to be validated.
         :param max_kg_edges: int, maximum number of edges to be validated from the
                                   knowledge graph of the response. A value of zero triggers validation
                                   of all edges in the knowledge graph (Default: 0 - use all edges)
@@ -157,7 +155,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         # Response components, to allow for independent TRAPI Schema
         # validation of those non-Message components versus the Message
         # itself (checking along the way whether the Message is empty)
-        message: Optional[Dict] = response.pop('message')
+        message: dict | None = response.pop('message')
 
         # We insert a stub to enable TRAPI schema
         # then validate the remainder of the Response
@@ -168,7 +166,7 @@ class TRAPIResponseValidator(BiolinkValidator):
             self.is_valid_trapi_query(instance=response, component="Response")
             if not self.has_critical():
 
-                status: Optional[str] = response['status'] if 'status' in response else None
+                status: str | None = response['status'] if 'status' in response else None
                 if status and status not in ["OK", "Success", "QueryNotTraversable", "KPsNotAvailable"]:
                     self.report("warning.trapi.response.status.unknown", identifier=status)
 
@@ -193,14 +191,14 @@ class TRAPIResponseValidator(BiolinkValidator):
         response['message'] = message
 
     @staticmethod
-    def sample_results(results: List, sample_size: int = 0) -> List:
+    def sample_results(results: list, sample_size: int = 0) -> list:
         """
         Subsample the results to a maximum size of 'sample_size'
 
-        :param results: List, original list of Results
+        :param results: list, original list of Results
         :param sample_size: int, target sample size (default: 0 for 'use all results').
 
-        :return: List, 'sample_size' sized subset of Results
+        :return: list, 'sample_size' sized subset of Results
         """
         if sample_size > 0:
             sample_size = min(sample_size, len(results))
@@ -209,22 +207,22 @@ class TRAPIResponseValidator(BiolinkValidator):
             return results
 
     @staticmethod
-    def sample_graph(graph: Dict, edges_limit: int = 0) -> Dict:
+    def sample_graph(graph: dict, edges_limit: int = 0) -> dict:
         """
         Only process a strict subsample of the TRAPI Response Message knowledge graph.
 
         :param graph: original knowledge graph
-        :type graph: Dict
+        :type graph: dict
         :param edges_limit: integer maximum number of edges to be validated in the knowledge graph. A value of zero
                             triggers validation of all edges in the knowledge graph (Default: 0 - use all edges)
         :type edges_limit: int
 
-        :return: Dict, 'edges_limit' sized subset of knowledge graph
+        :return: dict, 'edges_limit' sized subset of knowledge graph
         """
         # We don't check for non-empty graphs here simply because the sole caller of this
         # method is the 'has_valid_knowledge_graph' method, which filters out empty graphs
         if edges_limit > 0:
-            kg_sample: Dict = {
+            kg_sample: dict = {
                 "nodes": dict(),
                 "edges": dict()
             }
@@ -262,7 +260,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                 "edges": graph["edges"]
             }
 
-    def has_valid_query_graph(self, message: Dict) -> bool:
+    def has_valid_query_graph(self, message: dict) -> bool:
         """
         Validate a TRAPI Query Graph.
         :param message: input message expected to contain the 'query_graph'
@@ -279,15 +277,9 @@ class TRAPIResponseValidator(BiolinkValidator):
                 if not self.suppress_empty_data_warnings:
                     self.report(code="error.trapi.response.message.query_graph.empty")
             else:
-                # Validate the TRAPI compliance of the Query Graph
-                # For TRAPI 1.6.0 or later, could either be regular or pathfinder type
-                if SemVer.from_string(self.trapi_version,ext_fields=None)>= SemVer.from_string("1.6.0"):
-                    components = ["QueryGraph", "PathfinderQueryGraph"]
-                else:
-                    components = "QueryGraph"
                 self.is_valid_trapi_query(
                     instance=query_graph,
-                    component=components
+                    component="QueryGraph"
                 )
 
                 if self.validate_biolink():
@@ -300,13 +292,13 @@ class TRAPIResponseValidator(BiolinkValidator):
 
     def has_valid_knowledge_graph(
             self,
-            message: Dict,
+            message: dict,
             edges_limit: int = 0
     ) -> bool:
         """
         Validate a TRAPI Knowledge Graph.
 
-        :param message: Dict, input message expected to contain the 'knowledge_graph'
+        :param message: dict, input message expected to contain the 'knowledge_graph'
         :param edges_limit: int, integer maximum number of edges to be validated in the knowledge graph. A value of zero
                             triggers validation of all edges in the knowledge graph (Default: 0 - use all edges)
 
@@ -356,7 +348,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         # messages invalidate the overall Message
         return False if self.has_errors() else True
 
-    def has_valid_results(self, message: Dict, sample_size: int = 0) -> bool:
+    def has_valid_results(self, message: dict, sample_size: int = 0) -> bool:
         """
         Validate a TRAPI Results.
 
@@ -384,7 +376,7 @@ class TRAPIResponseValidator(BiolinkValidator):
                     # An empty result (warning) does not generally invalidate
                     # the whole Message, but no more validation tests are needed
 
-            elif not isinstance(results, List):
+            elif not isinstance(results, list):
                 # The Message.results should be an array of Result objects
                 self.report(code="error.trapi.response.message.results.not_array")
 
@@ -429,18 +421,18 @@ class TRAPIResponseValidator(BiolinkValidator):
         # Only 'error' but not 'info' nor 'warning' messages invalidate the overall Message
         return False if self.has_errors() else True
 
-    def category_matched(self, source_categories: List[str], target_categories: List[str]) -> Optional[str]:
+    def category_matched(self, source_categories: list[str], target_categories: list[str]) -> str | None:
         """
         For each 'source' Biolink Model category given (list of CURIEs as strings?),
         first get the union set of all parent (ancestral) categories, then check if
         at least one of these categories is matched to the list of target categories.
 
-        :param source_categories: List[str], list of 'source' categories whose category hierarchy is to be matched.
-        :param target_categories: List[str], list of 'target' categories to be matched against 'source'
+        :param source_categories: list[str], list of 'source' categories whose category hierarchy is to be matched.
+        :param target_categories: list[str], list of 'target' categories to be matched against 'source'
                                              (or 'source parent' categories
         :return: bool, returned category matched (could be a generic parent of a 'source' category)
         """
-        source_category_set: Set = set()
+        source_category_set: set = set()
         # gather all the possible exact and ancestor (parent)
         # categories of source_categories to match...
         for source_category in source_categories:
@@ -460,23 +452,23 @@ class TRAPIResponseValidator(BiolinkValidator):
             node_id,
             testcase,
             node_details
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Retrieve the most specific Biolink Model category match of knowledge graph node to testcase.
 
         :param target: the concept node type of interest: the 'subject' or the 'object'
         :param node_id: str, identifier of node in "nodes" catalog whose category is to be matched against the testcase
-        :param testcase: Dict, full test testcase against which the input node is being matched
-        :param node_details: Dict, details about an individual knowledge graph node being processed.
+        :param testcase: dict, full test testcase against which the input node is being matched
+        :param node_details: dict, details about an individual knowledge graph node being processed.
         :return: str, most specific Biolink Model category match of knowledge graph node to testcase; None if not found
         """
         # For this comparison, we assume that a specified node category plus all its
         # parent categories, may be used to match the test testcase specified category.
         testcase_category: str = testcase[f"{target}_category"]
-        categories: List[str] = []
+        categories: list[str] = []
         if "categories" in node_details:
             categories = node_details["categories"]
-            category: Optional[str] = self.category_matched(
+            category: str | None = self.category_matched(
                 source_categories=categories,
                 target_categories=[testcase_category]
             )
@@ -522,10 +514,10 @@ class TRAPIResponseValidator(BiolinkValidator):
     def testcase_node_found(
             self,
             target: str,
-            target_id_aliases: List[str],
-            testcase: Dict,
-            nodes: Dict
-    ) -> Optional[Tuple[str, str, Optional[str]]]:
+            target_id_aliases: list[str],
+            testcase: dict,
+            nodes: dict
+    ) -> tuple[str, str, str | None] | None:
         """
         Find at least one of the given "target_id_aliases", with expected categories, in the "nodes" catalog.
         If such identifier is found, and at least one KG node category is the expected category or a proper subclass
@@ -535,10 +527,10 @@ class TRAPIResponseValidator(BiolinkValidator):
         there is no overlap in the (expected or parent) testcase and node categories, then also return None.
 
         :param target: the concept node type of interest: the 'subject' or the 'object'
-        :param target_id_aliases: List of (CURIE) target identifier aliases to be matched against the "nodes" catalog
-        :param testcase: Dict, full test testcase (to access the target node 'category')
-        :param nodes: Dict, catalog of knowledge graph nodes, indexed by node identifiers, with node details as values.
-        :return: Optional[Tuple[str, str, Optional[str]]], returns the KG node identifier, category, and
+        :param target_id_aliases: list of (CURIE) target identifier aliases to be matched against the "nodes" catalog
+        :param testcase: dict, full test testcase (to access the target node 'category')
+        :param nodes: dict, catalog of knowledge graph nodes, indexed by node identifiers, with node details as values.
+        :return: tuple[str, str, str | None] | None, returns the KG node identifier, category, and
                                                            parent identifier matched (if applicable); None if no match
         """
         #
@@ -551,10 +543,9 @@ class TRAPIResponseValidator(BiolinkValidator):
         assert target in ["subject", "object"]
         for node_id in nodes.keys():
             node_details = nodes[node_id]
-            category: Optional[str]
             if node_id in target_id_aliases:
                 # Directly found the target node identifier, but is the expected category present?
-                category = self.testcase_node_category_found(target, node_id, testcase, node_details)
+                category: str | None = self.testcase_node_category_found(target, node_id, testcase, node_details)
                 if category:
                     return node_id, category, None  # no 'parent of node' is given, since the node is directly matched.
             else:
@@ -562,14 +553,14 @@ class TRAPIResponseValidator(BiolinkValidator):
                 # we check whether the node identifier is within an ontology DAG hierarchy which
                 # includes an aliases of the target identifier as a child term. For this search, we assume
                 # that the matching terms have the same category as the term of the specified testcase 'target'.
-                category = testcase[f"{target}_category"]
-                parents_of_node_id: Optional[List[str]] = get_parent_concepts(
+                category: str = testcase[f"{target}_category"]
+                parents_of_node_id: list[str] | None = get_parent_concepts(
                     curie=node_id,
                     category=category,
                     biolink_version=self.get_biolink_version()
                 )
                 if parents_of_node_id:
-                    match: Optional[str] = None
+                    match: str | None = None
                     for identifier in parents_of_node_id:
                         if identifier in target_id_aliases:
                             match = identifier
@@ -588,91 +579,36 @@ class TRAPIResponseValidator(BiolinkValidator):
         # hence, we deem the node effectively missing.
         return None
 
+    @staticmethod
     def validate_binding(
-            self,
-            q_node_entry: Dict,
             target_id: str,
-            target_query_id: Optional[str],
-            node_binding_details: Dict
+            node_binding_details: dict
     ) -> bool:
         """
-        Validate that a specified target_id has a valid node_binding in specified node binding details.
+        Validate that a specified 'target_id' has a valid match to an identifier in the 'node binding details'.
 
-        :param q_node_entry: Dict, query node data currently being searched
         :param target_id: str, target knowledge graph node identifier to be matched to node binding
-        :param target_query_id: Optional[str], query identifier related to the target identifier,
-                                               if not identical to the target_id
-        :param node_binding_details: Dict, data relating to a given node_binding of query to knowledge graph identifier
+        :param node_binding_details: dict, data relating to a given node_binding of query to knowledge graph identifier
+
         :return: bool, True if a valid node binding was found
         """
-        #
-        # Example of node_bindings *without* and *with* a 'query_id':
-        #
-        # "node_bindings": {
-        #     "n0": [
-        #         {
-        #             "attributes": [],
-        #             "id": "CHEBI:16796"
-        #         }
-        #     ],
-        #     "n1": [
-        #         {
-        #             "attributes": [],
-        #             "id": "MONDO:0005258",
-        #             "query_id": "MONDO:0005260"
-        #         }
-        #     ]
-        # }
-        #
-        # In situations with a 'query_id', then the 'id' of the binding is the one
-        # associated with the knowledge graph node, while the 'query_id' is assumed to be a
-        # related identifier which was given in the query graph, but is not identical to the
-        # identifier of the knowledge graph edge node being matched. This may arise if the
-        # knowledge graph edge node identifier is an ontological subclass of the query identifier
-        # (e.g. a subtype of the MONDO disease requested in the QGraph)
-
-        # See also the TRAPI 'query_id' definition below, for other validation constraints.
-        #
-        # query_id:
-        #   oneOf:
-        #     - $ref: '#/components/schemas/CURIE'
-        #   description: >-
-        #     An optional property to provide the CURIE in the QueryGraph to
-        #     which this binding applies. If the bound QNode does not have
-        #     an 'id' property or if it is empty, then this query_id MUST be
-        #     null or absent. If the bound QNode has one or more CURIEs
-        #     as an 'id' and this NodeBinding's 'id' refers to a QNode 'id'
-        #     in a manner where the CURIEs are different (typically due to
-        #     the NodeBinding.id being a descendant of a QNode.id), then
-        #     this query_id MUST be provided. In other cases, there is no
-        #     ambiguity, and this query_id SHOULD NOT be provided.
-        #     TODO: unsure where a bound QNode is detected as 'empty'
-        if "id" in node_binding_details and node_binding_details["id"]:
-            if target_id == node_binding_details["id"]:
+        if "ids" in node_binding_details and node_binding_details["ids"]:
+            if target_id in node_binding_details["ids"]:
                 return True
-            else:
-                pass
-        else:
-            if self.minimum_required_biolink_version("1.3.0"):
-                # 'query_id'
-                if "query_id" in node_binding_details and node_binding_details["query_id"]:
-                    pass
-
         return False
 
     def testcase_node_bindings(
             self,
-            query_nodes: Dict,
+            query_nodes: dict,
             subject_id: str,
-            subject_query_id: Optional[str],
+            subject_query_id: str | None,
             object_id: str,
-            object_query_id: Optional[str],
-            data: Dict
+            object_query_id: str | None,
+            data: dict
     ) -> bool:
         """
         Check if the specified subject and object identifier
         are found in the result node bindings.
-        Expected query_id's are also validated.
 
         :param query_nodes: query nodes dictionary
         :param subject_id: expected node identifier of the knowledge graph subject
@@ -682,20 +618,20 @@ class TRAPIResponseValidator(BiolinkValidator):
         :param data: the result object
         :return: bool, True if node_bindings found for specified subject and object
         """
-        # node_bindings:
-        #   type: object
-        #   description: >-
-        #     The dictionary of Input Query Graph to Result Knowledge Graph node
-        #     bindings where the dictionary keys are the key identifiers of the
-        #     Query Graph nodes and the associated values of those keys are
-        #     instances of NodeBinding schema type. This value is an
-        #     array of NodeBindings since a given query node may have multiple
-        #     knowledge graph Node bindings in the result.
+        #     NodeBinding:
+        #       type: object
+        #       description: >-
+        #         A NodeBinding object defines all relevant KnowledgeGraph Node mappings,
+        #         identified by the corresponding object key identifier(s) of the
+        #         Node(s) within the Knowledge Graph. Instances of NodeBinding may
+        #         include extra annotation in the form of additional properties.
+        #         (such annotation is not yet fully standardized). Each Node
+        #         Binding must bind directly to node in the original Query Graph.
         #
-        node_bindings: Dict = data["node_bindings"]
+        node_bindings: dict = data["node_bindings"]
         subject_id_found: bool = False
         object_id_found: bool = False
-        for q_node_id, node_bindings in node_bindings.items():
+        for q_node_id, binding_details in node_bindings.items():
 
             # A basic expectation is for the node_binding keys
             # to match one of the input query node keys
@@ -706,34 +642,32 @@ class TRAPIResponseValidator(BiolinkValidator):
                 )
                 continue
 
-            q_node_entry: Dict = query_nodes[q_node_id]
+            # The subject and object id's will match separately...
+            if self.validate_binding(subject_id, binding_details):
+                subject_id_found = True
+            if self.validate_binding(object_id, binding_details):
+                object_id_found = True
 
-            entry: Dict
-            for entry in node_bindings:
-                # The subject and object id's will match separately...
-                if self.validate_binding(q_node_entry, subject_id, subject_query_id, entry):
-                    subject_id_found = True
-                if self.validate_binding(q_node_entry, object_id, object_query_id, entry):
-                    object_id_found = True
-
-                # ... but we need both to match, to succeed
-                if subject_id_found and object_id_found:
-                    # Short-cut tagging of search as successful if
-                    # and when both subject and object are matched
-                    return True
+            # ... but we need both to match, to succeed
+            if subject_id_found and object_id_found:
+                # Short-cut tagging of search as successful if
+                # and when both subject and object are matched
+                return True
 
         # Either the subject_id or object_id
         # failed to match any node_bindings: failure!
         return False
 
     @staticmethod
-    def testcase_edge_bindings(query_edges: Dict, target_edge_id: str, data: Dict) -> bool:
+    def testcase_edge_bindings(query_edges: dict, target_edge_id: str, data: dict) -> bool:
         """
         Check if target query edge id and knowledge graph edge id are in specified edge_bindings.
-        :param query_edges: List[str], expected query edge identifiers in a matching result
-        :param target_edge_id:  str, expected knowledge edge identifier in a matching result
-        :param data: TRAPI version-specific Response context from which the 'edge_bindings' may be retrieved
-        :return: True, if found
+
+        :param query_edges: list[str], expected query edge identifiers in a matching result.
+        :param target_edge_id:  str, expected knowledge edge identifier in a matching result.
+        :param data: TRAPI version-specific Response context from which the 'edge_bindings' may be retrieved.
+
+        :return: True, if all found
         """
         # Sanity check (maybe unnecessary?)
         if "edge_bindings" not in data:
@@ -741,50 +675,46 @@ class TRAPIResponseValidator(BiolinkValidator):
 
         query_edge_ids = list(query_edges.keys())
 
-        edge_bindings: Dict = data["edge_bindings"]
-        for bound_query_id, edge in edge_bindings.items():
-            if bound_query_id in query_edge_ids:
-                for binding_details in edge:
-                    # TRAPI schema validation likely actually
-                    # catches missing id's, but sanity check...
-                    if "id" in binding_details:
-                        if target_edge_id == binding_details["id"]:
-                            return True
+        edge_bindings: dict = data["edge_bindings"]
+        for bound_query_graph_edge_id, edge_binding_details in edge_bindings.items():
+            if bound_query_graph_edge_id in query_edge_ids:
+                if target_edge_id in edge_binding_details["ids"]:
+                    return True
+
+        # failure if a search of all edge_bindings
+        # doesn't match the 'target_edge_id'
         return False
 
     def testcase_result_found(
             self,
-            query_graph: Dict,
+            query_graph: dict,
             subject_id: str,
-            subject_query_id: Optional[str],
+            subject_query_id: str | None,
             object_id: str,
-            object_query_id: Optional[str],
+            object_query_id: str | None,
             edge_id: str,
-            results: List
+            results: list
     ) -> bool:
         """
         Validate that test testcase S--P->O edge is found bound to the Results?
-        :param query_graph: Dict, query graph to which the results pertain
+        :param query_graph: dict, query graph to which the results pertain
         :param subject_id: str, subject node (CURIE) identifier
-        :param subject_query_id: Optional[str], subject node (CURIE) query node identifier (if applicable)
+        :param subject_query_id: str | None, subject node (CURIE) query node identifier (if applicable)
         :param object_id:  str, object node (CURIE) identifier
-        :param object_query_id:  Optional[str], object node (CURIE) query node identifier (if applicable)
+        :param object_query_id:  str | None, object node (CURIE) query node identifier (if applicable)
         :param edge_id:  str, edge identifier
-        :param results: List of (TRAPI-version specific) Result objects
+        :param results: list of (TRAPI-version specific) Result objects
         :return: bool, True if testcase S-P-O edge was found in the results
         """
         # TODO: need to implement some kind of validation of 'subject_query_id' and 'object_query_id'
         assert query_graph, "testcase_result_found() encountered an empty query graph"
 
         result_found: bool = False
-        result: Dict
+        result: dict
 
         # At this point, a TRAPI Response.Message.Results
         # is generally a non-empty list of Result objects
         for result in results:
-
-            # Node binding validation still currently
-            # the same for most recent TRAPI versions >= 1.3.0
             node_bindings_found: bool = \
                 self.testcase_node_bindings(
                     query_graph["nodes"],
@@ -804,47 +734,22 @@ class TRAPIResponseValidator(BiolinkValidator):
             #         "e12"
             #     ]
             # },
-            # "a1": {
-            #     "edges": [
-            #         "extra_edge0"
-            #     ]
-            # },
-            # "a2": {
-            #     "edges" [
-            #         "extra_edge1"
-            #     ]
-            # }
-            #     },
             #     "results": [
             # # Single result in list:
             #
             # {
             #     "node_bindings": {
-            #         "n0": [
-            #             "id": "diabetes"
-            #         ],
-            #         "n1": [
-            #             "id": "metformin"
-            #         ]
+            #       "diabetes": {"ids": ["n0"]},
+            #       "metformin": {"ids": ["n1"]},
             #     },
             #     "analyses": [
             #         {
             #             "reasoner_id": "ara0",
             #             "edge_bindings": {
-            #                 "e0": [
-            #                     {
-            #                         "id": "e01"
-            #                     },
-            #                     {
-            #                         "id": "creative_edge"
-            #                     }
-            #                 ]
+            #                 "e0": {"ids": ["e01"]},
             #             },
-            #             "support_graphs": [
-            #                 "a1",
-            #                 "a2"
-            #             ]
-            #             "score": ".7"
+            #             "support_graphs": ["a1","a2"],
+            #             "score": "0.7"
             #         },
             #      ]
             #    }
@@ -852,7 +757,7 @@ class TRAPIResponseValidator(BiolinkValidator):
 
             # result["analyses"] may be empty but TRAPI 1.4.0 schema validation ensures that
             # the "analysis" key is at least present and that the objects themselves are 'well-formed'
-            analyses: List = result["analyses"]
+            analyses: list = result["analyses"]
             for analysis in analyses:
                 edge_binding_found = self.testcase_edge_bindings(query_graph["edges"], edge_id, analysis)
                 if edge_binding_found:
@@ -868,7 +773,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         return result_found
 
     @lru_cache(maxsize=1024)
-    def get_aliases(self, curie: str) -> Optional[List[str]]:
+    def get_aliases(self, curie: str) -> list[str] | None:
         """
         Get clique of related identifiers from the Node Normalizer. Note that
         except for the cases of a missing or invalid CURIE input, this method
@@ -876,10 +781,10 @@ class TRAPIResponseValidator(BiolinkValidator):
         of the aliases; however, the method reports various validation warnings
         based on the completeness of the entry reported by the Node Normalizer.
         :param curie: str, CURIE of node identifier for which aliases are needed.
-        :return: List[str], of all aliases (including at least the CURIE itself,
+        :return: list[str], of all aliases (including at least the CURIE itself,
                             unless validation error is encountered, then None)
         """
-        aliases: Optional[List[str]] = None
+        aliases: list[str] | None = None
         #
         # TODO: maybe check for IRI's here and attempt to translate
         #       (Q: now do we access the prefix map from BMT to do this?)
@@ -966,9 +871,9 @@ class TRAPIResponseValidator(BiolinkValidator):
     def resolve_testcase_node(
             self,
             target: str,
-            testcase: Dict,
-            nodes: Dict
-    ) -> Optional[Tuple[str, str, Optional[str]]]:
+            testcase: dict,
+            nodes: dict
+    ) -> tuple[str, str, str | None] | None:
         """
         Resolve the knowledge graph node identifiers against the testcase
         identifier of the 'target' context ('subject' or 'object' node).
@@ -980,16 +885,16 @@ class TRAPIResponseValidator(BiolinkValidator):
         also be compatible in terms of Biolink Model category.
 
         :param target: 'subject' or 'object'
-        :param testcase: Dict, full test testcase (to access the target node 'category')
-        :param nodes: Dict, details about knowledge graph nodes, indexed by node identifiers
-        :return: Optional[Tuple[str, str, Optional[str]]], returns the KG node identifier, category, and
-                                                           query identifier matched (if applicable); None if no match
+        :param testcase: dict, full test testcase (to access the target node 'category')
+        :param nodes: dict, details about knowledge graph nodes, indexed by node identifiers
+        :return: tuple[str, str, str | None] | None, returns the KG node identifier, category, and
+                                                     query identifier matched (if applicable); None if no match
         """
         target_id: str = testcase[f"{target}_id"] if f"{target}_id" in testcase else testcase[target]
         if target_id:
-            target_id_aliases: Optional[List[str]] = self.get_aliases(target_id)
+            target_id_aliases: list[str] | None = self.get_aliases(target_id)
             if target_id_aliases is not None:
-                match: Optional[Tuple[str, str, Optional[str]]] = \
+                match: tuple[str, str, str | None] | None = \
                     self.testcase_node_found(target, target_id_aliases, testcase, nodes)
                 if match:
                     # Node match! Return matched node identifier,
@@ -1005,18 +910,20 @@ class TRAPIResponseValidator(BiolinkValidator):
         )
         return None
 
+    # TODO: TRAPI 'testcase' validation seems mildly deprecated,
+    #       but its continued relevance needs further review
     def testcase_input_found_in_response(
             self,
-            testcase: Dict,
-            response: Dict
+            testcase: dict,
+            response: dict
     ) -> bool:
         """
         Predicate to validate if test data test case specified edge is returned
         in the Knowledge Graph of the TRAPI Response Message. This method assumes
         that the TRAPI response is already generally validated as well-formed.
 
-        :param testcase: Dict, input data test case
-        :param response: Dict, TRAPI Response whose message ought to contain the test case edge
+        :param testcase: dict, input data test case
+        :param response: dict, TRAPI Response whose message ought to contain the test case edge
         :return: True if test case edge found; False otherwise
         """
         # sanity checks
@@ -1025,7 +932,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         assert "message" in response, "testcase_input_found_in_response(): TRAPI Response missing Message component!"
 
         #
-        # testcase: Dict parameter contains something like:
+        # testcase: dict parameter contains something like:
         # {
         #     idx: 0,
         #     subject_category: 'biolink:SmallMolecule',
@@ -1037,7 +944,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         # the contents for which ought to be returned in
         # the TRAPI Knowledge Graph, with a Result mapping?
         #
-        message: Dict = response["message"]
+        message: dict = response["message"]
 
         # Another sanity check - unlikely to be a problem since
         # TRAPI schema validation should have picked it up since
@@ -1102,7 +1009,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         #     }
         # }
 
-        query_graph: Dict = message["query_graph"]
+        query_graph: dict = message["query_graph"]
 
         #
         # with a Response Message Knowledge Graph
@@ -1112,7 +1019,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         #     "nodes": ...,
         #     "edges": ...
         # }
-        knowledge_graph: Dict = message["knowledge_graph"]
+        knowledge_graph: dict = message["knowledge_graph"]
 
         # In the Knowledge Graph:
         #
@@ -1124,16 +1031,14 @@ class TRAPIResponseValidator(BiolinkValidator):
 
         # Check for testcase 'subject_id' and 'object_id',
         # with expected categories, in nodes catalog
-        nodes: Dict = knowledge_graph["nodes"]
+        nodes: dict = knowledge_graph["nodes"]
 
-        subject_node_match: Optional[Tuple[str, str, Optional[str]]] = \
-            self.resolve_testcase_node(target="subject", testcase=testcase, nodes=nodes)
+        subject_node_match = self.resolve_testcase_node(target="subject", testcase=testcase, nodes=nodes)
         if not subject_node_match:
             return False
         subject_match, subject_category_match, subject_query_id = subject_node_match
 
-        object_node_match: Optional[Tuple[str, str, Optional[str]]] = \
-            self.resolve_testcase_node(target="object", testcase=testcase, nodes=nodes)
+        object_node_match = self.resolve_testcase_node(target="object", testcase=testcase, nodes=nodes)
         if not object_node_match:
             return False
         object_match, object_category_match, object_query_id = object_node_match
@@ -1150,11 +1055,11 @@ class TRAPIResponseValidator(BiolinkValidator):
         #
         # Check in the edges catalog for an edge containing
         # the testcase 'subject_id', 'predicate' and 'object_id'
-        edges: Dict = knowledge_graph["edges"]
+        edges: dict = knowledge_graph["edges"]
 
         predicate = testcase["predicate"] if "predicate" in testcase else testcase["predicate_id"]
-        predicate_descendants: List[str]
-        inverse_predicate_descendants: List[str] = list()  # may sometimes remain empty...
+        predicate_descendants: list[str]
+        inverse_predicate_descendants: list[str] = list()  # may sometimes remain empty...
         if self.validate_biolink():
             predicate_descendants = self.bmt.get_descendants(predicate, formatted=True)
             inverse_predicate = self.get_inverse_predicate(predicate)
@@ -1165,11 +1070,11 @@ class TRAPIResponseValidator(BiolinkValidator):
             # ignoring deep Biolink Model validation
             predicate_descendants = [predicate]
 
-        edge_id_match: Optional[str] = None
-        edge_subject_match: Optional[str] = None
-        edge_subject_query_id_match: Optional[str] = None
-        edge_object_match: Optional[str] = None
-        edge_object_query_id_match: Optional[str] = None
+        edge_id_match: str | None = None
+        edge_subject_match: str | None = None
+        edge_subject_query_id_match: str | None = None
+        edge_object_match: str | None = None
+        edge_object_query_id_match: str | None = None
         for edge_id, edge in edges.items():
             # Note: this edge search could be arduous on a big knowledge graph?
             if edge["subject"] == subject_match and \
@@ -1208,7 +1113,7 @@ class TRAPIResponseValidator(BiolinkValidator):
         results_found: bool = False
         # TRAPI Response.Message.Results is nullable but...then results are not found?
         if "results" in message and message["results"]:
-            results: List = message["results"]
+            results: list = message["results"]
             results_found = self.testcase_result_found(
                 query_graph,
                 edge_subject_match,

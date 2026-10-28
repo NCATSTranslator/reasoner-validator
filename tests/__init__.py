@@ -1,4 +1,3 @@
-from typing import List, Dict, Any
 from sys import stderr
 from os.path import abspath, dirname, sep
 from copy import deepcopy
@@ -6,8 +5,7 @@ from copy import deepcopy
 from bmt import Toolkit
 
 from reasoner_validator.trapi import (
-    TRAPI_1_5_0,
-    TRAPI_1_6_0_BETA,
+    TRAPI_2_0_0_BETA2,
     LATEST_TRAPI_RELEASE,
     LATEST_TRAPI_MAJOR_MINOR_RELEASE,
     LATEST_TRAPI_MAJOR_MINOR_PATCH_RELEASE
@@ -20,18 +18,16 @@ LOCAL_SCHEMA_VERSION = "v1.5.0"
 LOCAL_TRAPI_150_SCHEMA_FILEPATH = f"{TESTS_DIRECTORY}{sep}test_data{sep}trapi_schema_v1.5.0.yaml"
 BROKEN_SCHEMA_FILEPATH = f"broken-{LOCAL_SCHEMA_VERSION}.yaml"
 
-TRAPI_1_5_TEST_VERSIONS: List = ["1.5", TRAPI_1_5_0]
-PRE_1_6_0_TEST_VERSIONS: List = TRAPI_1_5_TEST_VERSIONS
-TRAPI_1_6_TEST_VERSIONS: List = ["1.6", TRAPI_1_6_0_BETA]
+TRAPI_2_0_TEST_VERSIONS: list = ["2.0", TRAPI_2_0_0_BETA2]
 
-LATEST_TEST_RELEASES: List = [
-    "1",
+LATEST_TEST_RELEASES: list = [
+    "2",
     LATEST_TRAPI_MAJOR_MINOR_RELEASE,
     LATEST_TRAPI_MAJOR_MINOR_PATCH_RELEASE,
     LATEST_TRAPI_RELEASE
 ]
 
-ALL_TEST_VERSIONS: List[str] = PRE_1_6_0_TEST_VERSIONS + LATEST_TEST_RELEASES
+ALL_TEST_VERSIONS: list[str] = LATEST_TEST_RELEASES
 
 LATEST_BIOLINK_MODEL_VERSION = Toolkit().get_model_version()
 
@@ -63,18 +59,6 @@ SAMPLE_NODES_WITH_ATTRIBUTES["PUBCHEM.COMPOUND:597"]["attributes"] = [
     }
 ]
 
-DEFAULT_KL = {
-    "attribute_type_id": "biolink:knowledge_level",
-    "value": "not_provided"
-}
-
-
-DEFAULT_AT = {
-    "attribute_type_id": "biolink:agent_type",
-    "value": "not_provided"
-}
-
-DEFAULT_KL_AND_AT_ATTRIBUTES = [DEFAULT_KL, DEFAULT_AT]
 
 # complete edge dereferencing SAMPLE_NODES_WITH_ATTRIBUTES
 SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES = {
@@ -89,13 +73,15 @@ SAMPLE_EDGE_WITH_ATTRIBUTES_AND_SOURCES = {
                 "value": 2,
                 "attributes": [],
             }
-        ] + DEFAULT_KL_AND_AT_ATTRIBUTES,
+        ],
         "sources": [
             {
                 "resource_id": "infores:molepro",
                 "resource_role": "primary_knowledge_source"
             }
-        ]
+        ],
+        "knowledge_level": "not_provided",
+        "agent_type": "not_provided"
     }
 }
 
@@ -119,12 +105,42 @@ SAMPLE_EDGE_WITH_WITHOUT_ATTRIBUTES = {
                 "resource_id": "infores:molepro",
                 "resource_role": "primary_knowledge_source"
             }
-        ]
+        ],
+        "knowledge_level": "not_provided",
+        "agent_type": "not_provided"
     }
 }
 
 
-def sample_edge_with_attributes(attributes: List[Dict[str, Any]]) -> Dict[str, Any]:
-    sample_edge = deepcopy(SAMPLE_EDGE_WITH_WITHOUT_ATTRIBUTES)
-    sample_edge["edge_1"]["attributes"] = attributes
-    return sample_edge
+# From TRAPI 2.0, message components cannot be nullable and
+# for nodes, must include some minimum content, which is faked here
+TRAPI_2_0_COMPLIANT_QUERY_TEMPLATE = {
+    "message": {
+        "knowledge_graph": {
+            "nodes": {
+                "OMIM:603903": {
+                    "categories": ["biolink:Disease"],
+                    "name": "Sickle Cell Disease"
+                }
+            }
+        },
+        "query_graph": {
+            "nodes": {
+                "n0": {
+                    "ids": ["OMIM:603903"],
+                    "categories": ["biolink:Disease"]
+                }
+            }
+        },
+        "results": [
+            {
+                "node_bindings": {
+                    "n0": {
+                        "ids": ["OMIM:603903"]
+                    }
+                }
+            }
+        ],
+    },
+    "log_level": None,
+}
