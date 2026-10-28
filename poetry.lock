@@ -290,14 +290,14 @@ stringcase = ">=1.2.0,<2.0.0"
 
 [[package]]
 name = "certifi"
-version = "2026.7.22"
+version = "2026.10.23"
 description = "Python package for providing Mozilla's CA Bundle."
 optional = false
 python-versions = ">=3.7"
 groups = ["main", "docs", "web"]
 files = [
-    {file = "certifi-2026.7.22-py3-none-any.whl", hash = "sha256:62f22742b58a1a33014a2b6b706588a8d7e2a88ae7bd1a6ebe8c992928483775"},
-    {file = "certifi-2026.7.22.tar.gz", hash = "sha256:741e2c3b351ddf169a738da9f2c048608ff7f2c5cc02f1ebc6b118bb090d5d55"},
+    {file = "certifi-2026.10.23-py3-none-any.whl", hash = "sha256:e9b54de76e530bb6cf0ccd036787103acb58fd42ba930ea8bf948ddbaa2f61d1"},
+    {file = "certifi-2026.10.23.tar.gz", hash = "sha256:a9895e6e2758b371e0545e321a3a8fd1fcfd9829ada8824a936dfb16aaaf36cd"},
 ]
 
 [[package]]
@@ -790,14 +790,14 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "fastapi"
-version = "0.143.1"
+version = "0.162.0"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 optional = false
 python-versions = ">=3.10"
 groups = ["web"]
 files = [
-    {file = "fastapi-0.143.1-py3-none-any.whl", hash = "sha256:687beb445804e4c4dbe2a76fd83c25e9b973ac48c267defb86f791e099baecc4"},
-    {file = "fastapi-0.143.1.tar.gz", hash = "sha256:4cafaab64df8534758bf0fce61947f5e27e6cd512798ccbbaad5425086c3b664"},
+    {file = "fastapi-0.162.0-py3-none-any.whl", hash = "sha256:3785963de305dd09912426cb81f2d230fce98ab3521cdfe97265c8d14983128c"},
+    {file = "fastapi-0.162.0.tar.gz", hash = "sha256:6a22c1e2e6e32e0633ee7e170f00009a29b8228b16feb219ee42f32fd8d88a8f"},
 ]
 
 [package.dependencies]
@@ -809,21 +809,21 @@ typing-extensions = ">=4.8.0"
 typing-inspection = ">=0.4.2"
 
 [package.extras]
-all = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.32)", "httpx (>=0.23.0,<1.0.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=3.1.5)", "opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "pyyaml (>=5.3.1)", "uvicorn[standard] (>=0.12.0)"]
+all = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.32)", "httpx (>=0.23.0,<1.0.0)", "httpx2 (>=2.0.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=3.1.5)", "opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "pyyaml (>=5.3.1)", "uvicorn[standard] (>=0.12.0)"]
 opentelemetry = ["opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)"]
-standard = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.32)", "fastar (>=0.9.0)", "httpx (>=0.23.0,<1.0.0)", "jinja2 (>=3.1.5)", "opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "uvicorn[standard] (>=0.12.0)"]
-standard-no-fastapi-cloud-cli = ["email-validator (>=2.0.0)", "fastapi-cli[standard-no-fastapi-cloud-cli] (>=0.0.32)", "httpx (>=0.23.0,<1.0.0)", "jinja2 (>=3.1.5)", "opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "uvicorn[standard] (>=0.12.0)"]
+standard = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.32)", "fastar (>=0.9.0)", "httpx (>=0.23.0,<1.0.0)", "httpx2 (>=2.0.0)", "jinja2 (>=3.1.5)", "opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "uvicorn[standard] (>=0.12.0)"]
+standard-no-fastapi-cloud-cli = ["email-validator (>=2.0.0)", "fastapi-cli[standard-no-fastapi-cloud-cli] (>=0.0.32)", "httpx (>=0.23.0,<1.0.0)", "httpx2 (>=2.0.0)", "jinja2 (>=3.1.5)", "opentelemetry-exporter-otlp-proto-http (>=1.44.0)", "opentelemetry-sdk (>=1.44.0)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
 name = "googleapis-common-protos"
-version = "1.75.5"
+version = "1.76.0"
 description = "Common protobufs used in Google APIs"
 optional = false
 python-versions = ">=3.10"
 groups = ["web"]
 files = [
-    {file = "googleapis_common_protos-1.75.5-py3-none-any.whl", hash = "sha256:d7285525c23039db98f2463e6d5a4f9b958b94d497f03a844ece3259c4e72d5d"},
-    {file = "googleapis_common_protos-1.75.5.tar.gz", hash = "sha256:c7a866fc34ed29a3b10af627a4b9b1dc2433313ca6e959f0ae4feb132047ed72"},
+    {file = "googleapis_common_protos-1.76.0-py3-none-any.whl", hash = "sha256:59e13344a9f3651aa201a03e2bee815a3bf43a4baf1f9ff8a9b62a840ce25fac"},
+    {file = "googleapis_common_protos-1.76.0.tar.gz", hash = "sha256:71db0e44a1d4c2dd024ebad44ca67129cc1e2892e4861df466764749d5ef8642"},
 ]
 
 [package.dependencies]
@@ -1605,19 +1605,15 @@ files = [
 
 [[package]]
 name = "pluggy"
-version = "1.6.0"
+version = "1.7.0"
 description = "plugin and hook calling mechanisms for python"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main", "dev"]
 files = [
-    {file = "pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746"},
-    {file = "pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3"},
+    {file = "pluggy-1.7.0-py3-none-any.whl", hash = "sha256:7dd7b0d8832ba3cb632c306926ded123429211b83641b35dc5c41ad2d34f9bec"},
+    {file = "pluggy-1.7.0.tar.gz", hash = "sha256:d1eaa46ebb595891b860ab086b4d09c8588af65ebd4361b8e8f4bb8920b90ba8"},
 ]
-
-[package.extras]
-dev = ["pre-commit", "tox"]
-testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
 name = "poetry-core"
@@ -1873,47 +1869,45 @@ windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "pyoxigraph"
-version = "0.5.11"
+version = "0.5.13"
 description = "Python bindings of Oxigraph, a SPARQL database and RDF toolkit"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "pyoxigraph-0.5.11-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:951bc531a8f077914422d2117e7b52f2b2efb5be4c121024bf04bcd5a4e6872c"},
-    {file = "pyoxigraph-0.5.11-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:02729038a4f543f2defd6be985591ea25e7697c90c50d38b6a586365ba404295"},
-    {file = "pyoxigraph-0.5.11-cp310-cp310-win_amd64.whl", hash = "sha256:9f018dd3cf99afbd5c8b7a65b849e354543bb25df0d54b666e69e82403258d7a"},
-    {file = "pyoxigraph-0.5.11-cp311-cp311-manylinux_2_28_aarch64.whl", hash = "sha256:32ea926c2b4863c8a9e419dfecb7c1ee0a267374935e9d0f664545c6e8daa385"},
-    {file = "pyoxigraph-0.5.11-cp311-cp311-manylinux_2_28_x86_64.whl", hash = "sha256:e23557d3c584d81b7ad6eda6f95b202685940d1580a44b3e5da8ea1ede0f05e4"},
-    {file = "pyoxigraph-0.5.11-cp311-cp311-win_amd64.whl", hash = "sha256:00d2735aa4b754f1284a6c22aaa3881db7de5df9c63584356836a2b5bcea3705"},
-    {file = "pyoxigraph-0.5.11-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:e405b50389c0b41601516479fb81030dcada459a1b01d204371f09e6283c6c76"},
-    {file = "pyoxigraph-0.5.11-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:e3097d62e4fb903238ef074744ecf54c4328cf20e7787e925e670f6f7d33d345"},
-    {file = "pyoxigraph-0.5.11-cp312-cp312-win_amd64.whl", hash = "sha256:11bdebeb6d1725a885d39bd2c8d31927c2f375c23375f6a61c85e5802809e217"},
-    {file = "pyoxigraph-0.5.11-cp312-cp312-win_arm64.whl", hash = "sha256:d4847b3ba44796e2f796e939c89ebc6b0a37f8d70e02b4843d75e4ef01117d5f"},
-    {file = "pyoxigraph-0.5.11-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:f2e94296ce723ed030784a79c02f7e780522588840c5a8c44e118bd7c0d280a4"},
-    {file = "pyoxigraph-0.5.11-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:3de0588f90a467fe2467ec76588bccb8c18e57f05f63c89b6ea921b057b37365"},
-    {file = "pyoxigraph-0.5.11-cp313-cp313-win_amd64.whl", hash = "sha256:8aaebe4656b9e9d7ee575dad1c1fd810bb52bfa0690f13bdd408e975ae28b868"},
-    {file = "pyoxigraph-0.5.11-cp313-cp313-win_arm64.whl", hash = "sha256:acbc9f82b75d8c39aa80fcf3c6d9f897c9bb23776af868fb6e9e39dc054e0d2e"},
-    {file = "pyoxigraph-0.5.11-cp313-cp313t-win_amd64.whl", hash = "sha256:f6caa21919d0ebd4f165a4ade703e1f24cdd9cdb0a12fffa56440228d1106873"},
-    {file = "pyoxigraph-0.5.11-cp314-cp314-manylinux_2_28_aarch64.whl", hash = "sha256:18143baee09f6a3f17c096d6d58dbb3b1bf023ac5d6a52521cb2437cbf24b4a3"},
-    {file = "pyoxigraph-0.5.11-cp314-cp314-manylinux_2_28_x86_64.whl", hash = "sha256:e02906504ad2ac399d1f30cbae2e47b85932d39bf89ef5c7508268faa6ae3bc4"},
-    {file = "pyoxigraph-0.5.11-cp314-cp314-win_amd64.whl", hash = "sha256:81ccae2810d6f6b699c49f39a157a060b5713421e91ab7edb0ef354be04af583"},
-    {file = "pyoxigraph-0.5.11-cp314-cp314t-manylinux_2_28_aarch64.whl", hash = "sha256:b5167ed8771e9cdfeb8640c8f04aed06c295e5049752899d0ca221477ed327bb"},
-    {file = "pyoxigraph-0.5.11-cp314-cp314t-manylinux_2_28_x86_64.whl", hash = "sha256:13ed2633b72cf4a7cd6ef405d225e1a3e505228ffadb73c5f0aea4fd65f95cd9"},
-    {file = "pyoxigraph-0.5.11-cp314-cp314t-win_amd64.whl", hash = "sha256:f58294bd2695f2fc8074f9bf8a381281c737f2903159ca602f5bfc3834559174"},
-    {file = "pyoxigraph-0.5.11-cp38-abi3-macosx_10_14_x86_64.whl", hash = "sha256:aae8c162fd349a33255f580c665d8f950aaa875d65f64fae4a6c6fb93b5b7ccd"},
-    {file = "pyoxigraph-0.5.11-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:3b67839b598fc806dbed8e99eb2d75b26b0ded6d52ca8bff1496d6a3cc002036"},
-    {file = "pyoxigraph-0.5.11-cp38-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:96c9c4d117a0f4d0eae2c9092a490c6c51b0b8114ab7b126b8dfb0a8f0be2745"},
-    {file = "pyoxigraph-0.5.11-cp38-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:ed906c05164d4766046a899f5944b4cf63309e717e3f464b2c0c80e8de91fa16"},
-    {file = "pyoxigraph-0.5.11-cp38-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:1c0462f03c4e3789fdee48faaab0edf780379fe812d1d70073eae14da86eadc9"},
-    {file = "pyoxigraph-0.5.11-cp38-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:c4f2c4c907dd751cc7f7966217dcb33ecb89c89c30b1992665ae965ec5064f01"},
-    {file = "pyoxigraph-0.5.11-cp38-abi3-win_amd64.whl", hash = "sha256:1057b853663e3fa296f92dba3bb4145f545600261da0943266f4f449d8f7f0a9"},
-    {file = "pyoxigraph-0.5.11-cp38-abi3-win_arm64.whl", hash = "sha256:ec99a70bfc9683dcecaea1f3000b6d6ba9c34a641dda48e660c456454f642ee6"},
-    {file = "pyoxigraph-0.5.11-cp38-cp38-win_amd64.whl", hash = "sha256:77618f4efe34ff2117ac96594067804822a8b73a28e96b3bb957ddff2a41d2be"},
-    {file = "pyoxigraph-0.5.11-cp39-cp39-win_amd64.whl", hash = "sha256:6c357120015e8b4917fcc0eca4337888b55b7756bf08e43fed99c2ca1108e51f"},
-    {file = "pyoxigraph-0.5.11-pp311-pypy311_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:48906bceececf8a4ac7534dcc4ffbb3de9ef33a5dbda880485d3e4cc9ad3fcf6"},
-    {file = "pyoxigraph-0.5.11-pp311-pypy311_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:1b9ac337a215e94bae1747b98e3b4f2c8552e1834fa834f4c4cc678bd79c1e58"},
-    {file = "pyoxigraph-0.5.11-pp311-pypy311_pp73-win_amd64.whl", hash = "sha256:e8a61682eb44bc8b056d0f230325ba91f8c68d917bfa498f46ed3178f9e97d00"},
-    {file = "pyoxigraph-0.5.11.tar.gz", hash = "sha256:2b7d9bf02e7ed89cb0cbcf6c376aef361f1c3c9de49a7a8fb3ac231544bb6ba8"},
+    {file = "pyoxigraph-0.5.13-cp311-cp311-manylinux_2_28_aarch64.whl", hash = "sha256:f4c81f3588e6a417a537e1155785e99331dd3e03c4362e0688d21963c2fcc0b1"},
+    {file = "pyoxigraph-0.5.13-cp311-cp311-manylinux_2_28_x86_64.whl", hash = "sha256:20eeebb6ead914eb7030870b6d7e43f854c7a556cb75ce0375e12aa3bf4a90e5"},
+    {file = "pyoxigraph-0.5.13-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:9f4ab8a252f198e9d414be38886bf54018d69cd0719c2d14d470c096e646bda6"},
+    {file = "pyoxigraph-0.5.13-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:afb4d4ac972c17da77b5f5f17fd1b20f3a95d6a56c7dc6815bf701d1e4a0d255"},
+    {file = "pyoxigraph-0.5.13-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:7ad11cc64424fffb65e407ad6a88ce1483c8597cf196788aa2e4b89287eef860"},
+    {file = "pyoxigraph-0.5.13-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:402f8bf9eae3b37a18e808bde1b39760a1e15f208bb0e1a59c796567e4aa2aa0"},
+    {file = "pyoxigraph-0.5.13-cp314-cp314-manylinux_2_28_aarch64.whl", hash = "sha256:be4d0f0ba2e054fa1926cc962611a66f2a52ef2d65f6b7161e1a4af2880e2a96"},
+    {file = "pyoxigraph-0.5.13-cp314-cp314-manylinux_2_28_x86_64.whl", hash = "sha256:2dd79c4a50c6e33cd95bd66968a10ead584a89df4943b4a667e7d945f6ddef94"},
+    {file = "pyoxigraph-0.5.13-cp314-cp314t-manylinux_2_28_aarch64.whl", hash = "sha256:aa6e3a1371cfd6038ccbb29147cf5e68b81466b5b1ea9f036ddc586caf9ea03f"},
+    {file = "pyoxigraph-0.5.13-cp314-cp314t-manylinux_2_28_x86_64.whl", hash = "sha256:687fe80380b77400978e869bb2ce956fcaf44e67a234b3b74c0ac6eea5435997"},
+    {file = "pyoxigraph-0.5.13-cp315-abi3.abi3t-macosx_10_14_x86_64.whl", hash = "sha256:87da45fbd9f0b9748946935061667f66204080ddbaba68c0df2fbcb85d28b769"},
+    {file = "pyoxigraph-0.5.13-cp315-abi3.abi3t-macosx_11_0_arm64.whl", hash = "sha256:f91728b51f92ffc4f22348efe8dfeec50501b711e3cd29cf7d6132f2c8f8b2a4"},
+    {file = "pyoxigraph-0.5.13-cp315-abi3.abi3t-manylinux_2_28_aarch64.whl", hash = "sha256:0714462f6202590d4fd4dfad71aa8c6487df2c6467e7eddece9202db86865f91"},
+    {file = "pyoxigraph-0.5.13-cp315-abi3.abi3t-manylinux_2_28_x86_64.whl", hash = "sha256:bcf442352a8a78399f0009f827347a6edc1ba4d230c0a9f88304cdee6ffc3617"},
+    {file = "pyoxigraph-0.5.13-cp315-abi3.abi3t-musllinux_1_2_aarch64.whl", hash = "sha256:5331a391cbbf322debdc8208818c3cb1b68953e528e675299c8fe7d56edc23d4"},
+    {file = "pyoxigraph-0.5.13-cp315-abi3.abi3t-musllinux_1_2_x86_64.whl", hash = "sha256:a92e41fee2fc7b5da603b620e12de64b03f82f214f56d3a977196cbffbcd4aa0"},
+    {file = "pyoxigraph-0.5.13-cp315-abi3.abi3t-win_amd64.whl", hash = "sha256:4118c295d41b0cbca5b2ae0966ff34dc1779551c4e07f2e412f566772e826793"},
+    {file = "pyoxigraph-0.5.13-cp315-abi3.abi3t-win_arm64.whl", hash = "sha256:0a5ea71909f186770e1773ef853f2f797eb004a7a2ba1e6ae9fcae97c5967c01"},
+    {file = "pyoxigraph-0.5.13-cp315-cp315-manylinux_2_28_aarch64.whl", hash = "sha256:78dd4c8ba94417daa51ce6bd007d6b49a8f8cc56c2b2a7db4a9cb234b0f48d1e"},
+    {file = "pyoxigraph-0.5.13-cp315-cp315-manylinux_2_28_x86_64.whl", hash = "sha256:7143fcc779c3dc64bf326d3a3ba8ac802ae2fa14f6b9a557a9605fa5bcc16453"},
+    {file = "pyoxigraph-0.5.13-cp315-cp315t-manylinux_2_28_aarch64.whl", hash = "sha256:a9d9e946bb4ff4a724c71653eb3c768aa216e03a403f0251b8ed182c88a64bcf"},
+    {file = "pyoxigraph-0.5.13-cp315-cp315t-manylinux_2_28_x86_64.whl", hash = "sha256:7b66252ff1f3c514d9830974ff85456cfe805450f108f713471170541fa3900f"},
+    {file = "pyoxigraph-0.5.13-cp39-abi3-macosx_10_14_x86_64.whl", hash = "sha256:88c0dffa457e30e57e60931bd808c65cfc710f805b1288760518534f23ffbfdd"},
+    {file = "pyoxigraph-0.5.13-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:ebf818fc940b44d30f92a4e84afffbac0284eb57567a8a06fe076a482c605132"},
+    {file = "pyoxigraph-0.5.13-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:560f9842054b69e7688d847dc45bef202548d226e035ab56a15f0187a1f312fb"},
+    {file = "pyoxigraph-0.5.13-cp39-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:d12a7de106d1ffac4e3cfca79f498b9dc97704f0e3bf50b5e4d47770d63427b2"},
+    {file = "pyoxigraph-0.5.13-cp39-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:a948cf25ba85580d6ba695d1c911a5c1018dd4f5925cb0a8f2db680c4de53dd6"},
+    {file = "pyoxigraph-0.5.13-cp39-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:249e5eff4f94b646ec4dcd5c152fdd8db54d2979610790ec00f0c210d2e2b934"},
+    {file = "pyoxigraph-0.5.13-cp39-abi3-win_amd64.whl", hash = "sha256:5497c901b2a74a76a8ec3aad44ad79d002047b965425570f349b6d08bfdab8ea"},
+    {file = "pyoxigraph-0.5.13-cp39-abi3-win_arm64.whl", hash = "sha256:0e195f1db8aeba5964b31e40a877da0c42e10fd3ad765c4348f8cf3a1f52fc17"},
+    {file = "pyoxigraph-0.5.13-pp311-pypy311_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:99a8bc52f76e1474f16e724bf11b4388ce44d255b70480c51bc029170f64d4ac"},
+    {file = "pyoxigraph-0.5.13-pp311-pypy311_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:9d8d6c67b275ab165d2989ad043a07d7fb1d1b994c4fd0961673a6fd19470f80"},
+    {file = "pyoxigraph-0.5.13.tar.gz", hash = "sha256:1805b92b51293f658557ae53b4eb42ac4dc826959ccff1c5c0f5067ac570b073"},
 ]
 
 [[package]]
@@ -1986,14 +1980,14 @@ dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "requests
 
 [[package]]
 name = "pytest-asyncio"
-version = "1.4.0"
+version = "1.4.1"
 description = "Pytest support for asyncio"
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
 files = [
-    {file = "pytest_asyncio-1.4.0-py3-none-any.whl", hash = "sha256:933ca923a23075a87fb7070c0ec272a6848489824d887c85c812670932835aa1"},
-    {file = "pytest_asyncio-1.4.0.tar.gz", hash = "sha256:c6c0d2259945122819f171a32ecea2c349ead889ee28176caaf492143424be42"},
+    {file = "pytest_asyncio-1.4.1-py3-none-any.whl", hash = "sha256:507afa78ec77c6661164ef1a2368bc7820383fd1a14b2a7f813de8b5a92949cc"},
+    {file = "pytest_asyncio-1.4.1.tar.gz", hash = "sha256:e8266eb094e5ee9ffdb2068c9836f33e209ea77a970eb846933d416b5602669b"},
 ]
 
 [package.dependencies]
@@ -2467,18 +2461,20 @@ Sphinx = ">=1.8"
 
 [[package]]
 name = "sphinxcontrib-jsmath"
-version = "1.0.1"
-description = "A sphinx extension which renders display math in HTML via JavaScript"
+version = "2.0.0"
+description = "sphinxcontrib-jsmath is a sphinx extension which renders displayed maths in HTML via JavaScript"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.9"
 groups = ["docs"]
 files = [
-    {file = "sphinxcontrib-jsmath-1.0.1.tar.gz", hash = "sha256:a9925e4a4587247ed2191a22df5f6970656cb8ca2bd6284309578f2153e0c4b8"},
-    {file = "sphinxcontrib_jsmath-1.0.1-py2.py3-none-any.whl", hash = "sha256:2ec2eaebfb78f3f2078e73666b1415417a116cc848b72e5172e596c871103178"},
+    {file = "sphinxcontrib_jsmath-2.0.0-py3-none-any.whl", hash = "sha256:15ca92fe0eec82f0baf91a7efcc51ffacdb605924be6327683a52ebdacb6744c"},
+    {file = "sphinxcontrib_jsmath-2.0.0.tar.gz", hash = "sha256:551f780cf9687f9c3c74f0cf9f18aca06e0d6958853453f3803fe4d357c5b924"},
 ]
 
 [package.extras]
-test = ["flake8", "mypy", "pytest"]
+lint = ["mypy", "ruff (==0.5.5)", "types-docutils"]
+standalone = ["Sphinx (>=5)"]
+test = ["pytest"]
 
 [[package]]
 name = "sphinxcontrib-qthelp"
