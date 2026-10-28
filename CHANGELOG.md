@@ -2,12 +2,16 @@
 
 The Reasoner Validator package is evolving along with progress in TRAPI and Biolink Model standards within the NCATS Biomedical Knowledge Translator.
 
+# 7.1.2
+- removed premature "error" abort of knowledge graph edge validation, because it gets in the way of full error reporting
+- globally unique edge identifiers from the source TRAPI input JSON knowledge graph edge identifiers are now reported in the output messages
+
 ## 7.1.1
 - The infores values in the 'attribute_source' fields of TRAPI response attributes are now validated.
 
 ## 7.1.0
-  - Added `reasoner_validator.biolink.infores.is_infores()` predicate, validating 'infores' identifiers against the 'id' values of the 'information_resources' of the [InfoRes catalog](https://github.com/biolink/information-resource-registry/blob/main/infores_catalog.yaml)
-  - `BiolinkValidator.validate_infores()` now reports unregistered RetrievalSource 'infores' identifiers as 'unknown' errors (registration check is skipped, with a logged warning, if the InfoRes catalog is unavailable)
+- Added `reasoner_validator.biolink.infores.is_infores()` predicate, validating 'infores' identifiers against the 'id' values of the 'information_resources' of the [InfoRes catalog](https://github.com/biolink/information-resource-registry/blob/main/infores_catalog.yaml)
+- `BiolinkValidator.validate_infores()` now reports unregistered RetrievalSource 'infores' identifiers as 'unknown' errors (registration check is skipped, with a logged warning, if the InfoRes catalog is unavailable)
 
 ## 7.0.0
 - An initial, basic upgrade of reasoner-validator to TRAPI 2.0 compliance.
