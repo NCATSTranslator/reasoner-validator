@@ -447,7 +447,7 @@ tagged to ‘suppress’ compliance validation.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_element_status" title="reasoner_validator.biolink.BiolinkValidator.validate_element_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_element_status</span></code></a>(graph_type, context, ...)</p></td>
 <td><p>Detect element missing from Biolink, or is deprecated, abstract or mixin, signalled as a failure or warning.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_graph_edge" title="reasoner_validator.biolink.BiolinkValidator.validate_graph_edge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_edge</span></code></a>(edge, graph_type)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_graph_edge" title="reasoner_validator.biolink.BiolinkValidator.validate_graph_edge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_edge</span></code></a>(edge_id, edge, graph_type)</p></td>
 <td><p>Validate slot properties of a relationship ('biolink:Association') edge.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reasoner_validator.biolink.BiolinkValidator.validate_graph_node" title="reasoner_validator.biolink.BiolinkValidator.validate_graph_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_graph_node</span></code></a>(node_id, slots, graph_type)</p></td>
@@ -797,11 +797,12 @@ only apply graph-type-differential strict validation if ‘ignore_graph_type’ 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.BiolinkValidator.validate_graph_edge">
-<span class="sig-name descname"><span class="pre">validate_graph_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_graph_edge" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_graph_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="reasoner_validator.report.html#reasoner_validator.report.TRAPIGraphType" title="reasoner_validator.report.TRAPIGraphType"><span class="pre">TRAPIGraphType</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reasoner_validator.biolink.BiolinkValidator.validate_graph_edge" title="Permalink to this definition"></a></dt>
 <dd><p>Validate slot properties of a relationship (‘biolink:Association’) edge.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>edge_id</strong> – str, unique edge identifier set by the generator of the knowledge graph.</p></li>
 <li><p><strong>edge</strong> – dict[str, str], dictionary of the edge slot properties.</p></li>
 <li><p><strong>graph_type</strong> – TRAPIGraphType, component type of TRAPI being validated</p></li>
 </ul>
@@ -1000,7 +1001,8 @@ Biolink association subclasses possibly related to the current edge.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="reasoner_validator.biolink.get_biolink_model_toolkit">
 <span class="sig-prename descclassname"><span class="pre">reasoner_validator.biolink.</span></span><span class="sig-name descname"><span class="pre">get_biolink_model_toolkit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">biolink_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Toolkit</span></span></span><a class="headerlink" href="#reasoner_validator.biolink.get_biolink_model_toolkit" title="Permalink to this definition"></a></dt>
-<dd><p>Get a Biolink Model Toolkit configured with the expected project Biolink Model schema.</p>
+<dd><p>Get a Biolink Model Toolkit configured with the expected project Biolink Model schema.
+If the schema cannot be resolved, then the default</p>
 </dd></dl>
 
 <dl class="py function">

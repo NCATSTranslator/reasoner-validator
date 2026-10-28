@@ -140,6 +140,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-type-id-not-curie">error.knowledge_graph.edge.attribute.type_id.not_curie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-value-missing">error.knowledge_graph.edge.attribute.value.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-value-empty">error.knowledge_graph.edge.attribute.value.empty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-attribute-source-infores-missing">error.knowledge_graph.edge.attribute.attribute_source.infores.missing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-attribute-source-infores-not-curie">error.knowledge_graph.edge.attribute.attribute_source.infores.not_curie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-attribute-source-infores-invalid">error.knowledge_graph.edge.attribute.attribute_source.infores.invalid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-attribute-attribute-source-infores-unknown">error.knowledge_graph.edge.attribute.attribute_source.infores.unknown</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-provenance-infores-missing">error.knowledge_graph.edge.provenance.infores.missing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-provenance-missing-primary">error.knowledge_graph.edge.provenance.missing_primary</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#error-knowledge-graph-edge-qualifiers-not-array">error.knowledge_graph.edge.qualifiers.not_array</a></li>
@@ -774,6 +778,30 @@
 <p><strong>Context:</strong> identifier, attribute_id</p>
 <p><strong>Description:</strong> The value of an attribute of a Knowledge graph edge must not be empty</p>
 </section>
+<section id="error-knowledge-graph-edge-attribute-attribute-source-infores-missing">
+<h3>error.knowledge_graph.edge.attribute.attribute_source.infores.missing<a class="headerlink" href="#error-knowledge-graph-edge-attribute-attribute-source-infores-missing" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> ‘Attribute.attribute_source’ identifier is missing</p>
+<p><strong>Context:</strong> edge_id</p>
+<p><strong>Description:</strong> An ‘Attribute.attribute_source’  value should not be None or empty</p>
+</section>
+<section id="error-knowledge-graph-edge-attribute-attribute-source-infores-not-curie">
+<h3>error.knowledge_graph.edge.attribute.attribute_source.infores.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-attribute-attribute-source-infores-not-curie" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> One (or more) Infores value(s) is not a valid well-formed CURIE</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> An ‘Attribute.attribute_source’  Infores value must be a well-formed CURIE</p>
+</section>
+<section id="error-knowledge-graph-edge-attribute-attribute-source-infores-invalid">
+<h3>error.knowledge_graph.edge.attribute.attribute_source.infores.invalid<a class="headerlink" href="#error-knowledge-graph-edge-attribute-attribute-source-infores-invalid" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Invalid Infores namespace</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> An ‘Attribute.attribute_source’  Infores CURIE must come from the Infores namespace</p>
+</section>
+<section id="error-knowledge-graph-edge-attribute-attribute-source-infores-unknown">
+<h3>error.knowledge_graph.edge.attribute.attribute_source.infores.unknown<a class="headerlink" href="#error-knowledge-graph-edge-attribute-attribute-source-infores-unknown" title="Permalink to this heading"></a></h3>
+<p><strong>Message:</strong> Unregistered infores</p>
+<p><strong>Context:</strong> edge_id, identifier</p>
+<p><strong>Description:</strong> An ‘Attribute.attribute_source’  value must be a registered Infores identifier</p>
+</section>
 <section id="error-knowledge-graph-edge-provenance-infores-missing">
 <h3>error.knowledge_graph.edge.provenance.infores.missing<a class="headerlink" href="#error-knowledge-graph-edge-provenance-infores-missing" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Edge has provenance value which is not a well-formed InfoRes CURIE</p>
@@ -866,27 +894,27 @@
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-missing">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.missing<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-missing" title="Permalink to this heading"></a></h3>
-<p><strong>Message:</strong> RetrievalSource ‘resource_id’ identifier is missing</p>
+<p><strong>Message:</strong> ‘RetrievalSource.resource_id’ identifier is missing</p>
 <p><strong>Context:</strong> edge_id</p>
-<p><strong>Description:</strong> A RetrievalSource ‘resource_id’ value should not be None or empty</p>
+<p><strong>Description:</strong> A ‘RetrievalSource.resource_id’ value should not be None or empty</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-not-curie">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.not_curie<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-not-curie" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> One (or more) Infores value(s) is not a valid well-formed CURIE</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A RetrievalSource ‘resource_id’ Infores value must be a well-formed CURIE</p>
+<p><strong>Description:</strong> A ‘RetrievalSource.resource_id’ Infores value must be a well-formed CURIE</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-invalid">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.invalid<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-invalid" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Invalid Infores namespace</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A RetrievalSource ‘resource_id’ Infores CURIE must come from the Infores namespace</p>
+<p><strong>Description:</strong> A ‘RetrievalSource.resource_id’ Infores CURIE must come from the Infores namespace</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-unknown">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.infores.unknown<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-infores-unknown" title="Permalink to this heading"></a></h3>
 <p><strong>Message:</strong> Unregistered infores</p>
 <p><strong>Context:</strong> edge_id, identifier</p>
-<p><strong>Description:</strong> A ‘retrieval_source.resource_id’ value must be a registered Infores identifier</p>
+<p><strong>Description:</strong> A ‘RetrievalSource.resource_id’ value must be a registered Infores identifier</p>
 </section>
 <section id="error-knowledge-graph-edge-sources-retrieval-source-resource-id-empty">
 <h3>error.knowledge_graph.edge.sources.retrieval_source.resource_id.empty<a class="headerlink" href="#error-knowledge-graph-edge-sources-retrieval-source-resource-id-empty" title="Permalink to this heading"></a></h3>
